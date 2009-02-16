@@ -27,7 +27,9 @@ from numpy import linspace
 import os
 import copy
 
-__version__ = 0.1
+__author__ = "$Author$"
+__date__ = "$Date$"
+__version__ = "$Rev$"
 
 class Qpcr_qt(QMainWindow):
 

@@ -25,6 +25,10 @@ from matplotlib.backends.backend_qt4 import NavigationToolbar2QT
 from matplotlib.figure import Figure
 import re
 
+__author__ = "$Author$"
+__date__ = "$Date$"
+__version__ = "$Rev$"
+
 class GeneEchComboBox(QComboBox):
 
     def __init__(self, parent=None):

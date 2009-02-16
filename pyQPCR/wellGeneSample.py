@@ -22,6 +22,10 @@ from PyQt4.QtGui import *
 from numpy import nan
 import re
 
+__author__ = "$Author$"
+__date__ = "$Date$"
+__version__ = "$Rev$"
+
 class Ech:
 
     def __init__(self, nom, isRef=Qt.Unchecked):
