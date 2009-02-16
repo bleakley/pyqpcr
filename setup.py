@@ -21,10 +21,10 @@ elif sys.platform == 'win32':
                         )
 else:
     extra_options = dict( \
-                         data_files=[('share/icons', ['pyQPCR-16.png', 
-                             'pyQPCR-32.png']), ('share/applications',
-                              ['pyQPCR.desktop'])] \
-                         )
+          data_files=[('share/icons/hicolor/16x16/apps', ['pyQPCR-16.png']), 
+                      ('share/icons/hicolor/32x32/apps', ['pyQPCR-32.png']), 
+                      ('share/applications', ['pyQPCR.desktop'])] \
+                        )
 
 setup(name='pyQPCR',
       version='0.1',
