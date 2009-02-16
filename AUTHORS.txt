@@ -1,0 +1,5 @@
+Thomas Gastine <thomas.gastine@wanadoo.fr>
+Magali Hennion <magali.hennion@wanadoo.fr>
+
+The icons in this program are from the Oxygen Icons Project
+<http://www.oxygen-icons.org/>

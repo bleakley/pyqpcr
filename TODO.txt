@@ -1,0 +1,51 @@
+1°) Dans le addGene, il reste un probleme: comment enlever les doublons de la liste
+de manière élégante.
+Fait 
+
+2°) Dans edit: le remplissage automatique de l'état initial reste à faire...
+Fait
+
+3°) Ecrire la sauvegarde en CSV
+Fait
+
+4°) Quand on fait deux ouvertures successives la plaque ne se nettoie pas correctement
+Fait
+
+5°) on supprime un gene, puis undo le gene revient, mais pas dans la liste !
+Fait
+
+6°) Mm souçis avec les echantillons + bug ancestral si on supprime un ech et qu'on fait edit : adresseEch est completement foireux
+Fait
+
+7°) Soucis avec test.txt : on passe tout sur le meme echantillon ensuite on fait addEchantillon seul l'echantillon present dans la table reste !
+Fait
+
+8°) Quand on edite un standard il faut que la quantité soit préremplie.
+
+9°) Quand on edite un gene ou un standard, il reste un pb: si on édite et que le nom est le même pas d'ajout !
+Fait
+
+10°) remplacer les echantillons par des objets ou alors trouver une solution pour savoir qui est l'echantillon de reference.
+Fait
+
+11°) quand on ouvre 2 fichiers successifs, il faut nettoyer les comboBox
+Fait
+
+12°) si un gene est dans la liste des genes (comboBox) mais qu'il n'est pas represente dans la plaque et qu'on veut le supprimer, pb :
+Traceback (most recent call last):
+  File "/home/tgastine/pcrq/geneDialog.py", line 103, in remove
+    for well in self.plaque.dicoGene[gene.name]:
+  File "/home/tgastine/pcrq/odict.py", line 424, in __getitem__
+    return dict.__getitem__(self, key)
+KeyError: 'lulu'
+Fait, le bug a aussi été corrigé sur les echantillons...
+
+13°) Quand on a GOI et SOI dans le fichier de depart, tout semble OK. Cependant, si l'on trace les resultats, qu'on change le GOI et qu'on retrace, il y a un soucis avec la couleur:
+Traceback (most recent call last):
+  File "./main.py", line 684, in compute
+    self.plot()
+  File "./main.py", line 714, in plot
+    listNRQ, width, color=str(gene.color.name()),
+AttributeError: Gene instance has no attribute 'color'
+L'erreur vient du fait que echDialog et GeneDialog reinitialise l'objet Gene et l'objet Ech
+
