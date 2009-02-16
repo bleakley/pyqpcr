@@ -1,0 +1,197 @@
+# -*- coding: utf-8 -*-
+#
+# pyQPCR, an application to analyse qPCR raw data
+# Copyright (C) 2008 Thomas Gastine
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 3
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+
+import copy
+from pyQPCR.wellGeneSample import *
+from PyQt4.QtGui import *
+from PyQt4.QtCore import *
+
+class GeneDialog(QDialog):
+    
+    def __init__(self, parent=None, plaque=None):
+        self.parent = parent
+        QDialog.__init__(self, parent)
+
+        self.listWidget = QListWidget()
+        self.listWidget.setAlternatingRowColors(True)
+        if plaque is not None:
+            self.plaque = copy.deepcopy(plaque)
+            self.populateList()
+
+        self.listWidget.setCurrentRow(-1)
+        buttonAdd = QPushButton("&Add")
+        buttonEdit = QPushButton("&Edit")
+        buttonRemove = QPushButton("&Remove")
+        buttonBox = QDialogButtonBox(QDialogButtonBox.Ok|
+                                     QDialogButtonBox.Cancel)
+
+        vlayout = QVBoxLayout()
+        vlayout.addWidget(buttonAdd)
+        vlayout.addWidget(buttonEdit)
+        vlayout.addWidget(buttonRemove)
+        vlayout.addStretch()
+        hlayout = QHBoxLayout()
+        hlayout.addWidget(self.listWidget)
+        hlayout.addLayout(vlayout)
+        layout = QVBoxLayout()
+        layout.addLayout(hlayout)
+        layout.addWidget(buttonBox)
+        self.setLayout(layout)
+
+        self.connect(buttonBox, SIGNAL("accepted()"), self, SLOT("accept()"))
+        self.connect(buttonBox, SIGNAL("rejected()"), self, SLOT("reject()"))
+        self.connect(buttonAdd, SIGNAL("clicked()"), self.add)
+        self.connect(buttonEdit, SIGNAL("clicked()"), self.edit)
+        self.connect(buttonRemove, SIGNAL("clicked()"), self.remove)
+        self.setWindowTitle("New target")
+
+    def populateList(self):
+        self.listWidget.clear()
+        for ind, it in enumerate(self.plaque.listGene):
+            name = "%s (%s%%%s%s)" % (it.name, it.eff, unichr(177), it.pm)
+            item = QListWidgetItem(name)
+            if it.isRef == Qt.Checked:
+                item.setForeground(Qt.darkGreen)
+            else:
+                item.setForeground(Qt.black)
+            self.listWidget.addItem(item)
+
+    def add(self):
+        dialog = AddGeneDialog(self)
+        if dialog.exec_():
+            gene = str(dialog.gene.text())
+            eff = float(dialog.eff.value())
+            pm = float(dialog.pmerror.value())
+            state = int(dialog.ref.checkState())
+            g = Gene(gene, eff, pm)
+            g.setRef(state)
+            g.setColor(QColor(Qt.black))
+            if not self.plaque.adresseGene.has_key(gene):
+                self.plaque.listGene.append(g)
+                self.plaque.adresseGene[gene] = len(self.plaque.listGene)-1
+                self.populateList()
+
+    def edit(self):
+        row = self.listWidget.currentRow()
+        gene = self.plaque.listGene[row]
+        gene_before = gene.name
+        dialog = AddGeneDialog(self, ge=gene)
+        if dialog.exec_():
+            name = str(dialog.gene.text())
+            eff = float(dialog.eff.value())
+            pm = float(dialog.pmerror.value())
+            state = int(dialog.ref.checkState())
+            gene.setRef(state)
+            gene.setEff(eff)
+            gene.setPm(pm)
+            gene.setName(name)
+# dico
+            self.populateList()
+            if self.plaque.dicoGene.has_key(str(gene_before)):
+                self.plaque.dicoGene[str(name)] = \
+                     self.plaque.dicoGene[str(gene_before)]
+                self.plaque.adresseGene[str(name)] = \
+                     self.plaque.adresseGene[str(gene_before)]
+                for well in self.plaque.dicoGene[str(gene_before)]:
+                    well.setGene(gene)
+
+    def remove(self):
+        row = self.listWidget.currentRow()
+        gene = self.plaque.listGene[row]
+        item = self.listWidget.item(row)
+        if item is None:
+            return
+        reply = QMessageBox.question(self, "Remove",
+                        "Remove %s ?" % (item.text()),
+                        QMessageBox.Yes|QMessageBox.No)
+        if reply == QMessageBox.Yes:
+            self.plaque.listGene.__delitem__(row)
+            self.populateList()
+# On repasse les puits de la plaque sur le gene vide
+# a condition que des puits soient concernes
+            if self.plaque.dicoGene.has_key(gene.name):
+                for well in self.plaque.dicoGene[gene.name]:
+                    well.setGene(Gene(''))
+
+class AddGeneDialog(QDialog):
+    
+    def __init__(self, parent=None, ge=None):
+        self.parent = parent
+        QDialog.__init__(self, parent)
+        lab = QLabel("Target:")
+        if ge is not None:
+            g = copy.deepcopy(ge)
+            self.gene = QLineEdit(g.name)
+        else:
+            self.gene = QLineEdit()
+        lab2 = QLabel("Efficiency:")
+        buttonBox = QDialogButtonBox(QDialogButtonBox.Ok|
+                                     QDialogButtonBox.Cancel)
+        hlayout = QHBoxLayout()
+        self.eff = QDoubleSpinBox()
+# Pour changer les , par des . on force la locale
+        self.eff.setLocale(QLocale(QLocale.English, QLocale.UnitedStates))
+        self.eff.setRange(0.0, 100.0)
+        self.eff.setSuffix(" %")
+        if ge is not None:
+            self.eff.setValue(g.eff)
+        else:
+            self.eff.setValue(100.0)
+        self.pmerror = QDoubleSpinBox()
+# Pour changer les , par des . on force la locale
+        self.pmerror.setLocale(QLocale(QLocale.English, QLocale.UnitedStates))
+        self.pmerror.setRange(0.0, 100.0)
+        self.pmerror.setSuffix(" %")
+        if ge is not None:
+            self.pmerror.setValue(g.pm)
+        else:
+            self.pmerror.setValue(0.)
+        hlayout.addWidget(self.eff)
+        hlayout.addWidget(QLabel(unichr(177)))
+        hlayout.addWidget(self.pmerror)
+        labRef = QLabel("Reference:")
+        self.ref = QCheckBox()
+        if ge is not None:
+            self.ref.setCheckState(g.isRef)
+        else:
+            self.ref.setCheckState(Qt.Unchecked)
+
+        layout = QGridLayout()
+        layout.addWidget(lab, 0, 0)
+        layout.addWidget(self.gene, 0, 1)
+        layout.addWidget(lab2, 1, 0)
+        layout.addLayout(hlayout, 1, 1)
+        layout.addWidget(labRef, 2, 0)
+        layout.addWidget(self.ref, 2, 1)
+        layout.addWidget(buttonBox, 3, 0, 1, 2)
+        self.setLayout(layout)
+
+        self.connect(buttonBox, SIGNAL("accepted()"), self, SLOT("accept()"))
+        self.connect(buttonBox, SIGNAL("rejected()"), self, SLOT("reject()"))
+        self.setWindowTitle("New target")
+
+
+if __name__=="__main__":
+    import sys
+    from plaque import *
+    app = QApplication(sys.argv)
+    pl = Plaque('toto.csv')
+    f = GeneDialog(plaque=pl)
+    f.show()
+    app.exec_()

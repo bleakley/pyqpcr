@@ -1,0 +1,22 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource>
+<file alias="filequit.png">icons/application-exit.png</file>
+<file alias="fileopen.png">icons/document-open.png</file>
+<file alias="fileprint.png">icons/document-print.png</file>
+<file alias="filesave.png">icons/document-save.png</file>
+<file alias="filesaveas.png">icons/document-save-as.png</file>
+<file alias="filerecent.png">icons/document-open-recent.png</file>
+<file alias="addgene.png">icons/list-add.png</file>
+<file alias="undo.png">icons/edit-undo.png</file>
+<file alias="redo.png">icons/edit-redo.png</file>
+<file alias="plot.png">icons/plot.png</file>
+<file alias="edit.png">icons/edit-bomb.png</file>
+<file alias="about.png">icons/help-about.png</file>
+<file alias="help.png">icons/help-contents.png</file>
+<file alias="arrow-right.png">icons/arrow-right.png</file>
+<file alias="arrow-down.png">icons/arrow-down.png</file>
+<file alias="disable.png">icons/disable.png</file>
+<file alias="enable.png">icons/enable.png</file>
+<file alias="logo.png">icons/logo.png</file>
+</qresource>
+</RCC>

@@ -1,0 +1,14 @@
+[Desktop Entry]
+Name=pyQPCR
+Name[fr]=pyQPCR
+GenericName=qPCR analyser
+GenericName[fr]=Analyse de PCRq
+Comment=a PyQt4 application to deal qPCR data
+Comment[fr]=a PyQt4 application to deal qPCR data
+Exec=qpcr
+Terminal=false
+Type=Application
+StartupNotify=true
+Icon=pyQPCR-32
+Categories=Education;Science;Biology;
+

@@ -1,0 +1,38 @@
+pyQPCR Installation
+===================
+
+Dependencies
+------------
+
+Before installing pyQPCR, you need to have these libraries:
+
+ * PyQt 4.1 with Qt 4.2 or newer
+   http://www.riverbankcomputing.co.uk/pyqt/
+   http://www.trolltech.com/products/qt/
+
+ * python-matplotlib 0.91 or newer
+   http://matplotlib.sourceforge.net/
+
+ * numpy 1.1 or newer
+   http://numpy.scipy.org/
+
+
+Installation
+------------
+
+After installing the dependencies, you can install pyQPCR by running:
+
+  sudo python setup.py install
+
+This will automatically build and install all required Python modules. To
+start pyQPCR now you can use:
+
+  qpcr
+
+
+Running From the Source Tree
+----------------------------
+
+If you want to run pyQPCR from the source directory without installing, just run
+  
+  direct-run.py
