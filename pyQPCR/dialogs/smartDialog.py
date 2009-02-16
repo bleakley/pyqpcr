@@ -22,6 +22,10 @@ import pyQPCR.qrc_resources
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 
+__author__ = "$Author$"
+__date__ = "$Date$"
+__version__ = "$Rev$"
+
 def fromPosition(x, y):
     lettres = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
     dict = {}

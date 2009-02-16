@@ -22,6 +22,10 @@ from pyQPCR.wellGeneSample import *
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 
+__author__ = "$Author$"
+__date__ = "$Date$"
+__version__ = "$Rev$"
+
 class GeneDialog(QDialog):
     
     def __init__(self, parent=None, plaque=None):
