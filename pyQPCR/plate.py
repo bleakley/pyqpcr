@@ -26,9 +26,9 @@ from numpy import mean, std, sqrt, log, asarray
 from pyQPCR.utils.odict import OrderedDict
 from pyQPCR.utils.ragged import RaggedArray2D
 
-__author__ = "$Author:$"
-__date__ = "$Date:$"
-__version__ = "$Rev:$"
+__author__ = "$Author$:"
+__date__ = "$Date$:"
+__version__ = "$Rev$:"
 
 class Plaque:
     
