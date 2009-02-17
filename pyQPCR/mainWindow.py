@@ -43,7 +43,12 @@ class Qpcr_qt(QMainWindow):
         self.nplotStd = 0
         self.nplotEch = 0
 
-        self.groupsList = QListWidget()
+        self.tree = QTreeWidget()
+        ancestor = QTreeWidgetItem(self.tree, ["test"])
+        item = QTreeWidgetItem(ancestor, ["lulu"])
+        item = QTreeWidgetItem(ancestor, ["lulu2"])
+        self.tree.expandItem(ancestor)
+        self.tree.setHeaderLabel("Parameters")
 
         self.onglet = QTabWidget()
         self.table = QTableWidget()
@@ -75,7 +80,7 @@ class Qpcr_qt(QMainWindow):
             QSizePolicy.Maximum))
 
         self.vSplitter = QSplitter(Qt.Horizontal)
-        self.vSplitter.addWidget(self.groupsList)
+        self.vSplitter.addWidget(self.tree)
         self.vSplitter.addWidget(self.onglet)
         self.mainSplitter = QSplitter(Qt.Vertical)
         self.mainSplitter.addWidget(self.vSplitter)
@@ -775,7 +780,8 @@ class Qpcr_qt(QMainWindow):
 
 # Gene vs Ech
         if self.cboxSens.currentIndex() == 0:
-            for ind, gene in enumerate(self.plaque.listGene[1:]):
+            ind = 0
+            for gene in self.plaque.listGene[1:]:
                 if self.nplotGene == 0:
                     gene.setColor(colors[ind])
                 listNRQ = [] ; listNRQerror = []
@@ -791,6 +797,7 @@ class Qpcr_qt(QMainWindow):
                             yerr=listNRQerror, ecolor='k')
                     legPos.append(p[0])
                     legName.append(gene.name)
+                    ind += 1
             self.mplCanUnknown.axes.set_xticks( \
                            linspace(0, valmax, len(listNRQ)) \
                            +len(self.plaque.listGene[1:])/2*width)
@@ -800,7 +807,8 @@ class Qpcr_qt(QMainWindow):
 
 # Ech vs Gene
         elif self.cboxSens.currentIndex() == 1:
-            for ind, ech in enumerate(self.plaque.listEch[1:]):
+            ind = 0
+            for ech in self.plaque.listEch[1:]:
                 if self.nplotEch == 0:
                     ech.setColor(colors[ind])
                 listNRQ = [] ; listNRQerror = []
@@ -816,6 +824,7 @@ class Qpcr_qt(QMainWindow):
                             yerr=listNRQerror, ecolor='k')
                     legPos.append(p[0])
                     legName.append(ech.name)
+                    ind += 1
             self.mplCanUnknown.axes.set_xticks( \
                            linspace(0, valmax, len(listNRQ)) \
                            +len(self.plaque.listEch[1:])/2*width)
