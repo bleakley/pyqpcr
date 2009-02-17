@@ -132,8 +132,10 @@ class Plaque:
 # Ecriture du `Analysis Parameters`
             f.write("\n")
             f.write('"Analysis Parameters"\n')
-            f.write('"GOI"\t"%s"\n' % self.geneRef.name)
-            f.write('"SOI"\t"%s"\n' % self.echRef.name)
+            if hasattr(self, 'geneRef'):
+                f.write('"GOI"\t"%s"\n' % self.geneRef.name)
+            if hasattr(self, 'echRef'):
+                f.write('"SOI"\t"%s"\n' % self.echRef.name)
 # -----------CSV------------- 
         elif self.fileType == "csv":
             writer = csv.writer(f, quoting=csv.QUOTE_NONNUMERIC, delimiter=";")
@@ -147,8 +149,10 @@ class Plaque:
 # Ecriture du `Analysis Parameters`
             writer.writerow("")
             writer.writerow(['Analysis Parameters'])
-            writer.writerow(['GOI', self.geneRef.name])
-            writer.writerow(['SOI', self.echRef.name])
+            if hasattr(self, 'geneRef'):
+                writer.writerow(['GOI', self.geneRef.name])
+            if hasattr(self, 'echRef'):
+                writer.writerow(['SOI', self.echRef.name])
         f.close()
 
     def setDicoGene(self):
