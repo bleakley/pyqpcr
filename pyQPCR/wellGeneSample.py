@@ -126,17 +126,14 @@ class Gene:
 class Puits:
 
     def __init__(self, name, ech=None, ct=nan, ctmean=nan, 
-            ctdev=nan, amount=nan, gene=None):
+            ctdev=nan, gene=None):
         self.name = name
         self.ech = Ech(ech)
         self.gene = Gene(gene)
         self.ct = ct
         self.ctmean = ctmean
         self.ctdev = ctdev
-        if amount != '-':
-            self.amount = amount
-        else:
-            self.amount = ''
+        self.amount = ''
         self.type = "unknown"
         self.NRQ = ''
         self.NRQerror = ''

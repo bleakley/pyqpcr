@@ -132,14 +132,12 @@ class Qpcr_qt(QMainWindow):
         lab1 = QLabel("&Plot axis:")
         lab1.setBuddy(self.cboxSens)
         self.cboxSens.addItems(["Target vs Sample", "Sample vs Target"])
-        self.cboxSens.setEnabled(False)
         self.spinWidth = QDoubleSpinBox()
         self.spinWidth.setLocale(QLocale(QLocale.English, 
                                          QLocale.UnitedStates))
         self.spinWidth.setValue(0.1)
         self.spinWidth.setRange(0.01, 0.5)
         self.spinWidth.setSingleStep(0.02)
-        self.spinWidth.setEnabled(False)
         lab2 = QLabel("Bar &width:")
         lab2.setBuddy(self.spinWidth)
         self.spinSpacing = QDoubleSpinBox()
@@ -150,9 +148,7 @@ class Qpcr_qt(QMainWindow):
         self.spinSpacing.setSingleStep(0.1)
         lab3 = QLabel("Bar &spacing:")
         lab3.setBuddy(self.spinSpacing)
-        self.spinSpacing.setEnabled(False)
         self.btnPlot = QPushButton("&Colors and order...")
-        self.btnPlot.setEnabled(False)
         vLay.addWidget(lab1)
         vLay.addWidget(self.cboxSens)
         vLay.addWidget(lab2)
@@ -185,58 +181,54 @@ class Qpcr_qt(QMainWindow):
     def createMenusAndToolbars(self):
         fileOpenAction = self.createAction("&Open...", self.fileOpen, 
                 QKeySequence.Open, "fileopen", "Open an existing file")
-        filePrintAction = self.createAction("&Print", self.filePrint,
+        self.filePrintAction = self.createAction("&Print", self.filePrint,
                 QKeySequence.Print, "fileprint", "Print results")
-        fileSaveAction = self.createAction("&Save", self.fileSave,
+        self.fileSaveAction = self.createAction("&Save", self.fileSave,
                 QKeySequence.Save, "filesave", "Save the file")
-        fileSaveAsAction = self.createAction("Save &As...",
+        self.fileSaveAsAction = self.createAction("Save &As...",
                 self.fileSaveAs, icon="filesaveas",
                 tip="Save the file using a new name")
         fileQuitAction = self.createAction("&Quit", self.close, 
                 "Ctrl+Q", "filequit", "Close the application")
         self.editAction = self.createAction("Edit wells", self.editWell, 
                 "Ctrl+E", "edit", "Edit selected wells")
-        undoAction = self.createAction("Undo", self.undo, 
+        self.undoAction = self.createAction("Undo", self.undo, 
                 QKeySequence.Undo, "undo", "Undo")
-        redoAction = self.createAction("Redo", self.redo,
+        self.redoAction = self.createAction("Redo", self.redo,
                 QKeySequence.Redo, "redo", "Redo")
         self.addGeneAction = self.createAction("Add &Target...", self.addGene,
                 "Ctrl+T", "addgene", "Add a new target")
         self.addEchAction = self.createAction("Add &Sample...", self.addEch,
                 "Ctrl+G", "addgene", "Add a new sample")
-        plotAction = self.createAction("Compute unknown", self.computeUnknown, 
+        self.plotAction = self.createAction("Compute unknown", self.computeUnknown, 
                                 "Ctrl+Shift+U", "plotUnknown", "Plot unknown")
-        plotStdAction = self.createAction("Compute standard", self.computeStd, 
+        self.plotStdAction = self.createAction("Compute standard", self.computeStd, 
                            "Ctrl+Shift+S", "plotStandard", "Plot standard")
-        enableAction = self.createAction("Enable wells", self.enable, None,
+        self.enableAction = self.createAction("Enable wells", self.enable, None,
                 "enable", "Enable selected wells")
-        disableAction = self.createAction("Disable wells", self.disable, None,
+        self.disableAction = self.createAction("Disable wells", self.disable, None,
                 "disable", "Disable selected wells")
         helpAboutAction =  self.createAction("&About pyQPCR", self.helpAbout,
                 icon="about")
         helpHelpAction = self.createAction("&Help", self.helpHelp,
                 QKeySequence.HelpContents, icon="help")
-# Desactivation par defaut
-        self.addGeneAction.setDisabled(True)
-        self.addEchAction.setDisabled(True)
-        self.editAction.setDisabled(True)
 # Menus
         fileMenu = self.menuBar().addMenu("&File")
         fileMenu.addAction(fileOpenAction)
         self.recentFileMenu = fileMenu.addMenu(QIcon(":/filerecent.png"),
                 "Open recent files")
         fileMenu.addSeparator()
-        self.addActions(fileMenu, (filePrintAction, None, 
-            fileSaveAction, fileSaveAsAction, None, fileQuitAction))
+        self.addActions(fileMenu, (self.filePrintAction, None, 
+            self.fileSaveAction, self.fileSaveAsAction, None, fileQuitAction))
         editMenu = self.menuBar().addMenu("&Edit")
         editMenu.addAction(self.editAction)
         editMenu.addSeparator()
-        self.addActions(editMenu, (undoAction, redoAction))
+        self.addActions(editMenu, (self.undoAction, self.redoAction))
         editMenu.addSeparator()
         self.addActions(editMenu, (self.addGeneAction, self.addEchAction))
         calculMenu = self.menuBar().addMenu("&Computations")
-        self.addActions(calculMenu, (enableAction, disableAction,
-            None, plotAction, plotStdAction))
+        self.addActions(calculMenu, (self.enableAction, self.disableAction,
+                                  None, self.plotAction, self.plotStdAction))
         helpMenu = self.menuBar().addMenu("&Help")
         self.addActions(helpMenu, (helpAboutAction, helpHelpAction))
 
@@ -246,15 +238,15 @@ class Qpcr_qt(QMainWindow):
 # Toolbars
         fileToolbar = self.addToolBar("File")
         fileToolbar.setObjectName("FileToolBar")
-        self.addActions(fileToolbar, (fileOpenAction, filePrintAction, 
-            fileSaveAction, fileSaveAsAction))
+        self.addActions(fileToolbar, (fileOpenAction, self.filePrintAction, 
+            self.fileSaveAction, self.fileSaveAsAction))
         fileToolbar.setIconSize(QSize(22, 22))
 
         editToolbar = self.addToolBar("Edit")
         editToolbar.setObjectName("Edit ToolBar")
         editToolbar.addAction(self.editAction)
         editToolbar.addSeparator()
-        self.addActions(editToolbar, (undoAction, redoAction))
+        self.addActions(editToolbar, (self.undoAction, self.redoAction))
         editToolbar.addSeparator()
         self.typeComboBox = QComboBox()
         self.typeComboBox.addItems(["unknown", "standard", "negative"])
@@ -286,23 +278,28 @@ class Qpcr_qt(QMainWindow):
 
         plotToolbar = self.addToolBar("Plot")
         plotToolbar.setObjectName("PlotToolBar")
-        self.addActions(plotToolbar, (plotAction, plotStdAction))
+        self.addActions(plotToolbar, (self.plotAction, self.plotStdAction))
         plotToolbar.setIconSize(QSize(22, 22))
 # ContextMenu
         self.table.setContextMenuPolicy(Qt.ActionsContextMenu)
         self.result.setContextMenuPolicy(Qt.ActionsContextMenu)
         self.addActions(self.table, (fileOpenAction, self.editAction,
-            undoAction, redoAction, self.addGeneAction, 
-            self.addEchAction, enableAction, disableAction))
-        self.addActions(self.result, (filePrintAction, fileSaveAction,
-                fileSaveAsAction, plotAction, plotStdAction))
+                       self.undoAction, self.redoAction, self.addGeneAction, 
+                       self.addEchAction, self.enableAction, self.disableAction))
+        self.addActions(self.result, (self.filePrintAction, self.fileSaveAction,
+                self.fileSaveAsAction, self.plotAction, self.plotStdAction))
+# Desactivation par defaut
+        self.activateDesactivate(False)
 
 
     def createAction(self, text, slot=None, shortcut=None, icon=None,
                      tip=None, checkable=None, signal="triggered()"):
+        """
+        This method highly simplifies the creation of QAction
+        """
         action = QAction(text, self)
         if icon is not None:
-            action.setIcon(QIcon(":/%s.png"%icon))
+            action.setIcon(QIcon(":/%s.png" % icon))
         if shortcut  is not None:
             action.setShortcut(shortcut)
         if tip is not None:
@@ -322,7 +319,10 @@ class Qpcr_qt(QMainWindow):
                 target.addAction(action)
 
     def createItem(self, text, tip=None, status=None, back=Qt.white, 
-            fore=Qt.black, icon=None):
+                   fore=Qt.black, icon=None):
+        """
+        This method highly simplifies the creation of QTableWidgetItem
+        """
         item = QTableWidgetItem(text)
         item.setForeground(fore)
         if tip is not None:
@@ -380,15 +380,36 @@ class Qpcr_qt(QMainWindow):
             self.result.setHorizontalHeaderLabels(self.resultLabels)
             self.plaque = Plaque(fname)
 # Activation des actions
-            self.addGeneAction.setEnabled(True)
-            self.addEchAction.setEnabled(True)
-            self.editAction.setEnabled(True)
+            self.activateDesactivate(True)
 # Pile de plaques pour le Undo/Redo
             self.plaqueStack.append(copy.deepcopy(self.plaque))
             self.populateTable()
             self.populateResult()
             self.geneComboBox.addItems(self.plaque.listGene)
             self.echComboBox.addItems(self.plaque.listEch)
+
+    def activateDesactivate(self, bool):
+        """
+        This method allows to enable/disable several QAction
+
+        @param: the boolean value
+        @type: logical
+        """
+        self.addGeneAction.setEnabled(bool)
+        self.addEchAction.setEnabled(bool)
+        self.editAction.setEnabled(bool)
+        self.plotAction.setEnabled(bool)
+        self.plotStdAction.setEnabled(bool)
+        self.typeComboBox.setEnabled(bool)
+        self.geneComboBox.setEnabled(bool)
+        self.echComboBox.setEnabled(bool)
+        self.fileSaveAction.setEnabled(bool)
+        self.fileSaveAsAction.setEnabled(bool)
+        self.filePrintAction.setEnabled(bool)
+        self.undoAction.setEnabled(bool)
+        self.redoAction.setEnabled(bool)
+        self.enableAction.setEnabled(bool)
+        self.disableAction.setEnabled(bool)
 
     def populateTable(self):
         for well in self.plaque.listePuits:
@@ -727,10 +748,6 @@ class Qpcr_qt(QMainWindow):
             self.populateResult()
 # On trace le resultat
             self.plotUnknown()
-            self.cboxSens.setEnabled(True)
-            self.spinWidth.setEnabled(True)
-            self.spinSpacing.setEnabled(True)
-            self.btnPlot.setEnabled(True)
         else:
             if  hasattr(self.plaque, "echRef"):
                 QMessageBox.warning(self, "Warning",
