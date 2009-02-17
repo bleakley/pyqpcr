@@ -20,11 +20,28 @@ elif sys.platform == 'win32':
     glob.glob(r'C:\Python25\Lib\site-packages\matplotlib\mpl-data\fonts\*.*')) ] \
                         )
 else:
+    import platform
     extra_options = dict( \
           data_files=[('share/icons/hicolor/16x16/apps', ['pyQPCR-16.png']), 
                       ('share/icons/hicolor/32x32/apps', ['pyQPCR-32.png']), 
                       ('share/applications', ['pyQPCR.desktop'])] \
                         )
+    if platform.dist()[0] == 'fedora':
+        extra_options['options'] = \
+               {
+                'bdist_rpm': { 
+                    'requires': ['python-matplotlib', 'PyQt4'],
+                    'distribution_name': 'fedora'
+                             },
+                'install': {'optimize': '1'}
+                } 
+    elif platform.dist()[0] == 'opensuse':
+        extra_options['options'] = \
+                'bdist_rpm': { 
+                    'requires': ['python-matplotlib', 'python-qt4'],
+                    'distribution_name': 'opensuse'
+                             }
+                } 
 
 setup(name='pyQPCR',
       version='0.1',
