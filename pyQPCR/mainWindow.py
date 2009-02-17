@@ -40,6 +40,7 @@ class Qpcr_qt(QMainWindow):
         self.unsaved = False
         self.printer = None
         self.nplotGene = 0
+        self.nplotStd = 0
         self.nplotEch = 0
 
         self.groupsList = QListWidget()
@@ -57,50 +58,8 @@ class Qpcr_qt(QMainWindow):
         self.table.setEditTriggers(QTableWidget.NoEditTriggers)
         self.onglet.addTab(self.table, "Plate")
 #
-        plotWidget = QWidget()
-        vLay = QVBoxLayout()
-        self.cboxSens = QComboBox()
-        lab1 = QLabel("&Plot axis:")
-        lab1.setBuddy(self.cboxSens)
-        self.cboxSens.addItems(["Target vs Sample", "Sample vs Target"])
-        self.cboxSens.setEnabled(False)
-        self.spinWidth = QDoubleSpinBox()
-        self.spinWidth.setLocale(QLocale(QLocale.English, QLocale.UnitedStates))
-        self.spinWidth.setValue(0.1)
-        self.spinWidth.setRange(0.01, 0.5)
-        self.spinWidth.setSingleStep(0.05)
-        self.spinWidth.setEnabled(False)
-        lab2 = QLabel("Bar &width:")
-        lab2.setBuddy(self.spinWidth)
-        self.spinSpacing = QDoubleSpinBox()
-        self.spinSpacing.setLocale(QLocale(QLocale.English, QLocale.UnitedStates))
-        self.spinSpacing.setValue(1)
-        self.spinSpacing.setRange(0.5, 5)
-        self.spinSpacing.setSingleStep(0.5)
-        lab3 = QLabel("Bar &spacing:")
-        lab3.setBuddy(self.spinSpacing)
-        self.spinSpacing.setEnabled(False)
-        self.btnPlot = QPushButton("&Colors and order...")
-        self.btnPlot.setEnabled(False)
-        vLay.addWidget(lab1)
-        vLay.addWidget(self.cboxSens)
-        vLay.addWidget(lab2)
-        vLay.addWidget(self.spinWidth)
-        vLay.addWidget(lab3)
-        vLay.addWidget(self.spinSpacing)
-        vLay.addWidget(self.btnPlot)
-        vLay.addStretch()
-        vLayout = QVBoxLayout()
-        self.mplCan = MatplotlibWidget(plotWidget, width=5, height=4, dpi=100)
-        #self.mplCan.fig.subplots_adjust(left=0.05, right=0.85, top=0.95)
-        toolBar = NavigationToolbar2QT(self.mplCan, self)
-        vLayout.addWidget(toolBar)
-        vLayout.addWidget(self.mplCan)
-        hLayout = QHBoxLayout()
-        hLayout.addLayout(vLay)
-        hLayout.addLayout(vLayout)
-        plotWidget.setLayout(hLayout)
-        self.onglet.addTab(plotWidget, "Results")
+        self.createMplUnknownWiget()
+        self.createMplStdWiget()
 #
         self.result = QTableWidget()
         self.resultLabels=["Well", "Target", "Ct", "<Ct>", "E(Ct)", "Amount", 
@@ -145,11 +104,11 @@ class Qpcr_qt(QMainWindow):
         self.connect(self.typeComboBox, SIGNAL("activated(int)"),
                 self.setType)
         self.connect(self.cboxSens, SIGNAL("activated(int)"),
-                self.plot)
+                self.plotUnknown)
         self.connect(self.spinWidth, SIGNAL("valueChanged(double)"),
-                self.plot)
+                self.plotUnknown)
         self.connect(self.spinSpacing, SIGNAL("valueChanged(double)"),
-                self.plot)
+                self.plotUnknown)
         self.connect(self.btnPlot, SIGNAL("clicked()"),
                 self.setPlotColor)
 
@@ -165,6 +124,63 @@ class Qpcr_qt(QMainWindow):
                 settings.value("MainSplitter").toByteArray())
         self.setWindowTitle("pyQPCR")
         self.updateFileMenu()
+
+    def createMplUnknownWiget(self):
+        self.plotUnknownWidget = QWidget()
+        vLay = QVBoxLayout()
+        self.cboxSens = QComboBox()
+        lab1 = QLabel("&Plot axis:")
+        lab1.setBuddy(self.cboxSens)
+        self.cboxSens.addItems(["Target vs Sample", "Sample vs Target"])
+        self.cboxSens.setEnabled(False)
+        self.spinWidth = QDoubleSpinBox()
+        self.spinWidth.setLocale(QLocale(QLocale.English, 
+                                         QLocale.UnitedStates))
+        self.spinWidth.setValue(0.1)
+        self.spinWidth.setRange(0.01, 0.5)
+        self.spinWidth.setSingleStep(0.02)
+        self.spinWidth.setEnabled(False)
+        lab2 = QLabel("Bar &width:")
+        lab2.setBuddy(self.spinWidth)
+        self.spinSpacing = QDoubleSpinBox()
+        self.spinSpacing.setLocale(QLocale(QLocale.English, 
+                                           QLocale.UnitedStates))
+        self.spinSpacing.setValue(1)
+        self.spinSpacing.setRange(0.5, 5)
+        self.spinSpacing.setSingleStep(0.1)
+        lab3 = QLabel("Bar &spacing:")
+        lab3.setBuddy(self.spinSpacing)
+        self.spinSpacing.setEnabled(False)
+        self.btnPlot = QPushButton("&Colors and order...")
+        self.btnPlot.setEnabled(False)
+        vLay.addWidget(lab1)
+        vLay.addWidget(self.cboxSens)
+        vLay.addWidget(lab2)
+        vLay.addWidget(self.spinWidth)
+        vLay.addWidget(lab3)
+        vLay.addWidget(self.spinSpacing)
+        vLay.addWidget(self.btnPlot)
+        vLay.addStretch()
+        vLayout = QVBoxLayout()
+        self.mplCanUnknown = MatplotlibWidget(self.plotUnknownWidget, width=5, 
+                                       height=4, dpi=100)
+        toolBar = NavigationToolbar2QT(self.mplCanUnknown, self)
+        vLayout.addWidget(toolBar)
+        vLayout.addWidget(self.mplCanUnknown)
+        hLayout = QHBoxLayout()
+        hLayout.addLayout(vLay)
+        hLayout.addLayout(vLayout)
+        self.plotUnknownWidget.setLayout(hLayout)
+
+    def createMplStdWiget(self):
+        self.plotStdWidget = QWidget()
+        vLayout = QVBoxLayout()
+        self.mplCanStd = MatplotlibWidget(self.plotUnknownWidget, width=5, 
+                                          height=4, dpi=100)
+        toolBar = NavigationToolbar2QT(self.mplCanStd, self)
+        vLayout.addWidget(toolBar)
+        vLayout.addWidget(self.mplCanStd)
+        self.plotStdWidget.setLayout(vLayout)
 
     def createMenusAndToolbars(self):
         fileOpenAction = self.createAction("&Open...", self.fileOpen, 
@@ -188,8 +204,10 @@ class Qpcr_qt(QMainWindow):
                 "Ctrl+T", "addgene", "Add a new target")
         self.addEchAction = self.createAction("Add &Sample...", self.addEch,
                 "Ctrl+G", "addgene", "Add a new sample")
-        plotAction = self.createAction("Compute", self.compute, "Ctrl+Shift+P",
-                "plot", "Plot results")
+        plotAction = self.createAction("Compute unknown", self.computeUnknown, 
+                                "Ctrl+Shift+U", "plotUnknown", "Plot unknown")
+        plotStdAction = self.createAction("Compute standard", self.computeStd, 
+                           "Ctrl+Shift+S", "plotStandard", "Plot standard")
         enableAction = self.createAction("Enable wells", self.enable, None,
                 "enable", "Enable selected wells")
         disableAction = self.createAction("Disable wells", self.disable, None,
@@ -216,9 +234,9 @@ class Qpcr_qt(QMainWindow):
         self.addActions(editMenu, (undoAction, redoAction))
         editMenu.addSeparator()
         self.addActions(editMenu, (self.addGeneAction, self.addEchAction))
-        calculMenu = self.menuBar().addMenu("&Compute")
+        calculMenu = self.menuBar().addMenu("&Computations")
         self.addActions(calculMenu, (enableAction, disableAction,
-            None, plotAction))
+            None, plotAction, plotStdAction))
         helpMenu = self.menuBar().addMenu("&Help")
         self.addActions(helpMenu, (helpAboutAction, helpHelpAction))
 
@@ -256,7 +274,6 @@ class Qpcr_qt(QMainWindow):
         self.geneComboBox.setToolTip("List of targets")
         self.geneComboBox.setStatusTip(self.geneComboBox.toolTip())
         self.geneComboBox.setFocusPolicy(Qt.NoFocus)
-        #self.echComboBox = QComboBox()
         self.echComboBox = GeneEchComboBox()
         self.echComboBox.setToolTip("List of samples")
         self.echComboBox.setStatusTip(self.echComboBox.toolTip())
@@ -269,7 +286,7 @@ class Qpcr_qt(QMainWindow):
 
         plotToolbar = self.addToolBar("Plot")
         plotToolbar.setObjectName("PlotToolBar")
-        plotToolbar.addAction(plotAction)
+        self.addActions(plotToolbar, (plotAction, plotStdAction))
         plotToolbar.setIconSize(QSize(22, 22))
 # ContextMenu
         self.table.setContextMenuPolicy(Qt.ActionsContextMenu)
@@ -278,7 +295,7 @@ class Qpcr_qt(QMainWindow):
             undoAction, redoAction, self.addGeneAction, 
             self.addEchAction, enableAction, disableAction))
         self.addActions(self.result, (filePrintAction, fileSaveAction,
-                fileSaveAsAction, plotAction))
+                fileSaveAsAction, plotAction, plotStdAction))
 
 
     def createAction(self, text, slot=None, shortcut=None, icon=None,
@@ -695,7 +712,10 @@ class Qpcr_qt(QMainWindow):
         self.populateTable()
         self.populateResult()
 
-    def compute(self):
+    def computeUnknown(self):
+        if self.nplotGene == 0:
+            self.onglet.addTab(self.plotUnknownWidget, "Unknown")
+
 # On fixe le gene de reference et le triplicat de reference
         self.plaque.setRefs()
 # On construit tous les triplicats
@@ -706,17 +726,29 @@ class Qpcr_qt(QMainWindow):
 # On reremplit la table de resultats
             self.populateResult()
 # On trace le resultat
-            self.plot()
+            self.plotUnknown()
             self.cboxSens.setEnabled(True)
             self.spinWidth.setEnabled(True)
             self.spinSpacing.setEnabled(True)
             self.btnPlot.setEnabled(True)
         else:
-            QMessageBox.warning(self, "Warning",
-                    " Reference target or sample undefined !")
+            if  hasattr(self.plaque, "echRef"):
+                QMessageBox.warning(self, "Warning",
+                                 " Reference target undefined !")
+            elif  hasattr(self.plaque, "geneRef"):
+                QMessageBox.warning(self, "Warning",
+                                 " Reference sample undefined !")
+    def computeStd(self):
+        if self.nplotStd == 0:
+            self.onglet.addTab(self.plotStdWidget, "Standard plots")
+# On trace le resultat
+        self.plotStd()
 
-    def plot(self):
-        self.mplCan.axes.cla()
+    def plotUnknown(self):
+        """
+        A method to plot the unknown histograms
+        """
+        self.mplCanUnknown.axes.cla()
         width = float(self.spinWidth.value())
         spacing = float(self.spinSpacing.value())
         colors = [QColor(Qt.blue), QColor(Qt.red), QColor(Qt.green), 
@@ -736,16 +768,17 @@ class Qpcr_qt(QMainWindow):
                         listNRQ.append(localDict[ech].NRQ)
                         listNRQerror.append(localDict[ech].NRQerror)
                     valmax = spacing * (len(listNRQ)-1)
-                    p = self.mplCan.axes.bar( \
+                    p = self.mplCanUnknown.axes.bar( \
                             linspace(0, valmax, len(listNRQ))+ind*width, 
                             listNRQ, width, color=str(gene.color.name()), 
                             yerr=listNRQerror, ecolor='k')
                     legPos.append(p[0])
                     legName.append(gene.name)
-            self.mplCan.axes.set_xticks(linspace(0, valmax, len(listNRQ)) \
-                    +len(self.plaque.listGene[1:])/2*width)
-            #self.mplCan.axes.set_xticklabels(self.plaque.listEch[1:])
-            self.mplCan.axes.set_xticklabels(self.plaque.adresseEch.keys()[1:])
+            self.mplCanUnknown.axes.set_xticks( \
+                           linspace(0, valmax, len(listNRQ)) \
+                           +len(self.plaque.listGene[1:])/2*width)
+            self.mplCanUnknown.axes.set_xticklabels( \
+                           self.plaque.adresseEch.keys()[1:])
             self.nplotGene += 1
 
 # Ech vs Gene
@@ -760,26 +793,36 @@ class Qpcr_qt(QMainWindow):
                         listNRQ.append(localDict[gene].NRQ)
                         listNRQerror.append(localDict[gene].NRQerror)
                     valmax = spacing * (len(listNRQ)-1)
-                    p = self.mplCan.axes.bar( \
+                    p = self.mplCanUnknown.axes.bar( \
                             linspace(0, valmax, len(listNRQ))+ind*width, 
                             listNRQ, width, color=str(ech.color.name()), 
                             yerr=listNRQerror, ecolor='k')
                     legPos.append(p[0])
                     legName.append(ech.name)
-            self.mplCan.axes.set_xticks(linspace(0, valmax, len(listNRQ)) \
-                    +len(self.plaque.listEch[1:])/2*width)
-            #self.mplCan.axes.set_xticklabels(self.plaque.listGene[1:])
-            self.mplCan.axes.set_xticklabels(self.plaque.adresseGene.keys()[1:])
+            self.mplCanUnknown.axes.set_xticks( \
+                           linspace(0, valmax, len(listNRQ)) \
+                           +len(self.plaque.listEch[1:])/2*width)
+            self.mplCanUnknown.axes.set_xticklabels( \
+                           self.plaque.adresseGene.keys()[1:])
             self.nplotEch += 1
 
 # Legend + xlim
-        #self.mplCan.axes.legend(loc='upper right', shadow=True)
-        self.mplCan.axes.legend(legPos, legName, loc='upper right', shadow=True)
+        self.mplCanUnknown.axes.legend(legPos, legName, 
+                           loc='upper right', shadow=True)
         leftMargin = 0.2
         legendWidth = 0.4
-        self.mplCan.axes.set_xlim((-leftMargin, 
+        self.mplCanUnknown.axes.set_xlim((-leftMargin, 
                        valmax+(ind+1)*width+leftMargin+legendWidth))
-        self.mplCan.draw()
+        self.mplCanUnknown.draw()
+
+    def plotStd(self):
+        """
+        A method to plot the standard curves
+        """
+        self.mplCanStd.axes.cla()
+        self.mplCanStd.axes.plot(linspace(0., 1., 100)+self.nplotStd)
+        self.mplCanStd.draw()
+        self.nplotStd += 1
 
     def setPlotColor(self):
         if self.cboxSens.currentIndex() == 0:
@@ -792,7 +835,7 @@ class Qpcr_qt(QMainWindow):
                 self.plaque.listGene[1:] = dialog.listObj
             elif self.cboxSens.currentIndex() == 1:
                 self.plaque.listEch[1:] = dialog.listObj
-            self.plot()
+            self.plotUnknown()
 
 
 def run():
