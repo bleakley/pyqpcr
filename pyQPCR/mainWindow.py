@@ -205,10 +205,12 @@ class Qpcr_qt(QMainWindow):
                 "Ctrl+T", "addgene", "Add a new target")
         self.addEchAction = self.createAction("Add &Sample...", self.addEch,
                 "Ctrl+G", "addgene", "Add a new sample")
-        self.plotAction = self.createAction("Compute unknown", self.computeUnknown, 
-                                "Ctrl+Shift+U", "plotUnknown", "Plot unknown")
-        self.plotStdAction = self.createAction("Compute standard", self.computeStd, 
-                           "Ctrl+Shift+S", "plotStandard", "Plot standard")
+        self.plotAction = self.createAction("Quantifications", 
+                             self.computeUnknown, "Ctrl+Shift+U", 
+                             "plotUnknown", "Plot results")
+        self.plotStdAction = self.createAction("Standard samples", 
+                              self.computeStd, "Ctrl+Shift+S", 
+                              "plotStandard", "Plot standard curves")
         self.enableAction = self.createAction("Enable wells", self.enable, None,
                 "enable", "Enable selected wells")
         self.disableAction = self.createAction("Disable wells", self.disable, None,
@@ -740,7 +742,7 @@ class Qpcr_qt(QMainWindow):
 
     def computeUnknown(self):
         if self.nplotGene == 0:
-            self.onglet.addTab(self.plotUnknownWidget, "Unknown")
+            self.onglet.addTab(self.plotUnknownWidget, "Quantification")
 
 # On fixe le gene de reference et le triplicat de reference
         self.plaque.setRefs()
@@ -762,7 +764,7 @@ class Qpcr_qt(QMainWindow):
                                  " Reference sample undefined !")
     def computeStd(self):
         if self.nplotStd == 0:
-            self.onglet.addTab(self.plotStdWidget, "Standard plots")
+            self.onglet.addTab(self.plotStdWidget, "Standard curves")
 # On trace le resultat
         self.plotStd()
 
