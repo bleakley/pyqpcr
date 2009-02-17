@@ -3,12 +3,12 @@ import glob
 import sys
 
 if sys.platform == 'darwin':
-    extra_options = dict( \
-                         setup_requires=['py2app'] \
+    extra_options = dict(
+                         setup_requires=['py2app']
                         )
 
 elif sys.platform == 'win32':
-    extra_options = dict( \
+    extra_options = dict(
                          setup_requires=['py2exe'],
                          data_files = [(r'mpl-data', 
     glob.glob(r'C:\Python25\Lib\site-packages\matplotlib\mpl-data\*.*')),
@@ -17,26 +17,27 @@ elif sys.platform == 'win32':
                                       (r'mpl-data\images',
     glob.glob(r'C:\Python25\Lib\site-packages\matplotlib\mpl-data\images\*.*')),
                                       (r'mpl-data\fonts',
-    glob.glob(r'C:\Python25\Lib\site-packages\matplotlib\mpl-data\fonts\*.*')) ] \
+    glob.glob(r'C:\Python25\Lib\site-packages\matplotlib\mpl-data\fonts\*.*')) ]
                         )
 else:
     import platform
-    extra_options = dict( \
+    extra_options = dict(
           data_files=[('share/icons/hicolor/16x16/apps', ['pyQPCR-16.png']), 
                       ('share/icons/hicolor/32x32/apps', ['pyQPCR-32.png']), 
                       ('share/applications', ['pyQPCR.desktop'])] \
                         )
     if platform.dist()[0] == 'fedora':
         extra_options['options'] = \
-               {
+                {
                 'bdist_rpm': { 
                     'requires': ['python-matplotlib', 'PyQt4'],
                     'distribution_name': 'fedora'
                              },
                 'install': {'optimize': '1'}
                 } 
-    elif platform.dist()[0] == 'opensuse':
+    elif platform.dist()[0] == 'SuSe':
         extra_options['options'] = \
+                {
                 'bdist_rpm': { 
                     'requires': ['python-matplotlib', 'python-qt4'],
                     'distribution_name': 'opensuse'
