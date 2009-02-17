@@ -208,6 +208,9 @@ class Puits:
     def setAmount(self, qte):
         self.amount = qte
 
+    def setCt(self, ct):
+        self.ct = ct
+
     def setCtmean(self, ctmean):
         self.ctmean = ctmean
 

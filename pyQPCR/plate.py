@@ -67,37 +67,66 @@ class Plaque:
             iterator = csv.reader(file, delimiter=";")
         for ind, line in enumerate(iterator):
             if self.fileType == "txt": line = splitter.findall(line)
+
             if ind == 0:
-                self.header = []
-                for field in line:
-                    self.header.append(field.strip('"'))
-                ncol = len(self.header)
+                self.header = OrderedDict()
+                for i, field in enumerate(line):
+                    self.header[field.strip('"')] = i
+                ncol = len(self.header.keys())
+
             if len(line) == ncol and ind != 0:
-                champs=[]
+                champs = []
                 for field in line:
                     try:
                         dat = float(field.replace(',', '.'))
                     except ValueError:
                         dat = field.strip('"')
                     champs.append(dat)
-                name, ech, ct, ctmean, ctdev, amount, gene = champs[0:7]
-                x = Puits(name, ech, ct, ctmean, ctdev, amount, gene)
-# Dans le cas ou on a plus de 7 colonnes:
-# le type est donne dans la colonne 7
-# NRQ en 8 et NRQerror en 9
-                if len(champs) > 7:
-                    x.setType(champs[7])
-                    x.setNRQ(champs[8])
-                    x.setNRQerror(champs[9])
+                if self.header.has_key('Pos'):
+                    name = champs[self.header['Pos']]
+                    x = Puits(name)
+                else:
+                    raise KeyError
+                if self.header.has_key('Name'):
+                    echName = champs[self.header['Name']]
+                    if not self.adresseEch.has_key(echName):
+                        self.listEch.append(Ech(echName))
+                        self.adresseEch[echName] = len(self.listEch)-1
+                    x.setEch(Ech(echName))
+                if self.header.has_key('Ct SYBR'):
+                    ct = champs[self.header['Ct SYBR']]
+                    x.setCt(ct)
+                if self.header.has_key('Ct Mean SYBR'):
+                    ctmean = champs[self.header['Ct Mean SYBR']]
+                    x.setCtmean(ctmean)
+                if self.header.has_key('Ct Dev. SYBR'):
+                    ctdev = champs[self.header['Ct Dev. SYBR']]
+                    x.setCtdev(ctdev)
+                if self.header.has_key('Amount SYBR'):
+                    amount = champs[self.header['Amount SYBR']]
+                    if amount != '-':
+                        x.setAmount(amount)
+                    else:
+                        x.setAmount('')
+                if self.header.has_key('Target SYBR'):
+                    geneName = champs[self.header['Target SYBR']]
+                    if not self.adresseGene.has_key(geneName):
+                        self.listGene.append(Gene(geneName))
+                        self.adresseGene[geneName] = len(self.listGene)-1 
+                    x.setGene(Gene(geneName))
+                if self.header.has_key('Type'):
+                    type = champs[self.header['Type']]
+                    x.setType(type)
+                if self.header.has_key('NRQ'):
+                    nrq = champs[self.header['NRQ']]
+                    x.setNRQ(nrq)
+                if self.header.has_key('NRQerror'):
+                    nrqerror = champs[self.header['NRQerror']]
+                    x.setNRQerror(nrqerror)
+#
                 setattr(self, x.name, x)
                 self.listePuits.append(x)
-                if not self.adresseEch.has_key(ech):
-                    self.listEch.append(Ech(ech))
-                    self.adresseEch[ech] = len(self.listEch)-1
-# Pour les genes on fait un dico + une liste de genes
-                if not self.adresseGene.has_key(gene):
-                    self.listGene.append(Gene(gene))
-                    self.adresseGene[gene] = len(self.listGene)-1 
+
             if len(line) == 2:
                 name =  motif.findall(line[0].strip('"'))[0].replace(' ', '')
                 value = line[1]
@@ -113,15 +142,12 @@ class Plaque:
     def write(self, filename):
         f = open(filename, 'w')
         self.determineFileType(filename)
-# Ajout eventuel dans le header
-        if len(self.header) < 8:
-            self.header.append('Type')
-            self.header.append('NRQ')
-            self.header.append('NRQerror')
+        header=['Pos', 'Name', 'Ct SYBR', 'Ct Mean SYBR', 'Ct Dev. SYBR',
+                'Amount SYBR', 'Target SYBR', 'Type', 'NRQ', 'NRQerror']
 # -----------TXT------------- 
         if self.fileType == "txt":
 # Ecriture du header
-            for field in self.header:
+            for field in header:
                 f.write('"%s"'% field)
                 f.write("\t")
             f.write("\n")
@@ -140,7 +166,7 @@ class Plaque:
         elif self.fileType == "csv":
             writer = csv.writer(f, quoting=csv.QUOTE_NONNUMERIC, delimiter=";")
 # Ecriture du header
-            writer.writerow(self.header)
+            writer.writerow(header)
 # Ecriture des puits
             for well in self.listePuits:
                 writer.writerow([well.name, well.ech.name, well.ct, well.ctmean,
