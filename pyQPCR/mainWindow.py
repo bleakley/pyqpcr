@@ -23,7 +23,7 @@ from PyQt4.QtCore import *
 import pyQPCR.qrc_resources
 from pyQPCR.dialogs import *
 from pyQPCR.plate import Plaque
-from numpy import linspace, log10
+from numpy import linspace, log, polyfit, polyval
 import os
 import copy
 
@@ -871,8 +871,15 @@ class Qpcr_qt(QMainWindow):
         """
         self.mplCanStd.axes.cla()
         for geneName in self.plaque.dicoStd.keys():
-            self.mplCanStd.axes.scatter(log10(self.plaque.dicoStd[geneName].amList),
-                    self.plaque.dicoStd[geneName].ctList, marker='o')
+            x = log(self.plaque.dicoStd[geneName].amList)
+            y = self.plaque.dicoStd[geneName].ctList
+            self.mplCanStd.axes.scatter(x, y, marker='o')
+            m, b = polyfit(x, y, 1)
+            yr = polyval([m, b], x)
+            self.mplCanStd.axes.plot(x, yr)
+            self.mplCanStd.axes.text(0.6, 0.8, 'ct = %.2f log(am) + %.2f' \
+                    % (m, b), transform=self.mplCanStd.axes.transAxes)
+
         self.mplCanStd.draw()
         self.nplotStd += 1
 
