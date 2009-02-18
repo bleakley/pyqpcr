@@ -105,5 +105,5 @@
 "Baseline setting";"Automatic"
 "Baseline range (from cycle no. ... to)";"n/a"
 "Drift Correction";"OFF"
-"GOI";"act"
-"SOI";"ctrl"
+"refTarget";"act"
+"refSample";"ctrl"
