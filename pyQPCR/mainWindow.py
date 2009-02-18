@@ -23,7 +23,7 @@ from PyQt4.QtCore import *
 import pyQPCR.qrc_resources
 from pyQPCR.dialogs import *
 from pyQPCR.plate import Plaque
-from numpy import linspace
+from numpy import linspace, log10
 import os
 import copy
 
@@ -44,10 +44,6 @@ class Qpcr_qt(QMainWindow):
         self.nplotEch = 0
 
         self.tree = QTreeWidget()
-        ancestor = QTreeWidgetItem(self.tree, ["test"])
-        item = QTreeWidgetItem(ancestor, ["lulu"])
-        item = QTreeWidgetItem(ancestor, ["lulu2"])
-        self.tree.expandItem(ancestor)
         self.tree.setHeaderLabel("Parameters")
 
         self.onglet = QTabWidget()
@@ -77,7 +73,7 @@ class Qpcr_qt(QMainWindow):
         self.result.setEditTriggers(QTableWidget.NoEditTriggers)
         self.result.setAlternatingRowColors(True)
         self.result.setSizePolicy(QSizePolicy(QSizePolicy.Maximum,
-            QSizePolicy.Maximum))
+                                              QSizePolicy.Maximum))
 
         self.vSplitter = QSplitter(Qt.Horizontal)
         self.vSplitter.addWidget(self.tree)
@@ -392,6 +388,7 @@ class Qpcr_qt(QMainWindow):
             self.plaqueStack.append(copy.deepcopy(self.plaque))
             self.populateTable()
             self.populateResult()
+            self.populateTree()
             self.geneComboBox.addItems(self.plaque.listGene)
             self.echComboBox.addItems(self.plaque.listEch)
 
@@ -478,6 +475,20 @@ class Qpcr_qt(QMainWindow):
             self.result.setItem(ind, 8, itType)
             self.result.setItem(ind, 9, itNRQ)
 
+    def populateTree(self):
+        self.tree.clear()
+        ancestor = QTreeWidgetItem(self.tree, [QFileInfo(self.filename).fileName()])
+        itemQuant = QTreeWidgetItem(ancestor, ["Quantification"])
+        itemRefGene = QTreeWidgetItem(itemQuant , ["Reference Target"])
+        itemRefEch = QTreeWidgetItem(itemQuant , ["Reference Sample"])
+        itemStd = QTreeWidgetItem(ancestor, ["Standard"])
+        if hasattr(self.plaque, "geneRef"):
+            item = QTreeWidgetItem(itemRefGene, [self.plaque.geneRef.name])
+        if hasattr(self.plaque, "echRef"):
+            item = QTreeWidgetItem(itemRefEch, [self.plaque.echRef.name])
+        self.tree.expandItem(ancestor)
+        self.tree.expandItem(itemQuant)
+
     def fileSave(self):
         self.plaque.write(self.filename)
         self.updateStatus("Saved %s" % self.filename)
@@ -487,11 +498,11 @@ class Qpcr_qt(QMainWindow):
         formats =[u"*.txt", u"*.csv"]
         fname = self.filename if self.filename is not None else "."
         fname = unicode(QFileDialog.getSaveFileName(self, 
-                "qpcr Qt - Save a file", fname,
+                "pyQPCR - Save a file", fname,
                 "Result files (%s)" % " ".join(formats)))
         if fname:
             self.addRecentFile(fname)
-            self.setWindowTitle("qpcr Qt - %s[*]" % QFileInfo(fname).fileName())
+            self.setWindowTitle("pyQPCR - %s[*]" % QFileInfo(fname).fileName())
             self.filename = fname
             self.fileSave()
 
@@ -620,6 +631,7 @@ class Qpcr_qt(QMainWindow):
         self.echComboBox.addItems(self.plaque.listEch)
         self.populateTable()
         self.populateResult()
+        self.populateTree()
 
     def undo(self):
         if abs(self.undoInd) < abs(len(self.plaqueStack)):
@@ -633,6 +645,7 @@ class Qpcr_qt(QMainWindow):
 #
         self.populateTable()
         self.populateResult()
+        self.populateTree()
 # Si on remonte tous les undo pas besoin de sauvegarder
         if self.undoInd == 0 or self.undoInd == -len(self.plaqueStack):
             self.unsaved = False
@@ -670,6 +683,7 @@ class Qpcr_qt(QMainWindow):
             self.plaqueStack.append(copy.deepcopy(self.plaque))
         self.populateTable()
         self.populateResult()
+        self.populateTree()
 
     def addEch(self):
         dialog = EchDialog(self, plaque=self.plaque)
@@ -682,6 +696,7 @@ class Qpcr_qt(QMainWindow):
             self.plaqueStack.append(copy.deepcopy(self.plaque))
         self.populateTable()
         self.populateResult()
+        self.populateTree()
 
     def modifyGene(self):
         for it in self.table.selectedItems():
@@ -735,19 +750,22 @@ class Qpcr_qt(QMainWindow):
             nom = str(it.statusTip())
             well = getattr(self.plaque, nom)
             well.setEnabled(False)
+            well.setCtmean('')
+            well.setCtdev('')
+            well.setNRQ('')
+            well.setNRQerror('')
         self.unsaved = True
         self.plaqueStack.append(copy.deepcopy(self.plaque))
         self.populateTable()
         self.populateResult()
 
     def computeUnknown(self):
-        if self.nplotGene == 0:
-            self.onglet.addTab(self.plotUnknownWidget, "Quantification")
-
 # On fixe le gene de reference et le triplicat de reference
         self.plaque.setRefs()
 # On construit tous les triplicats
         if hasattr(self.plaque, "geneRef") and hasattr(self.plaque, "echRef"):
+            if self.nplotGene == 0:
+                self.onglet.addTab(self.plotUnknownWidget, "Quantification")
             self.plaque.findTriplicat()
 # On calcule NRQ
             self.plaque.calcNRQ()
@@ -756,17 +774,21 @@ class Qpcr_qt(QMainWindow):
 # On trace le resultat
             self.plotUnknown()
         else:
-            if  hasattr(self.plaque, "echRef"):
+            if  not hasattr(self.plaque, "echRef"):
                 QMessageBox.warning(self, "Warning",
                                  " Reference target undefined !")
-            elif  hasattr(self.plaque, "geneRef"):
+            elif not hasattr(self.plaque, "geneRef"):
                 QMessageBox.warning(self, "Warning",
                                  " Reference sample undefined !")
+
     def computeStd(self):
-        if self.nplotStd == 0:
-            self.onglet.addTab(self.plotStdWidget, "Standard curves")
+# On cherche les std
+        self.plaque.findStd()
 # On trace le resultat
-        self.plotStd()
+        if len(self.plaque.dicoStd.keys()) != 0:
+            if self.nplotStd == 0:
+                self.onglet.addTab(self.plotStdWidget, "Standard curves")
+            self.plotStd()
 
     def plotUnknown(self):
         """
@@ -848,7 +870,9 @@ class Qpcr_qt(QMainWindow):
         A method to plot the standard curves
         """
         self.mplCanStd.axes.cla()
-        self.mplCanStd.axes.plot(linspace(0., 1., 100)+self.nplotStd)
+        for geneName in self.plaque.dicoStd.keys():
+            self.mplCanStd.axes.scatter(log10(self.plaque.dicoStd[geneName].amList),
+                    self.plaque.dicoStd[geneName].ctList, marker='o')
         self.mplCanStd.draw()
         self.nplotStd += 1
 
