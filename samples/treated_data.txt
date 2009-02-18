@@ -97,5 +97,5 @@
 "H12"	""	25.03	""	""	"-"	""	"unknown"	""	""
 
 "Analysis Parameters"
-"GOI"	"act"
-"SOI"	"ctrl"
+"refTarget"	"act"
+"refSample"	"ctrl"
