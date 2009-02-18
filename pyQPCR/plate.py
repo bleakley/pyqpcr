@@ -60,6 +60,7 @@ class Plaque:
     def read(self):
         file = open(self.filename, "r")
         motif = re.compile(r"[\w\s]*")
+        amountMotif = re.compile(r"Amount SYBR ?\[(.*)\]")
         if self.fileType == "txt":
             splitter = re.compile(r'("[\w\s.,\-\(\)\[\]\+]*"|\d+[.,]?\d*)')
             iterator = file.readlines()
@@ -71,7 +72,12 @@ class Plaque:
             if ind == 0:
                 self.header = OrderedDict()
                 for i, field in enumerate(line):
-                    self.header[field.strip('"')] = i
+                    st = field.strip('"')
+                    if amountMotif.match(st):
+                        self.stdUnit = amountMotif.match(st).group(1)
+                        self.header['Amount SYBR'] = i
+                    else:
+                        self.header[st] = i
                 ncol = len(self.header.keys())
 
             if len(line) == ncol and ind != 0:
@@ -144,6 +150,8 @@ class Plaque:
         self.determineFileType(filename)
         header=['Pos', 'Name', 'Ct SYBR', 'Ct Mean SYBR', 'Ct Dev. SYBR',
                 'Amount SYBR', 'Target SYBR', 'Type', 'NRQ', 'NRQerror']
+        if hasattr(self, 'stdUnit'):
+            header[5] = 'Amount SYBR [%s]' % self.stdUnit
 # -----------TXT------------- 
         if self.fileType == "txt":
 # Ecriture du header
@@ -245,40 +253,44 @@ class Plaque:
             self.listEch[ind].setRef(Qt.Checked)
 
     def findTriplicat(self):
-# Elimination du gene avec la chaine vide
+# Elimination du gene avec la chaine vide puis calcul du ctref
         for g in self.listGene[1:]:
             if self.dicoGene.has_key(g.name):
                 g.calcCtRef(self.dicoGene[g.name])
                 for well in self.dicoGene[g.name]:
                     well.setGene(g)
-        self.dicoTrip = OrderedDict()
         self.dicoTrip = RaggedArray2D()
         for key in self.dicoGene.keys():
-            #dicoEch = OrderedDict()
             dicoEch = RaggedArray2D()
-            dicoAmount = OrderedDict()
             for well in self.dicoGene[str(key)]:
                 if str(well.type) == 'unknown' and well.enabled == True:
                     if dicoEch.has_key(str(well.ech.name)):
                         dicoEch[str(well.ech.name)].append(well)
                     else:
                         dicoEch[str(well.ech.name)] = [well]
-                if str(well.type) == 'standard' and well.enabled == False:
-                    if dicoAmount.has_key(well.amount):
-                        dicoAmount[well.amount].append(well)
-                    else:
-                        dicoAmount[well.amount] = [well]
 # Suppression de la chaine vide
-            try:
+            if dicoEch.has_key(""):
                 dicoEch.pop("")
-            except KeyError:
-                pass
             for ech in dicoEch.keys():
-                trip = Triplicat(dicoEch[ech], str(dicoEch[ech][0].type))
+                trip = Replicate(dicoEch[ech])
                 trip.calcDCt()
                 dicoEch[ech] = trip
                 self.dicoTrip[key] = dicoEch
             
+    def findStd(self):
+        """
+        This method allows to build a dictionnary for standard
+        wells.
+        """
+        self.dicoStd = OrderedDict()
+        for key in self.dicoGene.keys():
+            listPuits = []
+            for well in self.dicoGene[str(key)]:
+                if str(well.type) == 'standard' and well.enabled == True:
+                    listPuits.append(well)
+            if len(listPuits) != 0:
+                self.dicoStd[str(key)] = Replicate(listPuits, type='standard')
+
     def calcNRQ(self):
         for g in self.dicoTrip.keys():
             for ech in self.dicoTrip[g].keys():
@@ -308,19 +320,25 @@ class Plaque:
                 for well in self.dicoTrip[g][ech].listePuits:
                     well.setNRQerror(NRQerror)
 
-class Triplicat:
+class Replicate:
 
-    def __init__(self, listePuits, type):
-        self.listePuits = listePuits
+    def __init__(self, listePuits, type='unknown'):
         self.type = type
-        self.gene = self.listePuits[0].gene
-        self.ech = self.listePuits[0].ech
-        self.amount = self.listePuits[0].amount
-        #
+        self.listePuits = listePuits
+        if len(self.listePuits) != 0:
+            self.gene = self.listePuits[0].gene
+        else:
+            self.gene = Gene('')
         self.ctList =[]
         for well in self.listePuits:
             self.ctList.append(well.ct)
-        self.calcMeanDev()
+        if self.type == 'unknown':
+            self.ech = self.listePuits[0].ech
+            self.calcMeanDev()
+        elif self.type == 'standard':
+            self.amList = []
+            for well in self.listePuits:
+                self.amList.append(well.amount)
 
     def __str__(self):
         st = '{%s:[' % self.type
@@ -329,19 +347,19 @@ class Triplicat:
         st += ']'
         if self.type == 'unknown':
             st += ' %s, %s}' % (self.gene, self.ech)
-        elif self.type == 'standard':
-            st += ' %s, %s}' % (self.gene, str(self.amount))
+        else:
+            st += ' %s}' % self.gene
         return st
 
     def __repr__(self):
-        st = '{%s:[' % self.type
+        st = '{Trip:['
         for well in self.listePuits:
             st = st + well.name + ','
         st += ']'
         if self.type == 'unknown':
-            st += ' %s, %s}' % (self.gene.name, self.ech)
-        elif self.type == 'standard':
-            st += ' %s, %s}' % (self.gene.name, str(self.amount))
+            st += ' %s, %s}' % (self.gene, self.ech)
+        else:
+            st += ' %s}' % self.gene
         return st
 
     def setNRQ(self, NRQ):
@@ -352,13 +370,9 @@ class Triplicat:
 
     def calcMeanDev(self):
         """
-        Description:
-        -----------
-           compute the mean ct of a replicate
-
+        Compute the mean ct of a replicate
         """
         self.ctmean = mean(self.ctList)
-        #self.ctdev = std(self.ctList, ddof=1)
         self.ctdev = asarray(self.ctList).std()* sqrt(len(self.ctList)/ \
                      (len(self.ctList)-1.))
 
@@ -383,4 +397,3 @@ if __name__ == '__main__':
     print str(pl.A1.NRQ)
     print pl.refTarget
     pl.write('toto.csv')
-
