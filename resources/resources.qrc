@@ -10,6 +10,7 @@
 <file alias="undo.png">icons/edit-undo.png</file>
 <file alias="redo.png">icons/edit-redo.png</file>
 <file alias="plotUnknown.png">icons/plot.png</file>
+<file alias="plotStandard.png">icons/plotStd.png</file>
 <file alias="edit.png">icons/edit-bomb.png</file>
 <file alias="about.png">icons/help-about.png</file>
 <file alias="help.png">icons/help-contents.png</file>
