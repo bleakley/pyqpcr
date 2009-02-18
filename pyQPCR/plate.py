@@ -159,9 +159,9 @@ class Plaque:
             f.write("\n")
             f.write('"Analysis Parameters"\n')
             if hasattr(self, 'geneRef'):
-                f.write('"GOI"\t"%s"\n' % self.geneRef.name)
+                f.write('"refTarget"\t"%s"\n' % self.geneRef.name)
             if hasattr(self, 'echRef'):
-                f.write('"SOI"\t"%s"\n' % self.echRef.name)
+                f.write('"refSample"\t"%s"\n' % self.echRef.name)
 # -----------CSV------------- 
         elif self.fileType == "csv":
             writer = csv.writer(f, quoting=csv.QUOTE_NONNUMERIC, delimiter=";")
@@ -176,9 +176,9 @@ class Plaque:
             writer.writerow("")
             writer.writerow(['Analysis Parameters'])
             if hasattr(self, 'geneRef'):
-                writer.writerow(['GOI', self.geneRef.name])
+                writer.writerow(['refTarget', self.geneRef.name])
             if hasattr(self, 'echRef'):
-                writer.writerow(['SOI', self.echRef.name])
+                writer.writerow(['refSample', self.echRef.name])
         f.close()
 
     def setDicoGene(self):
@@ -233,13 +233,13 @@ class Plaque:
         This methods allows to determine both the Gene of Interest and
         the reference-sample thanks to the input data file
         """
-        if hasattr(self, 'GOI'):
-            goi = self.GOI.strip('"')
+        if hasattr(self, 'refTarget'):
+            goi = self.refTarget.strip('"')
             ind = self.adresseGene[str(goi)]
             self.geneRef = self.listGene[ind]
             self.listGene[ind].setRef(Qt.Checked)
-        if hasattr(self, 'SOI'):
-            soi = self.SOI.strip('"')
+        if hasattr(self, 'refSample'):
+            soi = self.refSample.strip('"')
             ind = self.adresseEch[str(soi)]
             self.echRef = self.listEch[ind]
             self.listEch[ind].setRef(Qt.Checked)
@@ -381,6 +381,6 @@ class Triplicat:
 if __name__ == '__main__':
     pl = Plaque('sortiesrealplex/ref-machine.txt')
     print str(pl.A1.NRQ)
-    print pl.GOI
+    print pl.refTarget
     pl.write('toto.csv')
 
