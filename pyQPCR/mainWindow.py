@@ -524,31 +524,18 @@ class Qpcr_qt(QMainWindow):
             self.fileSave()
 
     def filePrint(self):
-        html = u""
-        html += ("<head>"
-                 '<style type="text/css">'
-                 "td, th {vertical-align:top; font-size:6pt;}"
-                 "table {border=1; cellpadding=2; cellspacing=2;"
-                 "</style>"
-                 "</head>")
-        html += "<table border=1 cellpadding=2 cellspacing=2>"
-        html += ( "<tr><td bgcolor=yellow><b>%s</b></td>"
-                  "<td><b>%s</b></td>"
-                  "<td><b>%s</b></td>"
-                  "<td><b>%s</b></td>"
-                  "<td><b>%s</b></td>"
-                  "<td><b>%s</b></td>"
-                  "<td><b>%s</b></td>"
-                  "<td><b>%s</b></td>"
-                  "<td><b>%s</b></td>"
-                  "<td><b>%s</b></td></tr>") % ("Well", "Type", "Target",
-                          "Sample", "Ct", "Ctmean", "Ctdev", "Amount", 
-                          "NRQ", "NRQerror") 
-        for well in self.plaque.listePuits:
-            html += well.writeHtml()
-        html += "</table>"
         if not hasattr(self, "plaque"):
             return
+        html = u""
+        css = ("<html><head>\n"
+               '<style type="text/css">\n'
+               "table {border-color:black; border-style:solid;}\n"
+               "th, td {font-size:6pt;}"
+               "</style>\n"
+               "</head>\n")
+        html += css
+        html += self.plaque.writeHtml()
+        html += "</html>"
         if self.printer is None:
             self.printer = QPrinter(QPrinter.HighResolution)
             self.printer.setPageSize(QPrinter.A4)
@@ -560,7 +547,7 @@ class Qpcr_qt(QMainWindow):
 
     def helpAbout(self):
         import platform
-        QMessageBox.about(self, "About qpcr Qt",
+        QMessageBox.about(self, "About pyQPCR",
         """<b>pyQPCR</b> v %s
         <p>Copyright &copy; 2008- Thomas Gastine
         All rights reserved.
