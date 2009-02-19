@@ -112,6 +112,8 @@ class Qpcr_qt(QMainWindow):
                 self.plotUnknown)
         self.connect(self.btnPlot, SIGNAL("clicked()"),
                 self.setPlotColor)
+        self.connect(self.geneStdBox, SIGNAL("activated(int)"),
+                self.plotStd)
 
 # Settings pour sauvegarde de l'application
         settings = QSettings()
@@ -150,6 +152,7 @@ class Qpcr_qt(QMainWindow):
         lab3 = QLabel("Bar &spacing:")
         lab3.setBuddy(self.spinSpacing)
         self.btnPlot = QPushButton("&Colors and order...")
+        vLay.addStretch()
         vLay.addWidget(lab1)
         vLay.addWidget(self.cboxSens)
         vLay.addWidget(lab2)
@@ -170,6 +173,15 @@ class Qpcr_qt(QMainWindow):
         self.plotUnknownWidget.setLayout(hLayout)
 
     def createMplStdWiget(self):
+        layout = QVBoxLayout()
+        layout.addStretch()
+        self.geneStdBox = QComboBox()
+        lab1 = QLabel("&Gene:")
+        lab1.setBuddy(self.geneStdBox)
+        layout.addWidget(lab1)
+        layout.addWidget(self.geneStdBox)
+        layout.addStretch()
+
         self.plotStdWidget = QWidget()
         vLayout = QVBoxLayout()
         self.mplCanStd = MatplotlibWidget(self.plotUnknownWidget, width=5, 
@@ -177,7 +189,12 @@ class Qpcr_qt(QMainWindow):
         toolBar = NavigationToolbar2QT(self.mplCanStd, self)
         vLayout.addWidget(toolBar)
         vLayout.addWidget(self.mplCanStd)
-        self.plotStdWidget.setLayout(vLayout)
+
+        hLayout = QHBoxLayout()
+        hLayout.addLayout(layout)
+        hLayout.addLayout(vLayout)
+        self.plotStdWidget.setLayout(hLayout)
+
 
     def createMenusAndToolbars(self):
         fileOpenAction = self.createAction("&Open...", self.fileOpen, 
@@ -510,8 +527,8 @@ class Qpcr_qt(QMainWindow):
         html = u""
         html += ("<head>"
                  '<style type="text/css">'
-                 "td, th { vertical-align:top; font-size:6pt;}"
-                 "table {border=1; cellpadding=2; cellspacing=2"
+                 "td, th {vertical-align:top; font-size:6pt;}"
+                 "table {border=1; cellpadding=2; cellspacing=2;"
                  "</style>"
                  "</head>")
         html += "<table border=1 cellpadding=2 cellspacing=2>"
@@ -523,22 +540,12 @@ class Qpcr_qt(QMainWindow):
                   "<td><b>%s</b></td>"
                   "<td><b>%s</b></td>"
                   "<td><b>%s</b></td>"
+                  "<td><b>%s</b></td>"
                   "<td><b>%s</b></td></tr>") % ("Well", "Type", "Target",
-                          "Sample", "Ct", "Ctmean", "Ctdev", "Amount", "Eff") 
+                          "Sample", "Ct", "Ctmean", "Ctdev", "Amount", 
+                          "NRQ", "NRQerror") 
         for well in self.plaque.listePuits:
-            html += ( "<tr><td bgcolor=grey align=center><b>%s</b></td>"
-                      "<td>%s</td>"
-                      "<td>%s</td>"
-                      "<td>%s</td>"
-                      "<td>%s</td>"
-                      "<td>%s</td>"
-                      "<td>%s</td>"
-                      "<td>%s</td>"
-                      "<td>%s +/- %s</td></tr>") % (well.name, well.type, 
-                              well.gene.name, str(well.ech), str(well.ct), 
-                              str(well.ctmean), str(well.ctdev), 
-                              str(well.amount), str(well.gene.eff),
-                              str(well.gene.pm))
+            html += well.writeHtml()
         html += "</table>"
         if not hasattr(self, "plaque"):
             return
@@ -788,6 +795,8 @@ class Qpcr_qt(QMainWindow):
         if len(self.plaque.dicoStd.keys()) != 0:
             if self.nplotStd == 0:
                 self.onglet.addTab(self.plotStdWidget, "Standard curves")
+            self.geneStdBox.clear()
+            self.geneStdBox.addItems(self.plaque.dicoStd.keys())
             self.plotStd()
 
     def plotUnknown(self):
@@ -870,15 +879,16 @@ class Qpcr_qt(QMainWindow):
         A method to plot the standard curves
         """
         self.mplCanStd.axes.cla()
-        for geneName in self.plaque.dicoStd.keys():
-            x = log(self.plaque.dicoStd[geneName].amList)
-            y = self.plaque.dicoStd[geneName].ctList
-            self.mplCanStd.axes.scatter(x, y, marker='o')
-            m, b = polyfit(x, y, 1)
-            yr = polyval([m, b], x)
-            self.mplCanStd.axes.plot(x, yr)
-            self.mplCanStd.axes.text(0.6, 0.8, 'ct = %.2f log(am) + %.2f' \
-                    % (m, b), transform=self.mplCanStd.axes.transAxes)
+        #for geneName in self.plaque.dicoStd.keys():
+        geneName = str(self.geneStdBox.currentText())
+        x = log(self.plaque.dicoStd[geneName].amList)
+        y = self.plaque.dicoStd[geneName].ctList
+        self.mplCanStd.axes.scatter(x, y, marker='o')
+        m, b = polyfit(x, y, 1)
+        yr = polyval([m, b], x)
+        self.mplCanStd.axes.plot(x, yr)
+        self.mplCanStd.axes.text(0.6, 0.8, 'ct = %.2f log(am) + %.2f' \
+                % (m, b), transform=self.mplCanStd.axes.transAxes)
 
         self.mplCanStd.draw()
         self.nplotStd += 1

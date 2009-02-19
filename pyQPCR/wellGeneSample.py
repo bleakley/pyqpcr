@@ -151,7 +151,7 @@ class Puits:
         st = "%s: %s, %s, %s" % (self.name, self.gene, self.ech, self.type)
         return st
 
-    def writePuits(self):
+    def writePuits(self, html=False):
         if str(self.amount) == '':
             amount = '"-"'
         else:
@@ -176,12 +176,49 @@ class Puits:
             NRQerror = '""'
         else:
             NRQerror = "%.2f" % self.NRQerror
+
         st = '"%s"\t"%s"\t%s\t%s\t%s\t%s\t"%s"\t"%s"\t%s\t%s\n' % \
-                (str(self.name), str(self.ech), ct, ctmean, 
-                 ctdev, amount, str(self.gene.name), str(self.type),
-                 NRQ, NRQerror)
+            (str(self.name), str(self.ech), ct, ctmean, 
+             ctdev, amount, str(self.gene.name), str(self.type),
+             NRQ, NRQerror)
         return st
 
+    def writeHtml(self):
+        amount = str(self.amount)
+        try:
+            ct = "%.2f" % self.ct
+        except TypeError:
+            ct = ''
+        try:
+            ctmean = "%.2f" % self.ctmean
+        except TypeError:
+            ctmean = ''
+        try:
+            ctdev = "%.2f" % self.ctdev
+        except TypeError:
+            ctdev = ''
+        try:
+            NRQ = "%.2f" % self.NRQ
+        except TypeError:
+            NRQ = ''
+        try:
+            NRQerror = "%.2f" % self.NRQerror
+        except TypeError:
+            NRQerror = ''
+
+        st = ("<tr><td><b>%s</b></td>" # name
+              "<td>%s</td>" # type
+              "<td>%s</td>" # gene
+              "<td>%s</td>" # sample
+              "<td>%s</td>" # ct
+              "<td>%s</td>" # ctmean
+              "<td>%s</td>" # ctdev
+              "<td>%s</td>" # amount
+              "<td>%s</td>" # NRQ
+              "<td>%s</td></tr>") % (str(self.name), str(self.type), 
+                    str(self.gene.name), str(self.ech.name), ct, 
+                    ctmean, ctdev, amount, NRQ, NRQerror)
+        return st
 
     def getPosition(self):
         motif = re.compile(r"([A-H])(\d+)")
