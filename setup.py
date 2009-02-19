@@ -26,7 +26,7 @@ else:
                       ('share/icons/hicolor/32x32/apps', ['pyQPCR-32.png']), 
                       ('share/applications', ['pyQPCR.desktop'])] \
                         )
-    if platform.dist()[0] == 'fedora':
+    if platform.dist()[0] in ('fedora', 'redhat'):
         extra_options['options'] = \
                 {
                 'bdist_rpm': { 
