@@ -189,6 +189,27 @@ class Plaque:
                 writer.writerow(['refSample', self.echRef.name])
         f.close()
 
+    def writeHtml(self):
+        html = u""
+        html += "<table cellpadding=2 cellspacing=0 border=1 width=100%>\n"
+        html += ("<tr>\n"
+                 "<th align=center>Well</th>\n"
+                 "<th align=center>Type</th>\n"
+                 "<th align=center>Target</th>\n"
+                 "<th align=center>Sample</th>\n"
+                 "<th align=center>Ct</th>\n"
+                 "<th align=center>Ctmean</th>\n"
+                 "<th align=center>Ctdev</th>\n"
+                 "<th align=center>Amount</th>\n"
+                 "<th align=center>NRQ</th>\n"
+                 "<th align=center>NRQerror</th>\n"
+                 "</tr>\n")
+        for well in self.listePuits:
+            html += well.writeHtml()
+        html += "</table>"
+        return html
+
+
     def setDicoGene(self):
 # Mise a jour de dicoGene
         self.dicoGene = OrderedDict()

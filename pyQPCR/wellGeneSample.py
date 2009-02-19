@@ -206,16 +206,16 @@ class Puits:
         except TypeError:
             NRQerror = ''
 
-        st = ("<tr><td><b>%s</b></td>" # name
-              "<td>%s</td>" # type
-              "<td>%s</td>" # gene
-              "<td>%s</td>" # sample
-              "<td>%s</td>" # ct
-              "<td>%s</td>" # ctmean
-              "<td>%s</td>" # ctdev
-              "<td>%s</td>" # amount
-              "<td>%s</td>" # NRQ
-              "<td>%s</td></tr>") % (str(self.name), str(self.type), 
+        st = ("<tr><td align=center><b>%s</b></td>\n" # name
+              "<td align=center>%s</td>\n" # type
+              "<td align=center>%s</td>\n" # gene
+              "<td align=center>%s</td>\n" # sample
+              "<td align=center>%s</td>\n" # ct
+              "<td align=center>%s</td>\n" # ctmean
+              "<td align=center>%s</td>\n" # ctdev
+              "<td align=center>%s</td>\n" # amount
+              "<td align=center>%s</td>\n" # NRQ
+              "<td align=center>%s</td></tr>\n") % (str(self.name), str(self.type), 
                     str(self.gene.name), str(self.ech.name), ct, 
                     ctmean, ctdev, amount, NRQ, NRQerror)
         return st
