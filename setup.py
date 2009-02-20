@@ -8,6 +8,7 @@ if sys.platform == 'darwin':
                         )
 
 elif sys.platform == 'win32':
+    import py2exe
     extra_options = dict(
                          setup_requires=['py2exe'],
                          data_files = [(r'mpl-data', 
@@ -21,7 +22,7 @@ elif sys.platform == 'win32':
                         )
     extra_options['options'] = \
            {
-    'py2exe': { "includes" : ["sip", "PyQt4._qt", "matplotlib.backends",  
+    'py2exe': { "includes" : ["sip", "matplotlib.backends",  
                                "matplotlib.backends.backend_qt4agg",
                                "matplotlib.figure","pylab", "numpy", 
                                "matplotlib.numerix.fft",
@@ -48,17 +49,18 @@ else:
                 {
                 'bdist_rpm': { 
                     'requires': ['python-matplotlib', 'PyQt4'],
-                    'distribution_name': 'fedora'
+                    'distribution_name': ['fedora']
                              },
-                'install': {'optimize': '1'}
+                'install': {'optimize': '1', 'prefix' : ['/usr']}
                 } 
     elif platform.dist()[0] == 'SuSe':
         extra_options['options'] = \
                 {
                 'bdist_rpm': { 
                     'requires': ['python-matplotlib', 'python-qt4'],
-                    'distribution_name': 'opensuse'
-                             }
+                    'distribution_name': ['opensuse']
+                             },
+                'install': {'prefix': ['/usr']}
                 } 
 
 setup(name='pyQPCR',
