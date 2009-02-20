@@ -35,7 +35,8 @@ elif sys.platform == 'win32':
                                  'libgobject-2.0-0.dll']
               }
           }
-    extra_options['windows'] = [{'script' : 'scripts\qpcr'}]
+    extra_options['windows'] = [{'script' : 'scripts\qpcr',
+                                 'icon_resource': [(1, 'logo.ico')]}]
 
 else:
     import platform
