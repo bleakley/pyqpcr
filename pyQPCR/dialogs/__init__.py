@@ -23,3 +23,4 @@ from smartDialog import *
 from objDialog import *
 from editDialog import *
 from customWidgets import *
+from utilsDialog import *

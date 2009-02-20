@@ -524,6 +524,11 @@ class Qpcr_qt(QMainWindow):
             self.fileSave()
 
     def filePrint(self):
+        dialog = PrintingDialog(self)
+        if dialog.exec_():
+            isTable = dialog.btnRes.isChecked()
+            isStd = dialog.btnStd.isChecked()
+            isQuant = dialog.btnQuant.isChecked()
         if not hasattr(self, "plaque"):
             return
         html = u""
@@ -534,7 +539,18 @@ class Qpcr_qt(QMainWindow):
                "</style>\n"
                "</head>\n")
         html += css
-        html += self.plaque.writeHtml()
+        html += "<h1 align=center> qPCR results </h1><br>"
+        if isTable:
+            html += "<h2>Results table</h2>"
+            html += self.plaque.writeHtml()
+        if isStd and self.plotStd !=0:
+            html += "<br><h2>Standard curves</h2>"
+            fig = self.mplCanStd.figure.savefig("output.png", dpi=100)
+            html += "<p><img src='output.png' width=500 height=400></p>"
+        if isQuant:
+            html += "<h2>Quantification curves</h2>"
+            fig = self.mplCanUnknown.figure.savefig("output.png", dpi=100)
+            html += "<p><img src='output.png' width=500 height=400></p>"
         html += "</html>"
         if self.printer is None:
             self.printer = QPrinter(QPrinter.HighResolution)
@@ -898,8 +914,8 @@ def run():
     import sys
     app = QApplication(sys.argv)
     app.setApplicationName("pyQPCR")
-    #app.setOrganizationName("qpcr")
-    #app.setOrganizationDomain("qpcr")
+    app.setOrganizationName("pyqpcr")
+    app.setOrganizationDomain("pyqpcr.sourceforge.net")
     app.setWindowIcon(QIcon(":/logo.png"))
     f = Qpcr_qt()
     f.show()
