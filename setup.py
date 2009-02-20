@@ -19,6 +19,23 @@ elif sys.platform == 'win32':
                                       (r'mpl-data\fonts',
     glob.glob(r'C:\Python25\Lib\site-packages\matplotlib\mpl-data\fonts\*.*')) ]
                         )
+    extra_options['options'] = \
+           {
+    'py2exe': { "includes" : ["sip", "PyQt4._qt", "matplotlib.backends",  
+                               "matplotlib.backends.backend_qt4agg",
+                               "matplotlib.figure","pylab", "numpy", 
+                               "matplotlib.numerix.fft",
+                               "matplotlib.numerix.linear_algebra", 
+                               "matplotlib.numerix.random_array",
+                               "matplotlib.backends.backend_tkagg"],
+                'excludes': ['_gtkagg', '_tkagg', '_agg2', '_cairo', '_cocoaagg',
+                             '_fltkagg', '_gtk', '_gtkcairo', ],
+                'dll_excludes': ['libgdk-win32-2.0-0.dll',
+                                 'libgobject-2.0-0.dll']
+              }
+          }
+    extra_options['windows'] = [{'script' : 'scripts\qpcr'}]
+
 else:
     import platform
     extra_options = dict(
@@ -26,7 +43,7 @@ else:
                       ('share/icons/hicolor/32x32/apps', ['pyQPCR-32.png']), 
                       ('share/applications', ['pyQPCR.desktop'])] \
                         )
-    if platform.dist()[0] in ('fedora', 'redhat'):
+    if platform.dist()[0] == 'fedora':
         extra_options['options'] = \
                 {
                 'bdist_rpm': { 
