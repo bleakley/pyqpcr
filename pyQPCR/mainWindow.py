@@ -372,7 +372,7 @@ class Qpcr_qt(QMainWindow):
         dir = os.path.dirname(self.filename) if self.filename is not None \
                 else "."
         formats =[u"*.txt", u"*.csv"]
-        fname = unicode(QFileDialog.getOpenFileName(self, "qpcr Qt - Choose a file", 
+        fname = unicode(QFileDialog.getOpenFileName(self, "pyQPCR - Choose a file", 
                 dir, "Input files (%s)" % " ".join(formats)))
         if fname:
             self.loadFile(fname)
@@ -385,7 +385,7 @@ class Qpcr_qt(QMainWindow):
                 if not self.okToContinue():
                     return
         if fname:
-            self.setWindowTitle("qpcr Qt - %s[*]" % QFileInfo(fname).fileName())
+            self.setWindowTitle("pyQPCR - %s[*]" % QFileInfo(fname).fileName())
             self.addRecentFile(fname)
             self.filename = fname
             message = "Loaded %s" % QFileInfo(fname).fileName()
