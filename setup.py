@@ -36,7 +36,7 @@ elif sys.platform == 'win32':
               }
           }
     extra_options['windows'] = [{'script' : 'scripts\qpcr',
-                                 'icon_resource': [(1, 'logo.ico')]}]
+                                 'icon_resources': [(1, 'logo.ico')]}]
 
 else:
     import platform
