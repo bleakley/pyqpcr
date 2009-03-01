@@ -546,11 +546,11 @@ class Qpcr_qt(QMainWindow):
         if isStd and self.plotStd !=0:
             html += "<br><h2>Standard curves</h2>"
             fig = self.mplCanStd.figure.savefig("output.png", dpi=100)
-            html += "<p><img src='output.png' width=500 height=400></p>"
+            html += "<p><img src='output.png' width=500></p>"
         if isQuant:
-            html += "<h2>Quantification curves</h2>"
+            html += "<br><h2>Quantification curves</h2>"
             fig = self.mplCanUnknown.figure.savefig("output.png", dpi=100)
-            html += "<p><img src='output.png' width=500 height=400></p>"
+            html += "<p><img src='output.png' width=500></p>"
         html += "</html>"
         if self.printer is None:
             self.printer = QPrinter(QPrinter.HighResolution)
