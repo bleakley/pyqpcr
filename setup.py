@@ -46,23 +46,23 @@ else:
                       ('share/icons/hicolor/32x32/apps', ['pyQPCR-32.png']), 
                       ('share/applications', ['pyQPCR.desktop'])] \
                         )
-    if platform.dist()[0] == 'fedora':
+    if platform.dist()[0] in ('fedora', 'redhat'):
         extra_options['options'] = \
                 {
                 'bdist_rpm': { 
                     'requires': ['python-matplotlib', 'PyQt4'],
-                    'distribution_name': ['fedora']
+                    'distribution_name': 'fedora'
                              },
-                'install': {'optimize': '1', 'prefix' : ['/usr']}
+                'install': {'optimize': '1', 'prefix' : '/usr'}
                 } 
     elif platform.dist()[0] == 'SuSe':
         extra_options['options'] = \
                 {
                 'bdist_rpm': { 
                     'requires': ['python-matplotlib', 'python-qt4'],
-                    'distribution_name': ['opensuse']
+                    'distribution_name': 'opensuse'
                              },
-                'install': {'prefix': ['/usr']}
+                'install': {'prefix': '/usr'}
                 } 
 
 setup(name='pyQPCR',
