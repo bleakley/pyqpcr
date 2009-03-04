@@ -32,7 +32,8 @@ elif sys.platform == 'win32':
                 'excludes': ['_gtkagg', '_tkagg', '_agg2', '_cairo', '_cocoaagg',
                              '_fltkagg', '_gtk', '_gtkcairo', ],
                 'dll_excludes': ['libgdk-win32-2.0-0.dll',
-                                 'libgobject-2.0-0.dll']
+                                 'libgobject-2.0-0.dll',
+                                 'msvcp71.dll']
               }
           }
     extra_options['windows'] = [{'script' : 'scripts\qpcr',

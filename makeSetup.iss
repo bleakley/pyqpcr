@@ -7,7 +7,7 @@
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
 AppId={{AB0FCAB4-3161-4336-99F1-77E465DE2A79}
 AppName=pyQPCR
-AppVerName=pyQPCR 0.1
+AppVerName=0.1beta2
 AppPublisher=qpcr
 AppPublisherURL=http://pyqpcr.sourceforge.net
 AppSupportURL=http://pyqpcr.sourceforge.net
