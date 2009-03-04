@@ -16,10 +16,18 @@ Before installing pyQPCR, you need to have these libraries:
  * numpy 1.1 or newer
    http://numpy.scipy.org/
 
+Running From the Source Tree
+----------------------------
+
+If you want to run pyQPCR from the source directory without installing, just run
+  
+  direct-run.py
 
 Installation
 ------------
 
+1) Source Installation
+   -------------------
 After installing the dependencies, you can install pyQPCR by running:
 
   sudo python setup.py install
@@ -29,10 +37,12 @@ start pyQPCR now you can use:
 
   qpcr
 
-
-Running From the Source Tree
-----------------------------
-
-If you want to run pyQPCR from the source directory without installing, just run
+2) RPM based distribution
+   ----------------------
+You can build the rpm of pyQPCR by running:
   
-  direct-run.py
+  python setup.py bdist_rpm
+
+This will automatically build the rpm in the bdist directory. You can then install it by running:
+
+  sudo rpm -ivh rpm
