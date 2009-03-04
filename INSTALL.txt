@@ -45,4 +45,7 @@ You can build the rpm of pyQPCR by running:
 
 This will automatically build the rpm in the bdist directory. You can then install it by running:
 
-  sudo rpm -ivh rpm
+  sudo rpm -ivh dist/pyQPCR-0.1-1.noarch.rpm
+
+This installation process is known to work on Fedora 7, 8 (i686 and x86_64) and
+OpenSuSE 11.1 (i686)
