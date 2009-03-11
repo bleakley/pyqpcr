@@ -195,7 +195,6 @@ class Qpcr_qt(QMainWindow):
         hLayout.addLayout(vLayout)
         self.plotStdWidget.setLayout(hLayout)
 
-
     def createMenusAndToolbars(self):
         fileOpenAction = self.createAction("&Open...", self.fileOpen, 
                 QKeySequence.Open, "fileopen", "Open an existing file")
@@ -310,7 +309,6 @@ class Qpcr_qt(QMainWindow):
                 self.fileSaveAsAction, self.plotAction, self.plotStdAction))
 # Desactivation par defaut
         self.activateDesactivate(False)
-
 
     def createAction(self, text, slot=None, shortcut=None, icon=None,
                      tip=None, checkable=None, signal="triggered()"):
@@ -835,8 +833,8 @@ class Qpcr_qt(QMainWindow):
                     legName.append(gene.name)
                     ind += 1
             self.mplCanUnknown.axes.set_xticks( \
-                           linspace(0, valmax, len(listNRQ)) \
-                           +len(self.plaque.listGene[1:])/2*width)
+                            linspace(0, valmax, len(self.plaque.listEch[1:])) \
+                            +ind/2.*width)
             self.mplCanUnknown.axes.set_xticklabels( \
                            self.plaque.adresseEch.keys()[1:])
             self.nplotGene += 1
@@ -862,15 +860,18 @@ class Qpcr_qt(QMainWindow):
                     legName.append(ech.name)
                     ind += 1
             self.mplCanUnknown.axes.set_xticks( \
-                           linspace(0, valmax, len(listNRQ)) \
-                           +len(self.plaque.listEch[1:])/2*width)
+                            linspace(0, valmax, len(self.plaque.listGene[1:])) \
+                            +ind/2.*width)
             self.mplCanUnknown.axes.set_xticklabels( \
                            self.plaque.adresseGene.keys()[1:])
             self.nplotEch += 1
 
 # Legend + xlim
-        self.mplCanUnknown.axes.legend(legPos, legName, 
-                           loc='upper right', shadow=True)
+        leg = self.mplCanUnknown.axes.legend(legPos, legName, 
+                           loc='upper right', shadow=True, labelspacing=0.1)
+# Taille de la police dans la legende
+        for t in leg.get_texts():
+            t.set_fontsize('small')
         leftMargin = 0.2
         legendWidth = 0.4
         self.mplCanUnknown.axes.set_xlim((-leftMargin, 
