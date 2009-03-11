@@ -23,7 +23,8 @@ from PyQt4.QtCore import *
 import pyQPCR.qrc_resources
 from pyQPCR.dialogs import *
 from pyQPCR.plate import Plaque
-from numpy import linspace, log, polyfit, polyval
+import matplotlib
+from numpy import linspace, log, exp, sqrt, sum, polyfit, polyval
 import os
 import copy
 
@@ -568,9 +569,9 @@ class Qpcr_qt(QMainWindow):
         <p>This application can be used to perform
         simple qPCR analysis.
         <p> It may be used, copied and modified with no restriction
-        <p>Python %s - Qt %s - PyQt %s 
+        <p>Python %s - PyQt %s - Matplotlib %s
         on %s""" % (__version__, platform.python_version(),
-        QT_VERSION_STR, PYQT_VERSION_STR, platform.system()))
+        PYQT_VERSION_STR, matplotlib.__version__, platform.system()))
 
     def helpHelp(self):
         print "Not implemented yet"
@@ -824,14 +825,16 @@ class Qpcr_qt(QMainWindow):
                     for ech in localDict.keys():
                         listNRQ.append(localDict[ech].NRQ)
                         listNRQerror.append(localDict[ech].NRQerror)
-                    valmax = spacing * (len(listNRQ)-1)
-                    p = self.mplCanUnknown.axes.bar( \
-                            linspace(0, valmax, len(listNRQ))+ind*width, 
-                            listNRQ, width, color=str(gene.color.name()), 
-                            yerr=listNRQerror, ecolor='k')
-                    legPos.append(p[0])
-                    legName.append(gene.name)
-                    ind += 1
+# Au cas ou tous les puits d'un gene sont desactives
+                    if len(listNRQ) == len(self.plaque.listEch[1:]):
+                        valmax = spacing * (len(listNRQ)-1)
+                        p = self.mplCanUnknown.axes.bar( \
+                                linspace(0, valmax, len(listNRQ))+ind*width, 
+                                listNRQ, width, color=str(gene.color.name()), 
+                                yerr=listNRQerror, ecolor='k')
+                        legPos.append(p[0])
+                        legName.append(gene.name)
+                        ind += 1
             self.mplCanUnknown.axes.set_xticks( \
                             linspace(0, valmax, len(self.plaque.listEch[1:])) \
                             +ind/2.*width)
@@ -851,14 +854,15 @@ class Qpcr_qt(QMainWindow):
                     for gene in localDict.keys():
                         listNRQ.append(localDict[gene].NRQ)
                         listNRQerror.append(localDict[gene].NRQerror)
-                    valmax = spacing * (len(listNRQ)-1)
-                    p = self.mplCanUnknown.axes.bar( \
-                            linspace(0, valmax, len(listNRQ))+ind*width, 
-                            listNRQ, width, color=str(ech.color.name()), 
-                            yerr=listNRQerror, ecolor='k')
-                    legPos.append(p[0])
-                    legName.append(ech.name)
-                    ind += 1
+                    if len(listNRQ) == len(self.plaque.listGene[1:]):
+                        valmax = spacing * (len(listNRQ)-1)
+                        p = self.mplCanUnknown.axes.bar( \
+                                linspace(0, valmax, len(listNRQ))+ind*width, 
+                                listNRQ, width, color=str(ech.color.name()), 
+                                yerr=listNRQerror, ecolor='k')
+                        legPos.append(p[0])
+                        legName.append(ech.name)
+                        ind += 1
             self.mplCanUnknown.axes.set_xticks( \
                             linspace(0, valmax, len(self.plaque.listGene[1:])) \
                             +ind/2.*width)
@@ -888,12 +892,19 @@ class Qpcr_qt(QMainWindow):
         x = log(self.plaque.dicoStd[geneName].amList)
         y = self.plaque.dicoStd[geneName].ctList
         self.mplCanStd.axes.scatter(x, y, marker='o')
-        m, b = polyfit(x, y, 1)
-        yr = polyval([m, b], x)
+        slope, orig = polyfit(x, y, 1)
+        yr = polyval([slope, orig], x)
         self.mplCanStd.axes.plot(x, yr)
-        self.mplCanStd.axes.text(0.6, 0.8, 'ct = %.2f log(am) + %.2f' \
-                % (m, b), transform=self.mplCanStd.axes.transAxes)
+        self.mplCanStd.axes.text(0.6, 0.8, 'ct = %.2f log q0 + %.2f' \
+                % (slope, orig), transform=self.mplCanStd.axes.transAxes)
 
+        sy = sqrt(sum((yr-y)**2)/(len(y)-2)) # Formule 2
+        sx = sqrt(sum((x-x.mean())**2)/(len(x)-1)) # Formule 3
+        stderr = sy / (sx*(len(x)-1)) # Formule 4
+        eff = (exp(-1./slope)-1)*100 # Formule 5 adaptee
+        # Erreur(Eff) = (Eff+100) * stderr / slope**2 
+        stdeff = (eff+100)*stderr/slope**2 # Formule 6 adaptee
+        print eff, stdeff
         self.mplCanStd.draw()
         self.nplotStd += 1
 
