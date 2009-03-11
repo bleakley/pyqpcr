@@ -209,7 +209,6 @@ class Plaque:
         html += "</table>"
         return html
 
-
     def setDicoGene(self):
 # Mise a jour de dicoGene
         self.dicoGene = OrderedDict()
@@ -392,6 +391,7 @@ class Replicate:
     def calcMeanDev(self):
         """
         Compute the mean ct of a replicate
+        Formule 7
         """
         self.ctmean = mean(self.ctList)
         self.ctdev = asarray(self.ctList).std()* sqrt(len(self.ctList)/ \
@@ -402,10 +402,11 @@ class Replicate:
             well.setCtdev(self.ctdev)
 
     def calcDCt(self):
-        self.dct = self.gene.ctref - self.ctmean
-        self.RQ = (1.+self.gene.eff/100.)**(self.dct)
+        self.dct = self.gene.ctref - self.ctmean # Formule 10
+        self.RQ = (1.+self.gene.eff/100.)**(self.dct) # Formule 11
 
     def calcRQerror(self):
+        # Formule 12
         err = sqrt( self.RQ**2 * ((self.dct*(self.gene.pm/100.) \
                 /(1.+self.gene.eff/100.))**2 \
                 + (log(1.+self.gene.eff/100.)*self.ctdev)**2 \
