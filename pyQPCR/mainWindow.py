@@ -872,7 +872,7 @@ class Qpcr_qt(QMainWindow):
 
 # Legend + xlim
         leg = self.mplCanUnknown.axes.legend(legPos, legName, 
-                           loc='upper right', shadow=True, labelspacing=0.1)
+                           loc='upper right', shadow=True)
 # Taille de la police dans la legende
         for t in leg.get_texts():
             t.set_fontsize('small')
