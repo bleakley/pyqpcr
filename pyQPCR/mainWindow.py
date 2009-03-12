@@ -24,7 +24,7 @@ import pyQPCR.qrc_resources
 from pyQPCR.dialogs import *
 from pyQPCR.plate import Plaque
 import matplotlib
-from numpy import linspace, log, exp, sqrt, sum, polyfit, polyval
+from numpy import linspace, log, exp, sqrt, sum, mean, polyfit, polyval
 import os
 import copy
 
@@ -471,8 +471,8 @@ class Qpcr_qt(QMainWindow):
                 itCtdev = QTableWidgetItem(str(well.ctdev))
             itAmount = QTableWidgetItem(str(well.amount))
             itEch = QTableWidgetItem(well.ech.name)
-            itEff = QTableWidgetItem("%s%%%s%s" % (str(well.gene.eff),
-                                     unichr(177), str(well.gene.pm)))
+            itEff = QTableWidgetItem("%.2f%%%s%.2f" % (well.gene.eff,
+                                     unichr(177), well.gene.pm))
             itType = QTableWidgetItem(well.type)
             try:
                 itNRQ = QTableWidgetItem("%.2f%s%.2f" % (well.NRQ,
@@ -800,6 +800,30 @@ class Qpcr_qt(QMainWindow):
                 self.onglet.addTab(self.plotStdWidget, "Standard curves")
             self.geneStdBox.clear()
             self.geneStdBox.addItems(self.plaque.dicoStd.keys())
+            for geneName in self.plaque.dicoStd.keys():
+                x = log(self.plaque.dicoStd[geneName].amList)
+                y = self.plaque.dicoStd[geneName].ctList
+                slope, orig = polyfit(x, y, 1)
+                yr = polyval([slope, orig], x)
+                sy = sqrt(sum((yr-y)**2)/(len(y)-2)) # Formule 2
+                sx = sqrt(sum((x-x.mean())**2)/(len(x)-1)) # Formule 3
+                stderr = sy / (sx*(len(x)-1)) # Formule 4
+                eff = (exp(-1./slope)-1)*100 # Formule 5 adaptee
+                # Erreur(Eff) = (Eff+100) * stderr / slope**2 
+                stdeff = (eff+100)*stderr/slope**2 # Formule 6 adaptee
+                # Coefficient de Pearsson de correlation
+                R2 = 1 - sum((y-yr)**2)/sum((y-mean(y))**2)
+                print eff, stdeff, R2
+                # Mise a jour de l'efficacite des puits
+                for well in self.plaque.dicoGene[geneName]:
+                    well.gene.setEff(eff)
+                # Mise a jour de listGene
+                self.plaque.listGene[self.plaque.adresseGene[geneName]].\
+                                     setEff(eff)
+
+            self.unsaved = True
+            self.plaqueStack.append(copy.deepcopy(self.plaque))
+            self.populateResult()
             self.plotStd()
 
     def plotUnknown(self):
@@ -888,7 +912,6 @@ class Qpcr_qt(QMainWindow):
         A method to plot the standard curves
         """
         self.mplCanStd.axes.cla()
-        #for geneName in self.plaque.dicoStd.keys():
         geneName = str(self.geneStdBox.currentText())
         x = log(self.plaque.dicoStd[geneName].amList)
         y = self.plaque.dicoStd[geneName].ctList
@@ -899,13 +922,6 @@ class Qpcr_qt(QMainWindow):
         self.mplCanStd.axes.text(0.6, 0.8, 'ct = %.2f log q0 + %.2f' \
                 % (slope, orig), transform=self.mplCanStd.axes.transAxes)
 
-        sy = sqrt(sum((yr-y)**2)/(len(y)-2)) # Formule 2
-        sx = sqrt(sum((x-x.mean())**2)/(len(x)-1)) # Formule 3
-        stderr = sy / (sx*(len(x)-1)) # Formule 4
-        eff = (exp(-1./slope)-1)*100 # Formule 5 adaptee
-        # Erreur(Eff) = (Eff+100) * stderr / slope**2 
-        stdeff = (eff+100)*stderr/slope**2 # Formule 6 adaptee
-        print eff, stdeff
         self.mplCanStd.draw()
         self.nplotStd += 1
 
