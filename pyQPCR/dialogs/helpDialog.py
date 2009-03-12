@@ -34,12 +34,14 @@ class HelpDialog(QDialog):
 
         backAction = QAction(QIcon(":/back.png"), "&Back", self)
         backAction.setShortcut(QKeySequence.Back)
+        nextAction = QAction(QIcon(":/next.png"), "&Next", self)
         homeAction = QAction(QIcon(":/home.png"), "&Home", self)
         homeAction.setShortcut("Home")
         self.pageLabel = QLabel()
 
         toolBar = QToolBar()
         toolBar.addAction(backAction)
+        toolBar.addAction(nextAction)
         toolBar.addAction(homeAction)
         toolBar.addWidget(self.pageLabel)
         toolBar.setIconSize(QSize(22, 22))
@@ -52,6 +54,8 @@ class HelpDialog(QDialog):
 
         self.connect(backAction, SIGNAL("triggered()"),
                      self.textBrowser, SLOT("backward()"))
+        self.connect(nextAction, SIGNAL("triggered()"),
+                     self.textBrowser, SLOT("forward()"))
         self.connect(homeAction, SIGNAL("triggered()"),
                      self.textBrowser, SLOT("home()"))
         self.connect(self.textBrowser, SIGNAL("sourceChanged(QUrl)"),

@@ -20,8 +20,10 @@
 <file alias="enable.png">icons/enable.png</file>
 <file alias="home.png">icons/home.png</file>
 <file alias="back.png">icons/back.png</file>
+<file alias="next.png">icons/next.png</file>
 <file alias="logo.png">icons/logo.png</file>
 
 <file>help/index.html</file>
+<file>help/filemenu.html</file>
 </qresource>
 </RCC>
