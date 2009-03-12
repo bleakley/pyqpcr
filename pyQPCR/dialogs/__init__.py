@@ -24,3 +24,4 @@ from objDialog import *
 from editDialog import *
 from customWidgets import *
 from utilsDialog import *
+from helpDialog import *

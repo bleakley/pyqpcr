@@ -574,7 +574,8 @@ class Qpcr_qt(QMainWindow):
         PYQT_VERSION_STR, matplotlib.__version__, platform.system()))
 
     def helpHelp(self):
-        print "Not implemented yet"
+        f = HelpDialog("index.html", self)
+        f.show()
 
     def addRecentFile(self, fname):
         if fname is None:
