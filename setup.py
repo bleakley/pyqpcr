@@ -18,7 +18,9 @@ elif sys.platform == 'win32':
                                       (r'mpl-data\images',
     glob.glob(r'C:\Python25\Lib\site-packages\matplotlib\mpl-data\images\*.*')),
                                       (r'mpl-data\fonts',
-    glob.glob(r'C:\Python25\Lib\site-packages\matplotlib\mpl-data\fonts\*.*')) ]
+    glob.glob(r'C:\Python25\Lib\site-packages\matplotlib\mpl-data\fonts\*.*')),
+                                      ( \
+              r'C:\Python25\Lib\site-packages\matplotlib\MSVCP71.dll')]
                         )
     extra_options['options'] = \
            {
@@ -32,8 +34,7 @@ elif sys.platform == 'win32':
                 'excludes': ['_gtkagg', '_tkagg', '_agg2', '_cairo', '_cocoaagg',
                              '_fltkagg', '_gtk', '_gtkcairo', ],
                 'dll_excludes': ['libgdk-win32-2.0-0.dll',
-                                 'libgobject-2.0-0.dll',
-                                 'msvcp71.dll']
+                                 'libgobject-2.0-0.dll']
               }
           }
     extra_options['windows'] = [{'script' : 'scripts\qpcr',
@@ -71,7 +72,7 @@ setup(name='pyQPCR',
       long_description='a qt4 based interface to deal qPCR',
       author='Thomas Gastine',
       author_email='thomas.gastine@wanadoo.fr',
-      url='http://sourceforge.net/',
+      url='http://sourceforge.net/projects/pyqpcr',
       licence='GPLv3',
       packages=['pyQPCR', 'pyQPCR.dialogs', 'pyQPCR.utils'],
       scripts=['scripts/qpcr'],
