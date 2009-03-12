@@ -68,7 +68,7 @@ class GeneDialog(QDialog):
     def populateList(self):
         self.listWidget.clear()
         for ind, it in enumerate(self.plaque.listGene):
-            name = "%s (%s%%%s%s)" % (it.name, it.eff, unichr(177), it.pm)
+            name = "%s (%.2f%%%s%.2f)" % (it.name, it.eff, unichr(177), it.pm)
             item = QListWidgetItem(name)
             if it.isRef == Qt.Checked:
                 item.setForeground(Qt.darkGreen)
@@ -82,7 +82,7 @@ class GeneDialog(QDialog):
             gene = str(dialog.gene.text())
             eff = float(dialog.eff.value())
             pm = float(dialog.pmerror.value())
-            state = int(dialog.ref.checkState())
+            state = dialog.ref.checkState()
             g = Gene(gene, eff, pm)
             g.setRef(state)
             g.setColor(QColor(Qt.black))
@@ -100,7 +100,7 @@ class GeneDialog(QDialog):
             name = str(dialog.gene.text())
             eff = float(dialog.eff.value())
             pm = float(dialog.pmerror.value())
-            state = int(dialog.ref.checkState())
+            state = dialog.ref.checkState()
             gene.setRef(state)
             gene.setEff(eff)
             gene.setPm(pm)
@@ -151,7 +151,7 @@ class AddGeneDialog(QDialog):
         self.eff = QDoubleSpinBox()
 # Pour changer les , par des . on force la locale
         self.eff.setLocale(QLocale(QLocale.English, QLocale.UnitedStates))
-        self.eff.setRange(0.0, 100.0)
+        self.eff.setRange(0.0, 120.0)
         self.eff.setSuffix(" %")
         if ge is not None:
             self.eff.setValue(g.eff)

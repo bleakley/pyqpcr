@@ -80,7 +80,7 @@ class EchDialog(QDialog):
         dialog = AddEchDialog(self)
         if dialog.exec_():
             nomech = str(dialog.ech.text())
-            state = int(dialog.ref.checkState())
+            state = dialog.ref.checkState()
             ech = Ech(nomech, state)
             ech.setColor(QColor(Qt.black))
             if not self.plaque.adresseEch.has_key(nomech):
@@ -95,7 +95,7 @@ class EchDialog(QDialog):
         dialog = AddEchDialog(self, ech=ech)
         if dialog.exec_():
             name = str(dialog.ech.text())
-            state = int(dialog.ref.checkState())
+            state = dialog.ref.checkState()
             ech.setName(name)
             ech.setRef(state)
             self.populateList()
