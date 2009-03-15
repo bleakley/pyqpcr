@@ -119,6 +119,7 @@ class Qpcr_qt(QMainWindow):
 # Settings pour sauvegarde de l'application
         settings = QSettings()
         self.recentFiles = settings.value("RecentFiles").toStringList()
+        self.ectMax = settings.value("EctMax").toString()
         geom = settings.value("Geometry").toByteArray()
         self.restoreGeometry(geom)
         self.restoreState(settings.value("MainWindow/State").toByteArray())
@@ -582,9 +583,9 @@ class Qpcr_qt(QMainWindow):
             document.print_(self.printer)
 
     def configure(self):
-        dialog = SettingsDialog(self)
+        dialog = SettingsDialog(self, ect=float(self.ectMax))
         if dialog.exec_():
-            print "coucou"
+            self.ectMax = float(dialog.ectLineEdit.text())
 
     def helpAbout(self):
         import platform
@@ -636,6 +637,7 @@ class Qpcr_qt(QMainWindow):
             recentFiles = QVariant(self.recentFiles) if self.recentFiles \
                   else QVariant()
             settings.setValue("RecentFiles", recentFiles)
+            settings.setValue("EctMax", QVariant(self.ectMax))
             settings.setValue("Geometry", QVariant(self.saveGeometry()))
             settings.setValue("MainWindow/State", QVariant(self.saveState()))
             settings.setValue("VerticalSplitter", 
@@ -802,7 +804,7 @@ class Qpcr_qt(QMainWindow):
         if hasattr(self.plaque, "geneRef") and hasattr(self.plaque, "echRef"):
             if self.nplotGene == 0:
                 self.onglet.addTab(self.plotUnknownWidget, "Quantification")
-            self.plaque.findTriplicat()
+            self.plaque.findTriplicat(float(self.ectMax))
 # On calcule NRQ
             self.plaque.calcNRQ()
 # On reremplit la table de resultats

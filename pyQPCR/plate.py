@@ -22,6 +22,7 @@ import csv
 from pyQPCR.wellGeneSample import Ech, Gene, Puits
 from utils import *
 from PyQt4.QtCore import Qt
+from PyQt4.QtGui import *
 from numpy import mean, std, sqrt, log, asarray, log10, polyval, polyfit, \
 sum
 from pyQPCR.utils.odict import OrderedDict
@@ -279,7 +280,7 @@ class Plaque:
             self.echRef = self.listEch[ind]
             self.listEch[ind].setRef(Qt.Checked)
 
-    def findTriplicat(self):
+    def findTriplicat(self, ectMax):
 # Elimination du gene avec la chaine vide puis calcul du ctref
         for g in self.listGene[1:]:
             if self.dicoGene.has_key(g.name):
@@ -299,7 +300,7 @@ class Plaque:
             if dicoEch.has_key(""):
                 dicoEch.pop("")
             for ech in dicoEch.keys():
-                trip = Replicate(dicoEch[ech])
+                trip = Replicate(dicoEch[ech], ectMax=ectMax)
                 trip.calcDCt()
                 dicoEch[ech] = trip
                 self.dicoTrip[key] = dicoEch
@@ -368,9 +369,12 @@ class Plaque:
                 well.gene.setPm(stdeff)
 
 
-class Replicate:
+class Replicate(QDialog):
 
-    def __init__(self, listePuits, type='unknown'):
+    def __init__(self, listePuits, type='unknown', parent=None, ectMax=0.3):
+        self.parent = parent
+        self.ectMax = ectMax
+        QDialog.__init__(self, parent)
         self.type = type
         self.listePuits = listePuits
         if len(self.listePuits) != 0:
@@ -428,6 +432,11 @@ class Replicate:
         for well in self.listePuits:
             well.setCtmean(self.ctmean)
             well.setCtdev(self.ctdev)
+
+        if self.ctdev >= self.ectMax:
+            QMessageBox.warning(self, "Warning Replicates",
+                    "Warning: E(ct) of replicate (%s, %s) greater than %.2f" \
+                    % (self.gene, self.ech, self.ectMax))
 
     def calcDCt(self):
         self.dct = self.gene.ctref - self.ctmean # Formule 10
