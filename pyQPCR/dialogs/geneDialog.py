@@ -67,7 +67,7 @@ class GeneDialog(QDialog):
 
     def populateList(self):
         self.listWidget.clear()
-        for ind, it in enumerate(self.plaque.listGene):
+        for ind, it in enumerate(self.plaque.listGene[1:]):
             name = "%s (%.2f%%%s%.2f)" % (it.name, it.eff, unichr(177), it.pm)
             item = QListWidgetItem(name)
             if it.isRef == Qt.Checked:
@@ -93,7 +93,7 @@ class GeneDialog(QDialog):
 
     def edit(self):
         row = self.listWidget.currentRow()
-        gene = self.plaque.listGene[row]
+        gene = self.plaque.listGene[row+1]
         gene_before = gene.name
         dialog = AddGeneDialog(self, ge=gene)
         if dialog.exec_():
@@ -117,7 +117,7 @@ class GeneDialog(QDialog):
 
     def remove(self):
         row = self.listWidget.currentRow()
-        gene = self.plaque.listGene[row]
+        gene = self.plaque.listGene[row+1]
         item = self.listWidget.item(row)
         if item is None:
             return
@@ -125,7 +125,7 @@ class GeneDialog(QDialog):
                         "Remove %s ?" % (item.text()),
                         QMessageBox.Yes|QMessageBox.No)
         if reply == QMessageBox.Yes:
-            self.plaque.listGene.__delitem__(row)
+            self.plaque.listGene.__delitem__(row+1)
             self.populateList()
 # On repasse les puits de la plaque sur le gene vide
 # a condition que des puits soient concernes
