@@ -68,7 +68,7 @@ class EchDialog(QDialog):
 
     def populateList(self):
         self.listWidget.clear()
-        for ind, it in enumerate(self.plaque.listEch):
+        for ind, it in enumerate(self.plaque.listEch[1:]):
             item = QListWidgetItem(it.name)
             if it.isRef == Qt.Checked:
                 item.setForeground(Qt.darkGreen)
@@ -90,7 +90,7 @@ class EchDialog(QDialog):
 
     def edit(self):
         row = self.listWidget.currentRow()
-        ech = self.plaque.listEch[row]
+        ech = self.plaque.listEch[row+1]
         ech_before = ech.name
         dialog = AddEchDialog(self, ech=ech)
         if dialog.exec_():
@@ -109,7 +109,7 @@ class EchDialog(QDialog):
 
     def remove(self):
         row = self.listWidget.currentRow()
-        ech = self.plaque.listEch[row]
+        ech = self.plaque.listEch[row+1]
         item = self.listWidget.item(row)
         if item is None:
             return
@@ -117,7 +117,7 @@ class EchDialog(QDialog):
                         "Remove %s ?" % ech,
                         QMessageBox.Yes|QMessageBox.No)
         if reply == QMessageBox.Yes:
-            self.plaque.listEch.__delitem__(row)
+            self.plaque.listEch.__delitem__(row+1)
             self.populateList()
 # On ajuste les puits de la plaque concernes sur l'echantillon vide
 # a condition que le puit soit concerne

@@ -240,10 +240,10 @@ class Qpcr_qt(QMainWindow):
         self.plotStdAction = self.createAction("Standard samples", 
                               self.computeStd, "Ctrl+Shift+S", 
                               "plotStandard", "Plot standard curves")
-        self.enableAction = self.createAction("Enable wells", self.enable, None,
-                "enable", "Enable selected wells")
-        self.disableAction = self.createAction("Disable wells", self.disable, None,
-                "disable", "Disable selected wells")
+        self.enableAction = self.createAction("Enable wells", self.enable, 
+                     None, "enable", "Enable selected wells")
+        self.disableAction = self.createAction("Disable wells", self.disable,
+                     None, "disable", "Disable selected wells")
         settingsAction = self.createAction("&Configure pyQPCR...", 
                                            self.configure, icon="settings")
         helpAboutAction = self.createAction("&About pyQPCR", self.helpAbout,
@@ -310,10 +310,10 @@ class Qpcr_qt(QMainWindow):
         self.echComboBox.setToolTip("List of samples")
         self.echComboBox.setStatusTip(self.echComboBox.toolTip())
         self.echComboBox.setFocusPolicy(Qt.NoFocus)
-        editToolbar.addWidget(self.geneComboBox)
-        editToolbar.addAction(self.addGeneAction)
         editToolbar.addWidget(self.echComboBox)
         editToolbar.addAction(self.addEchAction)
+        editToolbar.addWidget(self.geneComboBox)
+        editToolbar.addAction(self.addGeneAction)
         editToolbar.setIconSize(QSize(22, 22))
 
         plotToolbar = self.addToolBar("Plot")
@@ -391,7 +391,8 @@ class Qpcr_qt(QMainWindow):
         dir = os.path.dirname(self.filename) if self.filename is not None \
                 else "."
         formats =[u"*.txt", u"*.csv"]
-        fname = unicode(QFileDialog.getOpenFileName(self, "pyQPCR - Choose a file", 
+        fname = unicode(QFileDialog.getOpenFileName(self,
+                                                    "pyQPCR - Choose a file", 
                 dir, "Input files (%s)" % " ".join(formats)))
         if fname:
             self.loadFile(fname)
