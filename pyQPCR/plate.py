@@ -48,6 +48,8 @@ class Plaque:
         self.read()
         self.setDicoGene()
         self.setDicoEch()
+# Permet eventuellement de connaitre les genes/ech de ref 
+        self.getRefsFromFile()
 
     def determineFileType(self, filename):
         extent = filename[-3:]
@@ -142,8 +144,6 @@ class Plaque:
                 except ValueError:
                     pass
                 setattr(self, name, value)
-# Permet eventuellement de connaitre les genes/ech de ref 
-        self.getRefsFromFile()
         file.close()
 
     def write(self, filename):
@@ -213,12 +213,15 @@ class Plaque:
     def setDicoGene(self):
 # Mise a jour de dicoGene
         self.dicoGene = OrderedDict()
+        self.listGene = [Gene('')]
         for well in self.listePuits:
             nomgene = well.gene.name
             if self.dicoGene.has_key(nomgene):
                 self.dicoGene[nomgene].append(well)
             else:
                 self.dicoGene[nomgene] = [well]
+                if str(well.gene.name) != '':
+                    self.listGene.append(well.gene)
 # Mise a jour de adresseGene
         self.adresseGene = OrderedDict()
         self.adresseGene[''] = 0
@@ -231,12 +234,15 @@ class Plaque:
     def setDicoEch(self):
 # Mise a jour de dicoEch
         self.dicoEch = OrderedDict()
+        self.listEch = [Ech('')]
         for well in self.listePuits:
             nomech = well.ech.name
             if self.dicoEch.has_key(str(nomech)):
                 self.dicoEch[str(nomech)].append(well)
             else:
                 self.dicoEch[str(nomech)] = [well]
+                if str(well.ech.name) != '':
+                    self.listEch.append(well.ech)
 # Mise a jour de adresseEch
         self.adresseEch = OrderedDict()
         self.adresseEch[''] = 0
@@ -352,7 +358,7 @@ class Plaque:
             stderr = sy / (sx*(len(x)-1)) # Formule 4
             eff = (10**(-1./slope)-1)*100 # Formule 5 adaptee
             # Erreur(Eff) = (Eff+100) * stderr / slope**2
-            stdeff = (eff+100)*stderr/slope**2 # Formule 6 adaptee
+            stdeff = (eff+100)*log(10)*stderr/slope**2 # Formule 6 adaptee
             # Coefficient de Pearsson de correlation
             R2 = 1 - sum((y-yr)**2)/sum((y-mean(y))**2)
             print eff, stdeff, R2
