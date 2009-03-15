@@ -22,7 +22,8 @@ import csv
 from pyQPCR.wellGeneSample import Ech, Gene, Puits
 from utils import *
 from PyQt4.QtCore import Qt
-from numpy import mean, std, sqrt, log, asarray
+from numpy import mean, std, sqrt, log, asarray, log10, polyval, polyfit, \
+sum
 from pyQPCR.utils.odict import OrderedDict
 from pyQPCR.utils.ragged import RaggedArray2D
 
@@ -339,6 +340,27 @@ class Plaque:
                 self.dicoTrip[g][ech].setNRQerror(NRQerror)
                 for well in self.dicoTrip[g][ech].listePuits:
                     well.setNRQerror(NRQerror)
+
+    def calcStd(self):
+        for geneName in self.dicoStd.keys():
+            x = log10(self.dicoStd[geneName].amList)
+            y = self.dicoStd[geneName].ctList
+            slope, orig = polyfit(x, y, 1)
+            yr = polyval([slope, orig], x)
+            sy = sqrt(sum((yr-y)**2)/(len(y)-2)) # Formule 2
+            sx = sqrt(sum((x-x.mean())**2)/(len(x)-1)) # Formule 3
+            stderr = sy / (sx*(len(x)-1)) # Formule 4
+            eff = (10**(-1./slope)-1)*100 # Formule 5 adaptee
+            # Erreur(Eff) = (Eff+100) * stderr / slope**2
+            stdeff = (eff+100)*stderr/slope**2 # Formule 6 adaptee
+            # Coefficient de Pearsson de correlation
+            R2 = 1 - sum((y-yr)**2)/sum((y-mean(y))**2)
+            print eff, stdeff, R2
+            # Mise a jour de l'efficacite des puits
+            for well in self.dicoGene[geneName]:
+                well.gene.setEff(eff)
+                well.gene.setPm(stdeff)
+
 
 class Replicate:
 

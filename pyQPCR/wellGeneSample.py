@@ -115,6 +115,9 @@ class Gene:
     def setEnabled(self, ena):
         self.enabled = ena
 
+    def setR2(self, R):
+        self.R2 = R
+
     def calcCtRef(self, listePuits):
         qt = 0
         k = 0
