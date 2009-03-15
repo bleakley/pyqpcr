@@ -24,7 +24,7 @@ import pyQPCR.qrc_resources
 from pyQPCR.dialogs import *
 from pyQPCR.plate import Plaque
 import matplotlib
-from numpy import linspace, log, exp, sqrt, sum, mean, polyfit, polyval
+from numpy import linspace, log10, sqrt, sum, mean, polyfit, polyval
 import os
 import copy
 
@@ -179,8 +179,24 @@ class Qpcr_qt(QMainWindow):
         self.geneStdBox = QComboBox()
         lab1 = QLabel("&Gene:")
         lab1.setBuddy(self.geneStdBox)
+        lab2 = QLabel("&Linear Regression:")
+        self.labEquation = QLineEdit()
+        lab2.setBuddy(self.labEquation)
+        lab3 = QLabel("R^2:")
+        self.labR2 =  QLineEdit()
+        lab3.setBuddy(self.labR2)
+        self.labEff =  QLineEdit()
+        lab4 = QLabel("Efficiency:")
+        lab4.setBuddy(self.labEff)
+
         layout.addWidget(lab1)
         layout.addWidget(self.geneStdBox)
+        layout.addWidget(lab2)
+        layout.addWidget(self.labEquation)
+        layout.addWidget(lab3)
+        layout.addWidget(self.labR2)
+        layout.addWidget(lab4)
+        layout.addWidget(self.labEff)
         layout.addStretch()
 
         self.plotStdWidget = QWidget()
@@ -622,7 +638,7 @@ class Qpcr_qt(QMainWindow):
     def okToContinue(self):
         if self.unsaved:
             reponse = QMessageBox.question(self,
-                    "pcrq Qt - Unsaved Changes",
+                    "pyQPCR - Unsaved Changes",
                     "Save unsaved changes?",
                     QMessageBox.Yes|QMessageBox.No|QMessageBox.Cancel)
             if reponse == QMessageBox.Cancel:
@@ -800,27 +816,8 @@ class Qpcr_qt(QMainWindow):
                 self.onglet.addTab(self.plotStdWidget, "Standard curves")
             self.geneStdBox.clear()
             self.geneStdBox.addItems(self.plaque.dicoStd.keys())
-            for geneName in self.plaque.dicoStd.keys():
-                x = log(self.plaque.dicoStd[geneName].amList)
-                y = self.plaque.dicoStd[geneName].ctList
-                slope, orig = polyfit(x, y, 1)
-                yr = polyval([slope, orig], x)
-                sy = sqrt(sum((yr-y)**2)/(len(y)-2)) # Formule 2
-                sx = sqrt(sum((x-x.mean())**2)/(len(x)-1)) # Formule 3
-                stderr = sy / (sx*(len(x)-1)) # Formule 4
-                eff = (exp(-1./slope)-1)*100 # Formule 5 adaptee
-                # Erreur(Eff) = (Eff+100) * stderr / slope**2 
-                stdeff = (eff+100)*stderr/slope**2 # Formule 6 adaptee
-                # Coefficient de Pearsson de correlation
-                R2 = 1 - sum((y-yr)**2)/sum((y-mean(y))**2)
-                print eff, stdeff, R2
-                # Mise a jour de l'efficacite des puits
-                for well in self.plaque.dicoGene[geneName]:
-                    well.gene.setEff(eff)
-                # Mise a jour de listGene
-                self.plaque.listGene[self.plaque.adresseGene[geneName]].\
-                                     setEff(eff)
-
+            # Calcul des courbes standards
+            self.plaque.calcStd()
             self.unsaved = True
             self.plaqueStack.append(copy.deepcopy(self.plaque))
             self.populateResult()
@@ -913,15 +910,26 @@ class Qpcr_qt(QMainWindow):
         """
         self.mplCanStd.axes.cla()
         geneName = str(self.geneStdBox.currentText())
-        x = log(self.plaque.dicoStd[geneName].amList)
+        x = log10(self.plaque.dicoStd[geneName].amList)
         y = self.plaque.dicoStd[geneName].ctList
         self.mplCanStd.axes.scatter(x, y, marker='o')
         slope, orig = polyfit(x, y, 1)
         yr = polyval([slope, orig], x)
-        self.mplCanStd.axes.plot(x, yr)
-        self.mplCanStd.axes.text(0.6, 0.8, 'ct = %.2f log q0 + %.2f' \
-                % (slope, orig), transform=self.mplCanStd.axes.transAxes)
+        sy = sqrt(sum((yr-y)**2)/(len(y)-2)) # Formule 2
+        sx = sqrt(sum((x-x.mean())**2)/(len(x)-1)) # Formule 3
+        stderr = sy / (sx*(len(x)-1)) # Formule 4
+        eff = (10**(-1./slope)-1)*100 # Formule 5 adaptee
+        # Erreur(Eff) = (Eff+100) * stderr / slope**2 
+        stdeff = (eff+100)*stderr/slope**2 # Formule 6 adaptee
+        # Coefficient de Pearsson de correlation
+        R2 = 1 - sum((y-yr)**2)/sum((y-mean(y))**2)
 
+        self.mplCanStd.axes.plot(x, yr)
+
+        self.labEquation.setText('ct = %.2f log q0 + %.2f' \
+                                % (slope, orig))
+        self.labR2.setText('%.3f' % R2)
+        self.labEff.setText('%.2f%% %s %.2f' % (eff, unichr(177), stdeff))
         self.mplCanStd.draw()
         self.nplotStd += 1
 
