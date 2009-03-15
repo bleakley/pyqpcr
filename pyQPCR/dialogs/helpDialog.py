@@ -19,11 +19,11 @@
 
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-#import pyQPCR.qrc_resources
+import pyQPCR.qrc_resources
 
-__author__ = "$Author$"
-__date__ = "$Date$"
-__version__ = "$Revision$"
+__author__ = "$Author:$"
+__date__ = "$Date:$"
+__version__ = "$Revision:$"
 
 
 class HelpDialog(QDialog):

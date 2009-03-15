@@ -163,8 +163,8 @@ class Qpcr_qt(QMainWindow):
         vLay.addWidget(self.btnPlot)
         vLay.addStretch()
         vLayout = QVBoxLayout()
-        self.mplCanUnknown = MatplotlibWidget(self.plotUnknownWidget, width=5, 
-                                       height=4, dpi=100)
+        self.mplCanUnknown = MatplotlibWidget(self.plotUnknownWidget, width=5,
+                                              height=4, dpi=100)
         toolBar = NavigationToolbar2QT(self.mplCanUnknown, self)
         vLayout.addWidget(toolBar)
         vLayout.addWidget(self.mplCanUnknown)
@@ -177,16 +177,16 @@ class Qpcr_qt(QMainWindow):
         layout = QVBoxLayout()
         layout.addStretch()
         self.geneStdBox = QComboBox()
-        lab1 = QLabel("&Gene:")
+        lab1 = QLabel("<b>&Gene:</b>")
         lab1.setBuddy(self.geneStdBox)
-        lab2 = QLabel("&Linear Regression:")
-        self.labEquation = QLineEdit()
+        lab2 = QLabel("<b>&Linear Regression:</b>")
+        self.labEquation = QLabel()
         lab2.setBuddy(self.labEquation)
-        lab3 = QLabel("R^2:")
-        self.labR2 =  QLineEdit()
+        lab3 = QLabel("<b>R^2:</b>")
+        self.labR2 =  QLabel()
         lab3.setBuddy(self.labR2)
-        self.labEff =  QLineEdit()
-        lab4 = QLabel("Efficiency:")
+        self.labEff =  QLabel()
+        lab4 = QLabel("<b>Efficiency:</b>")
         lab4.setBuddy(self.labEff)
 
         layout.addWidget(lab1)
@@ -244,7 +244,9 @@ class Qpcr_qt(QMainWindow):
                 "enable", "Enable selected wells")
         self.disableAction = self.createAction("Disable wells", self.disable, None,
                 "disable", "Disable selected wells")
-        helpAboutAction =  self.createAction("&About pyQPCR", self.helpAbout,
+        settingsAction = self.createAction("&Configure pyQPCR...", 
+                                           self.configure, icon="settings")
+        helpAboutAction = self.createAction("&About pyQPCR", self.helpAbout,
                 icon="about")
         helpHelpAction = self.createAction("&Help", self.helpHelp,
                 QKeySequence.HelpContents, icon="help")
@@ -265,6 +267,8 @@ class Qpcr_qt(QMainWindow):
         calculMenu = self.menuBar().addMenu("&Computations")
         self.addActions(calculMenu, (self.enableAction, self.disableAction,
                                   None, self.plotAction, self.plotStdAction))
+        settingsMenu = self.menuBar().addMenu("&Settings")
+        settingsMenu.addAction(settingsAction)
         helpMenu = self.menuBar().addMenu("&Help")
         self.addActions(helpMenu, (helpAboutAction, helpHelpAction))
 
@@ -509,7 +513,8 @@ class Qpcr_qt(QMainWindow):
 
     def populateTree(self):
         self.tree.clear()
-        ancestor = QTreeWidgetItem(self.tree, [QFileInfo(self.filename).fileName()])
+        ancestor = QTreeWidgetItem(self.tree, 
+                                   [QFileInfo(self.filename).fileName()])
         itemQuant = QTreeWidgetItem(ancestor, ["Quantification"])
         itemRefGene = QTreeWidgetItem(itemQuant , ["Reference Target"])
         itemRefEch = QTreeWidgetItem(itemQuant , ["Reference Sample"])
@@ -518,8 +523,7 @@ class Qpcr_qt(QMainWindow):
             item = QTreeWidgetItem(itemRefGene, [self.plaque.geneRef.name])
         if hasattr(self.plaque, "echRef"):
             item = QTreeWidgetItem(itemRefEch, [self.plaque.echRef.name])
-        self.tree.expandItem(ancestor)
-        self.tree.expandItem(itemQuant)
+        self.tree.expandAll()
 
     def fileSave(self):
         self.plaque.write(self.filename)
@@ -575,6 +579,11 @@ class Qpcr_qt(QMainWindow):
             document = QTextDocument()
             document.setHtml(html)
             document.print_(self.printer)
+
+    def configure(self):
+        dialog = SettingsDialog(self)
+        if dialog.exec_():
+            print "coucou"
 
     def helpAbout(self):
         import platform
