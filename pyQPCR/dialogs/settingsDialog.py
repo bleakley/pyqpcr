@@ -27,16 +27,14 @@ __version__ = "$Revision:$"
 
 class SettingsDialog(QDialog):
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, ect=0.3, ctmin=35):
         self.parent = parent
         QDialog.__init__(self, parent)
 
-        value = 0.3
-        ctmin = 35
         labTit = QLabel("<b>Quality Control:</b>")
         lab1 = QLabel("E(ct) >")
-        edit1 = QLineEdit("%.2f" % value)
-        lab1.setBuddy(edit1)
+        self.ectLineEdit = QLineEdit("%.2f" % ect)
+        lab1.setBuddy(self.ectLineEdit)
         lab2 = QLabel("Negative ct >")
         edit2 = QLineEdit("%.2f" % ctmin)
         lab2.setBuddy(edit2)
@@ -45,7 +43,7 @@ class SettingsDialog(QDialog):
 
         gLayout = QGridLayout()
         gLayout.addWidget(lab1, 0, 0)
-        gLayout.addWidget(edit1, 0, 1)
+        gLayout.addWidget(self.ectLineEdit, 0, 1)
         gLayout.addWidget(lab2, 1, 0)
         gLayout.addWidget(edit2, 1, 1)
 
