@@ -125,6 +125,11 @@ class Qpcr_qt(QMainWindow):
             self.ectMax = float(self.ectMax)
         except ValueError:
             self.ectMax = 0.3
+        self.ctMin = settings.value("ctMin").toString()
+        try:
+            self.ctMin = float(self.ctMin)
+        except ValueError:
+            self.ctMin = 35.
         geom = settings.value("Geometry").toByteArray()
         self.restoreGeometry(geom)
         self.restoreState(settings.value("MainWindow/State").toByteArray())
@@ -588,9 +593,11 @@ class Qpcr_qt(QMainWindow):
             document.print_(self.printer)
 
     def configure(self):
-        dialog = SettingsDialog(self, ect=float(self.ectMax))
+        dialog = SettingsDialog(self, ect=float(self.ectMax),
+                                ctmin=float(self.ctMin))
         if dialog.exec_():
             self.ectMax = float(dialog.ectLineEdit.text())
+            self.ctMin = float(dialog.ctMinLineEdit.text())
 
     def helpAbout(self):
         import platform
@@ -645,6 +652,9 @@ class Qpcr_qt(QMainWindow):
             ectMax = QVariant(self.ectMax) if self.ectMax \
                   else QVariant()
             settings.setValue("EctMax", ectMax)
+            ctMin = QVariant(self.ctMin) if self.ctMin \
+                  else QVariant()
+            settings.setValue("ctMin", ctMin)
             settings.setValue("Geometry", QVariant(self.saveGeometry()))
             settings.setValue("MainWindow/State", QVariant(self.saveState()))
             settings.setValue("VerticalSplitter", 
@@ -804,9 +814,39 @@ class Qpcr_qt(QMainWindow):
         self.populateTable()
         self.populateResult()
 
+    def checkNegative(self, ctMin):
+        """
+        A method to check negative samples quality
+        """
+        for well in self.plaque.listePuits:
+            if str(well.type) == 'negative':
+                if well.ct <= ctMin:
+                    QMessageBox.warning(self, "Warning Negative",
+                               "Warning: ct of well %s lower than %.2f" \
+                                        % (well.name, ctMin))
+
+    def setRefs(self):
+        """
+        Determine the reference target and sample
+        """
+        for g in self.plaque.listGene:
+            if g.isRef == 2:
+                self.plaque.geneRef = g
+        for e in self.plaque.listEch:
+            if e.isRef == 2:
+                self.plaque.echRef = e
+        if not hasattr(self.plaque, "geneRef"):
+            QMessageBox.warning(self, "Warning",
+                                "Reference target undefined !")
+        if not hasattr(self.plaque, "echRef"):
+            QMessageBox.warning(self, "Warning",
+                                "Reference sample undefined !")
+
     def computeUnknown(self):
+# On verifie la qualite des negative control
+        self.checkNegative(float(self.ctMin))
 # On fixe le gene de reference et le triplicat de reference
-        self.plaque.setRefs()
+        self.setRefs()
 # On construit tous les triplicats
         if hasattr(self.plaque, "geneRef") and hasattr(self.plaque, "echRef"):
             if self.nplotGene == 0:
@@ -818,13 +858,6 @@ class Qpcr_qt(QMainWindow):
             self.populateResult()
 # On trace le resultat
             self.plotUnknown()
-        else:
-            if  not hasattr(self.plaque, "echRef"):
-                QMessageBox.warning(self, "Warning",
-                                 " Reference target undefined !")
-            elif not hasattr(self.plaque, "geneRef"):
-                QMessageBox.warning(self, "Warning",
-                                 " Reference sample undefined !")
 
     def computeStd(self):
 # On cherche les std

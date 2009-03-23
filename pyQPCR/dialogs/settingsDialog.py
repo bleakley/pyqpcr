@@ -20,9 +20,9 @@
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
-__author__ = "$Author:$"
-__date__ = "$Date:$"
-__version__ = "$Revision:$"
+__author__ = "$Author$"
+__date__ = "$Date$"
+__version__ = "$Revision$"
 
 
 class SettingsDialog(QDialog):
@@ -36,8 +36,8 @@ class SettingsDialog(QDialog):
         self.ectLineEdit = QLineEdit("%.2f" % ect)
         lab1.setBuddy(self.ectLineEdit)
         lab2 = QLabel("Negative ct >")
-        edit2 = QLineEdit("%.2f" % ctmin)
-        lab2.setBuddy(edit2)
+        self.ctMinLineEdit = QLineEdit("%.2f" % ctmin)
+        lab2.setBuddy(self.ctMinLineEdit)
         buttonBox = QDialogButtonBox(QDialogButtonBox.Ok|
                                      QDialogButtonBox.Cancel)
 
@@ -45,7 +45,7 @@ class SettingsDialog(QDialog):
         gLayout.addWidget(lab1, 0, 0)
         gLayout.addWidget(self.ectLineEdit, 0, 1)
         gLayout.addWidget(lab2, 1, 0)
-        gLayout.addWidget(edit2, 1, 1)
+        gLayout.addWidget(self.ctMinLineEdit, 1, 1)
 
         layout = QVBoxLayout()
         layout.addWidget(labTit)
