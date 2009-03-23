@@ -24,7 +24,7 @@ from utils import *
 from PyQt4.QtCore import Qt
 from PyQt4.QtGui import *
 from numpy import mean, std, sqrt, log, asarray, log10, polyval, polyfit, \
-sum
+sum, ravel
 from pyQPCR.utils.odict import OrderedDict
 from pyQPCR.utils.ragged import RaggedArray2D
 
@@ -305,19 +305,27 @@ class Plaque:
                 dicoEch[ech] = trip
                 self.dicoTrip[key] = dicoEch
             
-    def findStd(self):
+    def findStd(self, ectMax):
         """
         This method allows to build a dictionnary for standard
         wells.
         """
-        self.dicoStd = OrderedDict()
+        self.dicoStd = RaggedArray2D()
         for key in self.dicoGene.keys():
-            listPuits = []
+            dicoAmount = RaggedArray2D()
             for well in self.dicoGene[str(key)]:
                 if str(well.type) == 'standard' and well.enabled == True:
-                    listPuits.append(well)
-            if len(listPuits) != 0:
-                self.dicoStd[str(key)] = Replicate(listPuits, type='standard')
+                    if dicoAmount.has_key(str(well.amount)):
+                        dicoAmount[str(well.amount)].append(well)
+                    else:
+                        dicoAmount[str(well.amount)] = [well]
+            if dicoAmount.has_key(""):
+                dicoAmount.pop("")
+            for amount in dicoAmount.keys():
+                trip = Replicate(dicoAmount[amount], type="standard",
+                                 ectMax=ectMax)
+                dicoAmount[amount] = trip
+                self.dicoStd[str(key)] = dicoAmount
 
     def calcNRQ(self):
         for g in self.dicoTrip.keys():
@@ -350,8 +358,13 @@ class Plaque:
 
     def calcStd(self):
         for geneName in self.dicoStd.keys():
-            x = log10(self.dicoStd[geneName].amList)
-            y = self.dicoStd[geneName].ctList
+            x = []
+            y = []
+            for trip in self.dicoStd[geneName].values():
+                x.append(trip.amList)
+                y.append(trip.ctList)
+            x = log10(ravel(asarray(x)))
+            y = ravel(asarray(y))
             slope, orig = polyfit(x, y, 1)
             yr = polyval([slope, orig], x)
             sy = sqrt(sum((yr-y)**2)/(len(y)-2)) # Formule 2
@@ -386,11 +399,11 @@ class Replicate(QDialog):
             self.ctList.append(well.ct)
         if self.type == 'unknown':
             self.ech = self.listePuits[0].ech
-            self.calcMeanDev()
         elif self.type == 'standard':
             self.amList = []
             for well in self.listePuits:
                 self.amList.append(well.amount)
+        self.calcMeanDev()
 
     def __str__(self):
         st = '{%s:[' % self.type
@@ -434,9 +447,14 @@ class Replicate(QDialog):
             well.setCtdev(self.ctdev)
 
         if self.ctdev >= self.ectMax:
-            QMessageBox.warning(self, "Warning Replicates",
+            if self.type == 'unknown':
+                QMessageBox.warning(self, "Warning Replicates",
                     "Warning: E(ct) of replicate (%s, %s) greater than %.2f" \
                     % (self.gene, self.ech, self.ectMax))
+            elif self.type == 'standard':
+                QMessageBox.warning(self, "Warning Replicates",
+                    "Warning: E(ct) of replicate (%s, %s) greater than %.2f" \
+                    % (self.gene, self.amList[0], self.ectMax))
 
     def calcDCt(self):
         self.dct = self.gene.ctref - self.ctmean # Formule 10
