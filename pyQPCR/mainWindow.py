@@ -24,7 +24,8 @@ import pyQPCR.qrc_resources
 from pyQPCR.dialogs import *
 from pyQPCR.plate import Plaque
 import matplotlib
-from numpy import linspace, log10, sqrt, sum, mean, polyfit, polyval
+from numpy import linspace, log10, sqrt, sum, mean, polyfit, polyval, \
+        ravel, asarray
 import os
 import copy
 
@@ -120,6 +121,10 @@ class Qpcr_qt(QMainWindow):
         settings = QSettings()
         self.recentFiles = settings.value("RecentFiles").toStringList()
         self.ectMax = settings.value("EctMax").toString()
+        try:
+            self.ectMax = float(self.ectMax)
+        except ValueError:
+            self.ectMax = 0.3
         geom = settings.value("Geometry").toByteArray()
         self.restoreGeometry(geom)
         self.restoreState(settings.value("MainWindow/State").toByteArray())
@@ -637,7 +642,9 @@ class Qpcr_qt(QMainWindow):
             recentFiles = QVariant(self.recentFiles) if self.recentFiles \
                   else QVariant()
             settings.setValue("RecentFiles", recentFiles)
-            settings.setValue("EctMax", QVariant(self.ectMax))
+            ectMax = QVariant(self.ectMax) if self.ectMax \
+                  else QVariant()
+            settings.setValue("EctMax", ectMax)
             settings.setValue("Geometry", QVariant(self.saveGeometry()))
             settings.setValue("MainWindow/State", QVariant(self.saveState()))
             settings.setValue("VerticalSplitter", 
@@ -821,7 +828,7 @@ class Qpcr_qt(QMainWindow):
 
     def computeStd(self):
 # On cherche les std
-        self.plaque.findStd()
+        self.plaque.findStd(self.ectMax)
 # On trace le resultat
         if len(self.plaque.dicoStd.keys()) != 0:
             if self.nplotStd == 0:
@@ -922,8 +929,13 @@ class Qpcr_qt(QMainWindow):
         """
         self.mplCanStd.axes.cla()
         geneName = str(self.geneStdBox.currentText())
-        x = log10(self.plaque.dicoStd[geneName].amList)
-        y = self.plaque.dicoStd[geneName].ctList
+        x = []
+        y = []
+        for trip in self.plaque.dicoStd[geneName].values():
+            x.append(trip.amList)
+            y.append(trip.ctList)
+        x = log10(ravel(asarray(x)))
+        y = ravel(asarray(y))
         self.mplCanStd.axes.scatter(x, y, marker='o')
         slope, orig = polyfit(x, y, 1)
         yr = polyval([slope, orig], x)
