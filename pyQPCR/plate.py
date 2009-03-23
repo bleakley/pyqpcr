@@ -32,11 +32,16 @@ __author__ = "$Author$"
 __date__ = "$Date$"
 __version__ = "$Rev$"
 
+#class Plaque(QDialog):
 class Plaque:
     
+    #def __init__(self, filename, parent=None):
     def __init__(self, filename):
+        #self.parent = parent
+        #QDialog.__init__(self, parent)
+
         self.filename = filename
-#
+
         self.listePuits = []
         self.listGene = [Gene('')]
         self.listEch = [Ech('')]
@@ -44,7 +49,7 @@ class Plaque:
         self.adresseEch = OrderedDict()
         self.adresseEch[''] = 0
         self.adresseGene[''] = 0
-# 
+ 
         self.determineFileType(self.filename)
         self.read()
         self.setDicoGene()
@@ -252,17 +257,6 @@ class Plaque:
             if not self.adresseEch.has_key(str(ech.name)):
                 self.adresseEch[str(ech.name)] = ind
                 ind += 1
-
-    def setRefs(self):
-        """
-        Determine the reference target and sample
-        """
-        for g in self.listGene:
-            if g.isRef == 2:
-                self.geneRef = g
-        for e in self.listEch:
-            if e.isRef == 2:
-                self.echRef = e
 
     def getRefsFromFile(self):
         """
