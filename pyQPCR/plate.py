@@ -32,14 +32,9 @@ __author__ = "$Author$"
 __date__ = "$Date$"
 __version__ = "$Rev$"
 
-#class Plaque(QDialog):
 class Plaque:
     
-    #def __init__(self, filename, parent=None):
     def __init__(self, filename):
-        #self.parent = parent
-        #QDialog.__init__(self, parent)
-
         self.filename = filename
 
         self.listePuits = []
