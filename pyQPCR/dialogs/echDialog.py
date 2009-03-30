@@ -83,6 +83,11 @@ class EchDialog(QDialog):
             state = dialog.ref.checkState()
             ech = Ech(nomech, state)
             ech.setColor(QColor(Qt.black))
+            if state == Qt.Checked:
+                self.plaque.echRef = ech
+                for sample in self.plaque.listEch:
+                    if sample.isRef == Qt.Checked:
+                        sample.setRef(Qt.Unchecked)
             if not self.plaque.adresseEch.has_key(nomech):
                 self.plaque.listEch.append(ech)
                 self.plaque.adresseEch[nomech] = len(self.plaque.listEch)-1
@@ -98,6 +103,11 @@ class EchDialog(QDialog):
             state = dialog.ref.checkState()
             ech.setName(name)
             ech.setRef(state)
+            if state == Qt.Checked:
+                self.plaque.echRef = ech
+                for ind, sample in enumerate(self.plaque.listEch):
+                    if sample.isRef == Qt.Checked and ind != row+1:
+                        sample.setRef(Qt.Unchecked)
             self.populateList()
             if self.plaque.dicoEch.has_key(str(ech_before)):
                 self.plaque.dicoEch[name] = \

@@ -424,6 +424,9 @@ class Qpcr_qt(QMainWindow):
 # Nettoyage des comboBox avant l'eventuel remplissage
             self.geneComboBox.clear()
             self.echComboBox.clear()
+# Nettoyage du QTabWidget
+            self.onglet.removeTab(1)
+            self.onglet.removeTab(2)
 # Nettoyage des tableaux avant l'eventuel remplissage
             self.table.clear()
             self.table.setVerticalHeaderLabels(self.tableLabels)
@@ -830,10 +833,10 @@ class Qpcr_qt(QMainWindow):
         Determine the reference target and sample
         """
         for g in self.plaque.listGene:
-            if g.isRef == 2:
+            if g.isRef == Qt.Checked:
                 self.plaque.geneRef = g
         for e in self.plaque.listEch:
-            if e.isRef == 2:
+            if e.isRef == Qt.Checked:
                 self.plaque.echRef = e
         if not hasattr(self.plaque, "geneRef"):
             QMessageBox.warning(self, "Warning",
