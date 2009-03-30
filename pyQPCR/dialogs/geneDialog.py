@@ -85,6 +85,13 @@ class GeneDialog(QDialog):
             state = dialog.ref.checkState()
             g = Gene(gene, eff, pm)
             g.setRef(state)
+# Si le gene ajoute est un gene de reference alors l'autre gene de reference
+# repasse en isRef = Qt.Unchecked
+            if state == Qt.Checked:
+                self.plaque.geneRef = g
+                for gene in self.plaque.listGene:
+                    if gene.isRef == Qt.Checked:
+                        gene.setRef(Qt.Unchecked)
             g.setColor(QColor(Qt.black))
             if not self.plaque.adresseGene.has_key(gene):
                 self.plaque.listGene.append(g)
@@ -105,6 +112,13 @@ class GeneDialog(QDialog):
             gene.setEff(eff)
             gene.setPm(pm)
             gene.setName(name)
+# Si le gene ajoute est un gene de reference alors l'autre gene de reference
+# repasse en isRef = Qt.Unchecked
+            if state == Qt.Checked:
+                self.plaque.geneRef = gene
+                for ind, g in enumerate(self.plaque.listGene):
+                    if g.isRef == Qt.Checked and ind != row+1:
+                        g.setRef(Qt.Unchecked)
 # dico
             self.populateList()
             if self.plaque.dicoGene.has_key(str(gene_before)):

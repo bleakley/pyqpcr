@@ -44,7 +44,7 @@ class GeneEchComboBox(QComboBox):
         pix.fill(Qt.blue)
         for ind, obj in enumerate(self.listObj):
             self.addItem(obj)
-            if obj.isRef == 2:
+            if obj.isRef == Qt.Checked:
                 self.setItemIcon(ind, QIcon(pix))
 
     def currentObj(self):
