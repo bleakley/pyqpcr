@@ -48,8 +48,10 @@ Traceback (most recent call last):
     listNRQ, width, color=str(gene.color.name()),
 AttributeError: Gene instance has no attribute 'color'
 L'erreur vient du fait que echDialog et GeneDialog reinitialise l'objet Gene et l'objet Ech
+Fait
 
 14°) il faut supprimer les tabulations quand on ouvre un nouveau fichier
+Fait
 
 
 15°) quand on rajoute un nouveau gene, qu'on edite a nouveau, le gene créé n'apparaît pas dans la liste des genes. Il apparait bien en revanche dans la comboBox...
