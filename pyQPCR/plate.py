@@ -214,36 +214,30 @@ class Plaque:
     def setDicoGene(self):
 # Mise a jour de dicoGene
         self.dicoGene = OrderedDict()
-        self.listGene = [Gene('')]
         for well in self.listePuits:
             nomgene = well.gene.name
             if self.dicoGene.has_key(nomgene):
                 self.dicoGene[nomgene].append(well)
             else:
                 self.dicoGene[nomgene] = [well]
-                if str(well.gene.name) != '':
-                    self.listGene.append(well.gene)
 # Mise a jour de adresseGene
         self.adresseGene = OrderedDict()
         self.adresseGene[''] = 0
         ind = 1
         for gene in self.listGene:
-            if not self.adresseGene.has_key(str(gene.name)):
-                self.adresseGene[str(gene.name)] = ind
+            if not self.adresseGene.has_key(str(gene)):
+                self.adresseGene[str(gene)] = ind
                 ind += 1
 
     def setDicoEch(self):
 # Mise a jour de dicoEch
         self.dicoEch = OrderedDict()
-        self.listEch = [Ech('')]
         for well in self.listePuits:
             nomech = well.ech.name
             if self.dicoEch.has_key(str(nomech)):
                 self.dicoEch[str(nomech)].append(well)
             else:
                 self.dicoEch[str(nomech)] = [well]
-                if str(well.ech.name) != '':
-                    self.listEch.append(well.ech)
 # Mise a jour de adresseEch
         self.adresseEch = OrderedDict()
         self.adresseEch[''] = 0
