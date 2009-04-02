@@ -585,7 +585,8 @@ class Qpcr_qt(QMainWindow):
             for index in range(len(self.plaque.dicoStd.keys())):
                 self.geneStdBox.setCurrentIndex(index)
                 self.plotStd()
-                fig = self.mplCanStd.figure.savefig("output.png", dpi=100)
+                fig = self.mplCanStd.figure.savefig("output%i.png" % index, 
+                                                    dpi=100)
                 html += "<tr valign=middle>\n"
                 html += ("<th align=center>"
                          "<table width=100% border=0>")
@@ -599,10 +600,11 @@ class Qpcr_qt(QMainWindow):
                 html += ("</table>"
                          "</th>")
 
-                html += ("<th align=center>"
-                         "<p><img src='output.png' width=300></p>"
-                         "</th>")
-                html += "</tr>\n"
+                html += "<th align=center>"
+                html += "<p><img src='output%i.png' width=300></p>" % \
+                        index
+                html += ("</th>"
+                         "</tr>\n")
             html += "</table>"
             html += "</p>"
         if isQuant:
