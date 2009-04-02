@@ -573,14 +573,38 @@ class Qpcr_qt(QMainWindow):
                "</style>\n"
                "</head>\n")
         html += css
-        html += "<h1 align=center> qPCR results </h1><br>"
+        html += "<h1 align=center> qPCR results </h1><br><br>"
         if isTable:
-            html += "<h2>Results table</h2>"
+            html += "<br><h2>Results table</h2><br>"
             html += self.plaque.writeHtml()
         if isStd and self.plotStd !=0:
-            html += "<br><h2>Standard curves</h2>"
-            fig = self.mplCanStd.figure.savefig("output.png", dpi=100)
-            html += "<p><img src='output.png' width=500></p>"
+            html += "<p style='page-break-before:always;'>"
+            html += "<br><h2>Standard curves</h2><br>"
+            self.geneStdBox.addItems(self.plaque.dicoStd.keys())
+            html += "<table border=0 width=100%>\n"
+            for index in range(len(self.plaque.dicoStd.keys())):
+                self.geneStdBox.setCurrentIndex(index)
+                self.plotStd()
+                fig = self.mplCanStd.figure.savefig("output.png", dpi=100)
+                html += "<tr valign=middle>\n"
+                html += ("<th align=center>"
+                         "<table width=100% border=0>")
+                html += "<tr><th><font size 10pt><b>Gene:</b> %s</th></tr>" %\
+                        self.geneStdBox.currentText()
+                html += "<tr><th><b>Linear Regression:</b> %s</th></tr>" %\
+                        self.labEquation.text() 
+                html += "<tr><th><b>Efficiency:</b> %s</th></tr>" % \
+                        self.labEff.text()
+                html += "<tr><th><b>R^2:</b> %s</th></tr>" % self.labR2.text()
+                html += ("</table>"
+                         "</th>")
+
+                html += ("<th align=center>"
+                         "<p><img src='output.png' width=300></p>"
+                         "</th>")
+                html += "</tr>\n"
+            html += "</table>"
+            html += "</p>"
         if isQuant:
             html += "<br><h2>Quantification curves</h2>"
             fig = self.mplCanUnknown.figure.savefig("output.png", dpi=100)
@@ -589,6 +613,11 @@ class Qpcr_qt(QMainWindow):
         if self.printer is None:
             self.printer = QPrinter(QPrinter.HighResolution)
             self.printer.setPageSize(QPrinter.A4)
+            #self.printer.setOutputFileName('test.pdf')
+            #self.printer.setOutputFormat(QPrinter.PdfFormat)
+        #document = QTextDocument()
+        #document.setHtml(html)
+        #document.print_(self.printer)
         form = QPrintDialog(self.printer, self)
         if form.exec_():
             document = QTextDocument()
