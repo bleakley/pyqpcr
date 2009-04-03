@@ -22,6 +22,7 @@ import copy
 from pyQPCR.wellGeneSample import *
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
+import pyQPCR.qrc_resources
 
 __author__ = "$Author$"
 __date__ = "$Date$"
@@ -71,9 +72,7 @@ class EchDialog(QDialog):
         for ind, it in enumerate(self.plaque.listEch[1:]):
             item = QListWidgetItem(it.name)
             if it.isRef == Qt.Checked:
-                item.setForeground(Qt.darkGreen)
-            else:
-                item.setForeground(Qt.black)
+                item.setIcon(QIcon(":/reference.png"))
             self.listWidget.addItem(item)
 
     def add(self):

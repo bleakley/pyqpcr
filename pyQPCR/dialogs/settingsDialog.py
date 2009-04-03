@@ -32,10 +32,10 @@ class SettingsDialog(QDialog):
         QDialog.__init__(self, parent)
 
         labTit = QLabel("<b>Quality Control:</b>")
-        lab1 = QLabel("E(ct) >")
+        lab1 = QLabel("E(ct) maximum :")
         self.ectLineEdit = QLineEdit("%.2f" % ect)
         lab1.setBuddy(self.ectLineEdit)
-        lab2 = QLabel("Negative ct >")
+        lab2 = QLabel("Negative ct maximum :")
         self.ctMinLineEdit = QLineEdit("%.2f" % ctmin)
         lab2.setBuddy(self.ctMinLineEdit)
         buttonBox = QDialogButtonBox(QDialogButtonBox.Ok|

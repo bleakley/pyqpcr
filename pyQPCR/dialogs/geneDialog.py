@@ -21,6 +21,7 @@ import copy
 from pyQPCR.wellGeneSample import *
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
+import pyQPCR.qrc_resources
 
 __author__ = "$Author$"
 __date__ = "$Date$"
@@ -71,9 +72,7 @@ class GeneDialog(QDialog):
             name = "%s (%.2f%%%s%.2f)" % (it.name, it.eff, unichr(177), it.pm)
             item = QListWidgetItem(name)
             if it.isRef == Qt.Checked:
-                item.setForeground(Qt.darkGreen)
-            else:
-                item.setForeground(Qt.black)
+                item.setIcon(QIcon(":/reference.png"))
             self.listWidget.addItem(item)
 
     def add(self):
