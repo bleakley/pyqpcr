@@ -228,6 +228,8 @@ class Qpcr_qt(QMainWindow):
                 QKeySequence.Open, "fileopen", "Open an existing file")
         self.filePrintAction = self.createAction("&Print", self.filePrint,
                 QKeySequence.Print, "fileprint", "Print results")
+        self.exportAction = self.createAction("&Export as PDF", self.fileExport,
+                "Ctrl+D", "pdf", "Export results in a PDF file")
         self.fileSaveAction = self.createAction("&Save", self.fileSave,
                 QKeySequence.Save, "filesave", "Save the file")
         self.fileSaveAction.setEnabled(False)
@@ -268,7 +270,7 @@ class Qpcr_qt(QMainWindow):
         self.recentFileMenu = fileMenu.addMenu(QIcon(":/filerecent.png"),
                 "Open recent files")
         fileMenu.addSeparator()
-        self.addActions(fileMenu, (self.filePrintAction, None, 
+        self.addActions(fileMenu, (self.filePrintAction, self.exportAction, None, 
                         self.fileSaveAction, self.fileSaveAsAction, 
                         None, fileQuitAction))
         editMenu = self.menuBar().addMenu("&Edit")
@@ -292,7 +294,8 @@ class Qpcr_qt(QMainWindow):
         fileToolbar = self.addToolBar("File")
         fileToolbar.setObjectName("FileToolBar")
         self.addActions(fileToolbar, (fileOpenAction, self.filePrintAction, 
-                        self.fileSaveAction, self.fileSaveAsAction))
+                        self.exportAction, self.fileSaveAction,
+                        self.fileSaveAsAction))
         fileToolbar.setIconSize(QSize(22, 22))
 
         editToolbar = self.addToolBar("Edit")
@@ -339,8 +342,9 @@ class Qpcr_qt(QMainWindow):
         self.addActions(self.table, (fileOpenAction, self.editAction,
                        self.undoAction, self.redoAction, self.addGeneAction, 
                        self.addEchAction, self.enableAction, self.disableAction))
-        self.addActions(self.result, (self.filePrintAction, self.fileSaveAction,
-                self.fileSaveAsAction, self.plotAction, self.plotStdAction))
+        self.addActions(self.result, (self.filePrintAction, self.exportAction,
+                                      self.fileSaveAction, self.fileSaveAsAction,
+                                      self.plotAction, self.plotStdAction))
 # Desactivation par defaut
         self.activateDesactivate(False)
 
@@ -462,6 +466,7 @@ class Qpcr_qt(QMainWindow):
         self.echComboBox.setEnabled(bool)
         self.fileSaveAsAction.setEnabled(bool)
         self.filePrintAction.setEnabled(bool)
+        self.exportAction.setEnabled(bool)
         self.undoAction.setEnabled(bool)
         self.redoAction.setEnabled(bool)
         self.enableAction.setEnabled(bool)
@@ -559,7 +564,7 @@ class Qpcr_qt(QMainWindow):
             self.filename = fname
             self.fileSave()
 
-    def filePrint(self):
+    def generateHTML(self):
         dialog = PrintingDialog(self)
         if dialog.exec_():
             isTable = dialog.btnRes.isChecked()
@@ -579,7 +584,7 @@ class Qpcr_qt(QMainWindow):
         if isTable:
             html += "<br><h2>Results table</h2><br>"
             html += self.plaque.writeHtml()
-        if isStd and self.plotStd !=0:
+        if isStd and self.nplotStd !=0:
             html += "<p style='page-break-before:always;'>"
             html += "<br><h2>Standard curves</h2><br>"
             self.geneStdBox.addItems(self.plaque.dicoStd.keys())
@@ -614,16 +619,37 @@ class Qpcr_qt(QMainWindow):
             fig = self.mplCanUnknown.figure.savefig("output.png", dpi=100)
             html += "<p><img src='output.png' width=500></p>"
         html += "</html>"
+        return html
+
+    def filePrint(self):
+        """
+        A method to print results thanks to a QPrinter object
+        """
+        html = self.generateHTML()
         if self.printer is None:
             self.printer = QPrinter(QPrinter.HighResolution)
             self.printer.setPageSize(QPrinter.A4)
-            #self.printer.setOutputFileName('test.pdf')
-            #self.printer.setOutputFormat(QPrinter.PdfFormat)
-        #document = QTextDocument()
-        #document.setHtml(html)
-        #document.print_(self.printer)
         form = QPrintDialog(self.printer, self)
         if form.exec_():
+            document = QTextDocument()
+            document.setHtml(html)
+            document.print_(self.printer)
+
+    def fileExport(self):
+        """
+        A method to export results in a PDF file
+        """
+        html = self.generateHTML()
+        if self.printer is None:
+            self.printer = QPrinter(QPrinter.HighResolution)
+            self.printer.setPageSize(QPrinter.A4)
+            self.printer.setOutputFormat(QPrinter.PdfFormat)
+        formats =[u"*.pdf"]
+        fname = unicode(QFileDialog.getSaveFileName(self, 
+                "pyQPCR - Export results in a pdf file", "results.pdf",
+                "PDF - Portable Document Format (%s)" % " ".join(formats)))
+        if fname:
+            self.printer.setOutputFileName(fname)
             document = QTextDocument()
             document.setHtml(html)
             document.print_(self.printer)
