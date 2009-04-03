@@ -645,7 +645,7 @@ class Qpcr_qt(QMainWindow):
         simple qPCR analysis.
         <p> It may be used, copied and modified with no restriction
         <p>Python %s - PyQt %s - Matplotlib %s
-        on %s""" % (__version__, platform.python_version(),
+        on %s""" % (0.1, platform.python_version(),
         PYQT_VERSION_STR, matplotlib.__version__, platform.system()))
 
     def helpHelp(self):
