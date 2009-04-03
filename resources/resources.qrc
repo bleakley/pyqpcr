@@ -23,6 +23,7 @@
 <file alias="next.png">icons/next.png</file>
 <file alias="settings.png">icons/settings.png</file>
 <file alias="logo.png">icons/logo.png</file>
+<file alias="reference.png">icons/reference.png</file>
 
 <file>help/index.html</file>
 <file>help/filemenu.html</file>

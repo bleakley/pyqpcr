@@ -230,6 +230,7 @@ class Qpcr_qt(QMainWindow):
                 QKeySequence.Print, "fileprint", "Print results")
         self.fileSaveAction = self.createAction("&Save", self.fileSave,
                 QKeySequence.Save, "filesave", "Save the file")
+        self.fileSaveAction.setEnabled(False)
         self.fileSaveAsAction = self.createAction("Save &As...",
                 self.fileSaveAs, icon="filesaveas",
                 tip="Save the file using a new name")
@@ -268,13 +269,14 @@ class Qpcr_qt(QMainWindow):
                 "Open recent files")
         fileMenu.addSeparator()
         self.addActions(fileMenu, (self.filePrintAction, None, 
-            self.fileSaveAction, self.fileSaveAsAction, None, fileQuitAction))
+                        self.fileSaveAction, self.fileSaveAsAction, 
+                        None, fileQuitAction))
         editMenu = self.menuBar().addMenu("&Edit")
         editMenu.addAction(self.editAction)
         editMenu.addSeparator()
         self.addActions(editMenu, (self.undoAction, self.redoAction))
         editMenu.addSeparator()
-        self.addActions(editMenu, (self.addGeneAction, self.addEchAction))
+        self.addActions(editMenu, (self.addEchAction, self.addGeneAction))
         calculMenu = self.menuBar().addMenu("&Computations")
         self.addActions(calculMenu, (self.enableAction, self.disableAction,
                                   None, self.plotAction, self.plotStdAction))
@@ -290,13 +292,11 @@ class Qpcr_qt(QMainWindow):
         fileToolbar = self.addToolBar("File")
         fileToolbar.setObjectName("FileToolBar")
         self.addActions(fileToolbar, (fileOpenAction, self.filePrintAction, 
-            self.fileSaveAction, self.fileSaveAsAction))
+                        self.fileSaveAction, self.fileSaveAsAction))
         fileToolbar.setIconSize(QSize(22, 22))
 
         editToolbar = self.addToolBar("Edit")
         editToolbar.setObjectName("Edit ToolBar")
-        editToolbar.addAction(self.editAction)
-        editToolbar.addSeparator()
         self.addActions(editToolbar, (self.undoAction, self.redoAction))
         editToolbar.addSeparator()
         self.typeComboBox = QComboBox()
@@ -325,6 +325,8 @@ class Qpcr_qt(QMainWindow):
         editToolbar.addAction(self.addEchAction)
         editToolbar.addWidget(self.geneComboBox)
         editToolbar.addAction(self.addGeneAction)
+        editToolbar.addSeparator()
+        editToolbar.addAction(self.editAction)
         editToolbar.setIconSize(QSize(22, 22))
 
         plotToolbar = self.addToolBar("Plot")
@@ -458,7 +460,6 @@ class Qpcr_qt(QMainWindow):
         self.typeComboBox.setEnabled(bool)
         self.geneComboBox.setEnabled(bool)
         self.echComboBox.setEnabled(bool)
-        self.fileSaveAction.setEnabled(bool)
         self.fileSaveAsAction.setEnabled(bool)
         self.filePrintAction.setEnabled(bool)
         self.undoAction.setEnabled(bool)
@@ -544,6 +545,7 @@ class Qpcr_qt(QMainWindow):
         self.plaque.write(self.filename)
         self.updateStatus("Saved %s" % self.filename)
         self.unsaved = False
+        self.fileSaveAction.setEnabled(False)
 
     def fileSaveAs(self):
         formats =[u"*.txt", u"*.csv"]
@@ -738,6 +740,7 @@ class Qpcr_qt(QMainWindow):
 # Si on remonte tous les undo pas besoin de sauvegarder
         if self.undoInd == 0 or self.undoInd == -len(self.plaqueStack):
             self.unsaved = False
+            self.fileSaveAction.setEnabled(False)
 
     def editWell(self):
         setType = set()
@@ -758,6 +761,7 @@ class Qpcr_qt(QMainWindow):
             self.plaque.setDicoEch()
             self.plaqueStack.append(copy.deepcopy(self.plaque))
         self.unsaved = True
+        self.fileSaveAction.setEnabled(True)
         self.populateTable()
         self.populateResult()
 
@@ -794,6 +798,7 @@ class Qpcr_qt(QMainWindow):
             well = getattr(self.plaque, nom)
             well.setGene(gene)
         self.unsaved = True
+        self.fileSaveAction.setEnabled(True)
         self.plaque.setDicoGene()
         self.plaqueStack.append(copy.deepcopy(self.plaque))
         self.populateTable()
@@ -806,6 +811,7 @@ class Qpcr_qt(QMainWindow):
             well = getattr(self.plaque, nom)
             well.setEch(ech)
         self.unsaved = True
+        self.fileSaveAction.setEnabled(True)
         self.plaque.setDicoEch()
         self.plaqueStack.append(copy.deepcopy(self.plaque))
         self.populateTable()
@@ -818,6 +824,7 @@ class Qpcr_qt(QMainWindow):
             well = getattr(self.plaque, nom)
             well.setType(type)
         self.unsaved = True
+        self.fileSaveAction.setEnabled(True)
         self.plaqueStack.append(copy.deepcopy(self.plaque))
         self.populateTable()
         self.populateResult()
@@ -829,6 +836,7 @@ class Qpcr_qt(QMainWindow):
             well = getattr(self.plaque, nom)
             well.setEnabled(True)
         self.unsaved = True
+        self.fileSaveAction.setEnabled(True)
         self.plaqueStack.append(copy.deepcopy(self.plaque))
         self.populateTable()
         self.populateResult()
@@ -844,6 +852,7 @@ class Qpcr_qt(QMainWindow):
             well.setNRQ('')
             well.setNRQerror('')
         self.unsaved = True
+        self.fileSaveAction.setEnabled(True)
         self.plaqueStack.append(copy.deepcopy(self.plaque))
         self.populateTable()
         self.populateResult()
@@ -905,6 +914,7 @@ class Qpcr_qt(QMainWindow):
             # Calcul des courbes standards
             self.plaque.calcStd()
             self.unsaved = True
+            self.fileSaveAction.setEnabled(True)
             self.plaqueStack.append(copy.deepcopy(self.plaque))
             self.populateResult()
             self.plotStd()
@@ -1036,7 +1046,6 @@ class Qpcr_qt(QMainWindow):
             elif self.cboxSens.currentIndex() == 1:
                 self.plaque.listEch[1:] = dialog.listObj
             self.plotUnknown()
-
 
 def run():
     import sys

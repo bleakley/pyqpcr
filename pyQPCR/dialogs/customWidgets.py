@@ -24,6 +24,7 @@ from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt4 import NavigationToolbar2QT
 from matplotlib.figure import Figure
 import re
+import pyQPCR.qrc_resources
 
 __author__ = "$Author$"
 __date__ = "$Date$"
@@ -40,12 +41,10 @@ class GeneEchComboBox(QComboBox):
 
     def addItems(self, listObj):
         self.listObj = listObj
-        pix = QPixmap(32, 32)
-        pix.fill(Qt.blue)
         for ind, obj in enumerate(self.listObj):
             self.addItem(obj)
             if obj.isRef == Qt.Checked:
-                self.setItemIcon(ind, QIcon(pix))
+                self.setItemIcon(ind, QIcon(":/reference.png"))
 
     def currentObj(self):
         index = QComboBox.currentIndex(self)
@@ -73,5 +72,3 @@ class MatplotlibWidget(FigureCanvas):
     def minimumSizeHint(self):
         return QSize(10, 10)
 
-    #def compute_initial_figure(self):
-        #self.axes.plot([])
