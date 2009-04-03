@@ -24,6 +24,7 @@
 <file alias="settings.png">icons/settings.png</file>
 <file alias="logo.png">icons/logo.png</file>
 <file alias="reference.png">icons/reference.png</file>
+<file alias="pdf.png">icons/pdf.png</file>
 
 <file>help/index.html</file>
 <file>help/filemenu.html</file>
