@@ -25,7 +25,7 @@ from pyQPCR.dialogs import *
 from pyQPCR.plate import Plaque
 import matplotlib
 from numpy import linspace, log10, sqrt, sum, mean, polyfit, polyval, \
-        ravel, asarray
+        asarray, append, array
 import os
 import copy
 
@@ -1032,13 +1032,12 @@ class Qpcr_qt(QMainWindow):
         """
         self.mplCanStd.axes.cla()
         geneName = str(self.geneStdBox.currentText())
-        x = []
-        y = []
+        x = array([])
+        y = array([])
         for trip in self.plaque.dicoStd[geneName].values():
-            x.append(trip.amList)
-            y.append(trip.ctList)
-        x = log10(ravel(asarray(x)))
-        y = ravel(asarray(y))
+            x = append(x, asarray(trip.amList))
+            y = append(y, asarray(trip.ctList))
+        x = log10(x)
         self.mplCanStd.axes.scatter(x, y, marker='o')
         slope, orig = polyfit(x, y, 1)
         yr = polyval([slope, orig], x)
