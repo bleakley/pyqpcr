@@ -24,7 +24,7 @@ from utils import *
 from PyQt4.QtCore import Qt
 from PyQt4.QtGui import *
 from numpy import mean, std, sqrt, log, asarray, log10, polyval, polyfit, \
-sum, ravel
+sum, array, append
 from pyQPCR.utils.odict import OrderedDict
 from pyQPCR.utils.ragged import RaggedArray2D
 
@@ -341,13 +341,12 @@ class Plaque:
 
     def calcStd(self):
         for geneName in self.dicoStd.keys():
-            x = []
-            y = []
+            x = array([])
+            y = array([])
             for trip in self.dicoStd[geneName].values():
-                x.append(trip.amList)
-                y.append(trip.ctList)
-            x = log10(ravel(asarray(x)))
-            y = ravel(asarray(y))
+                x = append(x, asarray(trip.amList))
+                y = append(y, asarray(trip.ctList))
+            x = log10(x)
             slope, orig = polyfit(x, y, 1)
             yr = polyval([slope, orig], x)
             sy = sqrt(sum((yr-y)**2)/(len(y)-2)) # Formule 2
@@ -422,8 +421,11 @@ class Replicate(QDialog):
         Formule 7
         """
         self.ctmean = mean(self.ctList)
-        self.ctdev = asarray(self.ctList).std()* sqrt(len(self.ctList)/ \
-                     (len(self.ctList)-1.))
+        if len(self.ctList) > 1:
+            self.ctdev = asarray(self.ctList).std()* sqrt(len(self.ctList)/ \
+                         (len(self.ctList)-1.))
+        else:
+            self.ctdev = 0.
 
         for well in self.listePuits:
             well.setCtmean(self.ctmean)
