@@ -23,8 +23,8 @@ from pyQPCR.wellGeneSample import Ech, Gene, Puits
 from utils import *
 from PyQt4.QtCore import Qt
 from PyQt4.QtGui import *
-from numpy import mean, std, sqrt, log, asarray, log10, polyval, polyfit, \
-sum, array, append
+from numpy import mean, std, sqrt, log, log10, polyval, polyfit, sum, \
+array, append
 from pyQPCR.utils.odict import OrderedDict
 from pyQPCR.utils.ragged import RaggedArray2D
 
@@ -344,8 +344,8 @@ class Plaque:
             x = array([])
             y = array([])
             for trip in self.dicoStd[geneName].values():
-                x = append(x, asarray(trip.amList))
-                y = append(y, asarray(trip.ctList))
+                x = append(x, trip.amList)
+                y = append(y, trip.ctList)
             x = log10(x)
             slope, orig = polyfit(x, y, 1)
             yr = polyval([slope, orig], x)
@@ -376,15 +376,15 @@ class Replicate(QDialog):
             self.gene = self.listePuits[0].gene
         else:
             self.gene = Gene('')
-        self.ctList =[]
+        self.ctList =array([])
         for well in self.listePuits:
-            self.ctList.append(well.ct)
+            self.ctList = append(self.ctList, well.ct)
         if self.type == 'unknown':
             self.ech = self.listePuits[0].ech
         elif self.type == 'standard':
-            self.amList = []
+            self.amList = array([])
             for well in self.listePuits:
-                self.amList.append(well.amount)
+                self.amList = append(self.amList, well.amount)
         self.calcMeanDev()
 
     def __str__(self):
@@ -420,9 +420,9 @@ class Replicate(QDialog):
         Compute the mean ct of a replicate
         Formule 7
         """
-        self.ctmean = mean(self.ctList)
+        self.ctmean = self.ctList.mean()
         if len(self.ctList) > 1:
-            self.ctdev = asarray(self.ctList).std()* sqrt(len(self.ctList)/ \
+            self.ctdev = self.ctList.std() * sqrt(len(self.ctList)/ \
                          (len(self.ctList)-1.))
         else:
             self.ctdev = 0.
