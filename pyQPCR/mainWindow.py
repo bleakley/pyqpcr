@@ -101,21 +101,23 @@ class Qpcr_qt(QMainWindow):
 
 # Slots
         self.connect(self.geneComboBox, SIGNAL("activated(int)"),
-                self.modifyGene)
+                     self.modifyGene)
         self.connect(self.echComboBox, SIGNAL("activated(int)"),
-                self.modifyEch)
+                     self.modifyEch)
         self.connect(self.typeComboBox, SIGNAL("activated(int)"),
-                self.setType)
+                     self.setType)
         self.connect(self.cboxSens, SIGNAL("activated(int)"),
-                self.plotUnknown)
+                     self.plotUnknown)
         self.connect(self.spinWidth, SIGNAL("valueChanged(double)"),
-                self.plotUnknown)
+                     self.plotUnknown)
         self.connect(self.spinSpacing, SIGNAL("valueChanged(double)"),
-                self.plotUnknown)
+                     self.plotUnknown)
+        self.connect(self.cboxFontsize, SIGNAL("valueChanged(int)"),
+                     self.changeFontsize)
         self.connect(self.btnPlot, SIGNAL("clicked()"),
-                self.setPlotColor)
+                     self.setPlotColor)
         self.connect(self.geneStdBox, SIGNAL("activated(int)"),
-                self.plotStd)
+                     self.plotStd)
 
 # Settings pour sauvegarde de l'application
         settings = QSettings()
@@ -164,6 +166,12 @@ class Qpcr_qt(QMainWindow):
         lab3 = QLabel("Bar &spacing:")
         lab3.setBuddy(self.spinSpacing)
         self.btnPlot = QPushButton("&Colors and order...")
+        lab4 = QLabel("&Font size:")
+        self.cboxFontsize = QSpinBox()
+        lab4.setBuddy(self.cboxFontsize)
+        self.cboxFontsize.setValue(10)
+        self.cboxFontsize.setRange(4, 16)
+
         vLay.addStretch()
         vLay.addWidget(lab1)
         vLay.addWidget(self.cboxSens)
@@ -171,6 +179,8 @@ class Qpcr_qt(QMainWindow):
         vLay.addWidget(self.spinWidth)
         vLay.addWidget(lab3)
         vLay.addWidget(self.spinSpacing)
+        vLay.addWidget(lab4)
+        vLay.addWidget(self.cboxFontsize)
         vLay.addWidget(self.btnPlot)
         vLay.addStretch()
         vLayout = QVBoxLayout()
@@ -953,22 +963,38 @@ class Qpcr_qt(QMainWindow):
         width = float(self.spinWidth.value())
         spacing = float(self.spinSpacing.value())
         colors = [QColor(Qt.blue), QColor(Qt.red), QColor(Qt.green), 
-                  QColor(Qt.yellow), QColor(Qt.darkBlue), QColor(Qt.darkRed), 
-                  QColor(Qt.darkGreen), QColor(Qt.darkYellow)]
-        legPos = [] ; legName = []
+                  QColor(Qt.yellow), QColor(Qt.magenta),
+                  QColor(Qt.cyan), QColor(Qt.gray),
+                  QColor(Qt.darkBlue), QColor(Qt.darkRed), 
+                  QColor(Qt.darkGreen), QColor(Qt.darkYellow),
+                  QColor(Qt.darkMagenta), QColor(Qt.darkCyan),
+                  QColor(Qt.darkGray), QColor(Qt.lightGray), 
+                  QColor(Qt.black)]
+
+# color attributions
+        if self.nplotGene == 0:
+            for ind, gene in enumerate(self.plaque.listGene[1:]):
+                gene.setColor(colors[ind])
+
+        if self.nplotEch == 0:
+            for ind, ech in enumerate(self.plaque.listEch[1:]):
+                ech.setColor(colors[ind])
+
+        legPos = [] ; legName = [] ; xlabel = []
 
 # Gene vs Ech
         if self.cboxSens.currentIndex() == 0:
             ind = 0
             for gene in self.plaque.listGene[1:]:
-                if self.nplotGene == 0:
-                    gene.setColor(colors[ind])
                 listNRQ = [] ; listNRQerror = []
                 if gene.enabled == Qt.Checked:
                     localDict = self.plaque.dicoTrip.getRow(gene.name)
-                    for ech in localDict.keys():
-                        listNRQ.append(localDict[ech].NRQ)
-                        listNRQerror.append(localDict[ech].NRQerror)
+                    for ech in self.plaque.listEch[1:]:
+                        if localDict.has_key(ech.name):
+                            listNRQ.append(localDict[ech.name].NRQ)
+                            listNRQerror.append(localDict[ech.name].NRQerror)
+                            if ind == 0:
+                                xlabel.append(ech.name)
 # Au cas ou tous les puits d'un gene sont desactives
                     if len(listNRQ) == len(self.plaque.listEch[1:]):
                         valmax = spacing * (len(listNRQ)-1)
@@ -980,24 +1006,24 @@ class Qpcr_qt(QMainWindow):
                         legName.append(gene.name)
                         ind += 1
             self.mplCanUnknown.axes.set_xticks( \
-                            linspace(0, valmax, len(self.plaque.listEch[1:])) \
-                            +ind/2.*width)
-            self.mplCanUnknown.axes.set_xticklabels( \
-                           self.plaque.adresseEch.keys()[1:])
+                           linspace(0, valmax, len(self.plaque.listEch[1:])) \
+                           +ind/2.*width)
+            self.mplCanUnknown.axes.set_xticklabels(xlabel, fontsize=10)
             self.nplotGene += 1
 
 # Ech vs Gene
         elif self.cboxSens.currentIndex() == 1:
             ind = 0
             for ech in self.plaque.listEch[1:]:
-                if self.nplotEch == 0:
-                    ech.setColor(colors[ind])
                 listNRQ = [] ; listNRQerror = []
                 if ech.enabled == Qt.Checked:
                     localDict = self.plaque.dicoTrip.getColumn(ech.name)
-                    for gene in localDict.keys():
-                        listNRQ.append(localDict[gene].NRQ)
-                        listNRQerror.append(localDict[gene].NRQerror)
+                    for gene in self.plaque.listGene[1:]:
+                        if localDict.has_key(gene.name):
+                            listNRQ.append(localDict[gene.name].NRQ)
+                            listNRQerror.append(localDict[gene.name].NRQerror)
+                            if ind == 0:
+                                xlabel.append(gene.name)
                     if len(listNRQ) == len(self.plaque.listGene[1:]):
                         valmax = spacing * (len(listNRQ)-1)
                         p = self.mplCanUnknown.axes.bar( \
@@ -1008,10 +1034,9 @@ class Qpcr_qt(QMainWindow):
                         legName.append(ech.name)
                         ind += 1
             self.mplCanUnknown.axes.set_xticks( \
-                            linspace(0, valmax, len(self.plaque.listGene[1:])) \
-                            +ind/2.*width)
-            self.mplCanUnknown.axes.set_xticklabels( \
-                           self.plaque.adresseGene.keys()[1:])
+                          linspace(0, valmax, len(self.plaque.listGene[1:])) \
+                          +ind/2.*width)
+            self.mplCanUnknown.axes.set_xticklabels(xlabel, fontsize=10)
             self.nplotEch += 1
 
 # Legend + xlim
@@ -1019,7 +1044,9 @@ class Qpcr_qt(QMainWindow):
                            loc='upper right', shadow=True)
 # Taille de la police dans la legende
         for t in leg.get_texts():
-            t.set_fontsize('small')
+            t.set_fontsize(10)
+        for ytick in self.mplCanUnknown.axes.get_yticklabels():
+            ytick.set_fontsize(10)
         leftMargin = 0.2
         legendWidth = 0.4
         self.mplCanUnknown.axes.set_xlim((-leftMargin, 
@@ -1059,17 +1086,23 @@ class Qpcr_qt(QMainWindow):
         self.mplCanStd.draw()
         self.nplotStd += 1
 
+    def changeFontsize(self):
+        """
+        A method to change the matplotlib axes font sizes.
+        """
+        size = int(self.cboxFontsize.value())
+        for ytick in self.mplCanUnknown.axes.get_yticklabels():
+            ytick.set_fontsize(size)
+        for xtick in self.mplCanUnknown.axes.get_xticklabels():
+            xtick.set_fontsize(size)
+        self.mplCanUnknown.draw()
+
     def setPlotColor(self):
-        if self.cboxSens.currentIndex() == 0:
-            listObj = self.plaque.listGene[1:]
-        elif self.cboxSens.currentIndex() == 1:
-            listObj = self.plaque.listEch[1:]
-        dialog = PropDialog(self, listObj=listObj)
+        dialog = PropDialog(self, listGene=self.plaque.listGene[1:],
+                            listEch=self.plaque.listEch[1:])
         if dialog.exec_():
-            if self.cboxSens.currentIndex() == 0:
-                self.plaque.listGene[1:] = dialog.listObj
-            elif self.cboxSens.currentIndex() == 1:
-                self.plaque.listEch[1:] = dialog.listObj
+            self.plaque.listGene[1:] = dialog.listGene
+            self.plaque.listEch[1:] = dialog.listEch
             self.plotUnknown()
 
 def run():

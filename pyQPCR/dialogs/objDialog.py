@@ -28,16 +28,23 @@ __version__ = "$Rev$"
 
 class PropDialog(QDialog):
     
-    def __init__(self, parent=None, listObj=None):
+    def __init__(self, parent=None, listGene=None, listEch=None):
         self.parent = parent
         QDialog.__init__(self, parent)
 
-        self.listWidget = QListWidget()
-        self.listWidget.setAlternatingRowColors(True)
+        self.geneListWidget = QListWidget()
+        self.geneListWidget.setAlternatingRowColors(True)
         pix = QPixmap(32, 32)
-        if listObj is not None:
-            self.listObj = copy.deepcopy(listObj)
-            self.populateList()
+        if listGene is not None:
+            self.listGene = copy.deepcopy(listGene)
+            self.populateListGene()
+
+        self.echListWidget = QListWidget()
+        self.echListWidget.setAlternatingRowColors(True)
+        pix = QPixmap(32, 32)
+        if listEch is not None:
+            self.listEch = copy.deepcopy(listEch)
+            self.populateListEch()
 
         buttonUp = QPushButton("&Up")
         buttonDown = QPushButton("&Down")
@@ -50,8 +57,10 @@ class PropDialog(QDialog):
         vlayout.addWidget(buttonDown)
         vlayout.addWidget(buttonColor)
         vlayout.addStretch()
+
         hlayout = QHBoxLayout()
-        hlayout.addWidget(self.listWidget)
+        hlayout.addWidget(self.geneListWidget)
+        hlayout.addWidget(self.echListWidget)
         hlayout.addLayout(vlayout)
         layout = QVBoxLayout()
         layout.addLayout(hlayout)
@@ -63,63 +72,110 @@ class PropDialog(QDialog):
         self.connect(buttonUp, SIGNAL("clicked()"), self.up)
         self.connect(buttonDown, SIGNAL("clicked()"), self.down)
         self.connect(buttonColor, SIGNAL("clicked()"), self.color)
+        self.connect(self.geneListWidget, SIGNAL("itemSelectionChanged()"),
+                     self.unselectEch)
+        self.connect(self.echListWidget, SIGNAL("itemSelectionChanged()"),
+                     self.unselectGene)
         self.setWindowTitle("Plot properties")
 
     def accept(self):
-        for ind,it in enumerate(self.listObj):
-            it.setEnabled(self.listWidget.item(ind).checkState())
+        for ind, it in enumerate(self.listGene):
+            it.setEnabled(self.geneListWidget.item(ind).checkState())
         QDialog.accept(self)
 
-    def populateList(self):
+    def populateListGene(self):
         pix = QPixmap(32, 32)
-        for ind, it in enumerate(self.listObj):
+        for ind, it in enumerate(self.listGene):
             item = QListWidgetItem(it.name)
             item.setCheckState(it.enabled)
             pix.fill(it.color)
             item.setIcon(QIcon(pix))
-            self.listWidget.addItem(item)
+            self.geneListWidget.addItem(item)
+
+    def populateListEch(self):
+        pix = QPixmap(32, 32)
+        for ind, it in enumerate(self.listEch):
+            item = QListWidgetItem(it.name)
+            item.setCheckState(it.enabled)
+            pix.fill(it.color)
+            item.setIcon(QIcon(pix))
+            self.echListWidget.addItem(item)
+
+    def unselectEch(self):
+        for item in self.echListWidget.selectedItems():
+            self.echListWidget.setItemSelected(item, False)
+
+    def unselectGene(self):
+        for item in self.geneListWidget.selectedItems():
+            self.geneListWidget.setItemSelected(item, False)
 
     def up(self):
-        row = self.listWidget.currentRow()
-        if row >= 1:
-            thisObj = self.listObj[row]
-            prevObj = self.listObj[row-1]
-            self.listObj[row] = prevObj
-            self.listObj[row-1] = thisObj
-            self.listWidget.clear()
-            self.populateList()
-            self.listWidget.setCurrentRow(row-1)
+        activeGenes = self.geneListWidget.selectedItems()
+        activeEchs = self.echListWidget.selectedItems()
+        if len(activeGenes) != 0:
+            row = self.geneListWidget.currentRow()
+            if row >= 1:
+                thisObj = self.listGene[row]
+                prevObj = self.listGene[row-1]
+                self.listGene[row] = prevObj
+                self.listGene[row-1] = thisObj
+                self.geneListWidget.clear()
+                self.populateListGene()
+                self.geneListWidget.setCurrentRow(row-1)
+        elif len(activeEchs) != 0:
+            row = self.echListWidget.currentRow()
+            if row >= 1:
+                thisObj = self.listEch[row]
+                prevObj = self.listEch[row-1]
+                self.listEch[row] = prevObj
+                self.listEch[row-1] = thisObj
+                self.echListWidget.clear()
+                self.populateListEch()
+                self.echListWidget.setCurrentRow(row-1)
 
     def down(self):
-        row  = self.listWidget.currentRow()
-        if row < self.listWidget.count() -1:
-            thisObj = self.listObj[row]
-            nextObj = self.listObj[row+1]
-            self.listObj[row] = nextObj
-            self.listObj[row+1] = thisObj
-            self.listWidget.clear()
-            self.populateList()
-            self.listWidget.setCurrentRow(row+1)
+        activeGenes = self.geneListWidget.selectedItems()
+        activeEchs = self.echListWidget.selectedItems()
+        if len(activeGenes) != 0:
+            row  = self.geneListWidget.currentRow()
+            if row < self.geneListWidget.count() -1:
+                thisObj = self.listGene[row]
+                nextObj = self.listGene[row+1]
+                self.listGene[row] = nextObj
+                self.listGene[row+1] = thisObj
+                self.geneListWidget.clear()
+                self.populateListGene()
+                self.geneListWidget.setCurrentRow(row+1)
+        elif len(activeEchs) != 0:
+            row  = self.echListWidget.currentRow()
+            if row < self.echListWidget.count() -1:
+                thisObj = self.listEch[row]
+                nextObj = self.listEch[row+1]
+                self.listEch[row] = nextObj
+                self.listEch[row+1] = thisObj
+                self.echListWidget.clear()
+                self.populateListEch()
+                self.echListWidget.setCurrentRow(row+1)
 
     def color(self):
         pix = QPixmap(32, 32)
-        item = self.listWidget.currentItem()
-        row = self.listWidget.currentRow()
-        col = self.listObj[row].color
+        item = self.geneListWidget.currentItem()
+        row = self.geneListWidget.currentRow()
+        col = self.listGene[row].color
         color = QColorDialog.getColor(col, self)
         pix.fill(color)
         item.setIcon(QIcon(pix))
-        self.listObj[row].setColor(color)
+        self.listGene[row].setColor(color)
 
 
 if __name__=="__main__":
     import sys
-    from plaque import *
-    pl = Plaque("sortiesrealplex/ref-machine.txt")
+    from plate import *
+    pl = Plaque("../../treated_data.txt")
     for g in pl.listGene:
         setattr(g, 'color', QColor('#000000'))
     pl.listGene[2].setEnabled(Qt.Unchecked)
     app = QApplication(sys.argv)
-    f = PropDialog(listObj=pl.listGene[1:])
+    f = PropDialog(listGene=pl.listGene[1:])
     f.show()
     app.exec_()
