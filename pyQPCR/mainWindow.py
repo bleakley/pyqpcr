@@ -41,9 +41,6 @@ class Qpcr_qt(QMainWindow):
         self.filename = None
         self.unsaved = False
         self.printer = None
-        self.nplotGene = 0
-        self.nplotStd = 0
-        self.nplotEch = 0
 
         self.tree = QTreeWidget()
         self.tree.setHeaderLabel("Parameters")
@@ -442,7 +439,11 @@ class Qpcr_qt(QMainWindow):
             self.echComboBox.clear()
 # Nettoyage du QTabWidget
             self.onglet.removeTab(1)
-            self.onglet.removeTab(2)
+            self.onglet.removeTab(1)
+# Remise a zero des compteurs
+            self.nplotGene = 0
+            self.nplotStd = 0
+            self.nplotEch = 0
 # Nettoyage des tableaux avant l'eventuel remplissage
             self.table.clear()
             self.table.setVerticalHeaderLabels(self.tableLabels)
@@ -959,6 +960,7 @@ class Qpcr_qt(QMainWindow):
         """
         A method to plot the unknown histograms
         """
+        size = int(self.cboxFontsize.value())
         self.mplCanUnknown.axes.cla()
         width = float(self.spinWidth.value())
         spacing = float(self.spinSpacing.value())
@@ -1008,7 +1010,7 @@ class Qpcr_qt(QMainWindow):
             self.mplCanUnknown.axes.set_xticks( \
                            linspace(0, valmax, len(self.plaque.listEch[1:])) \
                            +ind/2.*width)
-            self.mplCanUnknown.axes.set_xticklabels(xlabel, fontsize=10)
+            self.mplCanUnknown.axes.set_xticklabels(xlabel, fontsize=size)
             self.nplotGene += 1
 
 # Ech vs Gene
@@ -1036,19 +1038,19 @@ class Qpcr_qt(QMainWindow):
             self.mplCanUnknown.axes.set_xticks( \
                           linspace(0, valmax, len(self.plaque.listGene[1:])) \
                           +ind/2.*width)
-            self.mplCanUnknown.axes.set_xticklabels(xlabel, fontsize=10)
+            self.mplCanUnknown.axes.set_xticklabels(xlabel, fontsize=size)
             self.nplotEch += 1
 
 # Legend + xlim
         leg = self.mplCanUnknown.axes.legend(legPos, legName, 
-                           loc='upper right', shadow=True)
-# Taille de la police dans la legende
+                           loc='upper right', shadow=True, labelsep=0.005)
+# Fontsize and legend texts
         for t in leg.get_texts():
             t.set_fontsize(10)
         for ytick in self.mplCanUnknown.axes.get_yticklabels():
-            ytick.set_fontsize(10)
+            ytick.set_fontsize(size)
         leftMargin = 0.2
-        legendWidth = 0.4
+        legendWidth = 0.3*(valmax+(ind+1)*width)
         self.mplCanUnknown.axes.set_xlim((-leftMargin, 
                        valmax+(ind+1)*width+leftMargin+legendWidth))
         self.mplCanUnknown.draw()
