@@ -351,7 +351,7 @@ class Plaque:
             yr = polyval([slope, orig], x)
             sy = sqrt(sum((yr-y)**2)/(len(y)-2)) # Formule 2
             sx = sqrt(sum((x-x.mean())**2)/(len(x)-1)) # Formule 3
-            stderr = sy / (sx*(len(x)-1)) # Formule 4
+            stderr = sy / (sx*sqrt(len(x)-1)) # Formule 4 corrigee
             eff = (10**(-1./slope)-1)*100 # Formule 5 adaptee
             # Erreur(Eff) = (Eff+100) * stderr / slope**2
             stdeff = (eff+100)*log(10)*stderr/slope**2 # Formule 6 adaptee
