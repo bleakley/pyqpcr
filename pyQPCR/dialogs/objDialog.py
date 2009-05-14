@@ -81,6 +81,8 @@ class PropDialog(QDialog):
     def accept(self):
         for ind, it in enumerate(self.listGene):
             it.setEnabled(self.geneListWidget.item(ind).checkState())
+        for ind, it in enumerate(self.listEch):
+            it.setEnabled(self.echListWidget.item(ind).checkState())
         QDialog.accept(self)
 
     def populateListGene(self):

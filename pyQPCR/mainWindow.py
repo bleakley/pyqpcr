@@ -991,14 +991,17 @@ class Qpcr_qt(QMainWindow):
                 listNRQ = [] ; listNRQerror = []
                 if gene.enabled == Qt.Checked:
                     localDict = self.plaque.dicoTrip.getRow(gene.name)
+                    nech = 0
                     for ech in self.plaque.listEch[1:]:
-                        if localDict.has_key(ech.name):
-                            listNRQ.append(localDict[ech.name].NRQ)
-                            listNRQerror.append(localDict[ech.name].NRQerror)
-                            if ind == 0:
-                                xlabel.append(ech.name)
+                        if ech.enabled == Qt.Checked:
+                            if localDict.has_key(ech.name):
+                                listNRQ.append(localDict[ech.name].NRQ)
+                                listNRQerror.append(localDict[ech.name].NRQerror)
+                                if ind == 0:
+                                    xlabel.append(ech.name)
+                            nech += 1
 # Au cas ou tous les puits d'un gene sont desactives
-                    if len(listNRQ) == len(self.plaque.listEch[1:]):
+                    if len(listNRQ) == nech:
                         valmax = spacing * (len(listNRQ)-1)
                         p = self.mplCanUnknown.axes.bar( \
                                 linspace(0, valmax, len(listNRQ))+ind*width, 
@@ -1008,8 +1011,7 @@ class Qpcr_qt(QMainWindow):
                         legName.append(gene.name)
                         ind += 1
             self.mplCanUnknown.axes.set_xticks( \
-                           linspace(0, valmax, len(self.plaque.listEch[1:])) \
-                           +ind/2.*width)
+                           linspace(0, valmax, nech)+ind/2.*width)
             self.mplCanUnknown.axes.set_xticklabels(xlabel, fontsize=size)
             self.nplotGene += 1
 
@@ -1020,13 +1022,16 @@ class Qpcr_qt(QMainWindow):
                 listNRQ = [] ; listNRQerror = []
                 if ech.enabled == Qt.Checked:
                     localDict = self.plaque.dicoTrip.getColumn(ech.name)
+                    ngene = 0
                     for gene in self.plaque.listGene[1:]:
-                        if localDict.has_key(gene.name):
-                            listNRQ.append(localDict[gene.name].NRQ)
-                            listNRQerror.append(localDict[gene.name].NRQerror)
-                            if ind == 0:
-                                xlabel.append(gene.name)
-                    if len(listNRQ) == len(self.plaque.listGene[1:]):
+                        if gene.enabled == Qt.Checked:
+                            if localDict.has_key(gene.name):
+                                listNRQ.append(localDict[gene.name].NRQ)
+                                listNRQerror.append(localDict[gene.name].NRQerror)
+                                if ind == 0:
+                                    xlabel.append(gene.name)
+                                ngene += 1
+                    if len(listNRQ) == ngene:
                         valmax = spacing * (len(listNRQ)-1)
                         p = self.mplCanUnknown.axes.bar( \
                                 linspace(0, valmax, len(listNRQ))+ind*width, 
@@ -1036,8 +1041,7 @@ class Qpcr_qt(QMainWindow):
                         legName.append(ech.name)
                         ind += 1
             self.mplCanUnknown.axes.set_xticks( \
-                          linspace(0, valmax, len(self.plaque.listGene[1:])) \
-                          +ind/2.*width)
+                          linspace(0, valmax, ngene)+ind/2.*width)
             self.mplCanUnknown.axes.set_xticklabels(xlabel, fontsize=size)
             self.nplotEch += 1
 
