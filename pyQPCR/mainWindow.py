@@ -129,6 +129,11 @@ class Qpcr_qt(QMainWindow):
             self.ctMin = float(self.ctMin)
         except ValueError:
             self.ctMin = 35.
+        self.confidence = settings.value("confidence").toString()
+        try:
+            self.confidence = float(self.confidence)
+        except ValueError:
+            self.confidence = 0.9
         geom = settings.value("Geometry").toByteArray()
         self.restoreGeometry(geom)
         self.restoreState(settings.value("MainWindow/State").toByteArray())
@@ -728,6 +733,9 @@ class Qpcr_qt(QMainWindow):
             ctMin = QVariant(self.ctMin) if self.ctMin \
                   else QVariant()
             settings.setValue("ctMin", ctMin)
+            confidence = QVariant(self.confidence) if self.confidence \
+                  else QVariant()
+            settings.setValue("confidence", confidence)
             settings.setValue("Geometry", QVariant(self.saveGeometry()))
             settings.setValue("MainWindow/State", QVariant(self.saveState()))
             settings.setValue("VerticalSplitter", 

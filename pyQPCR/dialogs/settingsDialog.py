@@ -27,7 +27,7 @@ __version__ = "$Revision$"
 
 class SettingsDialog(QDialog):
 
-    def __init__(self, parent=None, ect=0.3, ctmin=35):
+    def __init__(self, parent=None, ect=0.3, ctmin=35, confidence=0.9):
         self.parent = parent
         QDialog.__init__(self, parent)
 
@@ -38,6 +38,14 @@ class SettingsDialog(QDialog):
         lab2 = QLabel("Negative ct maximum :")
         self.ctMinLineEdit = QLineEdit("%.2f" % ctmin)
         lab2.setBuddy(self.ctMinLineEdit)
+        lab3 = QLabel("Confidence level :")
+        self.confCbox = QComboBox()
+        conf = "%i%%" % (100*confidence)
+        liste = ["75%", "80%", "85%", "90%", "95%", "97.5%",
+                 "99%", "99.5%", "99.75%", "99.9%", "99.95%"]
+        self.confCbox.addItems(liste)
+        lab3.setBuddy(self.confCbox)
+
         buttonBox = QDialogButtonBox(QDialogButtonBox.Ok|
                                      QDialogButtonBox.Cancel)
 
@@ -46,6 +54,8 @@ class SettingsDialog(QDialog):
         gLayout.addWidget(self.ectLineEdit, 0, 1)
         gLayout.addWidget(lab2, 1, 0)
         gLayout.addWidget(self.ctMinLineEdit, 1, 1)
+        gLayout.addWidget(lab3, 2, 0)
+        gLayout.addWidget(self.confCbox, 2, 1)
 
         layout = QVBoxLayout()
         layout.addWidget(labTit)
