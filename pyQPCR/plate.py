@@ -340,7 +340,7 @@ class Plaque:
                 for well in self.dicoTrip[g][ech].listePuits:
                     well.setNRQerror(NRQerror)
 
-    def calcStd(self):
+    def calcStd(self, confidence):
         for geneName in self.dicoStd.keys():
             x = array([])
             y = array([])
@@ -353,7 +353,6 @@ class Plaque:
             seps = sqrt(sum((yest-y)**2)/(len(y)-2)) # Formule 2
             sx = sqrt(sum((x-x.mean())**2)/(len(x))) # Formule 3
             stderr = seps / (sx*sqrt(len(x))) # Formule 4 corrigee
-            confidence = 0.9
             talpha = t.ppf(1.-(1.-confidence)/2., len(x)-2) # Student
             slopeerr = talpha * stderr
             eff = (10**(-1./slope)-1)*100 # Formule 5 adaptee
