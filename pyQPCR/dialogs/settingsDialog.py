@@ -19,6 +19,7 @@
 
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
+from pyQPCR.utils.odict import *
 
 __author__ = "$Author$"
 __date__ = "$Date$"
@@ -40,10 +41,21 @@ class SettingsDialog(QDialog):
         lab2.setBuddy(self.ctMinLineEdit)
         lab3 = QLabel("Confidence level :")
         self.confCbox = QComboBox()
-        conf = "%i%%" % (100*confidence)
-        liste = ["75%", "80%", "85%", "90%", "95%", "97.5%",
-                 "99%", "99.5%", "99.75%", "99.9%", "99.95%"]
-        self.confCbox.addItems(liste)
+        conf = "%.2f%%" % (100*confidence)
+        liste = OrderedDict()
+        liste['75.00%'] = 0
+        liste['80.00%'] = 1
+        liste['85.00%'] = 2
+        liste['90.00%'] = 3
+        liste['95.00%'] = 4
+        liste['97.50%'] = 5
+        liste['99.00%'] = 6
+        liste['99.50%'] = 7
+        liste['99.75%'] = 8
+        liste['99.90%'] = 9
+        liste['99.95%'] = 10
+        self.confCbox.addItems(liste.keys())
+        self.confCbox.setCurrentIndex(liste[conf])
         lab3.setBuddy(self.confCbox)
 
         buttonBox = QDialogButtonBox(QDialogButtonBox.Ok|

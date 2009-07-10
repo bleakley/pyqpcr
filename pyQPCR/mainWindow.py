@@ -672,10 +672,12 @@ class Qpcr_qt(QMainWindow):
 
     def configure(self):
         dialog = SettingsDialog(self, ect=float(self.ectMax),
-                                ctmin=float(self.ctMin))
+                                ctmin=float(self.ctMin),
+                                confidence=float(self.confidence))
         if dialog.exec_():
             self.ectMax = float(dialog.ectLineEdit.text())
             self.ctMin = float(dialog.ctMinLineEdit.text())
+            self.confidence = float(dialog.confCbox.currentText()[:-1])/100
 
     def helpAbout(self):
         import platform
@@ -957,7 +959,7 @@ class Qpcr_qt(QMainWindow):
             self.geneStdBox.clear()
             self.geneStdBox.addItems(self.plaque.dicoStd.keys())
             # Calcul des courbes standards
-            self.plaque.calcStd()
+            self.plaque.calcStd(self.confidence)
             self.unsaved = True
             self.fileSaveAction.setEnabled(True)
             self.plaqueStack.append(copy.deepcopy(self.plaque))
