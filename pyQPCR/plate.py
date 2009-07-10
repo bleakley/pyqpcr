@@ -21,6 +21,7 @@ import re
 import csv
 from pyQPCR.wellGeneSample import Ech, Gene, Puits
 from utils import *
+from scipy.stats import t
 from PyQt4.QtCore import Qt
 from PyQt4.QtGui import *
 from numpy import mean, std, sqrt, log, log10, polyval, polyfit, sum, \
@@ -348,15 +349,18 @@ class Plaque:
                 y = append(y, trip.ctList)
             x = log10(x)
             slope, orig = polyfit(x, y, 1)
-            yr = polyval([slope, orig], x)
-            sy = sqrt(sum((yr-y)**2)/(len(y)-2)) # Formule 2
-            sx = sqrt(sum((x-x.mean())**2)/(len(x)-1)) # Formule 3
-            stderr = sy / (sx*sqrt(len(x)-1)) # Formule 4 corrigee
+            yest = polyval([slope, orig], x)
+            seps = sqrt(sum((yest-y)**2)/(len(y)-2)) # Formule 2
+            sx = sqrt(sum((x-x.mean())**2)/(len(x))) # Formule 3
+            stderr = seps / (sx*sqrt(len(x))) # Formule 4 corrigee
+            confidence = 0.9
+            talpha = t.ppf(1.-(1.-confidence)/2., len(x)-2) # Student
+            slopeerr = talpha * stderr
             eff = (10**(-1./slope)-1)*100 # Formule 5 adaptee
-            # Erreur(Eff) = (Eff+100) * stderr / slope**2
-            stdeff = (eff+100)*log(10)*stderr/slope**2 # Formule 6 adaptee
+            # Erreur(Eff) = (Eff+100) * slopeerr / slope**2
+            stdeff = (eff+100)*log(10)*slopeerr/slope**2 # Formule 6 adaptee
             # Coefficient de Pearsson de correlation
-            R2 = 1 - sum((y-yr)**2)/sum((y-mean(y))**2)
+            R2 = 1 - sum((y-yest)**2)/sum((y-mean(y))**2)
             print eff, stdeff, R2
             # Mise a jour de l'efficacite des puits
             for well in self.dicoGene[geneName]:
