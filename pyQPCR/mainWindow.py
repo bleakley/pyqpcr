@@ -26,6 +26,7 @@ from pyQPCR.plate import Plaque
 import matplotlib
 from numpy import linspace, log10, log, sqrt, sum, mean, polyfit, polyval, \
         asarray, append, array
+from scipy.stats import t
 import os
 import copy
 
@@ -1083,17 +1084,19 @@ class Qpcr_qt(QMainWindow):
         x = log10(x)
         self.mplCanStd.axes.scatter(x, y, marker='o')
         slope, orig = polyfit(x, y, 1)
-        yr = polyval([slope, orig], x)
-        sy = sqrt(sum((yr-y)**2)/(len(y)-2)) # Formule 2
-        sx = sqrt(sum((x-x.mean())**2)/(len(x)-1)) # Formule 3
-        stderr = sy / (sx*sqrt(len(x)-1)) # Formule 4 corrigee
+        yest = polyval([slope, orig], x)
+        seps = sqrt(sum((yest-y)**2)/(len(y)-2)) # Formule 2
+        sx = sqrt(sum((x-x.mean())**2)/(len(x))) # Formule 3
+        stderr = seps / (sx*sqrt(len(x))) # Formule 4 corrigee
+        talpha = t.ppf(1.-(1.-self.confidence)/2., len(x)-2) # Student
+        slopeerr = talpha * stderr
         eff = (10**(-1./slope)-1)*100 # Formule 5 adaptee
-        # Erreur(Eff) = (Eff+100) * stderr / slope**2 
-        stdeff = (eff+100)*log(10)*stderr/slope**2 # Formule 6 adaptee
+        # Erreur(Eff) = (Eff+100) * slopeerr / slope**2 
+        stdeff = (eff+100)*log(10)*slopeerr/slope**2 # Formule 6 adaptee
         # Coefficient de Pearsson de correlation
-        R2 = 1 - sum((y-yr)**2)/sum((y-mean(y))**2)
+        R2 = 1 - sum((y-yest)**2)/sum((y-mean(y))**2)
 
-        self.mplCanStd.axes.plot(x, yr)
+        self.mplCanStd.axes.plot(x, yest)
 
         self.labEquation.setText('ct = %.2f log q0 + %.2f' \
                                 % (slope, orig))
