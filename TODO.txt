@@ -57,3 +57,6 @@ Fait
 15°) quand on rajoute un nouveau gene, qu'on edite a nouveau, le gene créé n'apparaît pas dans la liste des genes. Il apparait bien en revanche dans la comboBox...
 D'une manière plus générale, tout gene non-utilisé n'apparaît pas dans la
 fenêtre d'édition.
+
+16°) Problème lors de l'édition des couleurs : seule la partie pour les gènes est
+implémentée. Pb pour les échantillons.
