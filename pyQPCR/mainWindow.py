@@ -794,13 +794,15 @@ class Qpcr_qt(QMainWindow):
         setType = set()
         setGene = set()
         setEch = set()
-        selected = [setType, setGene, setEch]
+        setAm = set()
+        selected = [setType, setGene, setEch, setAm]
         for it in self.table.selectedItems():
             nom = str(it.statusTip())
             well = getattr(self.plaque, nom)
             setType.add(str(well.type))
             setEch.add(str(well.ech.name))
             setGene.add(str(well.gene.name))
+            setAm.add(str(well.amount))
         dialog = EditDialog(self, plaque=self.plaque, selected=selected)
         if dialog.exec_():
             plaque = dialog.plaque

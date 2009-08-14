@@ -97,6 +97,7 @@ class EditDialog(QDialog):
             nType = list(selected[0])
             nGene = list(selected[1])
             nEch = list(selected[2])
+            nAmount = list(selected[3])
 # Determination de l'item courant pour le type
             if len(nType) == 1:
                 self.cboxType.setCurrentIndex(dico[str(nType[0])])
@@ -114,6 +115,9 @@ class EditDialog(QDialog):
                 self.cboxSample.setCurrentIndex(ind)
             else:
                 self.cboxSample.setCurrentIndex(0)
+# Determination de l'item courant pour l'amount
+            if len(nAmount) == 1:
+                ind = self.editAmount.setText(nAmount[0])
 
 
         topLayout = QGridLayout()
@@ -155,7 +159,10 @@ class EditDialog(QDialog):
 
         if self.cboxType.currentText() == "standard":
             try:
-                am = float(self.editAmount.text())
+                if self.editAmount.text() != QString(''):
+                    am = float(self.editAmount.text())
+                else:
+                    am = ''
             except ValueError, e:
                 QMessageBox.warning(self, "Error", str(e))
                 return
@@ -163,8 +170,10 @@ class EditDialog(QDialog):
                 nom = str(it.statusTip())
                 well = getattr(self.plaque, nom)
                 well.setType(QString("standard"))
-                if ge.name != '': well.setGene(ge)
-                well.setAmount(am)
+                if ge.name != '':
+                    well.setGene(ge)
+                if am != '':
+                    well.setAmount(am)
         QDialog.accept(self)
 
 
