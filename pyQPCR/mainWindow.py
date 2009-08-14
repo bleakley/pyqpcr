@@ -116,6 +116,8 @@ class Qpcr_qt(QMainWindow):
                      self.setPlotColor)
         self.connect(self.geneStdBox, SIGNAL("activated(int)"),
                      self.plotStd)
+        self.connect(self.table, SIGNAL("cellDoubleClicked(int,int)"),
+                     self.editWell)
 
 # Settings pour sauvegarde de l'application
         settings = QSettings()
