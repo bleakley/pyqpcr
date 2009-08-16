@@ -67,9 +67,9 @@ class Ech:
     def setEnabled(self, ena):
         self.enabled = ena
 
-class Gene:
+class Gene(QDialog):
 
-    def __init__(self, nom, eff=100., pm=0., isRef=Qt.Unchecked):
+    def __init__(self, nom, eff=100., pm=0., isRef=Qt.Unchecked, parent=None):
         self.name = str(nom)
         self.eff = eff
         self.pm = pm
@@ -78,6 +78,8 @@ class Gene:
         self.ctref = nan
 # Pour dire si on veut tracer un gene
         self.enabled = Qt.Checked
+        QDialog.__init__(self, parent)
+        self.parent = parent
 
     def __str__(self):
         #st =  "%s (%.2f %% +/- %.2f)" % (self.name, self.eff, self.pm) 
@@ -121,10 +123,27 @@ class Gene:
     def calcCtRef(self, listePuits):
         qt = 0
         k = 0
+        brokenWells = []
+        dontContinue = False
         for well in listePuits:
-            qt += well.ct
-            k += 1
-        self.ctref = float(qt/k)
+            try:
+                if well.enabled:
+                    qt += well.ct
+                    k += 1
+            except TypeError:
+                well.setWarning(True)
+                brokenWells.append(well.name)
+                dontContinue = True
+                continue
+        if not dontContinue:
+            print self.ctref
+            self.ctref = float(qt/k)
+        else:
+            QMessageBox.warning(self, "Problem in ctref calculation !",
+                "A problem occured in the calculations. It seems to come from the \
+                 well %s. Check whether ct and/or amount are correctly defined." \
+                % (brokenWells))
+            raise ValueError
 
 class Puits:
 

@@ -954,9 +954,13 @@ class Qpcr_qt(QMainWindow):
         self.setRefs()
 # On construit tous les triplicats
         if hasattr(self.plaque, "geneRef") and hasattr(self.plaque, "echRef"):
+            try:
+                self.plaque.findTriplicat(float(self.ectMax))
+            except ValueError:
+                self.displayWarnings()
+                return
             if self.nplotGene == 0:
                 self.onglet.addTab(self.plotUnknownWidget, "Quantification")
-            self.plaque.findTriplicat(float(self.ectMax))
 # On calcule NRQ
             self.plaque.calcNRQ()
 # On reremplit la table de resultats
