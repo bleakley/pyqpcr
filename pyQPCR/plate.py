@@ -285,6 +285,9 @@ class Plaque:
                 dicoEch.pop("")
             for ech in dicoEch.keys():
                 trip = Replicate(dicoEch[ech], ectMax=ectMax)
+                if not hasattr(trip, "ctdev"):
+                    # if ctdev undefined raise an exception
+                    raise ValueError
                 trip.calcDCt()
                 dicoEch[ech] = trip
                 self.dicoTrip[key] = dicoEch
@@ -308,6 +311,9 @@ class Plaque:
             for amount in dicoAmount.keys():
                 trip = Replicate(dicoAmount[amount], type="standard",
                                  ectMax=ectMax)
+                if not hasattr(trip, "ctdev"):
+                    # if ctdev undefined raise an exception
+                    raise ValueError
                 dicoAmount[amount] = trip
                 self.dicoStd[str(key)] = dicoAmount
 
@@ -402,14 +408,10 @@ class Replicate(QDialog):
         return st
 
     def __repr__(self):
-        st = '{Trip:['
+        st = '['
         for well in self.listePuits:
             st = st + well.name + ','
         st += ']'
-        if self.type == 'unknown':
-            st += ' %s, %s}' % (self.gene, self.ech)
-        else:
-            st += ' %s}' % self.gene
         return st
 
     def setNRQ(self, NRQ):
@@ -423,7 +425,23 @@ class Replicate(QDialog):
         Compute the mean ct of a replicate
         Formule 7
         """
-        self.ctmean = self.ctList.mean()
+        try:
+            self.ctmean = self.ctList.mean()
+        except TypeError:
+            brokenWells = []
+            for well in self.listePuits:
+                try:
+                    f = float(well.ct)
+                except ValueError:
+                    brokenWells.append(well.name)
+                    well.setWarning(True)
+
+            QMessageBox.warning(self, "Problem in calculation !",
+                "A problem occured in the calculations. It seems to come from the \
+                 well %s. Check whether ct and/or amount are correctly defined." \
+                 % (brokenWells))
+            return
+
         if len(self.ctList) > 1:
             self.ctdev = self.ctList.std() * sqrt(len(self.ctList)/ \
                          (len(self.ctList)-1.))

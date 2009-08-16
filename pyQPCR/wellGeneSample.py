@@ -142,6 +142,7 @@ class Puits:
         self.NRQerror = ''
         self.getPosition()
         self.enabled = True
+        self.warning = False
 
     def __str__(self):
         st = '\nPuit ' + str(self.name) + "\n" + '(' + str(self.ech) + ', ' + \
@@ -265,6 +266,10 @@ class Puits:
 
     def setNRQerror(self, err):
         self.NRQerror = err
+
+    def setWarning(self, warn):
+        """Si un puit est casse, on met un flag warning dessus"""
+        self.warning = warn
 
 
 if __name__=="__main__":
