@@ -500,6 +500,10 @@ class Qpcr_qt(QMainWindow):
             tipname = "ct=%s\namount=%s" % (str(well.ct), str(well.amount))
             it = self.createItem(name, tip=tipname, status=well.name, 
                                  back=well.type, icon=well.enabled)
+            if well.warning == True and well.enabled == True:
+                # if there is a warning and the well is enabled, then
+                # we put the warning icon 
+                it.setIcon(QIcon(":/warning"))
             self.table.setItem(well.xpos, well.ypos, it)
 
     def populateResult(self):
@@ -509,11 +513,13 @@ class Qpcr_qt(QMainWindow):
                 #item.setFont(QFont("Sans Serif", 16))
                 item.setIcon(QIcon(":/enable"))
                 self.result.setVerticalHeaderItem(ind, item)
-            elif well.enabled == False:
+            else:
                 item = QTableWidgetItem("")
                 #item.setFont(QFont("Sans Serif", 16))
                 item.setIcon(QIcon(":/disable"))
                 self.result.setVerticalHeaderItem(ind, item)
+            if well.warning == True and well.enabled == True:
+                item.setIcon(QIcon(":/warning"))
             itWell = QTableWidgetItem(well.name)
             itWell.setFont(QFont("Sans Serif", 16))
             itGene = QTableWidgetItem(well.gene.name)
@@ -909,6 +915,10 @@ class Qpcr_qt(QMainWindow):
         self.populateTable()
         self.populateResult()
 
+    def displayWarnings(self):
+        self.populateTable()
+        self.populateResult()
+
     def checkNegative(self, ctMin):
         """
         A method to check negative samples quality
@@ -956,8 +966,12 @@ class Qpcr_qt(QMainWindow):
 
     def computeStd(self):
 # On cherche les std
-        self.plaque.findStd(self.ectMax)
-# On trace le resultat
+        try:
+            self.plaque.findStd(self.ectMax)
+        except ValueError:
+            self.displayWarnings()
+            return
+# On trace le resultat on rajoute un onglet si c'est la premiere fois
         if len(self.plaque.dicoStd.keys()) != 0:
             if self.nplotStd == 0:
                 self.onglet.addTab(self.plotStdWidget, "Standard curves")
