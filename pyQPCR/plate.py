@@ -438,7 +438,7 @@ class Replicate(QDialog):
 
             QMessageBox.warning(self, "Problem in calculation !",
                 "A problem occured in the calculations. It seems to come from the \
-                 well %s. Check whether ct and/or amount are correctly defined." \
+                 well %s. Check whether ct are correctly defined." \
                  % (brokenWells))
             return
 

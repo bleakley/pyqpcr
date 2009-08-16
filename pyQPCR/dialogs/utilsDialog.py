@@ -31,7 +31,7 @@ class PrintingDialog(QDialog):
         QDialog.__init__(self, parent)
 
         lab1 = QLabel("&Results table:")
-        lab2 = QLabel("&Standard plots:")
+        lab2 = QLabel("&Standard curves:")
         lab3 = QLabel("&Quantification plots:")
         self.btnRes = QCheckBox()
         self.btnRes.setChecked(True)

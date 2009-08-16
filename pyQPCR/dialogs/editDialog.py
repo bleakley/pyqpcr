@@ -20,6 +20,8 @@
 import copy
 from pyQPCR.wellGeneSample import *
 from pyQPCR.dialogs.customWidgets import *
+from pyQPCR.dialogs.echDialog import *
+from pyQPCR.dialogs.geneDialog import *
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 
@@ -51,7 +53,11 @@ class EditDialog(QDialog):
         lab2 = QLabel("&Target:")
         self.cboxGene = GeneEchComboBox()
         lab2.setBuddy(self.cboxGene)
-
+        ic = QIcon(":/addgene")
+        btnAddEch = QToolButton()
+        btnAddEch.setIcon(ic)
+        btnAddGene = QToolButton()
+        btnAddGene.setIcon(ic)
 #
         self.stackedWidget = QStackedWidget()
 #
@@ -62,6 +68,7 @@ class EditDialog(QDialog):
         self.labSample.setBuddy(self.cboxSample)
         sampleLayout.addWidget(self.labSample)
         sampleLayout.addWidget(self.cboxSample)
+        sampleLayout.addWidget(btnAddEch)
         sampleLayout.setMargin(0)
         sampleWidget.setLayout(sampleLayout)
         self.stackedWidget.addWidget(sampleWidget)
@@ -94,37 +101,29 @@ class EditDialog(QDialog):
             self.cboxGene.addItems(self.plaque.listGene)
             self.cboxSample.addItems(self.plaque.listEch)
         if selected is not None:
-            nType = list(selected[0])
-            nGene = list(selected[1])
-            nEch = list(selected[2])
-            nAmount = list(selected[3])
+            self.selected = selected
+            self.populateEch()
+            self.populateGene()
+
+            nType = list(self.selected[0])
+            nAmount = list(self.selected[3])
 # Determination de l'item courant pour le type
             if len(nType) == 1:
                 self.cboxType.setCurrentIndex(dico[str(nType[0])])
             else:
                 self.cboxType.setCurrentIndex(3)
-# Determination de l'item courant pour le gene
-            if len(nGene) == 1:
-                ind = self.plaque.adresseGene[str(nGene[0])]
-                self.cboxGene.setCurrentIndex(ind)
-            else:
-                self.cboxGene.setCurrentIndex(0)
-# Determination de l'item courant pour l'echantillon
-            if len(nEch) == 1:
-                ind = self.plaque.adresseEch[str(nEch[0])]
-                self.cboxSample.setCurrentIndex(ind)
-            else:
-                self.cboxSample.setCurrentIndex(0)
 # Determination de l'item courant pour l'amount
             if len(nAmount) == 1:
                 ind = self.editAmount.setText(nAmount[0])
-
 
         topLayout = QGridLayout()
         topLayout.addWidget(lab1, 0, 0)
         topLayout.addWidget(self.cboxType, 0, 1)
         topLayout.addWidget(lab2, 1, 0)
-        topLayout.addWidget(self.cboxGene, 1, 1)
+        hLay = QHBoxLayout()
+        hLay.addWidget(self.cboxGene)
+        hLay.addWidget(btnAddGene)
+        topLayout.addLayout(hLay, 1, 1)
 # Layout
         layout = QVBoxLayout()
         layout.addLayout(topLayout)
@@ -137,6 +136,8 @@ class EditDialog(QDialog):
         self.connect(buttonBox, SIGNAL("accepted()"), self, SLOT("accept()"))
         self.connect(buttonBox, SIGNAL("rejected()"), self, SLOT("reject()"))
         self.connect(self.cboxType, SIGNAL("activated(int)"), self.modifDialog)
+        self.connect(btnAddEch, SIGNAL("clicked()"), self.addEch)
+        self.connect(btnAddGene, SIGNAL("clicked()"), self.addGene)
         self.setWindowTitle("Edit")
         self.setMinimumSize(280,100)
 
@@ -145,6 +146,42 @@ class EditDialog(QDialog):
             self.stackedWidget.setCurrentIndex(0)
         if self.cboxType.currentText() == "standard":
             self.stackedWidget.setCurrentIndex(1)
+
+    def populateEch(self):
+        self.cboxSample.clear()
+        self.cboxSample.addItems(self.plaque.listEch)
+        nEch = list(self.selected[2])
+# Determination de l'item courant pour l'echantillon
+        if len(nEch) == 1:
+            ind = self.plaque.adresseEch[str(nEch[0])]
+            self.cboxSample.setCurrentIndex(ind)
+        else:
+            self.cboxSample.setCurrentIndex(0)
+
+    def populateGene(self):
+        self.cboxGene.clear()
+        self.cboxGene.addItems(self.plaque.listGene)
+        nGene = list(self.selected[1])
+# Determination de l'item courant pour le gene
+        if len(nGene) == 1:
+            ind = self.plaque.adresseGene[str(nGene[0])]
+            self.cboxGene.setCurrentIndex(ind)
+        else:
+            self.cboxGene.setCurrentIndex(0)
+
+    def addEch(self):
+        dialog = EchDialog(self, plaque=self.plaque)
+        if dialog.exec_():
+            self.plaque = dialog.plaque
+            self.plaque.setDicoEch()
+            self.populateEch()
+
+    def addGene(self):
+        dialog = GeneDialog(self, plaque=self.plaque)
+        if dialog.exec_():
+            self.plaque = dialog.plaque
+            self.plaque.setDicoGene()
+            self.populateGene()
 
     def accept(self):
         ge = self.cboxGene.currentObj()
