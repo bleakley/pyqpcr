@@ -266,7 +266,7 @@ class Qpcr_qt(QMainWindow):
         self.plotAction = self.createAction("Quantifications", 
                              self.computeUnknown, "Ctrl+Shift+U", 
                              "plotUnknown", "Plot results")
-        self.plotStdAction = self.createAction("Standard samples", 
+        self.plotStdAction = self.createAction("Standard curves", 
                               self.computeStd, "Ctrl+Shift+S", 
                               "plotStandard", "Plot standard curves")
         self.enableAction = self.createAction("Enable wells", self.enable, 
