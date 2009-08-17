@@ -38,7 +38,7 @@ class Qpcr_qt(QMainWindow):
 
     def __init__(self, parent=None):
         QMainWindow.__init__(self, parent)
-#
+ 
         self.filename = None
         self.unsaved = False
         self.printer = None
@@ -957,6 +957,14 @@ class Qpcr_qt(QMainWindow):
             try:
                 self.plaque.findTriplicat(float(self.ectMax))
             except ValueError:
+                brokenWells = []
+                for well in self.plaque.listePuits:
+                    if well.warning:
+                        brokenWells.append(well.name) 
+                QMessageBox.warning(self, "Problem occurs in ctref calculation !",
+                    "A problem occured in the calculations. It seems to come from the \
+                     well %s. Check whether ct are correctly defined." \
+                    % brokenWells)  
                 self.displayWarnings()
                 return
             if self.nplotGene == 0:
