@@ -394,6 +394,11 @@ class Plaque:
             for well in self.dicoGene[geneName]:
                 well.gene.setEff(eff)
                 well.gene.setPm(stdeff)
+            # il faut aussi mettre a jour les genes de listGene
+            # qui servent a remplir les comboBox
+            ind = self.adresseGene[geneName]
+            self.listGene[ind].setEff(eff)
+            self.listGene[ind].setPm(stdeff)
 
 
 class Replicate(QDialog):

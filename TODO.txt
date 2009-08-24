@@ -62,3 +62,4 @@ fenêtre d'édition.
 implémentée. Pb pour les échantillons.
 
 17°) bug avec editDialog : quand on fait add (n'importe lequel), qu'on modifie le nom et qu'on revient l'item courant n'est pas le bon
+Fait
