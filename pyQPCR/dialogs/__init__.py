@@ -19,6 +19,7 @@
 
 from echDialog import *
 from geneDialog import *
+from amountDialog import *
 from smartDialog import *
 from objDialog import *
 from editDialog import *
