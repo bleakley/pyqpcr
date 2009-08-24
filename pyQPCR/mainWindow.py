@@ -102,6 +102,8 @@ class Qpcr_qt(QMainWindow):
                      self.modifyGene)
         self.connect(self.echComboBox, SIGNAL("activated(int)"),
                      self.modifyEch)
+        self.connect(self.amComboBox, SIGNAL("activated(int)"),
+                     self.modifyAm)
         self.connect(self.typeComboBox, SIGNAL("activated(int)"),
                      self.setType)
         self.connect(self.cboxSens, SIGNAL("activated(int)"),
@@ -263,6 +265,8 @@ class Qpcr_qt(QMainWindow):
                 "Ctrl+T", "addgene", "Add a new target")
         self.addEchAction = self.createAction("Add &Sample...", self.addEch,
                 "Ctrl+G", "addgene", "Add a new sample")
+        self.addAmAction = self.createAction("Add A&mount...", self.addAmount,
+                "Ctrl+M", "addgene", "Add a new amount")
         self.plotAction = self.createAction("Quantifications", 
                              self.computeUnknown, "Ctrl+Shift+U", 
                              "plotUnknown", "Plot results")
@@ -339,10 +343,16 @@ class Qpcr_qt(QMainWindow):
         self.echComboBox.setToolTip("List of samples")
         self.echComboBox.setStatusTip(self.echComboBox.toolTip())
         self.echComboBox.setFocusPolicy(Qt.NoFocus)
-        editToolbar.addWidget(self.echComboBox)
-        editToolbar.addAction(self.addEchAction)
+        self.amComboBox = QComboBox()
+        self.amComboBox.setToolTip("List of amounts")
+        self.amComboBox.setStatusTip(self.amComboBox.toolTip())
+        self.amComboBox.setFocusPolicy(Qt.NoFocus)
         editToolbar.addWidget(self.geneComboBox)
         editToolbar.addAction(self.addGeneAction)
+        editToolbar.addWidget(self.echComboBox)
+        editToolbar.addAction(self.addEchAction)
+        editToolbar.addWidget(self.amComboBox)
+        editToolbar.addAction(self.addAmAction)
         editToolbar.addSeparator()
         editToolbar.addAction(self.editAction)
         editToolbar.setIconSize(QSize(22, 22))
@@ -445,6 +455,7 @@ class Qpcr_qt(QMainWindow):
 # Nettoyage des comboBox avant l'eventuel remplissage
             self.geneComboBox.clear()
             self.echComboBox.clear()
+            self.amComboBox.clear()
 # Nettoyage du QTabWidget
             self.onglet.removeTab(1)
             self.onglet.removeTab(1)
@@ -467,6 +478,7 @@ class Qpcr_qt(QMainWindow):
             self.populateTree()
             self.geneComboBox.addItems(self.plaque.listGene)
             self.echComboBox.addItems(self.plaque.listEch)
+            self.amComboBox.addItems(self.plaque.listAmount)
 
     def activateDesactivate(self, bool):
         """
@@ -477,12 +489,14 @@ class Qpcr_qt(QMainWindow):
         """
         self.addGeneAction.setEnabled(bool)
         self.addEchAction.setEnabled(bool)
+        self.addAmAction.setEnabled(bool)
         self.editAction.setEnabled(bool)
         self.plotAction.setEnabled(bool)
         self.plotStdAction.setEnabled(bool)
         self.typeComboBox.setEnabled(bool)
         self.geneComboBox.setEnabled(bool)
         self.echComboBox.setEnabled(bool)
+        self.amComboBox.setEnabled(bool)
         self.fileSaveAsAction.setEnabled(bool)
         self.filePrintAction.setEnabled(bool)
         self.exportAction.setEnabled(bool)
@@ -849,6 +863,19 @@ class Qpcr_qt(QMainWindow):
         self.populateResult()
         self.populateTree()
 
+    def addAmount(self):
+        dialog = AmountDialog(self, plaque=self.plaque)
+        if dialog.exec_():
+            plaque = dialog.plaque
+            self.amComboBox.clear()
+            self.amComboBox.addItems(plaque.listAmount)
+            self.plaque = plaque
+            self.plaque.setDicoAm()
+            self.plaqueStack.append(copy.deepcopy(self.plaque))
+        self.populateTable()
+        self.populateResult()
+        self.populateTree()
+
     def modifyGene(self):
         for it in self.table.selectedItems():
             gene = self.geneComboBox.currentObj()
@@ -871,6 +898,20 @@ class Qpcr_qt(QMainWindow):
         self.unsaved = True
         self.fileSaveAction.setEnabled(True)
         self.plaque.setDicoEch()
+        self.plaqueStack.append(copy.deepcopy(self.plaque))
+        self.populateTable()
+        self.populateResult()
+
+    def modifyAm(self):
+        for it in self.table.selectedItems():
+            ind = self.amComboBox.currentIndex()
+            am = self.plaque.listAmount[ind]
+            nom = str(it.statusTip())
+            well = getattr(self.plaque, nom)
+            well.setAmount(float(am))
+        self.unsaved = True
+        self.fileSaveAction.setEnabled(True)
+        self.plaque.setDicoAm()
         self.plaqueStack.append(copy.deepcopy(self.plaque))
         self.populateTable()
         self.populateResult()

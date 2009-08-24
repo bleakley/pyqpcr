@@ -20,7 +20,6 @@
 import re
 import csv
 from pyQPCR.wellGeneSample import Ech, Gene, Puits
-from utils import *
 from scipy.stats import t
 from PyQt4.QtCore import Qt
 from PyQt4.QtGui import *
@@ -41,15 +40,19 @@ class Plaque:
         self.listePuits = []
         self.listGene = [Gene('')]
         self.listEch = [Ech('')]
+        self.listAmount = ['']
         self.adresseGene = OrderedDict()
         self.adresseEch = OrderedDict()
+        self.adresseAmount = OrderedDict()
         self.adresseEch[''] = 0
         self.adresseGene[''] = 0
+        self.adresseAmount[''] = 0
  
         self.determineFileType(self.filename)
         self.read()
         self.setDicoGene()
         self.setDicoEch()
+        self.setDicoAm()
 # Permet eventuellement de connaitre les genes/ech de ref 
         self.getRefsFromFile()
 
@@ -117,6 +120,9 @@ class Plaque:
                     amount = champs[self.header['Amount SYBR']]
                     if amount != '-':
                         x.setAmount(amount)
+                        if not self.adresseAmount.has_key(str(amount)):
+                            self.listAmount.append(str(amount))
+                            self.adresseAmount[str(amount)] = len(self.listAmount)-1
                     else:
                         x.setAmount('')
                 if self.header.has_key('Target SYBR'):
@@ -246,6 +252,23 @@ class Plaque:
         for ech in self.listEch:
             if not self.adresseEch.has_key(str(ech.name)):
                 self.adresseEch[str(ech.name)] = ind
+                ind += 1
+
+    def setDicoAm(self):
+# Mise a jour de dicoAmount
+        self.dicoAmount = OrderedDict()
+        for well in self.listePuits:
+            if self.dicoAmount.has_key(str(well.amount)):
+                self.dicoAmount[str(well.amount)].append(well)
+            else:
+                self.dicoAmount[str(well.amount)] = [well]
+# Mise a jour de adresseAmount
+        self.adresseAmount = OrderedDict()
+        self.adresseAmount[''] = 0
+        ind = 1
+        for am in self.listAmount:
+            if not self.adresseAmount.has_key(str(am)):
+                self.adresseAmount[str(am)] = ind
                 ind += 1
 
     def getRefsFromFile(self):
@@ -476,7 +499,5 @@ class Replicate(QDialog):
 
 
 if __name__ == '__main__':
-    pl = Plaque('sortiesrealplex/ref-machine.txt')
+    pl = Plaque('../samples/raw_std.txt')
     print str(pl.A1.NRQ)
-    print pl.refTarget
-    pl.write('toto.csv')
