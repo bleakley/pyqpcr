@@ -22,6 +22,7 @@ from pyQPCR.wellGeneSample import *
 from pyQPCR.dialogs.customWidgets import *
 from pyQPCR.dialogs.echDialog import *
 from pyQPCR.dialogs.geneDialog import *
+from pyQPCR.dialogs.amountDialog import *
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 
@@ -58,6 +59,8 @@ class EditDialog(QDialog):
         btnAddEch.setIcon(ic)
         btnAddGene = QToolButton()
         btnAddGene.setIcon(ic)
+        btnAddAm = QToolButton()
+        btnAddAm.setIcon(ic)
 #
         self.stackedWidget = QStackedWidget()
 #
@@ -71,26 +74,19 @@ class EditDialog(QDialog):
         hLay.addWidget(self.cboxSample)
         hLay.addWidget(btnAddEch)
         sampleLayout.addLayout(hLay)
-        sampleLayout.setMargin(0)
         sampleWidget.setLayout(sampleLayout)
         self.stackedWidget.addWidget(sampleWidget)
 #
         amountWidget = QWidget()
         amountLayout = QHBoxLayout(amountWidget)
         self.labAmount = QLabel("&Amount:")
-        self.editAmount = QLineEdit(amountWidget)
-        self.labAmount.setBuddy(self.editAmount)
+        self.cboxAm = QComboBox()
+        self.labAmount.setBuddy(self.cboxAm)
+        hLay = QHBoxLayout()
         amountLayout.addWidget(self.labAmount)
-        sizePolicy = QSizePolicy(QSizePolicy.Preferred,
-            QSizePolicy.Fixed)
-        sizePolicy2 = QSizePolicy(QSizePolicy.Expanding,
-            QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(1)
-        sizePolicy2.setHorizontalStretch(1)
-        self.labAmount.setSizePolicy(sizePolicy)
-        self.editAmount.setSizePolicy(sizePolicy2)
-        amountLayout.addWidget(self.editAmount)
-        amountLayout.setMargin(0)
+        hLay.addWidget(self.cboxAm)
+        hLay.addWidget(btnAddAm)
+        amountLayout.addLayout(hLay)
         amountWidget.setLayout(amountLayout)
         self.stackedWidget.addWidget(amountWidget)
 #
@@ -102,21 +98,19 @@ class EditDialog(QDialog):
             self.plaque = copy.deepcopy(plaque)
             self.cboxGene.addItems(self.plaque.listGene)
             self.cboxSample.addItems(self.plaque.listEch)
+            self.cboxAm.addItems(self.plaque.listAmount)
         if selected is not None:
             self.selected = selected
             self.populateEch()
             self.populateGene()
+            self.populateAm()
 
             nType = list(self.selected[0])
-            nAmount = list(self.selected[3])
 # Determination de l'item courant pour le type
             if len(nType) == 1:
                 self.cboxType.setCurrentIndex(dico[str(nType[0])])
             else:
                 self.cboxType.setCurrentIndex(3)
-# Determination de l'item courant pour l'amount
-            if len(nAmount) == 1:
-                ind = self.editAmount.setText(nAmount[0])
 
         topLayout = QGridLayout()
         topLayout.addWidget(lab1, 0, 0)
@@ -139,6 +133,7 @@ class EditDialog(QDialog):
         self.connect(buttonBox, SIGNAL("rejected()"), self, SLOT("reject()"))
         self.connect(self.cboxType, SIGNAL("activated(int)"), self.modifDialog)
         self.connect(btnAddEch, SIGNAL("clicked()"), self.addEch)
+        self.connect(btnAddAm, SIGNAL("clicked()"), self.addAm)
         self.connect(btnAddGene, SIGNAL("clicked()"), self.addGene)
         self.setWindowTitle("Edit")
         self.setMinimumSize(280,100)
@@ -149,14 +144,33 @@ class EditDialog(QDialog):
         if self.cboxType.currentText() == "standard":
             self.stackedWidget.setCurrentIndex(1)
 
+    def populateAm(self):
+        self.cboxAm.clear()
+        self.cboxAm.addItems(self.plaque.listAmount)
+        nAm = list(self.selected[3])
+# Determination de l'item courant pour l'amount
+        if len(nAm) == 1:
+            try:
+                ind = self.plaque.adresseAmount[str(nAm[0])]
+                self.cboxAm.setCurrentIndex(ind)
+                self.curAmIndex = ind
+            except KeyError:
+                self.cboxAm.setCurrentIndex(self.curAmIndex)
+        else:
+            self.cboxAm.setCurrentIndex(0)
+
     def populateEch(self):
         self.cboxSample.clear()
         self.cboxSample.addItems(self.plaque.listEch)
         nEch = list(self.selected[2])
 # Determination de l'item courant pour l'echantillon
         if len(nEch) == 1:
-            ind = self.plaque.adresseEch[str(nEch[0])]
-            self.cboxSample.setCurrentIndex(ind)
+            try:
+                ind = self.plaque.adresseEch[str(nEch[0])]
+                self.cboxSample.setCurrentIndex(ind)
+                self.curEchIndex = ind
+            except KeyError:
+                self.cboxSample.setCurrentIndex(self.curEchIndex)
         else:
             self.cboxSample.setCurrentIndex(0)
 
@@ -166,8 +180,12 @@ class EditDialog(QDialog):
         nGene = list(self.selected[1])
 # Determination de l'item courant pour le gene
         if len(nGene) == 1:
-            ind = self.plaque.adresseGene[str(nGene[0])]
-            self.cboxGene.setCurrentIndex(ind)
+            try:
+                ind = self.plaque.adresseGene[str(nGene[0])]
+                self.cboxGene.setCurrentIndex(ind)
+                self.curGeneIndex = ind
+            except KeyError:
+                self.cboxGene.setCurrentIndex(self.curGeneIndex)
         else:
             self.cboxGene.setCurrentIndex(0)
 
@@ -177,6 +195,13 @@ class EditDialog(QDialog):
             self.plaque = dialog.plaque
             self.plaque.setDicoEch()
             self.populateEch()
+
+    def addAm(self):
+        dialog = AmountDialog(self, plaque=self.plaque)
+        if dialog.exec_():
+            self.plaque = dialog.plaque
+            self.plaque.setDicoAm()
+            self.populateAm()
 
     def addGene(self):
         dialog = GeneDialog(self, plaque=self.plaque)
@@ -197,14 +222,8 @@ class EditDialog(QDialog):
                 if ech.name != "": well.setEch(ech)
 
         if self.cboxType.currentText() == "standard":
-            try:
-                if self.editAmount.text() != QString(''):
-                    am = float(self.editAmount.text())
-                else:
-                    am = ''
-            except ValueError, e:
-                QMessageBox.warning(self, "Error", str(e))
-                return
+            ind = self.cboxAm.currentIndex()
+            am = self.plaque.listAmount[ind]
             for it in self.parent.table.selectedItems():
                 nom = str(it.statusTip())
                 well = getattr(self.plaque, nom)
@@ -212,7 +231,7 @@ class EditDialog(QDialog):
                 if ge.name != '':
                     well.setGene(ge)
                 if am != '':
-                    well.setAmount(am)
+                    well.setAmount(float(am))
         QDialog.accept(self)
 
 
