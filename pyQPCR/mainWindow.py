@@ -343,7 +343,7 @@ class Qpcr_qt(QMainWindow):
         self.echComboBox.setToolTip("List of samples")
         self.echComboBox.setStatusTip(self.echComboBox.toolTip())
         self.echComboBox.setFocusPolicy(Qt.NoFocus)
-        self.amComboBox = QComboBox()
+        self.amComboBox = GeneEchComboBox()
         self.amComboBox.setToolTip("List of amounts")
         self.amComboBox.setStatusTip(self.amComboBox.toolTip())
         self.amComboBox.setFocusPolicy(Qt.NoFocus)
@@ -452,10 +452,6 @@ class Qpcr_qt(QMainWindow):
             self.filename = fname
             message = "Loaded %s" % QFileInfo(fname).fileName()
             self.updateStatus(message)
-# Nettoyage des comboBox avant l'eventuel remplissage
-            self.geneComboBox.clear()
-            self.echComboBox.clear()
-            self.amComboBox.clear()
 # Nettoyage du QTabWidget
             self.onglet.removeTab(1)
             self.onglet.removeTab(1)
@@ -476,9 +472,9 @@ class Qpcr_qt(QMainWindow):
             self.populateTable()
             self.populateResult()
             self.populateTree()
-            self.geneComboBox.addItems(self.plaque.listGene)
-            self.echComboBox.addItems(self.plaque.listEch)
-            self.amComboBox.addItems(self.plaque.listAmount)
+            self.populateCbox(self.geneComboBox, self.plaque.listGene, "Target")
+            self.populateCbox(self.echComboBox, self.plaque.listEch, "Sample")
+            self.populateCbox(self.amComboBox, self.plaque.listAmount, "Amount")
 
     def activateDesactivate(self, bool):
         """
@@ -584,6 +580,11 @@ class Qpcr_qt(QMainWindow):
         if hasattr(self.plaque, "echRef"):
             item = QTreeWidgetItem(itemRefEch, [self.plaque.echRef.name])
         self.tree.expandAll()
+
+    def populateCbox(self, cbox, items, name="Target"):
+        cbox.clear()
+        cbox.addItem(name, "header")
+        cbox.addItems(items[1:])
 
     def fileSave(self):
         self.plaque.write(self.filename)
@@ -786,10 +787,9 @@ class Qpcr_qt(QMainWindow):
         if self.undoInd < -1:
             self.undoInd += 1
         self.plaque = copy.deepcopy(self.plaqueStack[self.undoInd])
-        self.geneComboBox.clear()
-        self.geneComboBox.addItems(self.plaque.listGene)
-        self.echComboBox.clear()
-        self.echComboBox.addItems(self.plaque.listEch)
+        self.populateCbox(self.geneComboBox, self.plaque.listGene, "Target")
+        self.populateCbox(self.echComboBox, self.plaque.listEch, "Sample")
+        self.populateCbox(self.amComboBox, self.plaque.listAmount, "Amount")
         self.populateTable()
         self.populateResult()
         self.populateTree()
@@ -799,10 +799,9 @@ class Qpcr_qt(QMainWindow):
             self.undoInd -= 1
         self.plaque = copy.deepcopy(self.plaqueStack[self.undoInd])
 # Ces lignes reremplissent les comboBox (idem dans redo)
-        self.geneComboBox.clear()
-        self.geneComboBox.addItems(self.plaque.listGene)
-        self.echComboBox.clear()
-        self.echComboBox.addItems(self.plaque.listEch)
+        self.populateCbox(self.geneComboBox, self.plaque.listGene, "Target")
+        self.populateCbox(self.echComboBox, self.plaque.listEch, "Sample")
+        self.populateCbox(self.amComboBox, self.plaque.listAmount, "Amount")
 #
         self.populateTable()
         self.populateResult()
@@ -841,8 +840,7 @@ class Qpcr_qt(QMainWindow):
         dialog = GeneDialog(self, plaque=self.plaque)
         if dialog.exec_():
             plaque = dialog.plaque
-            self.geneComboBox.clear()
-            self.geneComboBox.addItems(plaque.listGene)
+            self.populateCbox(self.geneComboBox, plaque.listGene, "Target")
             self.plaque = plaque
             self.plaque.setDicoGene()
             self.plaqueStack.append(copy.deepcopy(self.plaque))
@@ -854,8 +852,7 @@ class Qpcr_qt(QMainWindow):
         dialog = EchDialog(self, plaque=self.plaque)
         if dialog.exec_():
             plaque = dialog.plaque
-            self.echComboBox.clear()
-            self.echComboBox.addItems(plaque.listEch)
+            self.populateCbox(self.echComboBox, plaque.listEch, "Sample")
             self.plaque = plaque
             self.plaque.setDicoEch()
             self.plaqueStack.append(copy.deepcopy(self.plaque))
@@ -867,8 +864,7 @@ class Qpcr_qt(QMainWindow):
         dialog = AmountDialog(self, plaque=self.plaque)
         if dialog.exec_():
             plaque = dialog.plaque
-            self.amComboBox.clear()
-            self.amComboBox.addItems(plaque.listAmount)
+            self.populateCbox(self.amComboBox, plaque.listAmount, "Amount")
             self.plaque = plaque
             self.plaque.setDicoAm()
             self.plaqueStack.append(copy.deepcopy(self.plaque))
