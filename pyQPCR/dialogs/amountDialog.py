@@ -76,10 +76,10 @@ class AmountDialog(QDialog):
     def add(self):
         dialog = AddAmDialog(self)
         if dialog.exec_():
-            am = str(dialog.am.text())
-            if not self.plaque.adresseAmount.has_key(am):
-                self.plaque.listAmount.append(am)
-                self.plaque.adresseAmount[am] = len(self.plaque.listAmount)-1
+            am = float(dialog.am.text())
+            if not self.plaque.adresseAmount.has_key(str(am)):
+                self.plaque.listAmount.append(str(am))
+                self.plaque.adresseAmount[str(am)] = len(self.plaque.listAmount)-1
                 self.populateList()
 
     def edit(self):
@@ -87,16 +87,19 @@ class AmountDialog(QDialog):
         am_before = self.plaque.listAmount[row+1]
         dialog = AddAmDialog(self, am=am_before)
         if dialog.exec_():
-            am = str(dialog.am.text())
+            am = float(dialog.am.text())
+            am = str(am)
             self.plaque.listAmount[row+1] = am
             self.populateList()
-            if self.plaque.dicoAmount.has_key(str(am_before)):
+        if self.plaque.dicoAmount.has_key(str(am_before)):
                 self.plaque.dicoAmount[am] = \
                      self.plaque.dicoAmount[str(am_before)]
                 self.plaque.adresseAmount[am] = \
                      self.plaque.adresseAmount[str(am_before)]
                 for well in self.plaque.dicoAmount[str(am_before)]:
                     well.setAmount(float(am))
+                self.plaque.dicoAmount.__delitem__(str(am_before))
+                self.plaque.adresseAmount.__delitem__(str(am_before))
 
     def remove(self):
         row = self.listWidget.currentRow()
