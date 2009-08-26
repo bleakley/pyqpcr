@@ -583,7 +583,7 @@ class Qpcr_qt(QMainWindow):
 
     def populateCbox(self, cbox, items, name="Target"):
         cbox.clear()
-        cbox.addItem(name, "header")
+        cbox.addItem(name, QVariant("header"))
         cbox.addItems(items[1:])
 
     def fileSave(self):
