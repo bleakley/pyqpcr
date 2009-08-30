@@ -79,8 +79,8 @@ class GeneDialog(QDialog):
         dialog = AddGeneDialog(self)
         if dialog.exec_():
             gene = str(dialog.gene.text())
-            eff = float(dialog.eff.value())
-            pm = float(dialog.pmerror.value())
+            eff = dialog.eff.value()
+            pm = dialog.pmerror.value()
             state = dialog.ref.checkState()
             g = Gene(gene, eff, pm)
             g.setRef(state)
@@ -104,8 +104,8 @@ class GeneDialog(QDialog):
         dialog = AddGeneDialog(self, ge=gene)
         if dialog.exec_():
             name = str(dialog.gene.text())
-            eff = float(dialog.eff.value())
-            pm = float(dialog.pmerror.value())
+            eff = dialog.eff.value()
+            pm = dialog.pmerror.value()
             state = dialog.ref.checkState()
             gene.setRef(state)
             gene.setEff(eff)

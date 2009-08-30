@@ -39,6 +39,9 @@ class SuffixComboBox(QComboBox):
         for item in items:
             self.addItem(item)
 
+    def currentText(self):
+        cText = QComboBox.currentText(self)
+        return cText[:-1]
 
 class SettingsDialog(QDialog):
 
