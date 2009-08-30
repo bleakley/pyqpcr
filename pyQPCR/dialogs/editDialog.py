@@ -39,11 +39,11 @@ class EditDialog(QDialog):
         lab1 = QLabel("T&ype:")
         self.cboxType = QComboBox()
         lab1.setBuddy(self.cboxType)
-        self.cboxType.addItems(["unknown", "standard", "negative", ""])
+        self.cboxType.addItems(['unknown', 'standard', 'negative', ''])
         dico = {}
-        dico['unknown'] = 0
-        dico['standard'] = 1
-        dico['negative'] = 2
+        dico[QString('unknown')] = 0
+        dico[QString('standard')] = 1
+        dico[QString('negative')] = 2
         pix = QPixmap(32, 32)
         bleu = QColor(116, 167, 227) ; pix.fill(bleu)
         self.cboxType.setItemIcon(0, QIcon(pix))
@@ -108,7 +108,7 @@ class EditDialog(QDialog):
             nType = list(self.selected[0])
 # Determination de l'item courant pour le type
             if len(nType) == 1:
-                self.cboxType.setCurrentIndex(dico[str(nType[0])])
+                self.cboxType.setCurrentIndex(dico[nType[0]])
             else:
                 self.cboxType.setCurrentIndex(3)
 
@@ -139,9 +139,9 @@ class EditDialog(QDialog):
         self.setMinimumSize(280,100)
 
     def modifDialog(self):
-        if self.cboxType.currentText() in ("unknown", "negative"):
+        if self.cboxType.currentText() in (QString('unknown'), QString('negative')):
             self.stackedWidget.setCurrentIndex(0)
-        if self.cboxType.currentText() == "standard":
+        if self.cboxType.currentText() == QString('standard'):
             self.stackedWidget.setCurrentIndex(1)
 
     def populateAm(self):
@@ -166,7 +166,7 @@ class EditDialog(QDialog):
 # Determination de l'item courant pour l'echantillon
         if len(nEch) == 1:
             try:
-                ind = self.plaque.adresseEch[str(nEch[0])]
+                ind = self.plaque.adresseEch[nEch[0]]
                 self.cboxSample.setCurrentIndex(ind)
                 self.curEchIndex = ind
             except KeyError:
@@ -181,7 +181,7 @@ class EditDialog(QDialog):
 # Determination de l'item courant pour le gene
         if len(nGene) == 1:
             try:
-                ind = self.plaque.adresseGene[str(nGene[0])]
+                ind = self.plaque.adresseGene[nGene[0]]
                 self.cboxGene.setCurrentIndex(ind)
                 self.curGeneIndex = ind
             except KeyError:
@@ -212,22 +212,22 @@ class EditDialog(QDialog):
 
     def accept(self):
         ge = self.cboxGene.currentObj()
-        if self.cboxType.currentText() == "unknown":
+        if self.cboxType.currentText() == QString('unknown'):
             ech = self.cboxSample.currentObj()
             for it in self.parent.table.selectedItems():
-                nom = str(it.statusTip())
-                well = getattr(self.plaque, nom)
-                well.setType(QString("unknown"))
+                nom = it.statusTip()
+                well = getattr(self.plaque, str(nom))
+                well.setType(QString('unknown'))
                 if ge.name != "": well.setGene(ge)
                 if ech.name != "": well.setEch(ech)
 
-        if self.cboxType.currentText() == "standard":
+        if self.cboxType.currentText() == QString('standard'):
             ind = self.cboxAm.currentIndex()
             am = self.plaque.listAmount[ind]
             for it in self.parent.table.selectedItems():
-                nom = str(it.statusTip())
-                well = getattr(self.plaque, nom)
-                well.setType(QString("standard"))
+                nom = it.statusTip()
+                well = getattr(self.plaque, str(nom))
+                well.setType(QString('standard'))
                 if ge.name != '':
                     well.setGene(ge)
                 if am != '':

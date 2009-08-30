@@ -21,7 +21,7 @@ import re
 import csv
 from pyQPCR.wellGeneSample import Ech, Gene, Puits
 from scipy.stats import t
-from PyQt4.QtCore import Qt
+from PyQt4.QtCore import Qt, QString
 from PyQt4.QtGui import *
 from numpy import mean, std, sqrt, log, log10, polyval, polyfit, sum, \
 array, append
@@ -233,8 +233,8 @@ class Plaque:
         self.adresseGene[''] = 0
         ind = 1
         for gene in self.listGene:
-            if not self.adresseGene.has_key(str(gene)):
-                self.adresseGene[str(gene)] = ind
+            if not self.adresseGene.has_key(gene.name):
+                self.adresseGene[gene.name] = ind
                 ind += 1
 
     def setDicoEch(self):
@@ -242,17 +242,17 @@ class Plaque:
         self.dicoEch = OrderedDict()
         for well in self.listePuits:
             nomech = well.ech.name
-            if self.dicoEch.has_key(str(nomech)):
-                self.dicoEch[str(nomech)].append(well)
+            if self.dicoEch.has_key(nomech):
+                self.dicoEch[nomech].append(well)
             else:
-                self.dicoEch[str(nomech)] = [well]
+                self.dicoEch[nomech] = [well]
 # Mise a jour de adresseEch
         self.adresseEch = OrderedDict()
         self.adresseEch[''] = 0
         ind = 1
         for ech in self.listEch:
-            if not self.adresseEch.has_key(str(ech.name)):
-                self.adresseEch[str(ech.name)] = ind
+            if not self.adresseEch.has_key(ech.name):
+                self.adresseEch[ech.name] = ind
                 ind += 1
 
     def setDicoAm(self):
@@ -279,12 +279,12 @@ class Plaque:
         """
         if hasattr(self, 'refTarget'):
             goi = self.refTarget.strip('"')
-            ind = self.adresseGene[str(goi)]
+            ind = self.adresseGene[QString(goi)]
             self.geneRef = self.listGene[ind]
             self.listGene[ind].setRef(Qt.Checked)
         if hasattr(self, 'refSample'):
             soi = self.refSample.strip('"')
-            ind = self.adresseEch[str(soi)]
+            ind = self.adresseEch[QString(soi)]
             self.echRef = self.listEch[ind]
             self.listEch[ind].setRef(Qt.Checked)
 
@@ -298,12 +298,12 @@ class Plaque:
         self.dicoTrip = RaggedArray2D()
         for key in self.dicoGene.keys():
             dicoEch = RaggedArray2D()
-            for well in self.dicoGene[str(key)]:
-                if str(well.type) == 'unknown' and well.enabled == True:
-                    if dicoEch.has_key(str(well.ech.name)):
-                        dicoEch[str(well.ech.name)].append(well)
+            for well in self.dicoGene[key]:
+                if well.type == QString('unknown') and well.enabled == True:
+                    if dicoEch.has_key(well.ech.name):
+                        dicoEch[well.ech.name].append(well)
                     else:
-                        dicoEch[str(well.ech.name)] = [well]
+                        dicoEch[well.ech.name] = [well]
 # Suppression de la chaine vide
             if dicoEch.has_key(""):
                 dicoEch.pop("")
@@ -324,8 +324,8 @@ class Plaque:
         self.dicoStd = RaggedArray2D()
         for key in self.dicoGene.keys():
             dicoAmount = RaggedArray2D()
-            for well in self.dicoGene[str(key)]:
-                if str(well.type) == 'standard' and well.enabled == True:
+            for well in self.dicoGene[key]:
+                if well.type == QString('standard') and well.enabled == True:
                     if dicoAmount.has_key(str(well.amount)):
                         dicoAmount[str(well.amount)].append(well)
                     else:
@@ -333,13 +333,13 @@ class Plaque:
             if dicoAmount.has_key(""):
                 dicoAmount.pop("")
             for amount in dicoAmount.keys():
-                trip = Replicate(dicoAmount[amount], type="standard",
+                trip = Replicate(dicoAmount[amount], type=QString('standard'),
                                  ectMax=ectMax)
                 if not hasattr(trip, "ctdev"):
                     # if ctdev undefined raise an exception
                     raise ValueError
                 dicoAmount[amount] = trip
-                self.dicoStd[str(key)] = dicoAmount
+                self.dicoStd[key] = dicoAmount
 
     def calcNRQ(self):
         for g in self.dicoTrip.keys():
@@ -404,7 +404,8 @@ class Plaque:
 
 class Replicate(QDialog):
 
-    def __init__(self, listePuits, type='unknown', parent=None, ectMax=0.3):
+    def __init__(self, listePuits, type=QString('unknown'), 
+                 parent=None, ectMax=0.3):
         self.parent = parent
         self.ectMax = ectMax
         QDialog.__init__(self, parent)
@@ -417,9 +418,9 @@ class Replicate(QDialog):
         self.ctList =array([])
         for well in self.listePuits:
             self.ctList = append(self.ctList, well.ct)
-        if self.type == 'unknown':
+        if self.type == QString('unknown'):
             self.ech = self.listePuits[0].ech
-        elif self.type == 'standard':
+        elif self.type == QString('standard'):
             self.amList = array([])
             for well in self.listePuits:
                 self.amList = append(self.amList, well.amount)
@@ -430,7 +431,7 @@ class Replicate(QDialog):
         for well in self.listePuits:
             st = st + well.name + ','
         st += ']'
-        if self.type == 'unknown':
+        if self.type == QString('unknown'):
             st += ' %s, %s}' % (self.gene, self.ech)
         else:
             st += ' %s}' % self.gene
@@ -482,11 +483,11 @@ class Replicate(QDialog):
             well.setCtdev(self.ctdev)
 
         if self.ctdev >= self.ectMax:
-            if self.type == 'unknown':
+            if self.type == QString('unknown'):
                 QMessageBox.warning(self, "Warning Replicates",
                     "Warning: E(ct) of replicate (%s, %s) greater than %.2f" \
                     % (self.gene, self.ech, self.ectMax))
-            elif self.type == 'standard':
+            elif self.type == QString('standard'):
                 QMessageBox.warning(self, "Warning Replicates",
                     "Warning: E(ct) of replicate (%s, %s) greater than %.2f" \
                     % (self.gene, self.amList[0], self.ectMax))

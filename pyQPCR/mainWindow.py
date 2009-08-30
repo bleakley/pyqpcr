@@ -407,11 +407,11 @@ class Qpcr_qt(QMainWindow):
         if icon is not None:
             if icon == False:
                 item.setIcon(QIcon(":/disable"))
-        if back == "unknown":
+        if back == QString('unknown'):
             item.setBackground(QColor(116, 167, 227))
-        elif back == "standard":
+        elif back == QString('standard'):
             item.setBackground(QColor(233, 0, 0))
-        elif back == "negative":
+        elif back == QString('negative'):
             item.setBackground(QColor(255, 250, 80))
         else:
             item.setBackground(Qt.white)
@@ -497,9 +497,9 @@ class Qpcr_qt(QMainWindow):
 
     def populateTable(self):
         for well in self.plaque.listePuits:
-            if well.type in ('unknown', 'negative'):
+            if well.type in (QString('unknown'), QString('negative')):
                 name = "%s\n%s" % (well.ech, well.gene.name)
-            elif well.type == 'standard':
+            elif well.type == QString('standard'):
                 name = "%s\n%s" % (str(well.amount), well.gene)
             tipname = "ct=%s\namount=%s" % (str(well.ct), str(well.amount))
             it = self.createItem(name, tip=tipname, status=well.name, 
@@ -836,12 +836,12 @@ class Qpcr_qt(QMainWindow):
         setAm = set()
         selected = [setType, setGene, setEch, setAm]
         for it in self.table.selectedItems():
-            nom = str(it.statusTip())
-            well = getattr(self.plaque, nom)
-            setType.add(str(well.type))
-            setEch.add(str(well.ech.name))
-            setGene.add(str(well.gene.name))
-            setAm.add(str(well.amount))
+            nom = it.statusTip()
+            well = getattr(self.plaque, str(nom))
+            setType.add(well.type)
+            setEch.add(well.ech.name)
+            setGene.add(well.gene.name)
+            setAm.add(well.amount)
         dialog = EditDialog(self, plaque=self.plaque, selected=selected)
         if dialog.exec_():
             plaque = dialog.plaque
@@ -893,8 +893,8 @@ class Qpcr_qt(QMainWindow):
     def modifyGene(self):
         for it in self.table.selectedItems():
             gene = self.geneComboBox.currentObj()
-            nom = str(it.statusTip())
-            well = getattr(self.plaque, nom)
+            nom = it.statusTip()
+            well = getattr(self.plaque, str(nom))
             well.setGene(gene)
         self.unsaved = True
         self.fileSaveAction.setEnabled(True)
@@ -906,8 +906,8 @@ class Qpcr_qt(QMainWindow):
     def modifyEch(self):
         for it in self.table.selectedItems():
             ech = self.echComboBox.currentObj()
-            nom = str(it.statusTip())
-            well = getattr(self.plaque, nom)
+            nom = it.statusTip()
+            well = getattr(self.plaque, str(nom))
             well.setEch(ech)
         self.unsaved = True
         self.fileSaveAction.setEnabled(True)
@@ -920,8 +920,8 @@ class Qpcr_qt(QMainWindow):
         for it in self.table.selectedItems():
             ind = self.amComboBox.currentIndex()
             am = self.plaque.listAmount[ind]
-            nom = str(it.statusTip())
-            well = getattr(self.plaque, nom)
+            nom = it.statusTip()
+            well = getattr(self.plaque, str(nom))
             well.setAmount(float(am))
         self.unsaved = True
         self.fileSaveAction.setEnabled(True)
@@ -933,8 +933,8 @@ class Qpcr_qt(QMainWindow):
     def setType(self):
         for it in self.table.selectedItems():
             type = self.typeComboBox.currentText()
-            nom = str(it.statusTip())
-            well = getattr(self.plaque, nom)
+            nom = it.statusTip()
+            well = getattr(self.plaque, str(nom))
             well.setType(type)
         self.unsaved = True
         self.fileSaveAction.setEnabled(True)
@@ -945,8 +945,8 @@ class Qpcr_qt(QMainWindow):
     def enable(self):
         for it in self.table.selectedItems():
             ech = self.echComboBox.currentText()
-            nom = str(it.statusTip())
-            well = getattr(self.plaque, nom)
+            nom = it.statusTip()
+            well = getattr(self.plaque, str(nom))
             well.setEnabled(True)
         self.unsaved = True
         self.fileSaveAction.setEnabled(True)
@@ -957,8 +957,8 @@ class Qpcr_qt(QMainWindow):
     def disable(self):
         for it in self.table.selectedItems():
             ech = self.echComboBox.currentText()
-            nom = str(it.statusTip())
-            well = getattr(self.plaque, nom)
+            nom = it.statusTip()
+            well = getattr(self.plaque, str(nom))
             well.setEnabled(False)
             well.setCtmean('')
             well.setCtdev('')
@@ -979,7 +979,7 @@ class Qpcr_qt(QMainWindow):
         A method to check negative samples quality
         """
         for well in self.plaque.listePuits:
-            if str(well.type) == 'negative':
+            if well.type == QString('negative'):
                 if well.ct <= ctMin:
                     QMessageBox.warning(self, "Warning Negative",
                                "Warning: ct of well %s lower than %.2f" \
@@ -1160,7 +1160,7 @@ class Qpcr_qt(QMainWindow):
         A method to plot the standard curves
         """
         self.mplCanStd.axes.cla()
-        geneName = str(self.geneStdBox.currentText())
+        geneName = self.geneStdBox.currentText()
         x = array([])
         y = array([])
         for trip in self.plaque.dicoStd[geneName].values():

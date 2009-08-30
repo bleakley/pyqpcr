@@ -78,7 +78,7 @@ class GeneDialog(QDialog):
     def add(self):
         dialog = AddGeneDialog(self)
         if dialog.exec_():
-            gene = str(dialog.gene.text())
+            gene = dialog.gene.text()
             eff = dialog.eff.value()
             pm = dialog.pmerror.value()
             state = dialog.ref.checkState()
@@ -103,7 +103,7 @@ class GeneDialog(QDialog):
         gene_before = gene.name
         dialog = AddGeneDialog(self, ge=gene)
         if dialog.exec_():
-            name = str(dialog.gene.text())
+            name = dialog.gene.text()
             eff = dialog.eff.value()
             pm = dialog.pmerror.value()
             state = dialog.ref.checkState()
@@ -120,12 +120,12 @@ class GeneDialog(QDialog):
                         g.setRef(Qt.Unchecked)
 # dico
             self.populateList()
-            if self.plaque.dicoGene.has_key(str(gene_before)):
-                self.plaque.dicoGene[str(name)] = \
-                     self.plaque.dicoGene[str(gene_before)]
-                self.plaque.adresseGene[str(name)] = \
-                     self.plaque.adresseGene[str(gene_before)]
-                for well in self.plaque.dicoGene[str(gene_before)]:
+            if self.plaque.dicoGene.has_key(gene_before):
+                self.plaque.dicoGene[name] = \
+                     self.plaque.dicoGene[gene_before]
+                self.plaque.adresseGene[name] = \
+                     self.plaque.adresseGene[gene_before]
+                for well in self.plaque.dicoGene[gene_before]:
                     well.setGene(gene)
 
     def remove(self):

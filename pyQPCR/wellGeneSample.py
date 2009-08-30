@@ -29,7 +29,7 @@ __version__ = "$Rev$"
 class Ech:
 
     def __init__(self, nom, isRef=Qt.Unchecked):
-        self.name = str(nom)
+        self.name = QString(nom)
 # Pour dire si l'echantillon est un echantillon de reference
         self.isRef = isRef
 # Pour dire si on veut tracer un echantillon
@@ -70,7 +70,7 @@ class Ech:
 class Gene:
 
     def __init__(self, nom, eff=100., pm=0., isRef=Qt.Unchecked):
-        self.name = str(nom)
+        self.name = QString(nom)
         self.eff = eff
         self.pm = pm
 # Pour dire si le gene est un gene de reference
@@ -138,8 +138,8 @@ class Gene:
 
 class Puits:
 
-    def __init__(self, name, ech=None, ct=nan, ctmean=nan, 
-            ctdev=nan, gene=None):
+    def __init__(self, name, ech=QString(''), ct=nan, ctmean=nan, 
+            ctdev=nan, gene=QString('')):
         self.name = name
         self.ech = Ech(ech)
         self.gene = Gene(gene)
@@ -147,7 +147,7 @@ class Puits:
         self.ctmean = ctmean
         self.ctdev = ctdev
         self.amount = ''
-        self.type = "unknown"
+        self.type = QString("unknown")
         self.NRQ = ''
         self.NRQerror = ''
         self.getPosition()
@@ -155,7 +155,7 @@ class Puits:
         self.warning = False
 
     def __str__(self):
-        st = '\nPuit ' + str(self.name) + "\n" + '(' + str(self.ech) + ', ' + \
+        st = '\nPuit ' + self.name + "\n" + '(' + str(self.ech) + ', ' + \
               str(self.gene) + ')' + "\n" + \
               "ct = %.2f, ctmean = %.2f, ctdev = %.2f"%( \
                 self.ct, self.ctmean, self.ctdev)
@@ -192,8 +192,8 @@ class Puits:
             NRQerror = "%.2f" % self.NRQerror
 
         st = '"%s"\t"%s"\t%s\t%s\t%s\t%s\t"%s"\t"%s"\t%s\t%s\n' % \
-            (str(self.name), str(self.ech), ct, ctmean, 
-             ctdev, amount, str(self.gene.name), str(self.type),
+            (self.name, str(self.ech), ct, ctmean, 
+             ctdev, amount, self.gene.name, self.type,
              NRQ, NRQerror)
         return st
 
@@ -231,8 +231,8 @@ class Puits:
               "<td align=center>%s</td>\n" # amount
               "<td align=center>%s</td>\n" # eff
               "<td align=center>%s</td>\n" # NRQ
-              "<td align=center>%s</td></tr>\n") % (str(self.name), 
-                    str(self.type), str(self.gene.name), str(self.ech.name), ct, 
+              "<td align=center>%s</td></tr>\n") % (self.name, 
+                    self.type, self.gene.name, self.ech.name, ct, 
                     ctmean, ctdev, amount, eff, NRQ, NRQerror)
         return st
 
@@ -253,7 +253,7 @@ class Puits:
         self.ech = name
 
     def setType(self, name):
-        self.type = name
+        self.type = QString(name)
 
     def setAmount(self, qte):
         self.amount = qte
