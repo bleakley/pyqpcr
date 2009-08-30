@@ -115,6 +115,8 @@ class EchDialog(QDialog):
                      self.plaque.adresseEch[ech_before]
                 for well in self.plaque.dicoEch[ech_before]:
                     well.setEch(ech)
+                self.plaque.dicoEch.__delitem__(ech_before)
+                self.plaque.adresseEch.__delitem__(ech_before)
 
     def remove(self):
         row = self.listWidget.currentRow()

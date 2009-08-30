@@ -127,6 +127,8 @@ class GeneDialog(QDialog):
                      self.plaque.adresseGene[gene_before]
                 for well in self.plaque.dicoGene[gene_before]:
                     well.setGene(gene)
+                self.plaque.dicoGene.__delitem__(gene_before)
+                self.plaque.adresseGene.__delitem__(gene_before)
 
     def remove(self):
         row = self.listWidget.currentRow()
