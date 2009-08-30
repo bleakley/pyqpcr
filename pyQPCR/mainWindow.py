@@ -717,7 +717,9 @@ class Qpcr_qt(QMainWindow):
         if dialog.exec_():
             self.ectMax, st = dialog.ectLineEdit.text().toFloat()
             self.ctMin, st = dialog.ctMinLineEdit.text().toFloat()
-            self.confidence = float(dialog.confCbox.currentText()[:-1])/100
+            self.confidence, st = dialog.confCbox.currentText().toFloat()
+            self.confidence /= 100
+            print self.confidence
 
     def helpAbout(self):
         import platform

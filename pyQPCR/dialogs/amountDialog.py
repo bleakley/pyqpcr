@@ -127,6 +127,7 @@ class AddAmDialog(QDialog):
             self.am = QLineEdit(am)
         else:
             self.am = QLineEdit()
+        self.am.setValidator(QDoubleValidator(self))
         buttonBox = QDialogButtonBox(QDialogButtonBox.Ok|
                                      QDialogButtonBox.Cancel)
 
