@@ -219,6 +219,7 @@ class Puits:
             NRQerror = "%.2f" % self.NRQerror
         except TypeError:
             NRQerror = ''
+        eff = "%.2f%s%.2f" % (self.gene.eff, unichr(177), self.gene.pm)
 
         st = ("<tr><td align=center><b>%s</b></td>\n" # name
               "<td align=center>%s</td>\n" # type
@@ -228,10 +229,11 @@ class Puits:
               "<td align=center>%s</td>\n" # ctmean
               "<td align=center>%s</td>\n" # ctdev
               "<td align=center>%s</td>\n" # amount
+              "<td align=center>%s</td>\n" # eff
               "<td align=center>%s</td>\n" # NRQ
-              "<td align=center>%s</td></tr>\n") % (str(self.name), str(self.type), 
-                    str(self.gene.name), str(self.ech.name), ct, 
-                    ctmean, ctdev, amount, NRQ, NRQerror)
+              "<td align=center>%s</td></tr>\n") % (str(self.name), 
+                    str(self.type), str(self.gene.name), str(self.ech.name), ct, 
+                    ctmean, ctdev, amount, eff, NRQ, NRQerror)
         return st
 
     def getPosition(self):

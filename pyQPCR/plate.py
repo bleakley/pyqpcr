@@ -210,6 +210,7 @@ class Plaque:
                  "<th align=center>Ctmean</th>\n"
                  "<th align=center>Ctdev</th>\n"
                  "<th align=center>Amount</th>\n"
+                 "<th align=center>Efficiency</th>\n"
                  "<th align=center>NRQ</th>\n"
                  "<th align=center>NRQerror</th>\n"
                  "</tr>\n")

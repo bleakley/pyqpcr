@@ -610,6 +610,8 @@ class Qpcr_qt(QMainWindow):
             isTable = dialog.btnRes.isChecked()
             isStd = dialog.btnStd.isChecked()
             isQuant = dialog.btnQuant.isChecked()
+        else:
+            return
         if not hasattr(self, "plaque"):
             return
         html = u""
@@ -628,8 +630,12 @@ class Qpcr_qt(QMainWindow):
             html += "<p style='page-break-before:always;'>"
             html += "<br><h2>Standard curves</h2><br>"
             self.geneStdBox.addItems(self.plaque.dicoStd.keys())
-            html += "<table border=0 width=100%>\n"
             for index in range(len(self.plaque.dicoStd.keys())):
+                if (not index % 3 and index !=0):
+                    html += "<p style='page-break-before:always;'>"
+                else:
+                    html += "<p>"
+                html += "<table border=0 width=100%>\n"
                 self.geneStdBox.setCurrentIndex(index)
                 self.plotStd()
                 fig = self.mplCanStd.figure.savefig("output%i.png" % index, 
@@ -643,7 +649,8 @@ class Qpcr_qt(QMainWindow):
                         self.labEquation.text() 
                 html += "<tr><th><b>Efficiency:</b> %s</th></tr>" % \
                         self.labEff.text()
-                html += "<tr><th><b>R^2:</b> %s</th></tr>" % self.labR2.text()
+                html += "<tr><th><b>R<SUP>2</SUP>:</b> %s</th></tr>" % \
+                        self.labR2.text()
                 html += ("</table>"
                          "</th>")
 
@@ -652,7 +659,8 @@ class Qpcr_qt(QMainWindow):
                         index
                 html += ("</th>"
                          "</tr>\n")
-            html += "</table>"
+                html += "</table>"
+                html += "</p>"
             html += "</p>"
         if isQuant:
             html += "<br><h2>Quantification curves</h2>"
@@ -666,6 +674,8 @@ class Qpcr_qt(QMainWindow):
         A method to print results thanks to a QPrinter object
         """
         html = self.generateHTML()
+        if html is None:
+            return
         if self.printer is None:
             self.printer = QPrinter(QPrinter.HighResolution)
             self.printer.setPageSize(QPrinter.A4)
@@ -674,12 +684,15 @@ class Qpcr_qt(QMainWindow):
             document = QTextDocument()
             document.setHtml(html)
             document.print_(self.printer)
+            self.cleanPngs()
 
     def fileExport(self):
         """
         A method to export results in a PDF file
         """
         html = self.generateHTML()
+        if html is None:
+            return
         if self.printer is None:
             self.printer = QPrinter(QPrinter.HighResolution)
             self.printer.setPageSize(QPrinter.A4)
@@ -693,6 +706,15 @@ class Qpcr_qt(QMainWindow):
             document = QTextDocument()
             document.setHtml(html)
             document.print_(self.printer)
+            self.cleanPngs()
+
+    def cleanPngs(self):
+        """
+        Remove the png files needed after print or export
+        """
+        for file in os.listdir('.'):
+            if file.startswith('output'):
+                os.remove(file)
 
     def configure(self):
         dialog = SettingsDialog(self, ect=float(self.ectMax),
