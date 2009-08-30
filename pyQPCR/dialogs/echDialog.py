@@ -78,7 +78,7 @@ class EchDialog(QDialog):
     def add(self):
         dialog = AddEchDialog(self)
         if dialog.exec_():
-            nomech = str(dialog.ech.text())
+            nomech = dialog.ech.text()
             state = dialog.ref.checkState()
             ech = Ech(nomech, state)
             ech.setColor(QColor(Qt.black))
@@ -98,7 +98,7 @@ class EchDialog(QDialog):
         ech_before = ech.name
         dialog = AddEchDialog(self, ech=ech)
         if dialog.exec_():
-            name = str(dialog.ech.text())
+            name = dialog.ech.text()
             state = dialog.ref.checkState()
             ech.setName(name)
             ech.setRef(state)
@@ -108,12 +108,12 @@ class EchDialog(QDialog):
                     if sample.isRef == Qt.Checked and ind != row+1:
                         sample.setRef(Qt.Unchecked)
             self.populateList()
-            if self.plaque.dicoEch.has_key(str(ech_before)):
+            if self.plaque.dicoEch.has_key(ech_before):
                 self.plaque.dicoEch[name] = \
-                     self.plaque.dicoEch[str(ech_before)]
+                     self.plaque.dicoEch[ech_before]
                 self.plaque.adresseEch[name] = \
-                     self.plaque.adresseEch[str(ech_before)]
-                for well in self.plaque.dicoEch[str(ech_before)]:
+                     self.plaque.adresseEch[ech_before]
+                for well in self.plaque.dicoEch[ech_before]:
                     well.setEch(ech)
 
     def remove(self):
@@ -130,8 +130,8 @@ class EchDialog(QDialog):
             self.populateList()
 # On ajuste les puits de la plaque concernes sur l'echantillon vide
 # a condition que le puit soit concerne
-            if self.plaque.dicoEch.has_key(str(ech)):
-                for well in self.plaque.dicoEch[str(ech)]:
+            if self.plaque.dicoEch.has_key(ech):
+                for well in self.plaque.dicoEch[ech]:
                     well.setEch(Ech(''))
 
 class AddEchDialog(QDialog):

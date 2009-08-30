@@ -76,7 +76,7 @@ class AmountDialog(QDialog):
     def add(self):
         dialog = AddAmDialog(self)
         if dialog.exec_():
-            am = float(dialog.am.text())
+            am, status = dialog.am.text().toFloat()
             if not self.plaque.adresseAmount.has_key(str(am)):
                 self.plaque.listAmount.append(str(am))
                 self.plaque.adresseAmount[str(am)] = len(self.plaque.listAmount)-1
@@ -87,7 +87,7 @@ class AmountDialog(QDialog):
         am_before = self.plaque.listAmount[row+1]
         dialog = AddAmDialog(self, am=am_before)
         if dialog.exec_():
-            am = float(dialog.am.text())
+            am, status = dialog.am.text().toFloat()
             am = str(am)
             self.plaque.listAmount[row+1] = am
             self.populateList()
