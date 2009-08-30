@@ -294,7 +294,7 @@ class Qpcr_qt(QMainWindow):
         self.addActions(editMenu, (self.addEchAction, self.addGeneAction))
         calculMenu = self.menuBar().addMenu("&Computations")
         self.addActions(calculMenu, (self.enableAction, self.disableAction,
-                                  None, self.plotAction, self.plotStdAction))
+                                  None, self.plotStdAction, self.plotAction))
         settingsMenu = self.menuBar().addMenu("&Settings")
         settingsMenu.addAction(settingsAction)
         helpMenu = self.menuBar().addMenu("&Help")
@@ -353,7 +353,7 @@ class Qpcr_qt(QMainWindow):
 
         plotToolbar = self.addToolBar("Plot")
         plotToolbar.setObjectName("PlotToolBar")
-        self.addActions(plotToolbar, (self.plotAction, self.plotStdAction))
+        self.addActions(plotToolbar, (self.plotStdAction, self.plotAction))
         plotToolbar.setIconSize(QSize(22, 22))
 # ContextMenu
         self.table.setContextMenuPolicy(Qt.ActionsContextMenu)
@@ -363,7 +363,7 @@ class Qpcr_qt(QMainWindow):
                        self.addEchAction, self.enableAction, self.disableAction))
         self.addActions(self.result, (self.filePrintAction, self.exportAction,
                                       self.fileSaveAction, self.fileSaveAsAction,
-                                      self.plotAction, self.plotStdAction))
+                                      self.plotStdAction, self.plotAction))
 # Desactivation par defaut
         self.activateDesactivate(False)
 
@@ -573,6 +573,9 @@ class Qpcr_qt(QMainWindow):
             item = QTreeWidgetItem(itemRefGene, [self.plaque.geneRef.name])
         if hasattr(self.plaque, "echRef"):
             item = QTreeWidgetItem(itemRefEch, [self.plaque.echRef.name])
+        for gene in self.plaque.listGene[1:]:
+            eff = "%s:%.2f%s%.2f" % (gene.name, gene.eff, unichr(177), gene.pm)
+            item = QTreeWidgetItem(itemStd, [eff])
         self.tree.expandAll()
 
     def populateCbox(self, cbox, items, name="Target"):
@@ -888,7 +891,6 @@ class Qpcr_qt(QMainWindow):
             self.plaqueStack.append(copy.deepcopy(self.plaque))
         self.populateTable()
         self.populateResult()
-        self.populateTree()
 
     def modifyGene(self):
         for it in self.table.selectedItems():
@@ -1050,6 +1052,7 @@ class Qpcr_qt(QMainWindow):
             self.fileSaveAction.setEnabled(True)
             self.plaqueStack.append(copy.deepcopy(self.plaque))
             self.populateResult()
+            self.populateTree()
             self.plotStd()
 
     def plotUnknown(self):
