@@ -25,6 +25,20 @@ __author__ = "$Author$"
 __date__ = "$Date$"
 __version__ = "$Revision$"
 
+class SuffixComboBox(QComboBox):
+
+    def __init__(self, parent=None):
+        QComboBox.__init__(self, parent)
+
+    def addItem(self, item, *args):
+        suffix = QString("%")
+        item += suffix
+        QComboBox.addItem(self, item, *args)
+
+    def addItems(self, items):
+        for item in items:
+            self.addItem(item)
+
 
 class SettingsDialog(QDialog):
 
@@ -35,27 +49,32 @@ class SettingsDialog(QDialog):
         labTit = QLabel("<b>Quality Control:</b>")
         lab1 = QLabel("E(ct) maximum :")
         self.ectLineEdit = QLineEdit("%.2f" % ect)
+        self.ectLineEdit.setValidator(QDoubleValidator(self))
         lab1.setBuddy(self.ectLineEdit)
         lab2 = QLabel("Negative ct maximum :")
         self.ctMinLineEdit = QLineEdit("%.2f" % ctmin)
+        self.ctMinLineEdit.setValidator(QDoubleValidator(self))
         lab2.setBuddy(self.ctMinLineEdit)
         lab3 = QLabel("Confidence level :")
-        self.confCbox = QComboBox()
-        conf = "%.2f%%" % (100*confidence)
+        self.confCbox = SuffixComboBox()
+        conf = '%.2f' % (100*confidence)
         liste = OrderedDict()
-        liste['75.00%'] = 0
-        liste['80.00%'] = 1
-        liste['85.00%'] = 2
-        liste['90.00%'] = 3
-        liste['95.00%'] = 4
-        liste['97.50%'] = 5
-        liste['99.00%'] = 6
-        liste['99.50%'] = 7
-        liste['99.75%'] = 8
-        liste['99.90%'] = 9
-        liste['99.95%'] = 10
+        liste['75.00'] = 0
+        liste['80.00'] = 1
+        liste['85.00'] = 2
+        liste['90.00'] = 3
+        liste['95.00'] = 4
+        liste['97.50'] = 5
+        liste['99.00'] = 6
+        liste['99.50'] = 7
+        liste['99.75'] = 8
+        liste['99.90'] = 9
+        liste['99.95'] = 10
         self.confCbox.addItems(liste.keys())
-        self.confCbox.setCurrentIndex(liste[conf])
+        try:
+            self.confCbox.setCurrentIndex(liste[conf])
+        except KeyError:
+            self.confCbox.setCurrentIndex(4)
         lab3.setBuddy(self.confCbox)
 
         buttonBox = QDialogButtonBox(QDialogButtonBox.Ok|

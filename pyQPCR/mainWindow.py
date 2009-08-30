@@ -124,20 +124,14 @@ class Qpcr_qt(QMainWindow):
 # Settings pour sauvegarde de l'application
         settings = QSettings()
         self.recentFiles = settings.value("RecentFiles").toStringList()
-        self.ectMax = settings.value("EctMax").toString()
-        try:
-            self.ectMax = float(self.ectMax)
-        except ValueError:
+        self.ectMax, status = settings.value("EctMax").toDouble()
+        if not status:
             self.ectMax = 0.3
-        self.ctMin = settings.value("ctMin").toString()
-        try:
-            self.ctMin = float(self.ctMin)
-        except ValueError:
+        self.ctMin, status = settings.value("ctMin").toDouble()
+        if not status:
             self.ctMin = 35.
-        self.confidence = settings.value("confidence").toString()
-        try:
-            self.confidence = float(self.confidence)
-        except ValueError:
+        self.confidence, status = settings.value("confidence").toDouble()
+        if not status:
             self.confidence = 0.9
         geom = settings.value("Geometry").toByteArray()
         self.restoreGeometry(geom)
@@ -717,12 +711,12 @@ class Qpcr_qt(QMainWindow):
                 os.remove(file)
 
     def configure(self):
-        dialog = SettingsDialog(self, ect=float(self.ectMax),
-                                ctmin=float(self.ctMin),
-                                confidence=float(self.confidence))
+        dialog = SettingsDialog(self, ect=self.ectMax,
+                                ctmin=self.ctMin,
+                                confidence=self.confidence)
         if dialog.exec_():
-            self.ectMax = float(dialog.ectLineEdit.text())
-            self.ctMin = float(dialog.ctMinLineEdit.text())
+            self.ectMax, st = dialog.ectLineEdit.text().toFloat()
+            self.ctMin, st = dialog.ctMinLineEdit.text().toFloat()
             self.confidence = float(dialog.confCbox.currentText()[:-1])/100
 
     def helpAbout(self):
@@ -1008,13 +1002,13 @@ class Qpcr_qt(QMainWindow):
 
     def computeUnknown(self):
 # On verifie la qualite des negative control
-        self.checkNegative(float(self.ctMin))
+        self.checkNegative(self.ctMin)
 # On fixe le gene de reference et le triplicat de reference
         self.setRefs()
 # On construit tous les triplicats
         if hasattr(self.plaque, "geneRef") and hasattr(self.plaque, "echRef"):
             try:
-                self.plaque.findTriplicat(float(self.ectMax))
+                self.plaque.findTriplicat(self.ectMax)
             except ValueError:
                 brokenWells = []
                 for well in self.plaque.listePuits:
@@ -1062,8 +1056,8 @@ class Qpcr_qt(QMainWindow):
         """
         size = int(self.cboxFontsize.value())
         self.mplCanUnknown.axes.cla()
-        width = float(self.spinWidth.value())
-        spacing = float(self.spinSpacing.value())
+        width = self.spinWidth.value()
+        spacing = self.spinSpacing.value()
         colors = [QColor(Qt.blue), QColor(Qt.red), QColor(Qt.green), 
                   QColor(Qt.yellow), QColor(Qt.magenta),
                   QColor(Qt.cyan), QColor(Qt.gray),
