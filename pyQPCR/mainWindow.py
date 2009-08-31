@@ -722,7 +722,6 @@ class Qpcr_qt(QMainWindow):
             self.ctMin, st = dialog.ctMinLineEdit.text().toFloat()
             self.confidence, st = dialog.confCbox.currentText().toFloat()
             self.confidence /= 100
-            print self.confidence
 
     def helpAbout(self):
         import platform
@@ -1097,7 +1096,7 @@ class Qpcr_qt(QMainWindow):
                                 listNRQ.append(localDict[ech.name].NRQ)
                                 listNRQerror.append(localDict[ech.name].NRQerror)
                                 if ind == 0:
-                                    xlabel.append(ech.name)
+                                    xlabel.append(str(ech.name))
                             nech += 1
 # Au cas ou tous les puits d'un gene sont desactives
                     if len(listNRQ) == nech:
@@ -1107,7 +1106,7 @@ class Qpcr_qt(QMainWindow):
                                 listNRQ, width, color=str(gene.color.name()), 
                                 yerr=listNRQerror, ecolor='k')
                         legPos.append(p[0])
-                        legName.append(gene.name)
+                        legName.append(str(gene.name))
                         ind += 1
             self.mplCanUnknown.axes.set_xticks( \
                            linspace(0, valmax, nech)+ind/2.*width)
@@ -1128,7 +1127,7 @@ class Qpcr_qt(QMainWindow):
                                 listNRQ.append(localDict[gene.name].NRQ)
                                 listNRQerror.append(localDict[gene.name].NRQerror)
                                 if ind == 0:
-                                    xlabel.append(gene.name)
+                                    xlabel.append(str(gene.name))
                                 ngene += 1
                     if len(listNRQ) == ngene:
                         valmax = spacing * (len(listNRQ)-1)
@@ -1137,7 +1136,7 @@ class Qpcr_qt(QMainWindow):
                                 listNRQ, width, color=str(ech.color.name()), 
                                 yerr=listNRQerror, ecolor='k')
                         legPos.append(p[0])
-                        legName.append(ech.name)
+                        legName.append(str(ech.name))
                         ind += 1
             self.mplCanUnknown.axes.set_xticks( \
                           linspace(0, valmax, ngene)+ind/2.*width)
