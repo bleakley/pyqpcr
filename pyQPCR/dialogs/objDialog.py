@@ -66,6 +66,7 @@ class PropDialog(QDialog):
         layout.addLayout(hlayout)
         layout.addWidget(buttonBox)
         self.setLayout(layout)
+        self.whois = None
 
         self.connect(buttonBox, SIGNAL("accepted()"), self, SLOT("accept()"))
         self.connect(buttonBox, SIGNAL("rejected()"), self, SLOT("reject()"))
@@ -74,9 +75,21 @@ class PropDialog(QDialog):
         self.connect(buttonColor, SIGNAL("clicked()"), self.color)
         self.connect(self.geneListWidget, SIGNAL("itemSelectionChanged()"),
                      self.unselectEch)
+        self.connect(self.geneListWidget, 
+                     SIGNAL("itemActivated(QListWidgetItem *)"),
+                     self.chooseGeneList)
         self.connect(self.echListWidget, SIGNAL("itemSelectionChanged()"),
                      self.unselectGene)
+        self.connect(self.echListWidget, 
+                     SIGNAL("itemActivated(QListWidgetItem *)"),
+                     self.chooseEchList)
         self.setWindowTitle("Plot properties")
+
+    def chooseGeneList(self):
+        self.whois = "geneList"
+
+    def chooseEchList(self):
+        self.whois = "echList"
 
     def accept(self):
         for ind, it in enumerate(self.listGene):
@@ -161,13 +174,28 @@ class PropDialog(QDialog):
 
     def color(self):
         pix = QPixmap(32, 32)
-        item = self.geneListWidget.currentItem()
-        row = self.geneListWidget.currentRow()
-        col = self.listGene[row].color
-        color = QColorDialog.getColor(col, self)
-        pix.fill(color)
-        item.setIcon(QIcon(pix))
-        self.listGene[row].setColor(color)
+        if self.whois == "geneList":
+            item = self.geneListWidget.currentItem()
+            row = self.geneListWidget.currentRow()
+            col = self.listGene[row].color
+            dialog = QColorDialog(self)
+            dialog.setCurrentColor(col)
+            if dialog.exec_():
+                color = dialog.currentColor()
+                pix.fill(color)
+                item.setIcon(QIcon(pix))
+                self.listGene[row].setColor(color)
+        elif self.whois == "echList":
+            item = self.echListWidget.currentItem()
+            row = self.echListWidget.currentRow()
+            col = self.listEch[row].color
+            dialog = QColorDialog(self)
+            dialog.setCurrentColor(col)
+            if dialog.exec_():
+                color = dialog.currentColor()
+                pix.fill(color)
+                item.setIcon(QIcon(pix))
+                self.listEch[row].setColor(color)
 
 
 if __name__=="__main__":
