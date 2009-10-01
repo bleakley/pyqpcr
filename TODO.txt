@@ -60,6 +60,7 @@ fenêtre d'édition.
 
 16°) Problème lors de l'édition des couleurs : seule la partie pour les gènes est
 implémentée. Pb pour les échantillons.
+Fait
 
 17°) bug avec editDialog : quand on fait add (n'importe lequel), qu'on modifie le nom et qu'on revient l'item courant n'est pas le bon
 Fait
