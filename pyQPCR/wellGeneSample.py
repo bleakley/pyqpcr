@@ -249,8 +249,8 @@ class Puits:
     def setGene(self, gene):
         self.gene = gene
 
-    def setEch(self, name):
-        self.ech = name
+    def setEch(self, ech):
+        self.ech = ech
 
     def setType(self, name):
         self.type = QString(name)
