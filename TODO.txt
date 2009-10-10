@@ -64,3 +64,6 @@ Fait
 
 17°) bug avec editDialog : quand on fait add (n'importe lequel), qu'on modifie le nom et qu'on revient l'item courant n'est pas le bon
 Fait
+
+18°) plot unknown: si il manque un échantillon, tracer tous les autres, pas de
+barre pour celui qui est faux.
