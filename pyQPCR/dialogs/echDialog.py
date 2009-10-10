@@ -132,8 +132,8 @@ class EchDialog(QDialog):
             self.populateList()
 # On ajuste les puits de la plaque concernes sur l'echantillon vide
 # a condition que le puit soit concerne
-            if self.plaque.dicoEch.has_key(QString(ech.name)):
-                for well in self.plaque.dicoEch[QString(ech.name)]:
+            if self.plaque.dicoEch.has_key(ech.name):
+                for well in self.plaque.dicoEch[ech.name]:
                     well.setEch(Ech(''))
 
 class AddEchDialog(QDialog):
