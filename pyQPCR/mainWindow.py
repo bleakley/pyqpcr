@@ -421,9 +421,8 @@ class Qpcr_qt(QMainWindow):
         self.statusBar().showMessage(message, time)
 
     def fileOpen(self):
-        if hasattr(self, "plaque"):
-            if not self.okToContinue():
-                return
+        if not self.okToContinue():
+            return
         dir = os.path.dirname(self.filename) if self.filename is not None \
                 else "."
         formats =[u"*.txt", u"*.csv"]
@@ -438,9 +437,8 @@ class Qpcr_qt(QMainWindow):
             action = self.sender()
             if isinstance(action, QAction):
                 fname = unicode(action.data().toString())
-                if hasattr(self, "plaque"):
-                    if not self.okToContinue():
-                        return
+                if not self.okToContinue():
+                    return
         if fname:
             self.setWindowTitle("pyQPCR - %s[*]" % QFileInfo(fname).fileName())
             self.addRecentFile(fname)
@@ -793,15 +791,16 @@ class Qpcr_qt(QMainWindow):
             event.ignore()
 
     def okToContinue(self):
-        if self.plaque.unsaved:
-            reponse = QMessageBox.question(self,
-                    "pyQPCR - Unsaved Changes",
-                    "Save unsaved changes?",
-                    QMessageBox.Yes|QMessageBox.No|QMessageBox.Cancel)
-            if reponse == QMessageBox.Cancel:
-                return False
-            elif reponse == QMessageBox.Yes:
-                self.fileSave()
+        if hasattr(self, "plaque"):
+            if self.plaque.unsaved:
+                reponse = QMessageBox.question(self,
+                        "pyQPCR - Unsaved Changes",
+                        "Save unsaved changes?",
+                        QMessageBox.Yes|QMessageBox.No|QMessageBox.Cancel)
+                if reponse == QMessageBox.Cancel:
+                    return False
+                elif reponse == QMessageBox.Yes:
+                    self.fileSave()
         return True
 
     def redo(self):
