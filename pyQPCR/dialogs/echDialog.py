@@ -118,6 +118,7 @@ class EchDialog(QDialog):
                     well.setEch(ech)
                 self.plaque.dicoEch.__delitem__(ech_before)
                 self.plaque.adresseEch.__delitem__(ech_before)
+                self.plaque.unsaved = True
 
     def remove(self):
         echs = []
@@ -139,6 +140,7 @@ class EchDialog(QDialog):
                     self.plaque.setDicoEch()
                     self.plaque.listEch.__delitem__( \
                               self.plaque.adresseEch[ech.name])
+                self.plaque.unsaved = True
                 self.populateList()
 
 class AddEchDialog(QDialog):
