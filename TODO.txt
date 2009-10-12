@@ -67,3 +67,4 @@ Fait
 
 18°) plot unknown: si il manque un échantillon, tracer tous les autres, pas de
 barre pour celui qui est faux.
+Fait

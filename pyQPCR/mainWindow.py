@@ -40,7 +40,6 @@ class Qpcr_qt(QMainWindow):
         QMainWindow.__init__(self, parent)
  
         self.filename = None
-        self.unsaved = False
         self.printer = None
 
         self.tree = QTreeWidget()
@@ -438,8 +437,9 @@ class Qpcr_qt(QMainWindow):
             action = self.sender()
             if isinstance(action, QAction):
                 fname = unicode(action.data().toString())
-                if not self.okToContinue():
-                    return
+                if hasattr(self, "plaque"):
+                    if not self.okToContinue():
+                        return
         if fname:
             self.setWindowTitle("pyQPCR - %s[*]" % QFileInfo(fname).fileName())
             self.addRecentFile(fname)
@@ -586,7 +586,7 @@ class Qpcr_qt(QMainWindow):
     def fileSave(self):
         self.plaque.write(self.filename)
         self.updateStatus("Saved %s" % self.filename)
-        self.unsaved = False
+        self.plaque.unsaved = False
         self.fileSaveAction.setEnabled(False)
 
     def fileSaveAs(self):
@@ -792,7 +792,7 @@ class Qpcr_qt(QMainWindow):
             event.ignore()
 
     def okToContinue(self):
-        if self.unsaved:
+        if self.plaque.unsaved:
             reponse = QMessageBox.question(self,
                     "pyQPCR - Unsaved Changes",
                     "Save unsaved changes?",
@@ -813,6 +813,12 @@ class Qpcr_qt(QMainWindow):
         self.populateTable()
         self.populateResult()
         self.populateTree()
+        if self.undoInd == 0 or self.undoInd == -len(self.plaqueStack):
+            self.plaque.unsaved = False
+            self.fileSaveAction.setEnabled(False)
+        else:
+            self.plaque.unsaved = True
+            self.fileSaveAction.setEnabled(True)
 
     def undo(self):
         if abs(self.undoInd) < abs(len(self.plaqueStack)):
@@ -828,8 +834,11 @@ class Qpcr_qt(QMainWindow):
         self.populateTree()
 # Si on remonte tous les undo pas besoin de sauvegarder
         if self.undoInd == 0 or self.undoInd == -len(self.plaqueStack):
-            self.unsaved = False
+            self.plaque.unsaved = False
             self.fileSaveAction.setEnabled(False)
+        else:
+            self.plaque.unsaved = True
+            self.fileSaveAction.setEnabled(True)
 
     def editWell(self):
         setType = set()
@@ -851,7 +860,7 @@ class Qpcr_qt(QMainWindow):
             self.plaque.setDicoGene()
             self.plaque.setDicoEch()
             self.plaqueStack.append(copy.deepcopy(self.plaque))
-        self.unsaved = True
+        self.plaque.unsaved = True
         self.fileSaveAction.setEnabled(True)
         self.populateTable()
         self.populateResult()
@@ -862,6 +871,7 @@ class Qpcr_qt(QMainWindow):
             plaque = dialog.plaque
             self.populateCbox(self.geneComboBox, plaque.listGene, "Target")
             self.plaque = plaque
+            self.fileSaveAction.setEnabled(self.plaque.unsaved)
             self.plaque.setDicoGene()
             self.plaqueStack.append(copy.deepcopy(self.plaque))
         self.populateTable()
@@ -874,6 +884,7 @@ class Qpcr_qt(QMainWindow):
             plaque = dialog.plaque
             self.populateCbox(self.echComboBox, plaque.listEch, "Sample")
             self.plaque = plaque
+            self.fileSaveAction.setEnabled(self.plaque.unsaved)
             self.plaque.setDicoEch()
             self.plaqueStack.append(copy.deepcopy(self.plaque))
         self.populateTable()
@@ -897,7 +908,7 @@ class Qpcr_qt(QMainWindow):
             nom = it.statusTip()
             well = getattr(self.plaque, str(nom))
             well.setGene(gene)
-        self.unsaved = True
+        self.plaque.unsaved = True
         self.fileSaveAction.setEnabled(True)
         self.plaque.setDicoGene()
         self.plaqueStack.append(copy.deepcopy(self.plaque))
@@ -910,7 +921,7 @@ class Qpcr_qt(QMainWindow):
             nom = it.statusTip()
             well = getattr(self.plaque, str(nom))
             well.setEch(ech)
-        self.unsaved = True
+        self.plaque.unsaved = True
         self.fileSaveAction.setEnabled(True)
         self.plaque.setDicoEch()
         self.plaqueStack.append(copy.deepcopy(self.plaque))
@@ -924,7 +935,7 @@ class Qpcr_qt(QMainWindow):
             nom = it.statusTip()
             well = getattr(self.plaque, str(nom))
             well.setAmount(float(am))
-        self.unsaved = True
+        self.plaque.unsaved = True
         self.fileSaveAction.setEnabled(True)
         self.plaque.setDicoAm()
         self.plaqueStack.append(copy.deepcopy(self.plaque))
@@ -937,7 +948,7 @@ class Qpcr_qt(QMainWindow):
             nom = it.statusTip()
             well = getattr(self.plaque, str(nom))
             well.setType(type)
-        self.unsaved = True
+        self.plaque.unsaved = True
         self.fileSaveAction.setEnabled(True)
         self.plaqueStack.append(copy.deepcopy(self.plaque))
         self.populateTable()
@@ -949,7 +960,7 @@ class Qpcr_qt(QMainWindow):
             nom = it.statusTip()
             well = getattr(self.plaque, str(nom))
             well.setEnabled(True)
-        self.unsaved = True
+        self.plaque.unsaved = True
         self.fileSaveAction.setEnabled(True)
         self.plaqueStack.append(copy.deepcopy(self.plaque))
         self.populateTable()
@@ -965,7 +976,7 @@ class Qpcr_qt(QMainWindow):
             well.setCtdev('')
             well.setNRQ('')
             well.setNRQerror('')
-        self.unsaved = True
+        self.plaque.unsaved = True
         self.fileSaveAction.setEnabled(True)
         self.plaqueStack.append(copy.deepcopy(self.plaque))
         self.populateTable()
@@ -1047,7 +1058,7 @@ class Qpcr_qt(QMainWindow):
             self.geneStdBox.addItems(self.plaque.dicoStd.keys())
             # Calcul des courbes standards
             self.plaque.calcStd(self.confidence)
-            self.unsaved = True
+            self.plaque.unsaved = True
             self.fileSaveAction.setEnabled(True)
             self.plaqueStack.append(copy.deepcopy(self.plaque))
             self.populateResult()

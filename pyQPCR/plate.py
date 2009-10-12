@@ -36,6 +36,7 @@ class Plaque:
     
     def __init__(self, filename):
         self.filename = filename
+        self.unsaved = False
 
         self.listePuits = []
         self.listGene = [Gene('')]

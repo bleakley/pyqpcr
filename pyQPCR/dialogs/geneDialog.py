@@ -131,6 +131,7 @@ class GeneDialog(QDialog):
                     well.setGene(gene)
                 self.plaque.dicoGene.__delitem__(gene_before)
                 self.plaque.adresseGene.__delitem__(gene_before)
+                self.plaque.unsaved = True
 
     def remove(self):
         genes = []
@@ -153,6 +154,7 @@ class GeneDialog(QDialog):
                     self.plaque.listGene.__delitem__( \
                                   self.plaque.adresseGene[gene.name])
                 self.populateList()
+                self.plaque.unsaved = True
 
 class AddGeneDialog(QDialog):
     
