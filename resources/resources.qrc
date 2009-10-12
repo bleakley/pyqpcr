@@ -19,6 +19,8 @@
 <file alias="disable.png">icons/disable.png</file>
 <file alias="enable.png">icons/enable.png</file>
 <file alias="home.png">icons/home.png</file>
+<file alias="zoom.png">icons/zoom.png</file>
+<file alias="move.png">icons/move.png</file>
 <file alias="back.png">icons/back.png</file>
 <file alias="next.png">icons/next.png</file>
 <file alias="settings.png">icons/settings.png</file>

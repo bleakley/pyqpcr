@@ -18,12 +18,15 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 from PyQt4.QtGui import *
-from PyQt4.QtCore import QSize
+from PyQt4.QtCore import *
 from pyQPCR.wellGeneSample import *
+import pyQPCR.qrc_resources
+import matplotlib
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt4 import NavigationToolbar2QT
 from matplotlib.figure import Figure
 import re
+import os
 import pyQPCR.qrc_resources
 
 __author__ = "$Author$"
@@ -115,4 +118,47 @@ class MatplotlibWidget(FigureCanvas):
 
     def minimumSizeHint(self):
         return QSize(10, 10)
+
+class NavToolBar(NavigationToolbar2QT):
+
+    def __init__(self, canvas, parent, coordinates=True):
+        NavigationToolbar2QT.__init__(self, canvas, parent, coordinates)
+
+    def _init_toolbar(self):
+        """
+        modification of the toolbar definition in order to get
+        the oxygen icons in the matplotib toolbar
+        """
+        a = self.addAction(QIcon(':/home.png'), 'Home', self.home)
+        a.setToolTip('Reset original view')
+        a = self.addAction(QIcon(':/undo.png'), 'Back', self.back)
+        a.setToolTip('Back to previous view')
+        a = self.addAction(QIcon(':/redo.png'), 'Forward', self.forward)
+        a.setToolTip('Forward to next view')
+        self.addSeparator()
+        a = self.addAction(QIcon(':/move.png'), 'Pan', self.pan)
+        a.setToolTip('Pan axes with left mouse, zoom with right')
+        a = self.addAction(QIcon(':/zoom.png'), 'Zoom', self.zoom)
+        a.setToolTip('Zoom to rectangle')
+        self.addSeparator()
+        a = self.addAction(QIcon(':/settings.png'), 'Subplots',
+                self.configure_subplots)
+        a.setToolTip('Configure subplots')
+        a = self.addAction(QIcon(':/filesave.png'), 'Save',
+                self.save_figure)
+        a.setToolTip('Save the figure')
+
+        self.buttons = {}
+
+        if self.coordinates:
+            self.locLabel = QLabel( "", self )
+            self.locLabel.setAlignment(Qt.AlignRight|Qt.AlignTop )
+            self.locLabel.setSizePolicy( QSizePolicy(QSizePolicy.Expanding,
+                                  QSizePolicy.Ignored))
+            labelAction = self.addWidget(self.locLabel)
+            labelAction.setVisible(True)
+
+        # reference holder for subplots_adjust window
+        self.adj_window = None
+
 
