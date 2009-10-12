@@ -36,6 +36,7 @@ class EchDialog(QDialog):
 
         self.listWidget = QListWidget()
         self.listWidget.setAlternatingRowColors(True)
+        self.listWidget.setSelectionMode(3)
         if plaque is not None:
             self.plaque = copy.deepcopy(plaque)
             self.populateList()
@@ -119,22 +120,26 @@ class EchDialog(QDialog):
                 self.plaque.adresseEch.__delitem__(ech_before)
 
     def remove(self):
-        row = self.listWidget.currentRow()
-        ech = self.plaque.listEch[row+1]
-        item = self.listWidget.item(row)
-        if item is None:
+        echs = []
+        if len(self.listWidget.selectedItems()) == 0:
             return
+        for it in self.listWidget.selectedItems():
+            row = self.plaque.adresseEch[it.text()]
+            ech = self.plaque.listEch[row]
+            echs.append(ech)
+
         reply = QMessageBox.question(self, "Remove",
-                        "Remove %s ?" % ech,
+                        "Remove %s ?" % echs,
                         QMessageBox.Yes|QMessageBox.No)
         if reply == QMessageBox.Yes:
-            self.plaque.listEch.__delitem__(row+1)
-            self.populateList()
-# On ajuste les puits de la plaque concernes sur l'echantillon vide
-# a condition que le puit soit concerne
-            if self.plaque.dicoEch.has_key(ech.name):
-                for well in self.plaque.dicoEch[ech.name]:
-                    well.setEch(Ech(''))
+            for ech in echs:
+                if self.plaque.dicoEch.has_key(ech.name):
+                    for well in self.plaque.dicoEch[ech.name]:
+                        well.setEch(Ech(''))
+                    self.plaque.setDicoEch()
+                    self.plaque.listEch.__delitem__( \
+                              self.plaque.adresseEch[ech.name])
+                self.populateList()
 
 class AddEchDialog(QDialog):
     

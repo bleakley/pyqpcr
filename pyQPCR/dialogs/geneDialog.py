@@ -35,6 +35,7 @@ class GeneDialog(QDialog):
 
         self.listWidget = QListWidget()
         self.listWidget.setAlternatingRowColors(True)
+        self.listWidget.setSelectionMode(3)
         if plaque is not None:
             self.plaque = copy.deepcopy(plaque)
             self.populateList()
@@ -73,6 +74,7 @@ class GeneDialog(QDialog):
             item = QListWidgetItem(name)
             if it.isRef == Qt.Checked:
                 item.setIcon(QIcon(":/reference.png"))
+            item.setStatusTip(it.name)
             self.listWidget.addItem(item)
 
     def add(self):
@@ -131,22 +133,26 @@ class GeneDialog(QDialog):
                 self.plaque.adresseGene.__delitem__(gene_before)
 
     def remove(self):
-        row = self.listWidget.currentRow()
-        gene = self.plaque.listGene[row+1]
-        item = self.listWidget.item(row)
-        if item is None:
+        genes = []
+        if len(self.listWidget.selectedItems()) == 0:
             return
+        for it in self.listWidget.selectedItems():
+            row = self.plaque.adresseGene[it.statusTip()]
+            gene = self.plaque.listGene[row]
+            genes.append(gene)
+
         reply = QMessageBox.question(self, "Remove",
-                        "Remove %s ?" % (item.text()),
+                        "Remove %s ?" % genes,
                         QMessageBox.Yes|QMessageBox.No)
         if reply == QMessageBox.Yes:
-            self.plaque.listGene.__delitem__(row+1)
-            self.populateList()
-# On repasse les puits de la plaque sur le gene vide
-# a condition que des puits soient concernes
-            if self.plaque.dicoGene.has_key(gene.name):
-                for well in self.plaque.dicoGene[gene.name]:
-                    well.setGene(Gene(''))
+            for gene in genes:
+                if self.plaque.dicoGene.has_key(gene.name):
+                    for well in self.plaque.dicoGene[gene.name]:
+                        well.setGene(Gene(''))
+                    self.plaque.setDicoGene()
+                    self.plaque.listGene.__delitem__( \
+                                  self.plaque.adresseGene[gene.name])
+                self.populateList()
 
 class AddGeneDialog(QDialog):
     
