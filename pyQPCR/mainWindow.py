@@ -186,7 +186,7 @@ class Qpcr_qt(QMainWindow):
         vLayout = QVBoxLayout()
         self.mplCanUnknown = MatplotlibWidget(self.plotUnknownWidget, width=5,
                                               height=4, dpi=100)
-        toolBar = NavigationToolbar2QT(self.mplCanUnknown, self)
+        toolBar = NavToolBar(self.mplCanUnknown, self)
         vLayout.addWidget(toolBar)
         vLayout.addWidget(self.mplCanUnknown)
         hLayout = QHBoxLayout()
@@ -224,7 +224,7 @@ class Qpcr_qt(QMainWindow):
         vLayout = QVBoxLayout()
         self.mplCanStd = MatplotlibWidget(self.plotUnknownWidget, width=5, 
                                           height=4, dpi=100)
-        toolBar = NavigationToolbar2QT(self.mplCanStd, self)
+        toolBar = NavToolBar(self.mplCanStd, self)
         vLayout.addWidget(toolBar)
         vLayout.addWidget(self.mplCanStd)
 
@@ -421,8 +421,9 @@ class Qpcr_qt(QMainWindow):
         self.statusBar().showMessage(message, time)
 
     def fileOpen(self):
-        if not self.okToContinue():
-            return
+        if hasattr(self, "plaque"):
+            if not self.okToContinue():
+                return
         dir = os.path.dirname(self.filename) if self.filename is not None \
                 else "."
         formats =[u"*.txt", u"*.csv"]
