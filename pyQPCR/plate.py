@@ -485,8 +485,8 @@ class Replicate(QDialog):
         if self.ctdev >= self.ectMax:
             if self.type == QString('unknown'):
                 QMessageBox.warning(self, "Warning Replicates",
-                    "Warning: E(ct) of replicate (%s, %s) greater than %.2f" \
-                    % (self.gene, self.ech, self.ectMax))
+                    "<b>Warning</b>: E(ct) of replicate (%s, %s) greater than %.2f (E(ct)=%.2f)" \
+                    % (self.gene, self.ech, self.ectMax, self.ctdev))
             elif self.type == QString('standard'):
                 QMessageBox.warning(self, "Warning Replicates",
                     "Warning: E(ct) of replicate (%s, %s) greater than %.2f" \

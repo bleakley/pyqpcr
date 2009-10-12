@@ -25,7 +25,7 @@ from pyQPCR.dialogs import *
 from pyQPCR.plate import Plaque
 import matplotlib
 from numpy import linspace, log10, log, sqrt, sum, mean, polyfit, polyval, \
-        asarray, append, array
+        asarray, append, array, delete
 from scipy.stats import t
 import os
 import copy
@@ -983,7 +983,7 @@ class Qpcr_qt(QMainWindow):
             if well.type == QString('negative'):
                 if well.ct <= ctMin:
                     QMessageBox.warning(self, "Warning Negative",
-                               "Warning: ct of well %s lower than %.2f" \
+                               "<b>Warning</b>: ct of well %s lower than %.2f" \
                                         % (well.name, ctMin))
 
     def setRefs(self):
@@ -1086,7 +1086,7 @@ class Qpcr_qt(QMainWindow):
         if self.cboxSens.currentIndex() == 0:
             ind = 0
             for gene in self.plaque.listGene[1:]:
-                listNRQ = [] ; listNRQerror = []
+                listNRQ = [] ; listNRQerror = [] ; poped = []
                 if gene.enabled == Qt.Checked:
                     localDict = self.plaque.dicoTrip.getRow(gene.name)
                     nech = 0
@@ -1095,29 +1095,37 @@ class Qpcr_qt(QMainWindow):
                             if localDict.has_key(ech.name):
                                 listNRQ.append(localDict[ech.name].NRQ)
                                 listNRQerror.append(localDict[ech.name].NRQerror)
-                                if ind == 0:
+                                if not xlabel.__contains__(str(ech.name)):
                                     xlabel.append(str(ech.name))
+                            else:
+                                poped.append(nech)
                             nech += 1
-# Au cas ou tous les puits d'un gene sont desactives
-                    if len(listNRQ) == nech:
-                        valmax = spacing * (len(listNRQ)-1)
-                        p = self.mplCanUnknown.axes.bar( \
-                                linspace(0, valmax, len(listNRQ))+ind*width, 
-                                listNRQ, width, color=str(gene.color.name()), 
-                                yerr=listNRQerror, ecolor='k')
-                        legPos.append(p[0])
-                        legName.append(str(gene.name))
-                        ind += 1
+                    valmax = spacing * (nech-1)
+                    valx =linspace(0, valmax, nech) + ind*width
+                    if len(listNRQ) != nech:
+                        QMessageBox.warning(self, "Warning sample",
+                                   "<b>Warning</b>: the replicate (%s, %s)" \
+                                   " doesn't seem to be defined !" \
+                                   " Results may be wrong !" \
+                                    % (gene.name, xlabel[poped[0]]))
+                        valx = delete(valx, poped)
+                    p = self.mplCanUnknown.axes.bar(valx, 
+                            listNRQ, width, color=str(gene.color.name()), 
+                            yerr=listNRQerror, ecolor='k')
+                    legPos.append(p[0])
+                    legName.append(str(gene.name))
+                    ind += 1
             self.mplCanUnknown.axes.set_xticks( \
                            linspace(0, valmax, nech)+ind/2.*width)
             self.mplCanUnknown.axes.set_xticklabels(xlabel, fontsize=size)
+            self.mplCanUnknown.axes.set_ylim(ymin=0.)
             self.nplotGene += 1
 
 # Ech vs Gene
         elif self.cboxSens.currentIndex() == 1:
             ind = 0
             for ech in self.plaque.listEch[1:]:
-                listNRQ = [] ; listNRQerror = []
+                listNRQ = [] ; listNRQerror = [] ; poped = []
                 if ech.enabled == Qt.Checked:
                     localDict = self.plaque.dicoTrip.getColumn(ech.name)
                     ngene = 0
@@ -1126,21 +1134,30 @@ class Qpcr_qt(QMainWindow):
                             if localDict.has_key(gene.name):
                                 listNRQ.append(localDict[gene.name].NRQ)
                                 listNRQerror.append(localDict[gene.name].NRQerror)
-                                if ind == 0:
+                                if not xlabel.__contains__(str(gene.name)):
                                     xlabel.append(str(gene.name))
-                                ngene += 1
-                    if len(listNRQ) == ngene:
-                        valmax = spacing * (len(listNRQ)-1)
-                        p = self.mplCanUnknown.axes.bar( \
-                                linspace(0, valmax, len(listNRQ))+ind*width, 
-                                listNRQ, width, color=str(ech.color.name()), 
-                                yerr=listNRQerror, ecolor='k')
-                        legPos.append(p[0])
-                        legName.append(str(ech.name))
-                        ind += 1
+                            else:
+                                poped.append(ngene)
+                            ngene += 1
+                    valmax = spacing * (ngene-1)
+                    valx = linspace(0, valmax, ngene) + ind*width
+                    if len(listNRQ) != ngene:
+                        QMessageBox.warning(self, "Warning gene",
+                                   "<b>Warning</b>: the replicate (%s, %s)" \
+                                   " doesn't seem to be defined !" \
+                                   " Results may be wrong !" \
+                                    % (xlabel[poped[0]], ech.name))
+                        valx = delete(valx, poped)
+                    p = self.mplCanUnknown.axes.bar(valx,
+                            listNRQ, width, color=str(ech.color.name()), 
+                            yerr=listNRQerror, ecolor='k')
+                    legPos.append(p[0])
+                    legName.append(str(ech.name))
+                    ind += 1
             self.mplCanUnknown.axes.set_xticks( \
                           linspace(0, valmax, ngene)+ind/2.*width)
             self.mplCanUnknown.axes.set_xticklabels(xlabel, fontsize=size)
+            self.mplCanUnknown.axes.set_ylim(ymin=0.)
             self.nplotEch += 1
 
 # Legend + xlim
