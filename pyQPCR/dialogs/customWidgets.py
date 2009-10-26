@@ -123,6 +123,7 @@ class NavToolBar(NavigationToolbar2QT):
 
     def __init__(self, canvas, parent, coordinates=True):
         NavigationToolbar2QT.__init__(self, canvas, parent, coordinates)
+        self.setIconSize(QSize(16, 16))
 
     def _init_toolbar(self):
         """
