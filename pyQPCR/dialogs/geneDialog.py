@@ -109,6 +109,10 @@ class GeneDialog(QDialog):
             eff = dialog.eff.value()
             pm = dialog.pmerror.value()
             state = dialog.ref.checkState()
+# Si le gene etait gene de reference et qu'il est desactive
+# alors la plaque n'a plus de gene de reference
+            if gene.isRef == Qt.Checked and state == Qt.Unchecked:
+                delattr(self.plaque, "geneRef")
             gene.setRef(state)
             gene.setEff(eff)
             gene.setPm(pm)

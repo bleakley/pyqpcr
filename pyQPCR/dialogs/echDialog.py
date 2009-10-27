@@ -101,6 +101,11 @@ class EchDialog(QDialog):
         if dialog.exec_():
             name = dialog.ech.text()
             state = dialog.ref.checkState()
+# Si l'echantillon etait ech de reference et qu'il est desactive
+# alors la plaque n'a plus d'echantillon de reference
+            if ech.isRef == Qt.Checked and state == Qt.Unchecked:
+                delattr(self.plaque, "echRef")
+
             ech.setName(name)
             ech.setRef(state)
             if state == Qt.Checked:
