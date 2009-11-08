@@ -45,7 +45,8 @@ class SuffixComboBox(QComboBox):
 
 class SettingsDialog(QDialog):
 
-    def __init__(self, parent=None, ect=0.3, ctmin=35, confidence=0.9):
+    def __init__(self, parent=None, ect=0.3, ctmin=35, confidence=0.9,
+                 errtype="normal"):
         self.parent = parent
         QDialog.__init__(self, parent)
 
@@ -58,8 +59,22 @@ class SettingsDialog(QDialog):
         self.ctMinLineEdit = QLineEdit("%.2f" % ctmin)
         self.ctMinLineEdit.setValidator(QDoubleValidator(self))
         lab2.setBuddy(self.ctMinLineEdit)
-        lab3 = QLabel("Confidence level :")
+
+        labConf = QLabel("<b>Confidence interval :</b>")
+        lab3 = QLabel("Distribution type :")
+        self.typeCbox = QComboBox()
+        self.types = {}
+        self.types[QString('Gaussian')] = 'normal'
+        self.types[QString('Student t-test')] = 'student'
+        self.typeCbox.addItems(self.types.keys())
+        if errtype == "student":
+            self.typeCbox.setCurrentIndex(0)
+        else:
+            self.typeCbox.setCurrentIndex(1)
+
+        lab4 = QLabel("Confidence level :")
         self.confCbox = SuffixComboBox()
+
         conf = '%.2f' % (100*confidence)
         liste = OrderedDict()
         liste['75.00'] = 0
@@ -88,12 +103,18 @@ class SettingsDialog(QDialog):
         gLayout.addWidget(self.ectLineEdit, 0, 1)
         gLayout.addWidget(lab2, 1, 0)
         gLayout.addWidget(self.ctMinLineEdit, 1, 1)
-        gLayout.addWidget(lab3, 2, 0)
-        gLayout.addWidget(self.confCbox, 2, 1)
+
+        gLayout2 = QGridLayout()
+        gLayout2.addWidget(lab3, 0, 0)
+        gLayout2.addWidget(self.typeCbox, 0, 1)
+        gLayout2.addWidget(lab4, 1, 0)
+        gLayout2.addWidget(self.confCbox, 1, 1)
 
         layout = QVBoxLayout()
         layout.addWidget(labTit)
         layout.addLayout(gLayout)
+        layout.addWidget(labConf)
+        layout.addLayout(gLayout2)
         layout.addWidget(buttonBox)
         self.setLayout(layout)
 

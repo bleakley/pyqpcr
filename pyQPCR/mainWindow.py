@@ -26,7 +26,7 @@ from pyQPCR.plate import Plaque
 import matplotlib
 from numpy import linspace, log10, log, sqrt, sum, mean, polyfit, polyval, \
         asarray, append, array, delete
-from scipy.stats import t
+from scipy.stats import t, norm
 import os
 import copy
 
@@ -130,8 +130,10 @@ class Qpcr_qt(QMainWindow):
         if not status:
             self.ctMin = 35.
         self.confidence, status = settings.value("confidence").toDouble()
+        self.errtype = settings.value("errtype").toString()
         if not status:
             self.confidence = 0.9
+            self.errtype = "normal"
         geom = settings.value("Geometry").toByteArray()
         self.restoreGeometry(geom)
         self.restoreState(settings.value("MainWindow/State").toByteArray())
@@ -715,11 +717,14 @@ class Qpcr_qt(QMainWindow):
     def configure(self):
         dialog = SettingsDialog(self, ect=self.ectMax,
                                 ctmin=self.ctMin,
-                                confidence=self.confidence)
+                                confidence=self.confidence,
+                                errtype=self.errtype)
         if dialog.exec_():
             self.ectMax, st = dialog.ectLineEdit.text().toFloat()
             self.ctMin, st = dialog.ctMinLineEdit.text().toFloat()
             self.confidence, st = dialog.confCbox.currentText().toFloat()
+            errtype = dialog.typeCbox.currentText()
+            self.errtype = dialog.types[errtype]
             self.confidence /= 100
 
     def helpAbout(self):
@@ -780,7 +785,10 @@ class Qpcr_qt(QMainWindow):
             settings.setValue("ctMin", ctMin)
             confidence = QVariant(self.confidence) if self.confidence \
                   else QVariant()
+            errtype = QVariant(self.errtype) if self.errtype \
+                  else QVariant()
             settings.setValue("confidence", confidence)
+            settings.setValue("errtype", errtype)
             settings.setValue("Geometry", QVariant(self.saveGeometry()))
             settings.setValue("MainWindow/State", QVariant(self.saveState()))
             settings.setValue("VerticalSplitter", 
@@ -1022,7 +1030,8 @@ class Qpcr_qt(QMainWindow):
 # On construit tous les triplicats
         if hasattr(self.plaque, "geneRef") and hasattr(self.plaque, "echRef"):
             try:
-                self.plaque.findTriplicat(self.ectMax)
+                self.plaque.findTriplicat(self.ectMax, self.confidence,
+                                          self.errtype)
             except ValueError:
                 brokenWells = []
                 for well in self.plaque.listePuits:
@@ -1046,7 +1055,8 @@ class Qpcr_qt(QMainWindow):
     def computeStd(self):
 # On cherche les std
         try:
-            self.plaque.findStd(self.ectMax)
+            self.plaque.findStd(self.ectMax, self.confidence,
+                                self.errtype)
         except ValueError:
             self.displayWarnings()
             return
@@ -1057,7 +1067,7 @@ class Qpcr_qt(QMainWindow):
             self.geneStdBox.clear()
             self.geneStdBox.addItems(self.plaque.dicoStd.keys())
             # Calcul des courbes standards
-            self.plaque.calcStd(self.confidence)
+            self.plaque.calcStd(self.confidence, self.errtype)
             self.plaque.unsaved = True
             self.fileSaveAction.setEnabled(True)
             self.plaqueStack.append(copy.deepcopy(self.plaque))
@@ -1203,7 +1213,10 @@ class Qpcr_qt(QMainWindow):
         seps = sqrt(sum((yest-y)**2)/(len(y)-2)) # Formule 2
         sx = sqrt(sum((x-x.mean())**2)/(len(x))) # Formule 3
         stderr = seps / (sx*sqrt(len(x))) # Formule 4 corrigee
-        talpha = t.ppf(1.-(1.-self.confidence)/2., len(x)-2) # Student
+        if self.errtype == "student":
+            talpha = t.ppf(1.-(1.-self.confidence)/2., len(x)-2) # Student
+        elif self.errtype == "normal":
+            talpha = norm.ppf(1.-(1.-self.confidence)/2.) # Gaussian
         slopeerr = talpha * stderr
         eff = (10**(-1./slope)-1)*100 # Formule 5 adaptee
         # Erreur(Eff) = (Eff+100) * slopeerr / slope**2 

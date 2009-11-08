@@ -20,7 +20,7 @@
 import re
 import csv
 from pyQPCR.wellGeneSample import Ech, Gene, Puits
-from scipy.stats import t
+from scipy.stats import t, norm
 from PyQt4.QtCore import Qt, QString
 from PyQt4.QtGui import *
 from numpy import mean, std, sqrt, log, log10, polyval, polyfit, sum, \
@@ -289,7 +289,7 @@ class Plaque:
             self.echRef = self.listEch[ind]
             self.listEch[ind].setRef(Qt.Checked)
 
-    def findTriplicat(self, ectMax):
+    def findTriplicat(self, ectMax, confidence, errtype):
 # Elimination du gene avec la chaine vide puis calcul du ctref
         for g in self.listGene[1:]:
             if self.dicoGene.has_key(g.name):
@@ -309,7 +309,8 @@ class Plaque:
             if dicoEch.has_key(""):
                 dicoEch.pop("")
             for ech in dicoEch.keys():
-                trip = Replicate(dicoEch[ech], ectMax=ectMax)
+                trip = Replicate(dicoEch[ech], ectMax=ectMax, 
+                                 confidence=confidence, errtype=errtype)
                 if not hasattr(trip, "ctdev"):
                     # if ctdev undefined raise an exception
                     raise ValueError
@@ -317,7 +318,7 @@ class Plaque:
                 dicoEch[ech] = trip
                 self.dicoTrip[key] = dicoEch
             
-    def findStd(self, ectMax):
+    def findStd(self, ectMax, confidence, errtype):
         """
         This method allows to build a dictionnary for standard
         wells.
@@ -335,7 +336,8 @@ class Plaque:
                 dicoAmount.pop("")
             for amount in dicoAmount.keys():
                 trip = Replicate(dicoAmount[amount], type=QString('standard'),
-                                 ectMax=ectMax)
+                                 ectMax=ectMax, confidence=confidence, 
+                                 errtype=errtype)
                 if not hasattr(trip, "ctdev"):
                     # if ctdev undefined raise an exception
                     raise ValueError
@@ -371,7 +373,7 @@ class Plaque:
                 for well in self.dicoTrip[g][ech].listePuits:
                     well.setNRQerror(NRQerror)
 
-    def calcStd(self, confidence):
+    def calcStd(self, confidence, errtype):
         for geneName in self.dicoStd.keys():
             x = array([])
             y = array([])
@@ -384,7 +386,10 @@ class Plaque:
             seps = sqrt(sum((yest-y)**2)/(len(y)-2)) # Formule 2
             sx = sqrt(sum((x-x.mean())**2)/(len(x))) # Formule 3
             stderr = seps / (sx*sqrt(len(x))) # Formule 4 corrigee
-            talpha = t.ppf(1.-(1.-confidence)/2., len(x)-2) # Student
+            if errtype == "student":
+                talpha = t.ppf(1.-(1.-confidence)/2., len(x)-2) # Student
+            elif errtype == "normal":
+                talpha = norm.ppf(1.-(1.-confidence)/2.) # Gaussian
             slopeerr = talpha * stderr
             eff = (10**(-1./slope)-1)*100 # Formule 5 adaptee
             # Erreur(Eff) = (Eff+100) * slopeerr / slope**2
@@ -406,9 +411,11 @@ class Plaque:
 class Replicate(QDialog):
 
     def __init__(self, listePuits, type=QString('unknown'), 
-                 parent=None, ectMax=0.3):
+                 parent=None, ectMax=0.3, confidence=0.9, errtype="normal"):
         self.parent = parent
         self.ectMax = ectMax
+        self.confidence = confidence
+        self.errtype = errtype
         QDialog.__init__(self, parent)
         self.type = type
         self.listePuits = listePuits
@@ -474,8 +481,14 @@ class Replicate(QDialog):
             return
 
         if len(self.ctList) > 1:
-            self.ctdev = self.ctList.std() * sqrt(len(self.ctList)/ \
-                         (len(self.ctList)-1.))
+            # Formule 8
+            stdctList = self.ctList.std()*sqrt(1./(len(self.ctList)-1.))
+            if self.errtype == "student":
+                # coeff Student
+                talpha = t.ppf(1.-(1.-self.confidence)/2., len(self.ctList)-1) 
+            elif self.errtype == "normal":
+                talpha = norm.ppf(1.-(1.-self.confidence)/2.) # Gaussian
+            self.ctdev = talpha * stdctList
         else:
             self.ctdev = 0.
 
