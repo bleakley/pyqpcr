@@ -51,17 +51,17 @@ class SettingsDialog(QDialog):
         QDialog.__init__(self, parent)
 
         labTit = QLabel("<b>Quality Control:</b>")
-        lab1 = QLabel("E(ct) maximum :")
+        lab1 = QLabel("&E(ct) maximum :")
         self.ectLineEdit = QLineEdit("%.2f" % ect)
         self.ectLineEdit.setValidator(QDoubleValidator(self))
         lab1.setBuddy(self.ectLineEdit)
-        lab2 = QLabel("Negative ct maximum :")
+        lab2 = QLabel("&Negative ct maximum :")
         self.ctMinLineEdit = QLineEdit("%.2f" % ctmin)
         self.ctMinLineEdit.setValidator(QDoubleValidator(self))
         lab2.setBuddy(self.ctMinLineEdit)
 
         labConf = QLabel("<b>Confidence interval :</b>")
-        lab3 = QLabel("Distribution type :")
+        lab3 = QLabel("&Distribution type :")
         self.typeCbox = QComboBox()
         self.types = {}
         self.types[QString('Gaussian')] = 'normal'
@@ -71,8 +71,9 @@ class SettingsDialog(QDialog):
             self.typeCbox.setCurrentIndex(0)
         else:
             self.typeCbox.setCurrentIndex(1)
+        lab3.setBuddy(self.typeCbox)
 
-        lab4 = QLabel("Confidence level :")
+        lab4 = QLabel("&Confidence level :")
         self.confCbox = SuffixComboBox()
 
         conf = '%.2f' % (100*confidence)
@@ -93,30 +94,25 @@ class SettingsDialog(QDialog):
             self.confCbox.setCurrentIndex(liste[conf])
         except KeyError:
             self.confCbox.setCurrentIndex(4)
-        lab3.setBuddy(self.confCbox)
+        lab4.setBuddy(self.confCbox)
 
         buttonBox = QDialogButtonBox(QDialogButtonBox.Ok|
                                      QDialogButtonBox.Cancel)
 
         gLayout = QGridLayout()
-        gLayout.addWidget(lab1, 0, 0)
-        gLayout.addWidget(self.ectLineEdit, 0, 1)
-        gLayout.addWidget(lab2, 1, 0)
-        gLayout.addWidget(self.ctMinLineEdit, 1, 1)
+        gLayout.addWidget(labTit, 0, 0, 1, 2)
+        gLayout.addWidget(lab1, 1, 0)
+        gLayout.addWidget(self.ectLineEdit, 1, 1)
+        gLayout.addWidget(lab2, 2, 0)
+        gLayout.addWidget(self.ctMinLineEdit, 2, 1)
+        gLayout.addWidget(labConf, 3, 0, 1, 2)
+        gLayout.addWidget(lab3, 4, 0)
+        gLayout.addWidget(self.typeCbox, 4, 1)
+        gLayout.addWidget(lab4, 5, 0)
+        gLayout.addWidget(self.confCbox, 5, 1)
+        gLayout.addWidget(buttonBox, 6, 0, 1, 2)
 
-        gLayout2 = QGridLayout()
-        gLayout2.addWidget(lab3, 0, 0)
-        gLayout2.addWidget(self.typeCbox, 0, 1)
-        gLayout2.addWidget(lab4, 1, 0)
-        gLayout2.addWidget(self.confCbox, 1, 1)
-
-        layout = QVBoxLayout()
-        layout.addWidget(labTit)
-        layout.addLayout(gLayout)
-        layout.addWidget(labConf)
-        layout.addLayout(gLayout2)
-        layout.addWidget(buttonBox)
-        self.setLayout(layout)
+        self.setLayout(gLayout)
 
         self.setWindowTitle("%s Settings" % QApplication.applicationName())
         # Connections
