@@ -396,7 +396,8 @@ class Plaque:
             stdeff = (eff+100)*log(10)*slopeerr/slope**2 # Formule 6 adaptee
             # Coefficient de Pearsson de correlation
             R2 = 1 - sum((y-yest)**2)/sum((y-mean(y))**2)
-            print eff, stdeff, R2
+            # output for debugging stuff:
+            # print eff, stdeff, R2
             # Mise a jour de l'efficacite des puits
             for well in self.dicoGene[geneName]:
                 well.gene.setEff(eff)
@@ -488,9 +489,11 @@ class Replicate(QDialog):
                 talpha = t.ppf(1.-(1.-self.confidence)/2., len(self.ctList)-1) 
             elif self.errtype == "normal":
                 talpha = norm.ppf(1.-(1.-self.confidence)/2.) # Gaussian
-            self.ctdev = talpha * stdctList
+            self.ctdev = stdctList
+            self.ctdevtalpha = talpha * self.ctdev
         else:
             self.ctdev = 0.
+            self.ctdevtalpha = talpha * self.ctdev
 
         for well in self.listePuits:
             well.setCtmean(self.ctmean)
@@ -514,7 +517,7 @@ class Replicate(QDialog):
         # Formule 12
         err = sqrt( self.RQ**2 * ((self.dct*(self.gene.pm/100.) \
                 /(1.+self.gene.eff/100.))**2 \
-                + (log(1.+self.gene.eff/100.)*self.ctdev)**2 \
+                + (log(1.+self.gene.eff/100.)*self.ctdevtalpha)**2 \
                 ))
         self.RQerror = err
 

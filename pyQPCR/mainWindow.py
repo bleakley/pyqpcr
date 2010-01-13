@@ -1183,7 +1183,7 @@ class Qpcr_qt(QMainWindow):
 
 # Legend + xlim
         leg = self.mplCanUnknown.axes.legend(legPos, legName, 
-                           loc='upper right', shadow=True, labelsep=0.005)
+                           loc='upper right', shadow=True, labelspacing=0.005)
 # Fontsize and legend texts
         for t in leg.get_texts():
             t.set_fontsize(10)
