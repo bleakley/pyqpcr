@@ -1,0 +1,172 @@
+\documentclass[a4paper,10pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[francais]{babel}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{amsmath,amsfonts,amssymb}
+
+\begin{document}
+
+\section{Courbes standards}
+
+\subsection{Régression linéaire}
+
+Par commodité, nous adopterons dans la suite les notations suivantes:
+
+\begin{equation}
+ y\equiv c_t \quad \text{et} \quad x\equiv\log Q
+\end{equation}
+
+Dans le cas général d'une droite $y=ax+b$, la variance $\sigma_x^2$ s'écrit
+
+\begin{equation}
+\sigma_x^2=\displaystyle\frac{1}{n-1}\sum_{i=1}^{n}(x_i-\bar{x})^2
+\quad\text{avec}\quad \bar{x}=\frac{1}{n}\sum_{i=1}^{n}x_i
+\end{equation}
+De même, la covariance $\sigma_{xy}$ est définie par
+
+\begin{equation}
+ \sigma_{xy} =
+\displaystyle\frac{1}{n-1}\sum_{i=1}^{n}(x_i-\bar{x})(y_i-\bar{y})
+\end{equation}
+Pour obtenir la pente $a$ et l'ordonnée à l'origine $b$ d'une régression linéaire :
+
+\begin{equation}
+ \left\lbrace 
+\begin{array}{l}
+ a = \dfrac{\sigma_{xy}}{\sigma_x^2}=\dfrac{\sum(x_i-\bar{x})(y_i-\bar{y})}{\sum(x_i-\bar{x})^2} \\ \\
+ b = \bar{y}-a\bar{x}
+\end{array}
+\right.
+\end{equation}
+
+
+\subsection{Erreur sur la pente}
+
+Pour un problème à $n-2$ degrés de liberté, l'erreur-type d'une régression
+linéaire s'écrit:
+
+\begin{equation}
+ \sigma_{\epsilon}^2 = \displaystyle\frac{1}{n-2}\sum_{i=1}^{n}(y_i-\hat{y}_i)^2
+\end{equation}
+On en déduit l'erreur sur la pente $\sigma_a^2$
+
+\begin{equation}
+ \sigma_a^2 = \dfrac{\sigma_{\epsilon}^2}{(n-1)\sigma_x^2} \Longrightarrow
+\boxed{\sigma_a =
+\sqrt{\dfrac{\sum(y_i-\hat{y}_i)^2}{
+(n-2)\sum (x_i-\bar{x})^2}}}
+\end{equation}
+
+\subsection{Coefficient de Pearsson}
+
+\begin{equation}
+ R = \dfrac{\sigma_{xy}}{\sigma_x\sigma_y}
+\end{equation}
+Il est possible d'exprimer $\sigma_a$ en fonction de $R^2$ :
+
+\begin{equation}
+ \sigma_a = \dfrac{\sigma_y}{\sigma_x}\sqrt{\dfrac{1-R^2}{n-2}}
+\end{equation}
+
+
+\subsection{Intervalle de confiance}
+On est dans le cadre d'un test de Student sur l'espérance avec écart type
+inconnu. Pour un niveau de confiance $\alpha$ donné, on estime que l'erreur sur
+$a$ est :
+
+\begin{equation}
+ \Delta a = \sigma _a \cdot t_{(1-\alpha)/2}^{n-2}
+\end{equation}
+où $t_{(1-\alpha)/2}^{n-2}$ est est le quantile d'ordre $\alpha/2$ de la loi de
+Student à $n-2$ degrés de liberté. En termes de probabilité, on obtient donc
+
+\begin{equation}
+\boxed{%
+ P\left[a- \sigma _a \cdot t_{(1-\alpha)/2}^{n-2}\le \beta\le a +\sigma _a \cdot
+t_{(1-\alpha)/2}^{n-2}\right] = \alpha}
+\end{equation}
+
+\subsection{Efficacité}
+
+\begin{equation}
+ \text{eff} = 10^{-1/a}-1\quad \text{ou bien en \%:}\quad \text{eff}
+=100\cdot\left(10^{-1/a}-1\right)
+\end{equation}
+L'erreur sur la pente $\Delta a$ peut donc être propagée au calcul de l'erreur
+sur l'efficacité :
+
+\begin{equation}
+ \epsilon(\text{eff}) = \ln 10(\text{eff}+100) \dfrac{\Delta a}{a^2}
+\end{equation}
+{\color{red} ou bien} 
+\begin{equation}
+ \epsilon(\text{eff}) = \ln 10(\text{eff}+100) \dfrac{\sigma_a}{a^2}
+\end{equation}
+
+
+\section{Quantification relative}
+
+Pour un replicat $(s,\ g)$, on calcule le $c_t$ moyen de tous les puits, i.e.
+
+\begin{equation}
+ {\bar{c_t}}_{sg} = \dfrac{1}{n_w}\sum_{w}{c_t}_{wsg},
+\end{equation}
+ainsi que l'erreur-type associée
+
+\begin{equation}
+ \text{SE} ({c_t}_{sg}) =
+\sqrt{\dfrac{1}{n_w(n_w-1)}\sum_{\text{w}}
+({c_t}_{wsg}-{\bar{c_t}}_{sg})^2}
+\end{equation}
+L'intervalle de confiance associé peut s'écrire
+
+\begin{equation}
+ \left[{\bar{c_t}}_{sg}-t_{(1-\alpha)/2}^{n_w-1}\text{SE}(ct),\
+{\bar{c_t}}_{sg}+t_{(1-\alpha)/2}^{n_w-1}\text{SE}(ct)\right]
+\end{equation}
+Pour chaque gene, on calcule le coefficient ${c_t}_{\text{ref}}$
+
+\begin{equation}
+ {c_t}_{\text{ref},s} = \dfrac{1}{n_s}\sum_{s}{c_t}_{sg} 
+\end{equation}
+On définit alors pour chaque replicat ${\Delta c_t}_{sg}$
+
+\begin{equation}
+ {\Delta c_t}_{sg} = {c_t}_{\text{ref},s} - {\bar{c_t}}_{sg},
+\end{equation}
+et $\text{RQ}_{sg}$
+
+\begin{equation}
+ \text{RQ}_{sg} = \text{eff}_g^{{\Delta c_t}_{sg}}
+\end{equation}
+Concernant le calcul d'erreur, il s'agit de propager les erreurs d'une loi de
+type $z=x^y$. En passant au logarithme, on obtient
+
+\begin{equation}
+ \ln z = y\ln x
+\end{equation}
+En différanciant cette expression, on a alors
+
+\begin{equation}
+ \dfrac{\delta z}{z} = y\dfrac{\delta x}{x}+\delta y \ln x,
+\end{equation}
+qui conduit à l'erreur suivante
+
+\begin{equation}
+ \dfrac{\text{SE}(z)}{\bar{z}} =\sqrt{%
+\left(\bar{y}\dfrac{\text{SE}(x)}{\bar{x}}\right)^2+\left(\text{SE}(y) \ln
+\bar{x}\right)^2}
+\end{equation}
+En remplaçant par les grandeurs d'intérêt, nous obtenons donc
+
+\begin{equation}
+ \text{SE}(\text{RQ}_{sg}) =\sqrt{%
+ \left({\Delta c_t}_{sg}\dfrac{\text{SE}(\text{eff}_g)}{\text{eff}_g}\right)^2+
+ \left(\text{SE}({\Delta c_t}_{sg}) \ln \text{eff}_g\right)^2}
+\end{equation}
+
+
+
+\end{document}
+
