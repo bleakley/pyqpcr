@@ -493,7 +493,7 @@ class Replicate(QDialog):
             self.ctdevtalpha = talpha * self.ctdev
         else:
             self.ctdev = 0.
-            self.ctdevtalpha = talpha * self.ctdev
+            self.ctdevalpha = 0.
 
         for well in self.listePuits:
             well.setCtmean(self.ctmean)
