@@ -1051,6 +1051,8 @@ class Qpcr_qt(QMainWindow):
             self.populateResult()
 # On trace le resultat
             self.plotUnknown()
+            self.plaque.unsaved = True
+            self.fileSaveAction.setEnabled(True)
 
     def computeStd(self):
 # On cherche les std
