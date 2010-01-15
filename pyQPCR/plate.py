@@ -489,8 +489,8 @@ class Replicate(QDialog):
                 talpha = t.ppf(1.-(1.-self.confidence)/2., len(self.ctList)-1) 
             elif self.errtype == "normal":
                 talpha = norm.ppf(1.-(1.-self.confidence)/2.) # Gaussian
-            self.ctdev = stdctList
-            self.ctdevtalpha = talpha * self.ctdev
+            self.ctdev = stdctList*sqrt(len(self.ctList)-1.)
+            self.ctdevtalpha = talpha * stdctList
         else:
             self.ctdev = 0.
             self.ctdevalpha = 0.
