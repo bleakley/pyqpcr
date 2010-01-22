@@ -2,6 +2,7 @@
 <qresource>
 <file alias="filequit.png">icons/application-exit.png</file>
 <file alias="fileopen.png">icons/document-open.png</file>
+<file alias="fileimport.png">icons/document-import.png</file>
 <file alias="fileprint.png">icons/document-print.png</file>
 <file alias="filesave.png">icons/document-save.png</file>
 <file alias="filesaveas.png">icons/document-save-as.png</file>
