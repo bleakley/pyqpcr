@@ -23,6 +23,7 @@ from PyQt4.QtCore import *
 import pyQPCR.qrc_resources
 from pyQPCR.dialogs import *
 from pyQPCR.plate import Plaque
+from project import Project
 import matplotlib
 from numpy import linspace, log10, log, sqrt, sum, mean, polyfit, polyval, \
         asarray, append, array, delete
@@ -41,45 +42,30 @@ class Qpcr_qt(QMainWindow):
  
         self.filename = None
         self.printer = None
+        self.project = Project()
 
         self.tree = QTreeWidget()
         self.tree.setHeaderLabel("Parameters")
 
         self.onglet = QTabWidget()
-        self.table = QTableWidget()
-        self.tableLabels=["A", "B", "C", "D", "E", "F", "G", "H"]
-        self.table.setRowCount(8)
-        self.table.setColumnCount(12)
-        self.table.setVerticalHeaderLabels(self.tableLabels)
-        for i in range(12):
-            self.table.horizontalHeader().setResizeMode(i, QHeaderView.Stretch)
-        for j in range(8):
-            self.table.verticalHeader().setResizeMode(j, QHeaderView.Stretch)
-        self.table.setEditTriggers(QTableWidget.NoEditTriggers)
-        self.onglet.addTab(self.table, "Plate")
+        self.pileTables = OrderedDict()
+        self.table = PlateWidget()
+        self.createProjWidget()
+        self.onglet.addTab(self.projWidget, "Plates")
 #
         self.createMplUnknownWiget()
         self.createMplStdWiget()
 #
-        self.result = QTableWidget()
-        self.resultLabels=["Well", "Target", "Ct", "<Ct>", "E(Ct)", "Amount", 
-                "Sample", "Eff", "Type", "NRQ"]
-        self.result.setRowCount(96)
-        self.result.setColumnCount(10)
-        self.result.setHorizontalHeaderLabels(self.resultLabels)
-        for i in range(len(self.resultLabels)):
-            self.result.horizontalHeader().setResizeMode(i, QHeaderView.Stretch)
-        self.result.setEditTriggers(QTableWidget.NoEditTriggers)
-        self.result.setAlternatingRowColors(True)
-        self.result.setSizePolicy(QSizePolicy(QSizePolicy.Maximum,
-                                              QSizePolicy.Maximum))
-
+        self.createResultWidget()
+        self.pileResults = OrderedDict()
+        self.result = ResultWidget()
+#
         self.vSplitter = QSplitter(Qt.Horizontal)
         self.vSplitter.addWidget(self.tree)
         self.vSplitter.addWidget(self.onglet)
         self.mainSplitter = QSplitter(Qt.Vertical)
         self.mainSplitter.addWidget(self.vSplitter)
-        self.mainSplitter.addWidget(self.result)
+        self.mainSplitter.addWidget(self.resulWidget)
 
         self.setCentralWidget(self.mainSplitter)
 
@@ -91,7 +77,7 @@ class Qpcr_qt(QMainWindow):
         status = self.statusBar()
 
 # Undo / Redo
-        self.plaqueStack = []
+        self.projectStack = []
         self.undoInd = -1
 # Toolbar et Menus
         self.createMenusAndToolbars()
@@ -119,6 +105,8 @@ class Qpcr_qt(QMainWindow):
                      self.plotStd)
         self.connect(self.table, SIGNAL("cellDoubleClicked(int,int)"),
                      self.editWell)
+        self.connect(self.tabulPlates, SIGNAL("currentChanged(int)"),
+                     self.changeCurrentIndex)
 
 # Settings pour sauvegarde de l'application
         settings = QSettings()
@@ -143,6 +131,22 @@ class Qpcr_qt(QMainWindow):
                 settings.value("MainSplitter").toByteArray())
         self.setWindowTitle("pyQPCR")
         self.updateFileMenu()
+
+    def createProjWidget(self):
+        self.projWidget = QWidget(self)
+        vLay = QVBoxLayout()
+        self.tabulPlates = QTabWidget()
+        self.tabulPlates.setTabPosition(QTabWidget.West)
+        vLay.addWidget(self.tabulPlates)
+        self.projWidget.setLayout(vLay)
+
+    def createResultWidget(self):
+        self.resulWidget = QWidget(self)
+        vLay = QVBoxLayout()
+        self.tabulResults = QTabWidget()
+        self.tabulResults.setTabPosition(QTabWidget.West)
+        vLay.addWidget(self.tabulResults)
+        self.resulWidget.setLayout(vLay)
 
     def createMplUnknownWiget(self):
         self.plotUnknownWidget = QWidget()
@@ -238,6 +242,8 @@ class Qpcr_qt(QMainWindow):
     def createMenusAndToolbars(self):
         fileOpenAction = self.createAction("&Open...", self.fileOpen, 
                 QKeySequence.Open, "fileopen", "Open an existing file")
+        fileImportAction = self.createAction("&Import...", self.fileImport, 
+                "Ctrl+I", "fileimport", "Import/add an existing plate")
         self.filePrintAction = self.createAction("&Print", self.filePrint,
                 QKeySequence.Print, "fileprint", "Print results")
         self.exportAction = self.createAction("&Export as PDF", self.fileExport,
@@ -280,7 +286,7 @@ class Qpcr_qt(QMainWindow):
                 QKeySequence.HelpContents, icon="help")
 # Menus
         fileMenu = self.menuBar().addMenu("&File")
-        fileMenu.addAction(fileOpenAction)
+        self.addActions(fileMenu, (fileOpenAction,fileImportAction))
         self.recentFileMenu = fileMenu.addMenu(QIcon(":/filerecent.png"),
                 "Open recent files")
         fileMenu.addSeparator()
@@ -307,9 +313,9 @@ class Qpcr_qt(QMainWindow):
 # Toolbars
         fileToolbar = self.addToolBar("File")
         fileToolbar.setObjectName("FileToolBar")
-        self.addActions(fileToolbar, (fileOpenAction, self.filePrintAction, 
-                        self.exportAction, self.fileSaveAction,
-                        self.fileSaveAsAction))
+        self.addActions(fileToolbar, (fileOpenAction, fileImportAction,
+                        self.filePrintAction, self.exportAction, 
+                        self.fileSaveAction, self.fileSaveAsAction))
         fileToolbar.setIconSize(QSize(22, 22))
 
         editToolbar = self.addToolBar("Edit")
@@ -357,11 +363,12 @@ class Qpcr_qt(QMainWindow):
         self.addActions(plotToolbar, (self.plotStdAction, self.plotAction))
         plotToolbar.setIconSize(QSize(22, 22))
 # ContextMenu
-        self.table.setContextMenuPolicy(Qt.ActionsContextMenu)
+        self.projWidget.setContextMenuPolicy(Qt.ActionsContextMenu)
         self.result.setContextMenuPolicy(Qt.ActionsContextMenu)
-        self.addActions(self.table, (fileOpenAction, self.editAction,
-                       self.undoAction, self.redoAction, self.addGeneAction, 
-                       self.addEchAction, self.enableAction, self.disableAction))
+        self.addActions(self.projWidget, (fileOpenAction, fileImportAction,
+                       self.editAction, self.undoAction, self.redoAction, 
+                       self.addGeneAction, self.addEchAction, 
+                       self.enableAction, self.disableAction))
         self.addActions(self.result, (self.filePrintAction, self.exportAction,
                                       self.fileSaveAction, self.fileSaveAsAction,
                                       self.plotStdAction, self.plotAction))
@@ -394,31 +401,6 @@ class Qpcr_qt(QMainWindow):
             else:
                 target.addAction(action)
 
-    def createItem(self, text, tip=None, status=None, back=Qt.white, 
-                   fore=Qt.black, icon=None):
-        """
-        This method highly simplifies the creation of QTableWidgetItem
-        """
-        item = QTableWidgetItem(text)
-        item.setForeground(fore)
-        if tip is not None:
-            item.setToolTip(tip)
-        if status is not None:
-            item.setStatusTip(status)
-        if icon is not None:
-            if icon == False:
-                item.setIcon(QIcon(":/disable"))
-        if back == QString('unknown'):
-            item.setBackground(QColor(116, 167, 227))
-        elif back == QString('standard'):
-            item.setBackground(QColor(233, 0, 0))
-        elif back == QString('negative'):
-            item.setBackground(QColor(255, 250, 80))
-        else:
-            item.setBackground(Qt.white)
-        item.setTextAlignment(Qt.AlignCenter|Qt.AlignVCenter)
-        return item
-
     def updateStatus(self, message, time=5000):
         self.statusBar().showMessage(message, time)
 
@@ -427,12 +409,57 @@ class Qpcr_qt(QMainWindow):
             return
         dir = os.path.dirname(self.filename) if self.filename is not None \
                 else "."
-        formats =[u"*.txt", u"*.csv"]
+        formats =[u"*.xml"]
         fname = unicode(QFileDialog.getOpenFileName(self,
                                                     "pyQPCR - Choose a file", 
                 dir, "Input files (%s)" % " ".join(formats)))
         if fname:
             self.loadFile(fname)
+
+    def fileImport(self):
+        dir = os.path.dirname(self.filename) if self.filename is not None \
+                else "."
+        formats =[u"*.txt", u"*.csv"]
+        fname = unicode(QFileDialog.getOpenFileName(self,
+                       "pyQPCR - Choose a file", dir, 
+                       "Input files (%s)" % " ".join(formats)))
+        if fname:
+            self.addPlate(fname)
+
+    def addPlate(self, fname=None):
+        if fname is None:
+            action = self.sender()
+            if isinstance(action, QAction):
+                fname = unicode(action.data().toString())
+                if not self.okToContinue():
+                    return
+        if fname:
+            message = "Loaded %s" % QFileInfo(fname).fileName()
+            self.updateStatus(message)
+# Nettoyage des tableaux avant l'eventuel remplissage
+            plaque = Plaque(fname)
+            self.project.addPlate(plaque)
+            key = QFileInfo(fname).fileName()
+# Remise a zero des compteurs (a deplacer par la suite)
+            self.nplotGene = 0
+            self.nplotStd = 0
+            self.nplotEch = 0
+
+            mytab = PlateWidget()
+            mytab.populateTable(plaque)
+            self.tabulPlates.addTab(mytab, key)
+            self.pileTables[key] = mytab
+            mytab = ResultWidget()
+            mytab.populateResult(plaque)
+            self.tabulResults.addTab(mytab, key)
+            self.pileResults[key] = mytab
+
+# Activation des actions
+            self.activateDesactivate(True)
+# Mise a jour des cbox
+            self.populateCbox(self.geneComboBox, self.project.hashGene, "Target")
+            self.populateCbox(self.echComboBox, self.project.hashEch, "Sample")
+            self.populateCbox(self.amComboBox, self.project.hashAmount, "Amount")
 
     def loadFile(self, fname=None):
         if fname is None:
@@ -455,21 +482,25 @@ class Qpcr_qt(QMainWindow):
             self.nplotStd = 0
             self.nplotEch = 0
 # Nettoyage des tableaux avant l'eventuel remplissage
-            self.table.clear()
-            self.table.setVerticalHeaderLabels(self.tableLabels)
-            self.result.clear()
-            self.result.setHorizontalHeaderLabels(self.resultLabels)
-            self.plaque = Plaque(fname)
+            self.project.openProject(fname)
+            for key in self.project.dicoPlates.keys():
+                pl = self.project.dicoPlates[key]
+                mytab = PlateWidget()
+                mytab.populateTable(pl)
+                self.tabulPlates.addTab(mytab, key)
+                self.pileTables[key] = mytab
+                mytab = ResultWidget()
+                mytab.populateResult(pl)
+                self.tabulResults.addTab(mytab, key)
+                self.pileResults[key] = mytab
 # Activation des actions
             self.activateDesactivate(True)
 # Pile de plaques pour le Undo/Redo
-            self.plaqueStack.append(copy.deepcopy(self.plaque))
-            self.populateTable()
-            self.populateResult()
+            #self.projectStack.append(copy.deepcopy(self.plaque))
             self.populateTree()
-            self.populateCbox(self.geneComboBox, self.plaque.listGene, "Target")
-            self.populateCbox(self.echComboBox, self.plaque.listEch, "Sample")
-            self.populateCbox(self.amComboBox, self.plaque.listAmount, "Amount")
+            self.populateCbox(self.geneComboBox, self.project.hashGene, "Target")
+            self.populateCbox(self.echComboBox, self.project.hashEch, "Sample")
+            self.populateCbox(self.amComboBox, self.project.hashAmount, "Amount")
 
     def activateDesactivate(self, bool):
         """
@@ -496,85 +527,20 @@ class Qpcr_qt(QMainWindow):
         self.enableAction.setEnabled(bool)
         self.disableAction.setEnabled(bool)
 
-    def populateTable(self):
-        for well in self.plaque.listePuits:
-            if well.type in (QString('unknown'), QString('negative')):
-                name = "%s\n%s" % (well.ech, well.gene.name)
-            elif well.type == QString('standard'):
-                name = "%s\n%s" % (str(well.amount), well.gene)
-            tipname = "ct=%s\namount=%s" % (str(well.ct), str(well.amount))
-            it = self.createItem(name, tip=tipname, status=well.name, 
-                                 back=well.type, icon=well.enabled)
-            if well.warning == True and well.enabled == True:
-                # if there is a warning and the well is enabled, then
-                # we put the warning icon 
-                it.setIcon(QIcon(":/warning"))
-            self.table.setItem(well.xpos, well.ypos, it)
-
-    def populateResult(self):
-        for ind, well in enumerate(self.plaque.listePuits):
-            if well.enabled == True:
-                item = QTableWidgetItem("")
-                #item.setFont(QFont("Sans Serif", 16))
-                item.setIcon(QIcon(":/enable"))
-                self.result.setVerticalHeaderItem(ind, item)
-            else:
-                item = QTableWidgetItem("")
-                #item.setFont(QFont("Sans Serif", 16))
-                item.setIcon(QIcon(":/disable"))
-                self.result.setVerticalHeaderItem(ind, item)
-            if well.warning == True and well.enabled == True:
-                item.setIcon(QIcon(":/warning"))
-            itWell = QTableWidgetItem(well.name)
-            itWell.setFont(QFont("Sans Serif", 16))
-            itGene = QTableWidgetItem(well.gene.name)
-            try:
-                itCt = QTableWidgetItem("%.2f" % well.ct)
-            except TypeError:
-                itCt = QTableWidgetItem("%s" % str(well.ct))
-            try:
-                itCtmean = QTableWidgetItem("%.2f" % well.ctmean)
-            except TypeError:
-                itCtmean = QTableWidgetItem(str(well.ctmean))
-            try:
-                itCtdev = QTableWidgetItem("%.2f" % well.ctdev)
-            except TypeError:
-                itCtdev = QTableWidgetItem(str(well.ctdev))
-            itAmount = QTableWidgetItem(str(well.amount))
-            itEch = QTableWidgetItem(well.ech.name)
-            itEff = QTableWidgetItem("%.2f%%%s%.2f" % (well.gene.eff,
-                                     unichr(177), well.gene.pm))
-            itType = QTableWidgetItem(well.type)
-            try:
-                itNRQ = QTableWidgetItem("%.2f%s%.2f" % (well.NRQ,
-                                         unichr(177), well.NRQerror))
-            except TypeError:
-                itNRQ = QTableWidgetItem("%s%s" % (str(well.NRQ),
-                                         str(well.NRQerror)))
-            self.result.setItem(ind, 0, itWell)
-            self.result.setItem(ind, 1, itGene)
-            self.result.setItem(ind, 2, itCt)
-            self.result.setItem(ind, 3, itCtmean)
-            self.result.setItem(ind, 4, itCtdev)
-            self.result.setItem(ind, 5, itAmount)
-            self.result.setItem(ind, 6, itEch)
-            self.result.setItem(ind, 7, itEff)
-            self.result.setItem(ind, 8, itType)
-            self.result.setItem(ind, 9, itNRQ)
-
     def populateTree(self):
         self.tree.clear()
-        ancestor = QTreeWidgetItem(self.tree, 
-                                   [QFileInfo(self.filename).fileName()])
+        #ancestor = QTreeWidgetItem(self.tree, 
+        #                           [QFileInfo(self.filename).fileName()])
+        ancestor = QTreeWidgetItem(self.tree, "toto")
         itemQuant = QTreeWidgetItem(ancestor, ["Quantification"])
         itemRefGene = QTreeWidgetItem(itemQuant , ["Reference Target"])
         itemRefEch = QTreeWidgetItem(itemQuant , ["Reference Sample"])
         itemStd = QTreeWidgetItem(ancestor, ["Standard"])
-        if hasattr(self.plaque, "geneRef"):
-            item = QTreeWidgetItem(itemRefGene, [self.plaque.geneRef.name])
-        if hasattr(self.plaque, "echRef"):
-            item = QTreeWidgetItem(itemRefEch, [self.plaque.echRef.name])
-        for gene in self.plaque.listGene[1:]:
+        if hasattr(self.project, "geneRef"):
+            item = QTreeWidgetItem(itemRefGene, [self.project.geneRef.name])
+        if hasattr(self.project, "echRef"):
+            item = QTreeWidgetItem(itemRefEch, [self.project.echRef.name])
+        for gene in self.project.hashGene.values()[1:]:
             eff = "%s:%.2f%s%.2f" % (gene.name, gene.eff, unichr(177), gene.pm)
             item = QTreeWidgetItem(itemStd, [eff])
         self.tree.expandAll()
@@ -582,16 +548,16 @@ class Qpcr_qt(QMainWindow):
     def populateCbox(self, cbox, items, name="Target"):
         cbox.clear()
         cbox.addItem(name, QVariant("header"))
-        cbox.addItems(items[1:])
+        cbox.addItems(items)
 
     def fileSave(self):
-        self.plaque.write(self.filename)
+        self.project.exportXml(self.filename)
         self.updateStatus("Saved %s" % self.filename)
-        self.plaque.unsaved = False
+        self.project.unsaved = False
         self.fileSaveAction.setEnabled(False)
 
     def fileSaveAs(self):
-        formats =[u"*.txt", u"*.csv"]
+        formats =[u"*.xml"]
         fname = self.filename if self.filename is not None else "."
         fname = unicode(QFileDialog.getSaveFileName(self, 
                 "pyQPCR - Save a file", fname,
@@ -799,8 +765,8 @@ class Qpcr_qt(QMainWindow):
             event.ignore()
 
     def okToContinue(self):
-        if hasattr(self, "plaque"):
-            if self.plaque.unsaved:
+        if hasattr(self, "project"):
+            if self.project.unsaved:
                 reponse = QMessageBox.question(self,
                         "pyQPCR - Unsaved Changes",
                         "Save unsaved changes?",
@@ -814,38 +780,43 @@ class Qpcr_qt(QMainWindow):
     def redo(self):
         if self.undoInd < -1:
             self.undoInd += 1
-        self.plaque = copy.deepcopy(self.plaqueStack[self.undoInd])
-        self.populateCbox(self.geneComboBox, self.plaque.listGene, "Target")
-        self.populateCbox(self.echComboBox, self.plaque.listEch, "Sample")
-        self.populateCbox(self.amComboBox, self.plaque.listAmount, "Amount")
-        self.populateTable()
-        self.populateResult()
+        self.project = copy.deepcopy(self.projectStack[self.undoInd])
+        self.populateCbox(self.geneComboBox, self.project.hashGene, "Target")
+        self.populateCbox(self.echComboBox, self.project.hashEch, "Sample")
+        self.populateCbox(self.amComboBox, self.project.hashAmount, "Amount")
+#
+        for key in self.project.dicoPlates.keys():
+            pl = self.project.dicoPlates[key]
+            self.pileTables[key].populateTable(pl)
+            self.pileResults[key].populateResult(pl)
         self.populateTree()
-        if self.undoInd == 0 or self.undoInd == -len(self.plaqueStack):
-            self.plaque.unsaved = False
+        if self.undoInd == 0 or self.undoInd == -len(self.projectStack):
+            self.project.unsaved = False
             self.fileSaveAction.setEnabled(False)
         else:
-            self.plaque.unsaved = True
+            self.project.unsaved = True
             self.fileSaveAction.setEnabled(True)
 
     def undo(self):
-        if abs(self.undoInd) < abs(len(self.plaqueStack)):
+        if abs(self.undoInd) < abs(len(self.projectStack)):
             self.undoInd -= 1
-        self.plaque = copy.deepcopy(self.plaqueStack[self.undoInd])
+        self.project = copy.deepcopy(self.projectStack[self.undoInd])
 # Ces lignes reremplissent les comboBox (idem dans redo)
-        self.populateCbox(self.geneComboBox, self.plaque.listGene, "Target")
-        self.populateCbox(self.echComboBox, self.plaque.listEch, "Sample")
-        self.populateCbox(self.amComboBox, self.plaque.listAmount, "Amount")
+        self.populateCbox(self.geneComboBox, self.project.hashGene, "Target")
+        self.populateCbox(self.echComboBox, self.project.hashEch, "Sample")
+        self.populateCbox(self.amComboBox, self.project.hashAmount, "Amount")
 #
-        self.populateTable()
-        self.populateResult()
+        for key in self.project.dicoPlates.keys():
+            pl = self.project.dicoPlates[key]
+            self.pileTables[key].populateTable(pl)
+            self.pileResults[key].populateResult(pl)
         self.populateTree()
 # Si on remonte tous les undo pas besoin de sauvegarder
-        if self.undoInd == 0 or self.undoInd == -len(self.plaqueStack):
-            self.plaque.unsaved = False
+        if self.undoInd == 0 or self.undoInd == -len(self.projectStack):
+            self.project.unsaved = False
             self.fileSaveAction.setEnabled(False)
         else:
-            self.plaque.unsaved = True
+            self.project.unsaved = True
             self.fileSaveAction.setEnabled(True)
 
     def editWell(self):
@@ -854,154 +825,193 @@ class Qpcr_qt(QMainWindow):
         setEch = set()
         setAm = set()
         selected = [setType, setGene, setEch, setAm]
-        for it in self.table.selectedItems():
+        for it in self.pileTables[self.currentPlate].selectedItems():
             nom = it.statusTip()
-            well = getattr(self.plaque, str(nom))
+            well = getattr(self.project.dicoPlates[self.currentPlate], str(nom))
             setType.add(well.type)
             setEch.add(well.ech.name)
             setGene.add(well.gene.name)
             setAm.add(well.amount)
-        dialog = EditDialog(self, plaque=self.plaque, selected=selected)
+        dialog = EditDialog(self, project=self.project, selected=selected)
+        #
         if dialog.exec_():
-            plaque = dialog.plaque
-            self.plaque = plaque
-            self.plaque.setDicoGene()
-            self.plaque.setDicoEch()
-            self.plaqueStack.append(copy.deepcopy(self.plaque))
-        self.plaque.unsaved = True
-        self.fileSaveAction.setEnabled(True)
-        self.populateTable()
-        self.populateResult()
+            ge = dialog.cboxGene.currentObj()
+            if dialog.cboxType.currentText() == QString('unknown'):
+                ech = dialog.cboxSample.currentObj()
+                for it in self.pileTables[self.currentPlate].selectedItems():
+                    nom = it.statusTip()
+                    well = getattr(self.project.dicoPlates[self.currentPlate],
+                                   str(nom))
+                    well.setType(QString('unknown'))
+                    if ge.name != "": well.setGene(ge)
+                    if ech.name != "": well.setEch(ech)
+                for pl in self.project.dicoPlates.values():
+                    pl.setDicoEch()
+            if dialog.cboxType.currentText() == QString('standard'):
+                am = dialog.cboxAm.currentText()
+                for it in self.pileTables[self.currentPlate].selectedItems():
+                    nom = it.statusTip()
+                    well = getattr(self.project.dicoPlates[self.currentPlate],
+                                   str(nom))
+                    well.setType(QString('standard'))
+                    if ge.name != '':
+                        well.setGene(ge)
+                    if am != '':
+                        well.setAmount(float(am))
+                self.project.setDicoAm()
+            self.project.unsaved = True
+            self.fileSaveAction.setEnabled(True)
+            for pl in self.project.dicoPlates.values():
+                pl.setDicoGene()
+            self.projectStack.append(copy.deepcopy(self.project))
+            self.pileTables[self.currentPlate].populateTable( \
+                   self.project.dicoPlates[self.currentPlate])
+            self.pileResults[self.currentPlate].populateResult( \
+                   self.project.dicoPlates[self.currentPlate])
+
+
 
     def addGene(self):
-        dialog = GeneDialog(self, plaque=self.plaque)
+        dialog = GeneDialog(self, project=self.project)
         if dialog.exec_():
-            plaque = dialog.plaque
-            self.populateCbox(self.geneComboBox, plaque.listGene, "Target")
-            self.plaque = plaque
-            self.fileSaveAction.setEnabled(self.plaque.unsaved)
-            self.plaque.setDicoGene()
-            self.plaqueStack.append(copy.deepcopy(self.plaque))
-        self.populateTable()
-        self.populateResult()
-        self.populateTree()
+            project = dialog.project
+            self.populateCbox(self.geneComboBox, project.hashGene, "Target")
+            self.project = project
+            self.fileSaveAction.setEnabled(self.project.unsaved)
+            for pl in self.project.dicoPlates.values():
+                pl.setDicoGene()
+            self.projectStack.append(copy.deepcopy(self.project))
+            for key in self.project.dicoPlates.keys():
+                pl = self.project.dicoPlates[key]
+                self.pileTables[key].populateTable(pl)
+                self.pileResults[key].populateResult(pl)
+            self.populateTree()
 
     def addEch(self):
-        dialog = EchDialog(self, plaque=self.plaque)
+        dialog = EchDialog(self, project=self.project)
         if dialog.exec_():
-            plaque = dialog.plaque
-            self.populateCbox(self.echComboBox, plaque.listEch, "Sample")
-            self.plaque = plaque
-            self.fileSaveAction.setEnabled(self.plaque.unsaved)
-            self.plaque.setDicoEch()
-            self.plaqueStack.append(copy.deepcopy(self.plaque))
-        self.populateTable()
-        self.populateResult()
-        self.populateTree()
+            project = dialog.project
+            self.populateCbox(self.echComboBox, project.hashEch, "Sample")
+            self.project = project
+            self.fileSaveAction.setEnabled(self.project.unsaved)
+            for pl in self.project.dicoPlates.values():
+                pl.setDicoEch()
+            self.projectStack.append(copy.deepcopy(self.project))
+            for key in self.project.dicoPlates.keys():
+                pl = self.project.dicoPlates[key]
+                self.pileTables[key].populateTable(pl)
+                self.pileResults[key].populateResult(pl)
+            self.populateTree()
 
     def addAmount(self):
-        dialog = AmountDialog(self, plaque=self.plaque)
+        dialog = AmountDialog(self, project=self.project)
         if dialog.exec_():
-            plaque = dialog.plaque
-            self.populateCbox(self.amComboBox, plaque.listAmount, "Amount")
-            self.plaque = plaque
-            self.plaque.setDicoAm()
-            self.plaqueStack.append(copy.deepcopy(self.plaque))
-        self.populateTable()
-        self.populateResult()
+            project = dialog.project
+            self.populateCbox(self.amComboBox, project.hashAmount, "Amount")
+            self.project = project
+            self.fileSaveAction.setEnabled(self.project.unsaved)
+            self.project.setDicoAm()
+            self.projectStack.append(copy.deepcopy(self.project))
+            for key in self.project.dicoPlates.keys():
+                pl = self.project.dicoPlates[key]
+                self.pileTables[key].populateTable(pl)
+                self.pileResults[key].populateResult(pl)
+            self.populateTree()
 
     def modifyGene(self):
-        for it in self.table.selectedItems():
+        for it in self.pileTables[self.currentPlate].selectedItems():
             gene = self.geneComboBox.currentObj()
             nom = it.statusTip()
-            well = getattr(self.plaque, str(nom))
+            well = getattr(self.project.dicoPlates[self.currentPlate], str(nom))
             well.setGene(gene)
-        self.plaque.unsaved = True
+        self.project.unsaved = True
         self.fileSaveAction.setEnabled(True)
-        self.plaque.setDicoGene()
-        self.plaqueStack.append(copy.deepcopy(self.plaque))
-        self.populateTable()
-        self.populateResult()
+        self.project.dicoPlates[self.currentPlate].setDicoGene()
+        self.projectStack.append(copy.deepcopy(self.project))
+        self.pileTables[self.currentPlate].populateTable(self.project.dicoPlates[self.currentPlate])
+        self.pileResults[self.currentPlate].populateResult(self.project.dicoPlates[self.currentPlate])
 
     def modifyEch(self):
-        for it in self.table.selectedItems():
+        for it in self.pileTables[self.currentPlate].selectedItems():
             ech = self.echComboBox.currentObj()
             nom = it.statusTip()
-            well = getattr(self.plaque, str(nom))
+            well = getattr(self.project.dicoPlates[self.currentPlate], str(nom))
             well.setEch(ech)
-        self.plaque.unsaved = True
+        self.project.unsaved = True
         self.fileSaveAction.setEnabled(True)
-        self.plaque.setDicoEch()
-        self.plaqueStack.append(copy.deepcopy(self.plaque))
-        self.populateTable()
-        self.populateResult()
+        self.project.dicoPlates[self.currentPlate].setDicoEch()
+        self.projectStack.append(copy.deepcopy(self.project))
+        self.pileTables[self.currentPlate].populateTable(self.project.dicoPlates[self.currentPlate])
+        self.pileResults[self.currentPlate].populateResult(self.project.dicoPlates[self.currentPlate])
 
     def modifyAm(self):
-        for it in self.table.selectedItems():
-            ind = self.amComboBox.currentIndex()
-            am = self.plaque.listAmount[ind]
+        for it in self.pileTables[self.currentPlate].selectedItems():
+            am = self.amComboBox.currentText()
             nom = it.statusTip()
-            well = getattr(self.plaque, str(nom))
+            well = getattr(self.project.dicoPlates[self.currentPlate], str(nom))
             well.setAmount(float(am))
-        self.plaque.unsaved = True
+        self.project.unsaved = True
         self.fileSaveAction.setEnabled(True)
-        self.plaque.setDicoAm()
-        self.plaqueStack.append(copy.deepcopy(self.plaque))
-        self.populateTable()
-        self.populateResult()
+        self.project.setDicoAm()
+        self.projectStack.append(copy.deepcopy(self.project))
+        self.pileTables[self.currentPlate].populateTable(self.project.dicoPlates[self.currentPlate])
+        self.pileResults[self.currentPlate].populateResult(self.project.dicoPlates[self.currentPlate])
 
     def setType(self):
-        for it in self.table.selectedItems():
+        for it in self.pileTables[self.currentPlate].selectedItems():
             type = self.typeComboBox.currentText()
             nom = it.statusTip()
-            well = getattr(self.plaque, str(nom))
+            well = getattr(self.project.dicoPlates[self.currentPlate], str(nom))
             well.setType(type)
-        self.plaque.unsaved = True
+        self.project.unsaved = True
         self.fileSaveAction.setEnabled(True)
-        self.plaqueStack.append(copy.deepcopy(self.plaque))
-        self.populateTable()
-        self.populateResult()
+        self.projectStack.append(copy.deepcopy(self.project))
+        self.pileTables[self.currentPlate].populateTable(self.project.dicoPlates[self.currentPlate])
+        self.pileResults[self.currentPlate].populateResult(self.project.dicoPlates[self.currentPlate])
 
     def enable(self):
-        for it in self.table.selectedItems():
+        for it in self.pileTables[self.currentPlate].selectedItems():
             ech = self.echComboBox.currentText()
             nom = it.statusTip()
-            well = getattr(self.plaque, str(nom))
+            well = getattr(self.project.dicoPlates[self.currentPlate], str(nom))
             well.setEnabled(True)
-        self.plaque.unsaved = True
+        self.project.unsaved = True
         self.fileSaveAction.setEnabled(True)
-        self.plaqueStack.append(copy.deepcopy(self.plaque))
-        self.populateTable()
-        self.populateResult()
+        self.projectStack.append(copy.deepcopy(self.project))
+        self.pileTables[self.currentPlate].populateTable(self.project.dicoPlates[self.currentPlate])
+        self.pileResults[self.currentPlate].populateResult(self.project.dicoPlates[self.currentPlate])
 
     def disable(self):
-        for it in self.table.selectedItems():
+        for it in self.pileTables[self.currentPlate].selectedItems():
             ech = self.echComboBox.currentText()
             nom = it.statusTip()
-            well = getattr(self.plaque, str(nom))
+            well = getattr(self.project.dicoPlates[self.currentPlate], str(nom))
             well.setEnabled(False)
             well.setCtmean('')
             well.setCtdev('')
             well.setNRQ('')
             well.setNRQerror('')
-        self.plaque.unsaved = True
+        self.project.unsaved = True
         self.fileSaveAction.setEnabled(True)
-        self.plaqueStack.append(copy.deepcopy(self.plaque))
-        self.populateTable()
-        self.populateResult()
+        self.projectStack.append(copy.deepcopy(self.project))
+        self.pileTables[self.currentPlate].populateTable(self.project.dicoPlates[self.currentPlate])
+        self.pileResults[self.currentPlate].populateResult(self.project.dicoPlates[self.currentPlate])
 
     def displayWarnings(self):
-        self.populateTable()
-        self.populateResult()
+        for key in self.project.dicoPlates.keys():
+            pl = self.project.dicoPlates[key]
+            self.pileTables[key].populateTable(pl)
+            self.pileResults[key].populateResult(pl)
 
     def checkNegative(self, ctMin):
         """
         A method to check negative samples quality
         """
-        for well in self.plaque.listePuits:
-            if well.type == QString('negative'):
-                if well.ct <= ctMin:
-                    QMessageBox.warning(self, "Warning Negative",
+        for pl in self.project.dicoPlates:
+            for well in self.project.dicoPlates[pl].listePuits:
+                if well.type == QString('negative'):
+                    if well.ct <= ctMin:
+                        QMessageBox.warning(self, "Warning Negative",
                                "<b>Warning</b>: ct of well %s lower than %.2f" \
                                         % (well.name, ctMin))
 
@@ -1009,16 +1019,16 @@ class Qpcr_qt(QMainWindow):
         """
         Determine the reference target and sample
         """
-        for g in self.plaque.listGene:
+        for g in self.project.hashGene.values():
             if g.isRef == Qt.Checked:
-                self.plaque.geneRef = g
-        for e in self.plaque.listEch:
+                self.project.geneRef = g
+        for e in self.project.hashEch.values():
             if e.isRef == Qt.Checked:
-                self.plaque.echRef = e
-        if not hasattr(self.plaque, "geneRef"):
+                self.project.echRef = e
+        if not hasattr(self.project, "geneRef"):
             QMessageBox.warning(self, "Warning",
                                 "Reference target undefined !")
-        if not hasattr(self.plaque, "echRef"):
+        if not hasattr(self.project, "echRef"):
             QMessageBox.warning(self, "Warning",
                                 "Reference sample undefined !")
 
@@ -1028,15 +1038,16 @@ class Qpcr_qt(QMainWindow):
 # On fixe le gene de reference et le triplicat de reference
         self.setRefs()
 # On construit tous les triplicats
-        if hasattr(self.plaque, "geneRef") and hasattr(self.plaque, "echRef"):
+        if hasattr(self.project, "geneRef") and hasattr(self.project, "echRef"):
             try:
-                self.plaque.findTriplicat(self.ectMax, self.confidence,
+                self.project.findTrip(self.ectMax, self.confidence,
                                           self.errtype)
             except ValueError:
                 brokenWells = []
-                for well in self.plaque.listePuits:
-                    if well.warning:
-                        brokenWells.append(well.name) 
+                for pl in self.project.dicoPlates.values():
+                    for well in self.plaque.listePuits:
+                        if well.warning:
+                            brokenWells.append(well.name) 
                 QMessageBox.warning(self, "Problem occurs in ctref calculation !",
                     "A problem occured in the calculations. It seems to come from the \
                      well %s. Check whether ct are correctly defined." \
@@ -1046,9 +1057,11 @@ class Qpcr_qt(QMainWindow):
             if self.nplotGene == 0:
                 self.onglet.addTab(self.plotUnknownWidget, "Quantification")
 # On calcule NRQ
-            self.plaque.calcNRQ()
+            self.project.calcNRQ()
 # On reremplit la table de resultats
-            self.populateResult()
+            for key in self.project.dicoPlates.keys():
+                pl = self.project.dicoPlates[key]
+                self.pileResults[key].populateResult(pl)
 # On trace le resultat
             self.plotUnknown()
             self.plaque.unsaved = True
@@ -1057,23 +1070,25 @@ class Qpcr_qt(QMainWindow):
     def computeStd(self):
 # On cherche les std
         try:
-            self.plaque.findStd(self.ectMax, self.confidence,
+            self.project.findStd(self.ectMax, self.confidence,
                                 self.errtype)
         except ValueError:
             self.displayWarnings()
             return
 # On trace le resultat on rajoute un onglet si c'est la premiere fois
-        if len(self.plaque.dicoStd.keys()) != 0:
+        if len(self.project.dicoStd.keys()) != 0:
             if self.nplotStd == 0:
                 self.onglet.addTab(self.plotStdWidget, "Standard curves")
             self.geneStdBox.clear()
-            self.geneStdBox.addItems(self.plaque.dicoStd.keys())
+            self.geneStdBox.addItems(self.project.dicoStd.keys())
             # Calcul des courbes standards
-            self.plaque.calcStd(self.confidence, self.errtype)
-            self.plaque.unsaved = True
+            self.project.calcStd(self.confidence, self.errtype)
+            self.project.unsaved = True
             self.fileSaveAction.setEnabled(True)
-            self.plaqueStack.append(copy.deepcopy(self.plaque))
-            self.populateResult()
+            self.projectStack.append(copy.deepcopy(self.project))
+            for key in self.project.dicoPlates.keys():
+                pl = self.project.dicoPlates[key]
+                self.pileResults[key].populateResult(pl)
             self.populateTree()
             self.plotStd()
 
@@ -1096,11 +1111,11 @@ class Qpcr_qt(QMainWindow):
 
 # color attributions
         if self.nplotGene == 0:
-            for ind, gene in enumerate(self.plaque.listGene[1:]):
+            for ind, gene in enumerate(self.project.hashGene.values()[1:]):
                 gene.setColor(colors[ind])
 
         if self.nplotEch == 0:
-            for ind, ech in enumerate(self.plaque.listEch[1:]):
+            for ind, ech in enumerate(self.project.hashEch.values()[1:]):
                 ech.setColor(colors[ind])
 
         legPos = [] ; legName = [] ; xlabel = []
@@ -1108,12 +1123,12 @@ class Qpcr_qt(QMainWindow):
 # Gene vs Ech
         if self.cboxSens.currentIndex() == 0:
             ind = 0
-            for gene in self.plaque.listGene[1:]:
+            for gene in self.project.hashGene.values()[1:]:
                 listNRQ = [] ; listNRQerror = [] ; poped = []
                 if gene.enabled == Qt.Checked:
-                    localDict = self.plaque.dicoTrip.getRow(gene.name)
+                    localDict = self.project.dicoTriplicat.getRow(gene.name)
                     nech = 0
-                    for ech in self.plaque.listEch[1:]:
+                    for ech in self.project.hashEch.values()[1:]:
                         if ech.enabled == Qt.Checked:
                             if localDict.has_key(ech.name):
                                 listNRQ.append(localDict[ech.name].NRQ)
@@ -1147,12 +1162,12 @@ class Qpcr_qt(QMainWindow):
 # Ech vs Gene
         elif self.cboxSens.currentIndex() == 1:
             ind = 0
-            for ech in self.plaque.listEch[1:]:
+            for ech in self.project.hashEch.values()[1:]:
                 listNRQ = [] ; listNRQerror = [] ; poped = []
                 if ech.enabled == Qt.Checked:
-                    localDict = self.plaque.dicoTrip.getColumn(ech.name)
+                    localDict = self.project.dicoTriplicat.getColumn(ech.name)
                     ngene = 0
-                    for gene in self.plaque.listGene[1:]:
+                    for gene in self.project.hashGene.values()[1:]:
                         if gene.enabled == Qt.Checked:
                             if localDict.has_key(gene.name):
                                 listNRQ.append(localDict[gene.name].NRQ)
@@ -1205,7 +1220,7 @@ class Qpcr_qt(QMainWindow):
         geneName = self.geneStdBox.currentText()
         x = array([])
         y = array([])
-        for trip in self.plaque.dicoStd[geneName].values():
+        for trip in self.project.dicoStd[geneName].values():
             x = append(x, asarray(trip.amList))
             y = append(y, asarray(trip.ctList))
         x = log10(x)
@@ -1247,12 +1262,16 @@ class Qpcr_qt(QMainWindow):
         self.mplCanUnknown.draw()
 
     def setPlotColor(self):
-        dialog = PropDialog(self, listGene=self.plaque.listGene[1:],
-                            listEch=self.plaque.listEch[1:])
+        dialog = PropDialog(self, hashGene=self.project.hashGene,
+                            hashEch=self.project.hashEch)
         if dialog.exec_():
-            self.plaque.listGene[1:] = dialog.listGene
-            self.plaque.listEch[1:] = dialog.listEch
+            self.project.hashGene = dialog.hashGene
+            self.project.hashEch = dialog.hashEch
             self.plotUnknown()
+
+    def changeCurrentIndex(self):
+        self.currentIndex = self.tabulPlates.currentIndex()
+        self.currentPlate = self.tabulPlates.tabText(self.currentIndex)
 
 def run():
     import sys

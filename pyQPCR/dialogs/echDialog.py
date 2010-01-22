@@ -30,15 +30,16 @@ __version__ = "$Rev$"
 
 class EchDialog(QDialog):
     
-    def __init__(self, parent=None, plaque=None):
+    def __init__(self, parent=None, project=None):
         self.parent = parent
         QDialog.__init__(self, parent)
 
         self.listWidget = QListWidget()
         self.listWidget.setAlternatingRowColors(True)
         self.listWidget.setSelectionMode(3)
-        if plaque is not None:
-            self.plaque = copy.deepcopy(plaque)
+
+        if project is not None:
+            self.project = copy.deepcopy(project)
             self.populateList()
 
         self.listWidget.setCurrentRow(-1)
@@ -70,10 +71,11 @@ class EchDialog(QDialog):
 
     def populateList(self):
         self.listWidget.clear()
-        for ind, it in enumerate(self.plaque.listEch[1:]):
+        for it in self.project.hashEch.values()[1:]:
             item = QListWidgetItem(it.name)
             if it.isRef == Qt.Checked:
                 item.setIcon(QIcon(":/reference.png"))
+            item.setStatusTip(it.name)
             self.listWidget.addItem(item)
 
     def add(self):
@@ -84,54 +86,58 @@ class EchDialog(QDialog):
             ech = Ech(nomech, state)
             ech.setColor(QColor(Qt.black))
             if state == Qt.Checked:
-                self.plaque.echRef = ech
-                for sample in self.plaque.listEch:
+                self.project.echRef = ech
+                for sample in self.project.hashEch.values():
                     if sample.isRef == Qt.Checked:
                         sample.setRef(Qt.Unchecked)
-            if not self.plaque.adresseEch.has_key(nomech):
-                self.plaque.listEch.append(ech)
-                self.plaque.adresseEch[nomech] = len(self.plaque.listEch)-1
+            if not self.project.hashEch.has_key(nomech):
+                self.project.hashEch[nomech] = ech
                 self.populateList()
+            else:
+                QMessageBox.warning(self, "Already exist",
+                        "The sample %s is already defined !" % ech)
 
     def edit(self):
-        row = self.listWidget.currentRow()
-        ech = self.plaque.listEch[row+1]
-        ech_before = ech.name
+        ech_before = self.listWidget.currentItem().statusTip()
+        ech = self.project.hashEch[ech_before]
         dialog = AddEchDialog(self, ech=ech)
         if dialog.exec_():
             name = dialog.ech.text()
             state = dialog.ref.checkState()
 # Si l'echantillon etait ech de reference et qu'il est desactive
-# alors la plaque n'a plus d'echantillon de reference
+# alors la project n'a plus d'echantillon de reference
             if ech.isRef == Qt.Checked and state == Qt.Unchecked:
-                delattr(self.plaque, "echRef")
+                delattr(self.project, "echRef")
 
             ech.setName(name)
             ech.setRef(state)
             if state == Qt.Checked:
-                self.plaque.echRef = ech
-                for ind, sample in enumerate(self.plaque.listEch):
-                    if sample.isRef == Qt.Checked and ind != row+1:
+                self.project.echRef = ech
+                for sample in self.project.hashEch.values():
+                    if sample.isRef == Qt.Checked and sample.name != name:
                         sample.setRef(Qt.Unchecked)
+# dico
+            for pl in self.project.dicoPlates.values():
+                if pl.dicoEch.has_key(ech_before) and ech_before != name:
+                    ind = pl.dicoEch.index(ech_before)
+                    pl.dicoEch.insert(ind, name, pl.dicoEch[ech_before])
+                    ind = self.project.hashEch.index(ech_before)
+                    self.project.hashEch.insert(ind, name,
+                                                self.project.hashEch[ech_before])
+
+                    for well in pl.dicoEch[ech_before]:
+                        well.setEch(ech)
+                    pl.dicoEch.__delitem__(ech_before)
+                    self.project.hashEch.__delitem__(ech_before)
+                    self.project.unsaved = True
             self.populateList()
-            if self.plaque.dicoEch.has_key(ech_before):
-                self.plaque.dicoEch[name] = \
-                     self.plaque.dicoEch[ech_before]
-                self.plaque.adresseEch[name] = \
-                     self.plaque.adresseEch[ech_before]
-                for well in self.plaque.dicoEch[ech_before]:
-                    well.setEch(ech)
-                self.plaque.dicoEch.__delitem__(ech_before)
-                self.plaque.adresseEch.__delitem__(ech_before)
-                self.plaque.unsaved = True
 
     def remove(self):
         echs = []
         if len(self.listWidget.selectedItems()) == 0:
             return
         for it in self.listWidget.selectedItems():
-            row = self.plaque.adresseEch[it.text()]
-            ech = self.plaque.listEch[row]
+            ech = self.project.hashEch[it.statusTip()]
             echs.append(ech)
 
         reply = QMessageBox.question(self, "Remove",
@@ -139,14 +145,14 @@ class EchDialog(QDialog):
                         QMessageBox.Yes|QMessageBox.No)
         if reply == QMessageBox.Yes:
             for ech in echs:
-                if self.plaque.dicoEch.has_key(ech.name):
-                    for well in self.plaque.dicoEch[ech.name]:
-                        well.setEch(Ech(''))
-                    self.plaque.setDicoEch()
-                    self.plaque.listEch.__delitem__( \
-                              self.plaque.adresseEch[ech.name])
-                self.plaque.unsaved = True
-                self.populateList()
+                for pl in self.project.dicoPlates.values():
+                    if pl.dicoEch.has_key(ech.name):
+                        for well in pl.dicoEch[ech.name]:
+                            well.setEch(Ech(''))
+                        pl.setDicoEch()
+                self.project.hashEch.__delitem__(ech.name)
+            self.project.unsaved = True
+            self.populateList()
 
 class AddEchDialog(QDialog):
     
@@ -179,11 +185,11 @@ class AddEchDialog(QDialog):
         self.connect(buttonBox, SIGNAL("rejected()"), self, SLOT("reject()"))
         self.setWindowTitle("New sample")
 
-if __name__=="__main__":
+if __name__ == "__main__":
     import sys
-    from plaque import *
+    from project import *
     app = QApplication(sys.argv)
-    pl = Plaque('toto.csv')
+    pl = project('toto.csv')
     f = EchDialog(plaque=pl)
     f.show()
     app.exec_()

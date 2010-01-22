@@ -32,7 +32,7 @@ __version__ = "$Rev$"
 
 class EditDialog(QDialog):
 
-    def __init__(self, parent=None, plaque=None, selected=None):
+    def __init__(self, parent=None, project=None, selected=None):
         self.parent = parent
         QDialog.__init__(self, parent)
 # Widgets
@@ -94,11 +94,11 @@ class EditDialog(QDialog):
                                      QDialogButtonBox.Cancel)
 
 # Remplissage de la comboBox avec les genes
-        if plaque is not None:
-            self.plaque = copy.deepcopy(plaque)
-            self.cboxGene.addItems(self.plaque.listGene)
-            self.cboxSample.addItems(self.plaque.listEch)
-            self.cboxAm.addItems(self.plaque.listAmount)
+        if project is not None:
+            self.project = copy.deepcopy(project)
+            self.cboxGene.addItems(self.project.hashGene, editDialog=True)
+            self.cboxSample.addItems(self.project.hashEch, editDialog=True)
+            self.cboxAm.addItems(self.project.hashAmount.keys())
         if selected is not None:
             self.selected = selected
             self.populateEch()
@@ -146,12 +146,13 @@ class EditDialog(QDialog):
 
     def populateAm(self):
         self.cboxAm.clear()
-        self.cboxAm.addItems(self.plaque.listAmount)
+        self.cboxAm.addItems(self.project.hashAmount.keys())
         nAm = list(self.selected[3])
 # Determination de l'item courant pour l'amount
         if len(nAm) == 1:
             try:
-                ind = self.plaque.adresseAmount[str(nAm[0])]
+                dat = QString("%.2f" % nAm[0])
+                ind = self.project.hashAmount.index(dat)
                 self.cboxAm.setCurrentIndex(ind)
                 self.curAmIndex = ind
             except KeyError:
@@ -161,12 +162,13 @@ class EditDialog(QDialog):
 
     def populateEch(self):
         self.cboxSample.clear()
-        self.cboxSample.addItems(self.plaque.listEch)
+        self.cboxSample.addItems(self.project.hashEch, editDialog=True)
         nEch = list(self.selected[2])
 # Determination de l'item courant pour l'echantillon
         if len(nEch) == 1:
             try:
-                ind = self.plaque.adresseEch[nEch[0]]
+                print nEch[0]
+                ind = self.project.hashEch.index(nEch[0])
                 self.cboxSample.setCurrentIndex(ind)
                 self.curEchIndex = ind
             except KeyError:
@@ -176,12 +178,12 @@ class EditDialog(QDialog):
 
     def populateGene(self):
         self.cboxGene.clear()
-        self.cboxGene.addItems(self.plaque.listGene)
+        self.cboxGene.addItems(self.project.hashGene, editDialog=True)
         nGene = list(self.selected[1])
 # Determination de l'item courant pour le gene
         if len(nGene) == 1:
             try:
-                ind = self.plaque.adresseGene[nGene[0]]
+                ind = self.project.hashGene.index(nGene[0])
                 self.cboxGene.setCurrentIndex(ind)
                 self.curGeneIndex = ind
             except KeyError:
@@ -190,56 +192,34 @@ class EditDialog(QDialog):
             self.cboxGene.setCurrentIndex(0)
 
     def addEch(self):
-        dialog = EchDialog(self, plaque=self.plaque)
+        dialog = EchDialog(self, project=self.project)
         if dialog.exec_():
-            self.plaque = dialog.plaque
-            self.plaque.setDicoEch()
+            self.project = dialog.project
+            for pl in self.project.dicoPlates.values():
+                pl.setDicoEch()
             self.populateEch()
 
     def addAm(self):
-        dialog = AmountDialog(self, plaque=self.plaque)
+        dialog = AmountDialog(self, project=self.project)
         if dialog.exec_():
-            self.plaque = dialog.plaque
-            self.plaque.setDicoAm()
+            self.project = dialog.project
+            self.project.setDicoAm()
             self.populateAm()
 
     def addGene(self):
-        dialog = GeneDialog(self, plaque=self.plaque)
+        dialog = GeneDialog(self, project=self.project)
         if dialog.exec_():
-            self.plaque = dialog.plaque
-            self.plaque.setDicoGene()
+            self.project = dialog.project
+            for pl in self.project.dicoPlates.values():
+                pl.setDicoGene()
             self.populateGene()
-
-    def accept(self):
-        ge = self.cboxGene.currentObj()
-        if self.cboxType.currentText() == QString('unknown'):
-            ech = self.cboxSample.currentObj()
-            for it in self.parent.table.selectedItems():
-                nom = it.statusTip()
-                well = getattr(self.plaque, str(nom))
-                well.setType(QString('unknown'))
-                if ge.name != "": well.setGene(ge)
-                if ech.name != "": well.setEch(ech)
-
-        if self.cboxType.currentText() == QString('standard'):
-            ind = self.cboxAm.currentIndex()
-            am = self.plaque.listAmount[ind]
-            for it in self.parent.table.selectedItems():
-                nom = it.statusTip()
-                well = getattr(self.plaque, str(nom))
-                well.setType(QString('standard'))
-                if ge.name != '':
-                    well.setGene(ge)
-                if am != '':
-                    well.setAmount(float(am))
-        QDialog.accept(self)
 
 
 if __name__=="__main__":
     import sys
-    from plaque import *
+    from project import *
     app = QApplication(sys.argv)
-    pl = Plaque('sortiesrealplex/test_2.txt')
-    f = EditDialog(plaque=pl)
+    pl = project('sortiesrealplex/test_2.txt')
+    f = EditDialog(project=pl)
     f.show()
     app.exec_()

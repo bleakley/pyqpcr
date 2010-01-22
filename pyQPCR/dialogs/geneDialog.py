@@ -29,15 +29,15 @@ __version__ = "$Rev$"
 
 class GeneDialog(QDialog):
     
-    def __init__(self, parent=None, plaque=None):
+    def __init__(self, parent=None, project=None):
         self.parent = parent
         QDialog.__init__(self, parent)
 
         self.listWidget = QListWidget()
         self.listWidget.setAlternatingRowColors(True)
         self.listWidget.setSelectionMode(3)
-        if plaque is not None:
-            self.plaque = copy.deepcopy(plaque)
+        if project is not None:
+            self.project = copy.deepcopy(project)
             self.populateList()
 
         self.listWidget.setCurrentRow(-1)
@@ -69,7 +69,7 @@ class GeneDialog(QDialog):
 
     def populateList(self):
         self.listWidget.clear()
-        for ind, it in enumerate(self.plaque.listGene[1:]):
+        for it in self.project.hashGene.values()[1:]:
             name = "%s (%.2f%%%s%.2f)" % (it.name, it.eff, unichr(177), it.pm)
             item = QListWidgetItem(name)
             if it.isRef == Qt.Checked:
@@ -89,20 +89,21 @@ class GeneDialog(QDialog):
 # Si le gene ajoute est un gene de reference alors l'autre gene de reference
 # repasse en isRef = Qt.Unchecked
             if state == Qt.Checked:
-                self.plaque.geneRef = g
-                for gene in self.plaque.listGene:
+                self.project.geneRef = g
+                for gene in self.project.hashGene.values():
                     if gene.isRef == Qt.Checked:
                         gene.setRef(Qt.Unchecked)
             g.setColor(QColor(Qt.black))
-            if not self.plaque.adresseGene.has_key(gene):
-                self.plaque.listGene.append(g)
-                self.plaque.adresseGene[gene] = len(self.plaque.listGene)-1
+            if not self.project.hashGene.has_key(gene):
+                self.project.hashGene[gene] = g
                 self.populateList()
+            else:
+                QMessageBox.warning(self, "Already exist",
+                        "The gene %s is already defined !" % gene)
 
     def edit(self):
-        row = self.listWidget.currentRow()
-        gene = self.plaque.listGene[row+1]
-        gene_before = gene.name
+        gene_before = self.listWidget.currentItem().statusTip()
+        gene = self.project.hashGene[gene_before]
         dialog = AddGeneDialog(self, ge=gene)
         if dialog.exec_():
             name = dialog.gene.text()
@@ -112,7 +113,7 @@ class GeneDialog(QDialog):
 # Si le gene etait gene de reference et qu'il est desactive
 # alors la plaque n'a plus de gene de reference
             if gene.isRef == Qt.Checked and state == Qt.Unchecked:
-                delattr(self.plaque, "geneRef")
+                delattr(self.project, "geneRef")
             gene.setRef(state)
             gene.setEff(eff)
             gene.setPm(pm)
@@ -120,45 +121,51 @@ class GeneDialog(QDialog):
 # Si le gene ajoute est un gene de reference alors l'autre gene de reference
 # repasse en isRef = Qt.Unchecked
             if state == Qt.Checked:
-                self.plaque.geneRef = gene
-                for ind, g in enumerate(self.plaque.listGene):
-                    if g.isRef == Qt.Checked and ind != row+1:
+                self.project.geneRef = gene
+                for g in self.project.hashGene.values():
+                    if g.isRef == Qt.Checked and g.name != name:
                         g.setRef(Qt.Unchecked)
 # dico
+            for pl in self.project.dicoPlates.values():
+                if pl.dicoGene.has_key(gene_before) and gene_before != name:
+                    ind = pl.dicoGene.index(gene_before)
+                    pl.dicoGene.insert(ind, name, pl.dicoGene[gene_before])
+                    ind = self.project.hashGene.index(gene_before)
+                    self.project.hashGene.insert(ind, name,
+                                                self.project.hashGene[gene_before])
+
+                    for well in pl.dicoGene[gene_before]:
+                        well.setGene(gene)
+                    pl.dicoGene.__delitem__(gene_before)
+                    self.project.hashGene.__delitem__(gene_before)
+                    self.project.unsaved = True
             self.populateList()
-            if self.plaque.dicoGene.has_key(gene_before):
-                self.plaque.dicoGene[name] = \
-                     self.plaque.dicoGene[gene_before]
-                self.plaque.adresseGene[name] = \
-                     self.plaque.adresseGene[gene_before]
-                for well in self.plaque.dicoGene[gene_before]:
-                    well.setGene(gene)
-                self.plaque.dicoGene.__delitem__(gene_before)
-                self.plaque.adresseGene.__delitem__(gene_before)
-                self.plaque.unsaved = True
 
     def remove(self):
         genes = []
         if len(self.listWidget.selectedItems()) == 0:
             return
+# Liste des genes a supprimer
         for it in self.listWidget.selectedItems():
-            row = self.plaque.adresseGene[it.statusTip()]
-            gene = self.plaque.listGene[row]
+            gene = self.project.hashGene[it.statusTip()]
             genes.append(gene)
 
         reply = QMessageBox.question(self, "Remove",
                         "Remove %s ?" % genes,
                         QMessageBox.Yes|QMessageBox.No)
+
+# Si la suppression est confirmee, on remet tous les puits correspondant
+# au gene nul et on supprime l'entree dans hashGene
         if reply == QMessageBox.Yes:
             for gene in genes:
-                if self.plaque.dicoGene.has_key(gene.name):
-                    for well in self.plaque.dicoGene[gene.name]:
-                        well.setGene(Gene(''))
-                    self.plaque.setDicoGene()
-                    self.plaque.listGene.__delitem__( \
-                                  self.plaque.adresseGene[gene.name])
-                self.populateList()
-                self.plaque.unsaved = True
+                for pl in self.project.dicoPlates.values():
+                    if pl.dicoGene.has_key(gene.name):
+                        for well in pl.dicoGene[gene.name]:
+                            well.setGene(Gene(''))
+                            pl.setDicoGene()
+                self.project.hashGene.__delitem__(gene.name)
+            self.populateList()
+            self.project.unsaved = True
 
 class AddGeneDialog(QDialog):
     

@@ -32,30 +32,23 @@ __author__ = "$Author$"
 __date__ = "$Date$"
 __version__ = "$Rev$"
 
+
 class Plaque:
     
-    def __init__(self, filename):
-        self.filename = filename
+    def __init__(self, filename=None):
         self.unsaved = False
+        self.filename = filename
 
         self.listePuits = []
         self.listGene = [Gene('')]
         self.listEch = [Ech('')]
         self.listAmount = ['']
-        self.adresseGene = OrderedDict()
-        self.adresseEch = OrderedDict()
-        self.adresseAmount = OrderedDict()
-        self.adresseEch[''] = 0
-        self.adresseGene[''] = 0
-        self.adresseAmount[''] = 0
  
-        self.determineFileType(self.filename)
-        self.read()
-        self.setDicoGene()
-        self.setDicoEch()
-        self.setDicoAm()
+        if self.filename is not None:
+            self.determineFileType(self.filename)
+            self.read()
 # Permet eventuellement de connaitre les genes/ech de ref 
-        self.getRefsFromFile()
+        #self.getRefsFromFile()
 
     def determineFileType(self, filename):
         extent = filename[-3:]
@@ -104,9 +97,6 @@ class Plaque:
                     raise KeyError
                 if self.header.has_key('Name'):
                     echName = champs[self.header['Name']]
-                    if not self.adresseEch.has_key(echName):
-                        self.listEch.append(Ech(echName))
-                        self.adresseEch[echName] = len(self.listEch)-1
                     x.setEch(Ech(echName))
                 if self.header.has_key('Ct SYBR'):
                     ct = champs[self.header['Ct SYBR']]
@@ -121,16 +111,10 @@ class Plaque:
                     amount = champs[self.header['Amount SYBR']]
                     if amount != '-':
                         x.setAmount(amount)
-                        if not self.adresseAmount.has_key(str(amount)):
-                            self.listAmount.append(str(amount))
-                            self.adresseAmount[str(amount)] = len(self.listAmount)-1
                     else:
                         x.setAmount('')
                 if self.header.has_key('Target SYBR'):
                     geneName = champs[self.header['Target SYBR']]
-                    if not self.adresseGene.has_key(geneName):
-                        self.listGene.append(Gene(geneName))
-                        self.adresseGene[geneName] = len(self.listGene)-1 
                     x.setGene(Gene(geneName))
                 if self.header.has_key('Type'):
                     type = champs[self.header['Type']]
@@ -221,7 +205,6 @@ class Plaque:
         return html
 
     def setDicoGene(self):
-# Mise a jour de dicoGene
         self.dicoGene = OrderedDict()
         for well in self.listePuits:
             nomgene = well.gene.name
@@ -229,17 +212,8 @@ class Plaque:
                 self.dicoGene[nomgene].append(well)
             else:
                 self.dicoGene[nomgene] = [well]
-# Mise a jour de adresseGene
-        self.adresseGene = OrderedDict()
-        self.adresseGene[''] = 0
-        ind = 1
-        for gene in self.listGene:
-            if not self.adresseGene.has_key(gene.name):
-                self.adresseGene[gene.name] = ind
-                ind += 1
 
     def setDicoEch(self):
-# Mise a jour de dicoEch
         self.dicoEch = OrderedDict()
         for well in self.listePuits:
             nomech = well.ech.name
@@ -247,31 +221,7 @@ class Plaque:
                 self.dicoEch[nomech].append(well)
             else:
                 self.dicoEch[nomech] = [well]
-# Mise a jour de adresseEch
-        self.adresseEch = OrderedDict()
-        self.adresseEch[''] = 0
-        ind = 1
-        for ech in self.listEch:
-            if not self.adresseEch.has_key(ech.name):
-                self.adresseEch[ech.name] = ind
-                ind += 1
 
-    def setDicoAm(self):
-# Mise a jour de dicoAmount
-        self.dicoAmount = OrderedDict()
-        for well in self.listePuits:
-            if self.dicoAmount.has_key(str(well.amount)):
-                self.dicoAmount[str(well.amount)].append(well)
-            else:
-                self.dicoAmount[str(well.amount)] = [well]
-# Mise a jour de adresseAmount
-        self.adresseAmount = OrderedDict()
-        self.adresseAmount[''] = 0
-        ind = 1
-        for am in self.listAmount:
-            if not self.adresseAmount.has_key(str(am)):
-                self.adresseAmount[str(am)] = ind
-                ind += 1
 
     def getRefsFromFile(self):
         """
@@ -318,32 +268,6 @@ class Plaque:
                 dicoEch[ech] = trip
                 self.dicoTrip[key] = dicoEch
             
-    def findStd(self, ectMax, confidence, errtype):
-        """
-        This method allows to build a dictionnary for standard
-        wells.
-        """
-        self.dicoStd = RaggedArray2D()
-        for key in self.dicoGene.keys():
-            dicoAmount = RaggedArray2D()
-            for well in self.dicoGene[key]:
-                if well.type == QString('standard') and well.enabled == True:
-                    if dicoAmount.has_key(str(well.amount)):
-                        dicoAmount[str(well.amount)].append(well)
-                    else:
-                        dicoAmount[str(well.amount)] = [well]
-            if dicoAmount.has_key(""):
-                dicoAmount.pop("")
-            for amount in dicoAmount.keys():
-                trip = Replicate(dicoAmount[amount], type=QString('standard'),
-                                 ectMax=ectMax, confidence=confidence, 
-                                 errtype=errtype)
-                if not hasattr(trip, "ctdev"):
-                    # if ctdev undefined raise an exception
-                    raise ValueError
-                dicoAmount[amount] = trip
-                self.dicoStd[key] = dicoAmount
-
     def calcNRQ(self):
         for g in self.dicoTrip.keys():
             for ech in self.dicoTrip[g].keys():
@@ -373,40 +297,7 @@ class Plaque:
                 for well in self.dicoTrip[g][ech].listePuits:
                     well.setNRQerror(NRQerror)
 
-    def calcStd(self, confidence, errtype):
-        for geneName in self.dicoStd.keys():
-            x = array([])
-            y = array([])
-            for trip in self.dicoStd[geneName].values():
-                x = append(x, trip.amList)
-                y = append(y, trip.ctList)
-            x = log10(x)
-            slope, orig = polyfit(x, y, 1)
-            yest = polyval([slope, orig], x)
-            seps = sqrt(sum((yest-y)**2)/(len(y)-2)) # Formule 2
-            sx = sqrt(sum((x-x.mean())**2)/(len(x))) # Formule 3
-            stderr = seps / (sx*sqrt(len(x))) # Formule 4 corrigee
-            if errtype == "student":
-                talpha = t.ppf(1.-(1.-confidence)/2., len(x)-2) # Student
-            elif errtype == "normal":
-                talpha = norm.ppf(1.-(1.-confidence)/2.) # Gaussian
-            slopeerr = talpha * stderr
-            eff = (10**(-1./slope)-1)*100 # Formule 5 adaptee
-            # Erreur(Eff) = (Eff+100) * slopeerr / slope**2
-            stdeff = (eff+100)*log(10)*slopeerr/slope**2 # Formule 6 adaptee
-            # Coefficient de Pearsson de correlation
-            R2 = 1 - sum((y-yest)**2)/sum((y-mean(y))**2)
-            # output for debugging stuff:
-            # print eff, stdeff, R2
-            # Mise a jour de l'efficacite des puits
-            for well in self.dicoGene[geneName]:
-                well.gene.setEff(eff)
-                well.gene.setPm(stdeff)
-            # il faut aussi mettre a jour les genes de listGene
-            # qui servent a remplir les comboBox
-            ind = self.adresseGene[geneName]
-            self.listGene[ind].setEff(eff)
-            self.listGene[ind].setPm(stdeff)
+
 
 
 class Replicate(QDialog):
