@@ -42,14 +42,12 @@ class Qpcr_qt(QMainWindow):
  
         self.filename = None
         self.printer = None
-        self.project = Project()
 
         self.tree = QTreeWidget()
         self.tree.setHeaderLabel("Parameters")
 
         self.onglet = QTabWidget()
         self.pileTables = OrderedDict()
-        self.table = PlateWidget()
         self.createProjWidget()
         self.onglet.addTab(self.projWidget, "Plates")
 #
@@ -58,7 +56,6 @@ class Qpcr_qt(QMainWindow):
 #
         self.createResultWidget()
         self.pileResults = OrderedDict()
-        self.result = ResultWidget()
 #
         self.vSplitter = QSplitter(Qt.Horizontal)
         self.vSplitter.addWidget(self.tree)
@@ -103,8 +100,6 @@ class Qpcr_qt(QMainWindow):
                      self.setPlotColor)
         self.connect(self.geneStdBox, SIGNAL("activated(int)"),
                      self.plotStd)
-        self.connect(self.table, SIGNAL("cellDoubleClicked(int,int)"),
-                     self.editWell)
         self.connect(self.tabulPlates, SIGNAL("currentChanged(int)"),
                      self.changeCurrentIndex)
 
@@ -364,12 +359,12 @@ class Qpcr_qt(QMainWindow):
         plotToolbar.setIconSize(QSize(22, 22))
 # ContextMenu
         self.projWidget.setContextMenuPolicy(Qt.ActionsContextMenu)
-        self.result.setContextMenuPolicy(Qt.ActionsContextMenu)
+        self.resulWidget.setContextMenuPolicy(Qt.ActionsContextMenu)
         self.addActions(self.projWidget, (fileOpenAction, fileImportAction,
                        self.editAction, self.undoAction, self.redoAction, 
                        self.addGeneAction, self.addEchAction, 
                        self.enableAction, self.disableAction))
-        self.addActions(self.result, (self.filePrintAction, self.exportAction,
+        self.addActions(self.resulWidget, (self.filePrintAction, self.exportAction,
                                       self.fileSaveAction, self.fileSaveAsAction,
                                       self.plotStdAction, self.plotAction))
 # Desactivation par defaut
@@ -445,14 +440,8 @@ class Qpcr_qt(QMainWindow):
             self.nplotStd = 0
             self.nplotEch = 0
 
-            mytab = PlateWidget()
-            mytab.populateTable(plaque)
-            self.tabulPlates.addTab(mytab, key)
-            self.pileTables[key] = mytab
-            mytab = ResultWidget()
-            mytab.populateResult(plaque)
-            self.tabulResults.addTab(mytab, key)
-            self.pileResults[key] = mytab
+            self.appendPlate(plaque, key)
+            self.appendResult(plaque, key)
 
 # Activation des actions
             self.activateDesactivate(True)
@@ -475,6 +464,9 @@ class Qpcr_qt(QMainWindow):
             message = "Loaded %s" % QFileInfo(fname).fileName()
             self.updateStatus(message)
 # Nettoyage du QTabWidget
+            for ind in range(self.tabulPlates.count()):
+                self.tabulPlates.removeTab(0)
+                self.tabulResults.removeTab(0)
             self.onglet.removeTab(1)
             self.onglet.removeTab(1)
 # Remise a zero des compteurs
@@ -482,17 +474,12 @@ class Qpcr_qt(QMainWindow):
             self.nplotStd = 0
             self.nplotEch = 0
 # Nettoyage des tableaux avant l'eventuel remplissage
-            self.project.openProject(fname)
+            self.project = Project(fname)
             for key in self.project.dicoPlates.keys():
                 pl = self.project.dicoPlates[key]
-                mytab = PlateWidget()
-                mytab.populateTable(pl)
-                self.tabulPlates.addTab(mytab, key)
-                self.pileTables[key] = mytab
-                mytab = ResultWidget()
-                mytab.populateResult(pl)
-                self.tabulResults.addTab(mytab, key)
-                self.pileResults[key] = mytab
+                self.appendPlate(pl, key)
+                self.appendResult(pl, key)
+
 # Activation des actions
             self.activateDesactivate(True)
 # Pile de plaques pour le Undo/Redo
@@ -529,9 +516,10 @@ class Qpcr_qt(QMainWindow):
 
     def populateTree(self):
         self.tree.clear()
-        #ancestor = QTreeWidgetItem(self.tree, 
-        #                           [QFileInfo(self.filename).fileName()])
-        ancestor = QTreeWidgetItem(self.tree, "toto")
+        ancestor = QTreeWidgetItem(self.tree, 
+                                   [QFileInfo(self.filename).fileName()])
+        for key in self.project.dicoPlates.keys():
+            item = QTreeWidgetItem(ancestor, [key])
         itemQuant = QTreeWidgetItem(ancestor, ["Quantification"])
         itemRefGene = QTreeWidgetItem(itemQuant , ["Reference Target"])
         itemRefEch = QTreeWidgetItem(itemQuant , ["Reference Sample"])
@@ -1272,6 +1260,21 @@ class Qpcr_qt(QMainWindow):
     def changeCurrentIndex(self):
         self.currentIndex = self.tabulPlates.currentIndex()
         self.currentPlate = self.tabulPlates.tabText(self.currentIndex)
+
+    def appendPlate(self, plaque, key):
+        mytab = PlateWidget()
+        mytab.populateTable(plaque)
+        self.tabulPlates.addTab(mytab, key)
+        self.pileTables[key] = mytab
+        self.connect(mytab, SIGNAL("cellDoubleClicked(int,int)"),
+                     self.editWell)
+
+    def appendResult(self, plaque, key):
+        mytab = ResultWidget()
+        mytab.populateResult(plaque)
+        self.tabulResults.addTab(mytab, key)
+        self.pileResults[key] = mytab
+
 
 def run():
     import sys

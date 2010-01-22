@@ -28,7 +28,7 @@ array, append
 
 class Project:
 
-    def __init__(self):
+    def __init__(self, fname=None):
         self.dicoPlates = OrderedDict()
 #
         self.hashGene = OrderedDict()
@@ -40,6 +40,9 @@ class Project:
         self.hashAmount = OrderedDict()
         self.hashAmount[''] = ''
         self.unsaved = False
+        self.filename = fname
+        if self.filename is not None:
+            self.openProject(self.filename)
 
     def openProject(self, fname):
         error = None
