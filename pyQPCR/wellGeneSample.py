@@ -197,6 +197,37 @@ class Puits:
              NRQ, NRQerror)
         return st
 
+    def writeWellXml(self):
+        amount = str(self.amount)
+        if str(self.ct) != '':
+            ct = str(self.ct)
+        else:
+            ct = ''
+        if str(self.ctmean) != '':
+            ctmean = "%.2f" % self.ctmean
+        else:
+            ctmean = ''
+        if str(self.ctdev) != '':
+            ctdev = "%.2f" % self.ctdev
+        else:
+            ctdev = ''
+        if str(self.NRQ) != '':
+            NRQ = "%.2f" % self.NRQ
+            NRQerror = "%.2f" % self.NRQerror
+        else:
+            NRQ = ''
+            NRQerror = ''
+
+        st ="<WELL CT='%s' CTMEAN='%s' CTDEV='%s' " % (ct, ctmean, ctdev)
+        st += "AMOUNT='%s' NRQ='%s' NRQERROR='%s'>\n" % (amount, NRQ, NRQerror)
+        st += "<NAME>%s</NAME>\n" % self.name
+        st += "<TYPE>%s</TYPE>\n" % self.type
+        st += "<TARGET EFF='%s' PM='%s'>%s</TARGET>\n" % \
+            (self.gene.eff, self.gene.pm, self.gene.name)
+        st += "<SAMPLE>%s</SAMPLE>\n" % self.ech.name
+        st += "</WELL>\n"
+        return st
+
     def writeHtml(self):
         amount = str(self.amount)
         try:
@@ -276,6 +307,9 @@ class Puits:
         except ValueError:
             self.NRQ = nrq
 
+    def setCNRQ(self, cnrq):
+        self.CNRQ = cnrq
+
     def setNRQerror(self, err):
         self.NRQerror = err
 
@@ -289,7 +323,5 @@ if __name__=="__main__":
     eff = 90
     pm = 0.1
     g = Gene(a, eff, pm)
-    print g
     ech = Ech('si')
-    print ech
 

@@ -30,14 +30,16 @@ __version__ = "$Rev$"
 
 class AmountDialog(QDialog):
     
-    def __init__(self, parent=None, plaque=None):
+    def __init__(self, parent=None, project=None):
         self.parent = parent
         QDialog.__init__(self, parent)
 
         self.listWidget = QListWidget()
         self.listWidget.setAlternatingRowColors(True)
-        if plaque is not None:
-            self.plaque = copy.deepcopy(plaque)
+        self.listWidget.setSelectionMode(3)
+
+        if project is not None:
+            self.project = copy.deepcopy(project)
             self.populateList()
 
         self.listWidget.setCurrentRow(-1)
@@ -67,55 +69,72 @@ class AmountDialog(QDialog):
         self.connect(buttonRemove, SIGNAL("clicked()"), self.remove)
         self.setWindowTitle("New amount")
 
+    def reformatFloat(self, input):
+        output = QString("%.2f" % float(input))
+        return output
+
     def populateList(self):
         self.listWidget.clear()
-        for ind, it in enumerate(self.plaque.listAmount[1:]):
-            item = QListWidgetItem(it)
-            self.listWidget.addItem(item)
+        for it in self.project.hashAmount.keys():
+            if it != '':
+                item = QListWidgetItem(it)
+                item.setStatusTip(it)
+                self.listWidget.addItem(item)
 
     def add(self):
         dialog = AddAmDialog(self)
         if dialog.exec_():
-            am = float(dialog.am.text())
-            if not self.plaque.adresseAmount.has_key(str(am)):
-                self.plaque.listAmount.append(str(am))
-                self.plaque.adresseAmount[str(am)] = len(self.plaque.listAmount)-1
+            am = dialog.am.text()
+            amname = self.reformatFloat(am)
+            if not self.project.hashAmount.has_key(amname):
+                self.project.hashAmount[amname] = float(am)
                 self.populateList()
+            else:
+                QMessageBox.warning(self, "Already exist",
+                            "The amount %s is already defined !" % amname)
 
     def edit(self):
-        row = self.listWidget.currentRow()
-        am_before = self.plaque.listAmount[row+1]
+        am_before = self.listWidget.currentItem().statusTip()
+
         dialog = AddAmDialog(self, am=am_before)
         if dialog.exec_():
-            am = float(dialog.am.text())
-            am = str(am)
-            self.plaque.listAmount[row+1] = am
-            self.populateList()
-        if self.plaque.dicoAmount.has_key(str(am_before)):
-                self.plaque.dicoAmount[am] = \
-                     self.plaque.dicoAmount[str(am_before)]
-                self.plaque.adresseAmount[am] = \
-                     self.plaque.adresseAmount[str(am_before)]
-                for well in self.plaque.dicoAmount[str(am_before)]:
+            am = dialog.am.text()
+            amname = self.reformatFloat(am)
+            if self.project.dicoAmount.has_key(am_before) and amname != am_before:
+                ind = self.project.dicoAmount.index(am_before)
+                self.project.dicoAmount.insert(ind, amname, 
+                          self.project.dicoAmount[am_before])
+                ind = self.project.hashAmount.index(am_before)
+                self.project.hashAmount.insert(ind, amname, 
+                          self.project.hashAmount[am_before])
+                for well in self.project.dicoAmount[amname]:
                     well.setAmount(float(am))
-                self.plaque.dicoAmount.__delitem__(str(am_before))
-                self.plaque.adresseAmount.__delitem__(str(am_before))
+                self.project.dicoAmount.__delitem__(am_before)
+                self.project.hashAmount.__delitem__(am_before)
+                self.project.unsaved = True
+            self.populateList()
 
     def remove(self):
-        row = self.listWidget.currentRow()
-        am = self.plaque.listAmount[row+1]
-        item = self.listWidget.item(row)
-        if item is None:
+        ams = []
+        if len(self.listWidget.selectedItems()) == 0:
             return
+        for it in self.listWidget.selectedItems():
+            am = it.statusTip()
+            ams.append(am)
+
         reply = QMessageBox.question(self, "Remove",
-                        "Remove %s ?" % am,
+                        "Remove %s ?" % ams,
                         QMessageBox.Yes|QMessageBox.No)
         if reply == QMessageBox.Yes:
-            self.plaque.listAmount.__delitem__(row+1)
+            for am in ams:
+                if self.project.dicoAmount.has_key(am):
+                    for well in self.project.dicoAmount[am]:
+                        well.setAmount('')
+                    self.project.setDicoAm()
+                    self.project.hashAmount.__delitem__(am)
+            self.project.unsaved = True
             self.populateList()
-            if self.plaque.dicoAmount.has_key(str(am)):
-                for well in self.plaque.dicoAmount[str(am)]:
-                    well.setAmount('')
+
 
 class AddAmDialog(QDialog):
     
@@ -143,7 +162,7 @@ class AddAmDialog(QDialog):
 
 if __name__=="__main__":
     app = QApplication(sys.argv)
-    pl = Plaque('toto.csv')
-    f = AmountDialog(plaque=pl)
+    pl = project('toto.csv')
+    f = AmountDialog(project=pl)
     f.show()
     app.exec_()

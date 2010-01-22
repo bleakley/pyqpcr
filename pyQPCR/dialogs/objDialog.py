@@ -28,15 +28,15 @@ __version__ = "$Rev$"
 
 class PropDialog(QDialog):
     
-    def __init__(self, parent=None, listGene=None, listEch=None):
+    def __init__(self, parent=None, hashGene=None, listEch=None):
         self.parent = parent
         QDialog.__init__(self, parent)
 
         self.geneListWidget = QListWidget()
         self.geneListWidget.setAlternatingRowColors(True)
         pix = QPixmap(32, 32)
-        if listGene is not None:
-            self.listGene = copy.deepcopy(listGene)
+        if hashGene is not None:
+            self.listGene = copy.deepcopy(hashGene.values()[1:])
             self.populateListGene()
 
         self.echListWidget = QListWidget()
