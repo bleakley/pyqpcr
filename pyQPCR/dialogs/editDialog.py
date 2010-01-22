@@ -152,6 +152,9 @@ class EditDialog(QDialog):
         if len(nAm) == 1:
             try:
                 dat = QString("%.2f" % nAm[0])
+            except TypeError:
+                dat = QString(nAm[0])
+            try:
                 ind = self.project.hashAmount.index(dat)
                 self.cboxAm.setCurrentIndex(ind)
                 self.curAmIndex = ind
@@ -167,7 +170,6 @@ class EditDialog(QDialog):
 # Determination de l'item courant pour l'echantillon
         if len(nEch) == 1:
             try:
-                print nEch[0]
                 ind = self.project.hashEch.index(nEch[0])
                 self.cboxSample.setCurrentIndex(ind)
                 self.curEchIndex = ind

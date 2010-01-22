@@ -46,6 +46,7 @@ class Qpcr_qt(QMainWindow):
         self.tree = QTreeWidget()
         self.tree.setHeaderLabel("Parameters")
 
+        self.project = Project()
         self.onglet = QTabWidget()
         self.pileTables = OrderedDict()
         self.createProjWidget()
@@ -418,8 +419,16 @@ class Qpcr_qt(QMainWindow):
         fname = unicode(QFileDialog.getOpenFileName(self,
                        "pyQPCR - Choose a file", dir, 
                        "Input files (%s)" % " ".join(formats)))
+
         if fname:
-            self.addPlate(fname)
+            if not self.project.dicoPlates.has_key(QFileInfo(fname).fileName()):
+                self.addPlate(fname)
+            else:
+                name = QFileInfo(fname).fileName()
+                QMessageBox.warning(self, "Import cancelled",
+                  "<b>Warning</b>: the plate %s is already in the project %s ! \
+                   As a consequence, it has not been added to the project."       
+                                % (name, QFileInfo(self.filename).fileName()))
 
     def addPlate(self, fname=None):
         if fname is None:
@@ -449,6 +458,8 @@ class Qpcr_qt(QMainWindow):
             self.populateCbox(self.geneComboBox, self.project.hashGene, "Target")
             self.populateCbox(self.echComboBox, self.project.hashEch, "Sample")
             self.populateCbox(self.amComboBox, self.project.hashAmount, "Amount")
+            self.project.unsaved = True
+            self.fileSaveAction.setEnabled(True)
 
     def loadFile(self, fname=None):
         if fname is None:
