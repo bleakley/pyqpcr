@@ -1047,18 +1047,15 @@ class Qpcr_qt(QMainWindow):
         """
         Determine the reference target and sample
         """
-        for g in self.project.hashGene.values():
-            if g.isRef == Qt.Checked:
-                self.project.geneRef = g
-        for e in self.project.hashEch.values():
-            if e.isRef == Qt.Checked:
-                self.project.echRef = e
-        if not hasattr(self.project, "geneRef"):
-            QMessageBox.warning(self, "Warning",
-                                "Reference target undefined !")
-        if not hasattr(self.project, "echRef"):
-            QMessageBox.warning(self, "Warning",
-                                "Reference sample undefined !")
+        for plname in self.project.dicoPlates.keys():
+            pl = self.project.dicoPlates[plname]
+            if pl.geneRef == '':
+                QMessageBox.warning(self, "Warning",
+                    "Reference target undefined for plate %s!" % plname)
+            if pl.echRef == '':
+                QMessageBox.warning(self, "Warning",
+                    "Reference sample undefined for plate %s!" % plname)
+
 
     def computeUnknown(self):
 # On verifie la qualite des negative control
@@ -1066,34 +1063,33 @@ class Qpcr_qt(QMainWindow):
 # On fixe le gene de reference et le triplicat de reference
         self.setRefs()
 # On construit tous les triplicats
-        if hasattr(self.project, "geneRef") and hasattr(self.project, "echRef"):
-            try:
-                self.project.findTrip(self.ectMax, self.confidence,
-                                          self.errtype)
-            except ValueError:
-                brokenWells = []
-                for pl in self.project.dicoPlates.values():
-                    for well in self.plaque.listePuits:
-                        if well.warning:
-                            brokenWells.append(well.name) 
-                QMessageBox.warning(self, "Problem occurs in ctref calculation !",
-                    "A problem occured in the calculations. It seems to come from the \
-                     well %s. Check whether ct are correctly defined." \
-                    % brokenWells)  
-                self.displayWarnings()
-                return
-            if self.nplotGene == 0:
-                self.onglet.addTab(self.plotUnknownWidget, "Quantification")
+        try:
+            self.project.findTrip(self.ectMax, self.confidence,
+                                      self.errtype)
+        except ValueError:
+            brokenWells = []
+            for pl in self.project.dicoPlates.values():
+                for well in pl.listePuits:
+                    if well.warning:
+                        brokenWells.append(well.name) 
+            QMessageBox.warning(self, "Problem occurs in ctref calculation !",
+                "A problem occured in the calculations. It seems to come from the \
+                 well %s. Check whether ct are correctly defined." \
+                % brokenWells)  
+            self.displayWarnings()
+            return
+        if self.nplotGene == 0:
+            self.onglet.addTab(self.plotUnknownWidget, "Quantification")
 # On calcule NRQ
-            self.project.calcNRQ()
+        self.project.calcNRQ()
 # On reremplit la table de resultats
-            for key in self.project.dicoPlates.keys():
-                pl = self.project.dicoPlates[key]
-                self.pileResults[key].populateResult(pl)
+        for key in self.project.dicoPlates.keys():
+            pl = self.project.dicoPlates[key]
+            self.pileResults[key].populateResult(pl)
 # On trace le resultat
-            self.plotUnknown()
-            self.plaque.unsaved = True
-            self.fileSaveAction.setEnabled(True)
+        self.plotUnknown()
+        self.project.unsaved = True
+        self.fileSaveAction.setEnabled(True)
 
     def computeStd(self):
 # On cherche les std
@@ -1151,41 +1147,45 @@ class Qpcr_qt(QMainWindow):
 # Gene vs Ech
         if self.cboxSens.currentIndex() == 0:
             ind = 0
-            for gene in self.project.hashGene.values()[1:]:
-                listNRQ = [] ; listNRQerror = [] ; poped = []
-                if gene.enabled == Qt.Checked:
-                    localDict = self.project.dicoTriplicat.getRow(gene.name)
-                    nech = 0
-                    for ech in self.project.hashEch.values()[1:]:
-                        if ech.enabled == Qt.Checked:
-                            if localDict.has_key(ech.name):
-                                listNRQ.append(localDict[ech.name].NRQ)
-                                listNRQerror.append(localDict[ech.name].NRQerror)
-                                if not xlabel.__contains__(str(ech.name)):
-                                    xlabel.append(str(ech.name))
-                            else:
-                                poped.append(nech)
-                            nech += 1
-                    valmax = spacing * (nech-1)
-                    valx =linspace(0, valmax, nech) + ind*width
-                    if len(listNRQ) != nech:
-                        QMessageBox.warning(self, "Warning sample",
-                                   "<b>Warning</b>: the replicate (%s, %s)" \
-                                   " doesn't seem to be defined !" \
-                                   " Results may be wrong !" \
-                                    % (gene.name, xlabel[poped[0]]))
-                        valx = delete(valx, poped)
-                    p = self.mplCanUnknown.axes.bar(valx, 
-                            listNRQ, width, color=str(gene.color.name()), 
-                            yerr=listNRQerror, ecolor='k')
-                    legPos.append(p[0])
-                    legName.append(str(gene.name))
-                    ind += 1
-            self.mplCanUnknown.axes.set_xticks( \
-                           linspace(0, valmax, nech)+ind/2.*width)
-            self.mplCanUnknown.axes.set_xticklabels(xlabel, fontsize=size)
-            self.mplCanUnknown.axes.set_ylim(ymin=0.)
-            self.nplotGene += 1
+            for plname in self.project.dicoPlates.keys():
+                pl = self.project.dicoPlates[plname]
+                for gene in pl.dicoGene.keys():
+                    if gene != '':
+                        listNRQ = [] ; listNRQerror = [] ; poped = []
+                        if self.project.hashGene[gene].enabled == Qt.Checked:
+                            localDict = self.project.dicoTriplicat[plname].getRow(gene)
+                            nech = 0
+                            for ech in self.project.hashEch.values()[1:]:
+                                if ech.enabled == Qt.Checked:
+                                    if localDict.has_key(ech.name):
+                                        listNRQ.append(localDict[ech.name].NRQ)
+                                        listNRQerror.append(localDict[ech.name].NRQerror)
+                                        if not xlabel.__contains__(str(ech.name)):
+                                            xlabel.append(str(ech.name))
+                                    else:
+                                        poped.append(nech)
+                                    nech += 1
+                            valmax = spacing * (nech-1)
+                            valx =linspace(0, valmax, nech) + ind*width
+                            if len(listNRQ) != nech:
+                                #QMessageBox.warning(self, "Warning sample",
+                                           #"<b>Warning</b>: the replicate (%s, %s)" \
+                                           #" doesn't seem to be defined !" \
+                                           #" Results may be wrong !" \
+                                            #% (gene.name, xlabel[poped[0]]))
+                                valx = delete(valx, poped)
+                            color = self.project.hashGene[gene].color.name()
+                            p = self.mplCanUnknown.axes.bar(valx, 
+                                    listNRQ, width, color=str(color), 
+                                    yerr=listNRQerror, ecolor='k')
+                            legPos.append(p[0])
+                            legName.append(str(gene))
+                            ind += 1
+                self.mplCanUnknown.axes.set_xticks( \
+                               linspace(0, valmax, nech)+ind/2.*width)
+                self.mplCanUnknown.axes.set_xticklabels(xlabel, fontsize=size)
+                self.mplCanUnknown.axes.set_ylim(ymin=0.)
+                self.nplotGene += 1
 
 # Ech vs Gene
         elif self.cboxSens.currentIndex() == 1:
