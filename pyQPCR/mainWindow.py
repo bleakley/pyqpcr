@@ -22,6 +22,7 @@ from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 import pyQPCR.qrc_resources
 from pyQPCR.dialogs import *
+from pyQPCR.widgets import *
 from pyQPCR.plate import Plaque
 from project import Project
 import matplotlib
@@ -238,6 +239,8 @@ class Qpcr_qt(QMainWindow):
     def createMenusAndToolbars(self):
         fileOpenAction = self.createAction("&Open...", self.fileOpen, 
                 QKeySequence.Open, "fileopen", "Open an existing project")
+        fileNewAction = self.createAction("&New project...", self.fileNew, 
+                QKeySequence.New, "filenew", "Create a new project")
         fileImportAction = self.createAction("&Import...", self.fileImport, 
                 "Ctrl+I", "fileimport", "Import/add an existing plate")
         closeTabAction = self.createAction("&Close a plate", self.closePlate, 
@@ -284,8 +287,8 @@ class Qpcr_qt(QMainWindow):
                 QKeySequence.HelpContents, icon="help")
 # Menus
         fileMenu = self.menuBar().addMenu("&File")
-        self.addActions(fileMenu, (fileOpenAction, fileImportAction, 
-                                   closeTabAction))
+        self.addActions(fileMenu, (fileOpenAction, fileNewAction, 
+                                   fileImportAction, closeTabAction))
         self.recentFileMenu = fileMenu.addMenu(QIcon(":/filerecent.png"),
                 "Open recent files")
         fileMenu.addSeparator()
@@ -312,9 +315,10 @@ class Qpcr_qt(QMainWindow):
 # Toolbars
         fileToolbar = self.addToolBar("File")
         fileToolbar.setObjectName("FileToolBar")
-        self.addActions(fileToolbar, (fileOpenAction, fileImportAction,
-                        closeTabAction, self.filePrintAction, self.exportAction, 
-                        self.fileSaveAction, self.fileSaveAsAction))
+        self.addActions(fileToolbar, (fileOpenAction, fileNewAction,
+                        fileImportAction, closeTabAction, self.filePrintAction, 
+                        self.exportAction, self.fileSaveAction, 
+                        self.fileSaveAsAction))
         fileToolbar.setIconSize(QSize(22, 22))
 
         editToolbar = self.addToolBar("Edit")
@@ -364,10 +368,10 @@ class Qpcr_qt(QMainWindow):
 # ContextMenu
         self.projWidget.setContextMenuPolicy(Qt.ActionsContextMenu)
         self.resulWidget.setContextMenuPolicy(Qt.ActionsContextMenu)
-        self.addActions(self.projWidget, (fileOpenAction, fileImportAction,
-                       closeTabAction, self.editAction, self.undoAction, 
-                       self.redoAction, self.addGeneAction, self.addEchAction, 
-                       self.enableAction, self.disableAction))
+        self.addActions(self.projWidget, (fileOpenAction, fileNewAction, 
+                       fileImportAction, closeTabAction, self.editAction, 
+                       self.undoAction, self.redoAction, self.addGeneAction, 
+                       self.addEchAction, self.enableAction, self.disableAction))
         self.addActions(self.resulWidget, (self.filePrintAction, self.exportAction,
                                       self.fileSaveAction, self.fileSaveAsAction,
                                       self.plotStdAction, self.plotAction))
@@ -402,6 +406,9 @@ class Qpcr_qt(QMainWindow):
 
     def updateStatus(self, message, time=5000):
         self.statusBar().showMessage(message, time)
+
+    def fileNew(self):
+        print "not implemented yet"
 
     def fileOpen(self):
         if not self.okToContinue():
@@ -447,10 +454,6 @@ class Qpcr_qt(QMainWindow):
             plaque = Plaque(fname)
             self.project.addPlate(plaque)
             key = QFileInfo(fname).fileName()
-# Remise a zero des compteurs (a deplacer par la suite)
-            self.nplotGene = 0
-            self.nplotStd = 0
-            self.nplotEch = 0
 
             self.appendPlate(plaque, key)
             self.appendResult(plaque, key)
@@ -470,6 +473,7 @@ class Qpcr_qt(QMainWindow):
                             QMessageBox.Yes|QMessageBox.No)
         plToDestroy = self.currentPlate
         if reply == QMessageBox.Yes:
+            message = "Closed %s" % plToDestroy
             index = self.project.dicoPlates.index(plToDestroy)
             self.project.removePlate(plToDestroy)
 # Nettoyage des onglets et des tableaux
@@ -482,6 +486,7 @@ class Qpcr_qt(QMainWindow):
             self.populateCbox(self.echComboBox, self.project.hashEch, "Sample")
             self.populateCbox(self.amComboBox, self.project.hashAmount, "Amount")
             self.project.unsaved = True
+            self.fileSaveAction.setEnabled(True)
             self.populateTree()
 
     def loadFile(self, fname=None):

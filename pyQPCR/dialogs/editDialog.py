@@ -19,7 +19,7 @@
 
 import copy
 from pyQPCR.wellGeneSample import *
-from pyQPCR.dialogs.customWidgets import *
+from pyQPCR.widgets.customCbox import *
 from pyQPCR.dialogs.echDialog import *
 from pyQPCR.dialogs.geneDialog import *
 from pyQPCR.dialogs.amountDialog import *
