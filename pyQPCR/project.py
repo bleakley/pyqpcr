@@ -18,8 +18,8 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 #
 from pyQPCR.saxProjecthandler import *
-from utils.odict import OrderedDict
-from utils.ragged import RaggedArray2D
+from pyQPCR.utils.odict import OrderedDict
+from pyQPCR.utils.ragged import RaggedArray2D
 from PyQt4.QtCore import *
 from PyQt4.QtXml import QXmlSimpleReader, QXmlInputSource
 from numpy import mean, std, sqrt, log, log10, polyval, polyfit, sum, \
@@ -208,7 +208,8 @@ class Project:
 
     def findTrip(self, ectMax, confidence, errtype):
         self.dicoTriplicat = OrderedDict()
-        for pl in self.dicoPlates.values():
+        for plate in self.dicoPlates.keys():
+            pl = self.dicoPlates[plate]
             for g in self.hashGene.values()[1:]:
                 if pl.dicoGene.has_key(g.name):
                     g.calcCtRef(pl.dicoGene[g.name])
@@ -235,7 +236,7 @@ class Project:
                     trip.calcDCt()
                     dicoEch[ech] = trip
                     dicoTrip[key] = dicoEch
-            self.dicoTriplicat[pl] = dicoTrip
+            self.dicoTriplicat[plate] = dicoTrip
 
     def calcCF(self):
         self.CF = OrderedDict()
@@ -260,11 +261,14 @@ class Project:
 
     def calcNRQ(self):
         for pl in self.dicoTriplicat.keys():
+            plate = self.dicoPlates[pl]
             for g in self.dicoTriplicat[pl].keys():
                 for ech in self.dicoTriplicat[pl][g].keys():
 # Calcul de NRQ et rajout comme argument a chaque triplicat
                     NRQ = self.dicoTriplicat[pl][g][ech].RQ/ \
-                        self.dicoTriplicat[pl][self.geneRef.name][ech].RQ
+                          self.dicoTriplicat[pl][g][plate.echRef].RQ* \
+                          self.dicoTriplicat[pl][plate.geneRef][plate.echRef].RQ/ \
+                          self.dicoTriplicat[pl][plate.geneRef][ech].RQ
                     self.dicoTriplicat[pl][g][ech].setNRQ(NRQ)
                     self.dicoTriplicat[pl][g][ech].calcRQerror()
                     for well in self.dicoTriplicat[pl][g][ech].listePuits:
@@ -274,36 +278,18 @@ class Project:
             for g in self.dicoTriplicat[pl].keys():
                 for ech in self.dicoTriplicat[pl][g].keys():
                     NRQerror = self.dicoTriplicat[pl][g][ech].NRQ  \
-                            * sqrt((self.dicoTriplicat[pl][self.geneRef.name][ech].RQerror \
-                            / self.dicoTriplicat[pl][self.geneRef.name][ech].RQ)**2 \
-                            + (self.dicoTriplicat[pl][g][ech].RQerror \
-                            / self.dicoTriplicat[pl][g][ech].RQ)**2 )
-# Rajout de 2 termes supplementaires avec notre definition de NRQ
-                            #+ (self.dicoTriplicat[g][self.echRef.name].RQerror \
-                            #/ self.dicoTriplicat[g][self.echRef.name].RQ)**2
-                            #+ (self.dicoTriplicat[self.geneRef.name][self.echRef.name].RQerror \
-                            #/ self.dicoTriplicat[self.geneRef.name][self.echRef.name].RQ)**2)
+                         * sqrt((self.dicoTriplicat[pl][plate.geneRef][ech].RQerror \
+                         / self.dicoTriplicat[pl][plate.geneRef][ech].RQ)**2 \
+                         + (self.dicoTriplicat[pl][g][ech].RQerror \
+                         / self.dicoTriplicat[pl][g][ech].RQ)**2  \
+                         + (self.dicoTriplicat[pl][g][plate.echRef].RQerror \
+                         / self.dicoTriplicat[pl][g][plate.echRef].RQ)**2 \
+                         + (self.dicoTriplicat[pl][plate.geneRef][plate.echRef].RQerror \
+                         / self.dicoTriplicat[pl][plate.geneRef][plate.echRef].RQ)**2)
                     self.dicoTriplicat[pl][g][ech].setNRQerror(NRQerror)
                     for well in self.dicoTriplicat[pl][g][ech].listePuits:
                         well.setNRQerror(NRQerror)
-# Correction avec CF
-        #self.calcCF()
-        #for pl in self.dicoTriplicat.keys():
-            #for g in self.dicoTriplicat[pl].keys():
-                #for ech in self.dicoTriplicat[pl][g].keys():
-                    #CNRQ = self.dicoTriplicat[pl][g][ech].NRQ / \
-                            #self.CF[pl]
-                    #self.dicoTriplicat[pl][g][ech].setCNRQ(CNRQ)
-                    #for well in self.dicoTriplicat[pl][g][ech].listePuits:
-                        #well.setCNRQ(CNRQ)
-            #for g in self.dicoTriplicat[pl].keys():
-                #for ech in self.dicoTriplicat[pl][g].keys():
-                    #CNRQerror = self.dicoTriplicat[pl][g][ech].CNRQ* \
-                    #sqrt((self.dicoTriplicat[pl][g][ech].NRQerror /   \
-                               #self.dicoTriplicat[pl][g][ech].NRQ )**2  + \
-                            #(self.CFerror[pl]/self.CF[pl])**2)
-                    #print pl, self.dicoTriplicat[pl][g][ech], \
-                        #self.dicoTriplicat[pl][g][ech].NRQ, CNRQerror
+
 
     def findStd(self, ectMax, confidence, errtype):
         """
@@ -370,7 +356,9 @@ class Project:
 
 
 if __name__ == "__main__":
-    proj = Project()
-    proj.openProject("toto.xml")
-    print proj.dicoPlates[QString("mp1.txt")].listePuits
+    proj = Project('toto.xml')
+    print proj.dicoPlates[QString('mh101109-1m.TXT')].echRef
+    proj.findTrip(0.3, 0.9, 'student')
+    print proj.dicoTriplicat[QString('mh101109-1m.TXT')]
+    proj.calcNRQ()
 
