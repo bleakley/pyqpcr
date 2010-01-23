@@ -79,17 +79,29 @@ class EchDialog(QDialog):
             self.listWidget.addItem(item)
 
     def add(self):
-        dialog = AddEchDialog(self)
+        dialog = AddEchDialog(self, listPlates=self.project.dicoPlates.keys())
         if dialog.exec_():
             nomech = dialog.ech.text()
             state = dialog.ref.checkState()
             ech = Ech(nomech, state)
             ech.setColor(QColor(Qt.black))
+
             if state == Qt.Checked:
-                self.project.echRef = ech
-                for sample in self.project.hashEch.values():
-                    if sample.isRef == Qt.Checked:
-                        sample.setRef(Qt.Unchecked)
+                if dialog.whichPlates.currentText() == QString('All Plates'):
+                    for pl in self.project.dicoPlates.values():
+                        pl.echRef = nomech
+                    for ech in self.project.hashEch.values():
+                        ech.setRef(Qt.Unchecked)
+
+                else:
+                    currentPlate = dialog.whichPlates.currentText()
+                    pl = self.project.dicoPlates[currentPlate]
+                    pl.echRef = nomech
+                    for echName in pl.dicoEch.keys():
+                        ech = self.project.hashEch[echName]
+                        if ech.isRef == Qt.Checked and ech.name != name:
+                            ech.setRef(Qt.Unchecked)
+
             if not self.project.hashEch.has_key(nomech):
                 self.project.hashEch[nomech] = ech
                 self.populateList()
@@ -100,7 +112,8 @@ class EchDialog(QDialog):
     def edit(self):
         ech_before = self.listWidget.currentItem().statusTip()
         ech = self.project.hashEch[ech_before]
-        dialog = AddEchDialog(self, ech=ech)
+        dialog = AddEchDialog(self, ech=ech, 
+                              listPlates=self.project.dicoPlates.keys())
         if dialog.exec_():
             name = dialog.ech.text()
             state = dialog.ref.checkState()
@@ -111,11 +124,23 @@ class EchDialog(QDialog):
 
             ech.setName(name)
             ech.setRef(state)
+
             if state == Qt.Checked:
-                self.project.echRef = ech
-                for sample in self.project.hashEch.values():
-                    if sample.isRef == Qt.Checked and sample.name != name:
-                        sample.setRef(Qt.Unchecked)
+                if dialog.whichPlates.currentText() == QString('All Plates'):
+                    for pl in self.project.dicoPlates.values():
+                        pl.echRef = name
+                    for ech in self.project.hashEch.values():
+                        if ech.isRef == Qt.Checked and ech.name != name:
+                            ech.setRef(Qt.Unchecked)
+
+                else:
+                    currentPlate = dialog.whichPlates.currentText()
+                    pl = self.project.dicoPlates[currentPlate]
+                    pl.echRef = name
+                    for echName in pl.dicoEch.keys():
+                        ech = self.project.hashEch[echName]
+                        if ech.isRef == Qt.Checked and ech.name != name:
+                            ech.setRef(Qt.Unchecked)
 # dico
             for pl in self.project.dicoPlates.values():
                 if pl.dicoEch.has_key(ech_before) and ech_before != name:
@@ -156,7 +181,7 @@ class EchDialog(QDialog):
 
 class AddEchDialog(QDialog):
     
-    def __init__(self, parent=None, ech=None):
+    def __init__(self, parent=None, ech=None, listPlates=None):
         self.parent = parent
         QDialog.__init__(self, parent)
         lab = QLabel("Sample:")
@@ -166,6 +191,11 @@ class AddEchDialog(QDialog):
             self.ech = QLineEdit()
         labRef = QLabel("Reference:")
         self.ref = QCheckBox()
+        self.whichPlates = QComboBox()
+        self.whichPlates.addItem("All Plates")
+        if listPlates is not None:
+            self.whichPlates.addItems(listPlates)
+
         if ech is not None:
             self.ref.setCheckState(ech.isRef)
         else:
@@ -176,8 +206,11 @@ class AddEchDialog(QDialog):
         layout = QGridLayout()
         layout.addWidget(lab, 0, 0)
         layout.addWidget(self.ech, 0, 1)
-        layout.addWidget(labRef, 1, 0)
-        layout.addWidget(self.ref, 1, 1)
+        hLay = QHBoxLayout()
+        hLay.addWidget(labRef)
+        hLay.addWidget(self.ref)
+        hLay.addWidget(self.whichPlates)
+        layout.addLayout(hLay, 1, 0, 1, 2)
         layout.addWidget(buttonBox, 2, 0, 1, 2)
         self.setLayout(layout)
 

@@ -64,6 +64,10 @@ class Project:
             for pl in self.dicoPlates.values():
                 pl.setDicoGene()
                 pl.setDicoEch()
+                if pl.geneRef != '':
+                    self.hashGene[pl.geneRef].setRef(Qt.Checked)
+                if pl.echRef != '':
+                    self.hashEch[pl.echRef].setRef(Qt.Checked)
             self.setDicoAm()
         except (IOError, OSError, ValueError), e:
             error = "Failed to import: %s" % e
@@ -87,6 +91,10 @@ class Project:
                        "<QPCR VERSION='1.0'>\n".format(CODEC))
             for key in self.dicoPlates.keys():
                 stream << ("<PLATE NAME='{0}'>\n".format(key))
+                stream << ("<REFTARGET NAME='%s'></REFTARGET>\n") % \
+                        self.dicoPlates[key].geneRef
+                stream << ("<REFSAMPLE NAME='%s'></REFSAMPLE>\n") % \
+                        self.dicoPlates[key].echRef
                 for well in self.dicoPlates[key].listePuits:
                     stream << well.writeWellXml()
                 stream << "</PLATE>\n"
@@ -110,8 +118,6 @@ class Project:
         plate.setDicoGene()
         plate.setDicoEch()
         self.setDicoAm()
-        if hasattr(plate, 'geneRef'):
-            self.geneRef = plate.geneRef
 
     def removePlate(self, plateName):
         """

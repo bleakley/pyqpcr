@@ -43,6 +43,9 @@ class Plaque:
         self.listGene = [Gene('')]
         self.listEch = [Ech('')]
         self.listAmount = ['']
+
+        self.geneRef = ''
+        self.echRef = ''
  
         if self.filename is not None:
             self.determineFileType(self.filename)

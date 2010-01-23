@@ -23,7 +23,6 @@ from amountDialog import *
 from smartDialog import *
 from objDialog import *
 from editDialog import *
-from customWidgets import *
 from utilsDialog import *
 from helpDialog import *
 from settingsDialog import *
