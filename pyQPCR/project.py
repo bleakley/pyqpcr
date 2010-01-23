@@ -113,6 +113,35 @@ class Project:
         if hasattr(plate, 'geneRef'):
             self.geneRef = plate.geneRef
 
+    def removePlate(self, plateName):
+        """
+        This method allows to delete a specific plate of an existing
+        project.
+        """
+        oldGenes = self.dicoPlates[plateName].dicoGene.keys()
+        oldEchs = self.dicoPlates[plateName].dicoEch.keys()
+        self.dicoPlates.__delitem__(plateName)
+
+        for oldg in oldGenes:
+            delete = True
+            for pl in self.dicoPlates.values():
+                if pl.dicoGene.has_key(oldg) or oldg == '':
+                    delete = False
+            if delete:
+                self.hashGene.__delitem__(oldg)
+
+        for oldech in oldEchs:
+            delete = True
+            for pl in self.dicoPlates.values():
+                if pl.dicoEch.has_key(oldech) or oldech == '':
+                    delete = False
+            if delete:
+                self.hashEch.__delitem__(oldech)
+
+                
+# A deplacer :
+        self.setDicoAm()
+
     def initLocGene(self, plate=None):
         if plate is None:
             for pl in self.dicoPlates:

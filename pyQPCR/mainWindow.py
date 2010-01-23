@@ -237,9 +237,11 @@ class Qpcr_qt(QMainWindow):
 
     def createMenusAndToolbars(self):
         fileOpenAction = self.createAction("&Open...", self.fileOpen, 
-                QKeySequence.Open, "fileopen", "Open an existing file")
+                QKeySequence.Open, "fileopen", "Open an existing project")
         fileImportAction = self.createAction("&Import...", self.fileImport, 
                 "Ctrl+I", "fileimport", "Import/add an existing plate")
+        closeTabAction = self.createAction("&Close a plate", self.closePlate, 
+                QKeySequence.Close, "closeplate", "Close an existing plate")
         self.filePrintAction = self.createAction("&Print", self.filePrint,
                 QKeySequence.Print, "fileprint", "Print results")
         self.exportAction = self.createAction("&Export as PDF", self.fileExport,
@@ -282,7 +284,8 @@ class Qpcr_qt(QMainWindow):
                 QKeySequence.HelpContents, icon="help")
 # Menus
         fileMenu = self.menuBar().addMenu("&File")
-        self.addActions(fileMenu, (fileOpenAction,fileImportAction))
+        self.addActions(fileMenu, (fileOpenAction, fileImportAction, 
+                                   closeTabAction))
         self.recentFileMenu = fileMenu.addMenu(QIcon(":/filerecent.png"),
                 "Open recent files")
         fileMenu.addSeparator()
@@ -310,7 +313,7 @@ class Qpcr_qt(QMainWindow):
         fileToolbar = self.addToolBar("File")
         fileToolbar.setObjectName("FileToolBar")
         self.addActions(fileToolbar, (fileOpenAction, fileImportAction,
-                        self.filePrintAction, self.exportAction, 
+                        closeTabAction, self.filePrintAction, self.exportAction, 
                         self.fileSaveAction, self.fileSaveAsAction))
         fileToolbar.setIconSize(QSize(22, 22))
 
@@ -362,8 +365,8 @@ class Qpcr_qt(QMainWindow):
         self.projWidget.setContextMenuPolicy(Qt.ActionsContextMenu)
         self.resulWidget.setContextMenuPolicy(Qt.ActionsContextMenu)
         self.addActions(self.projWidget, (fileOpenAction, fileImportAction,
-                       self.editAction, self.undoAction, self.redoAction, 
-                       self.addGeneAction, self.addEchAction, 
+                       closeTabAction, self.editAction, self.undoAction, 
+                       self.redoAction, self.addGeneAction, self.addEchAction, 
                        self.enableAction, self.disableAction))
         self.addActions(self.resulWidget, (self.filePrintAction, self.exportAction,
                                       self.fileSaveAction, self.fileSaveAsAction,
@@ -461,6 +464,26 @@ class Qpcr_qt(QMainWindow):
             self.project.unsaved = True
             self.fileSaveAction.setEnabled(True)
 
+    def closePlate(self):
+        reply = QMessageBox.question(self, "Remove a plate",
+                            "Are you sure to remove %s ?" % self.currentPlate,
+                            QMessageBox.Yes|QMessageBox.No)
+        plToDestroy = self.currentPlate
+        if reply == QMessageBox.Yes:
+            index = self.project.dicoPlates.index(plToDestroy)
+            self.project.removePlate(plToDestroy)
+# Nettoyage des onglets et des tableaux
+            self.tabulPlates.removeTab(index)
+            self.pileTables.__delitem__(plToDestroy)
+            self.tabulResults.removeTab(index)
+            self.pileResults.__delitem__(plToDestroy)
+# Maj des cbox et Remplissage du tree
+            self.populateCbox(self.geneComboBox, self.project.hashGene, "Target")
+            self.populateCbox(self.echComboBox, self.project.hashEch, "Sample")
+            self.populateCbox(self.amComboBox, self.project.hashAmount, "Amount")
+            self.project.unsaved = True
+            self.populateTree()
+
     def loadFile(self, fname=None):
         if fname is None:
             action = self.sender()
@@ -527,8 +550,11 @@ class Qpcr_qt(QMainWindow):
 
     def populateTree(self):
         self.tree.clear()
-        ancestor = QTreeWidgetItem(self.tree, 
-                                   [QFileInfo(self.filename).fileName()])
+        if self.filename is not None:
+            ancestor = QTreeWidgetItem(self.tree, 
+                                       [QFileInfo(self.filename).fileName()])
+        else:
+            ancestor = QTreeWidgetItem(self.tree, ["untitled project"])
         for key in self.project.dicoPlates.keys():
             item = QTreeWidgetItem(ancestor, [key])
         itemQuant = QTreeWidgetItem(ancestor, ["Quantification"])
