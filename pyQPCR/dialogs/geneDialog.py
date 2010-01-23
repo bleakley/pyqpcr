@@ -78,53 +78,75 @@ class GeneDialog(QDialog):
             self.listWidget.addItem(item)
 
     def add(self):
-        dialog = AddGeneDialog(self)
+        dialog = AddGeneDialog(self, listPlates=self.project.dicoPlates.keys())
         if dialog.exec_():
-            gene = dialog.gene.text()
+            nomgene = dialog.gene.text()
             eff = dialog.eff.value()
             pm = dialog.pmerror.value()
             state = dialog.ref.checkState()
-            g = Gene(gene, eff, pm)
+            g = Gene(nomgene, eff, pm)
             g.setRef(state)
-# Si le gene ajoute est un gene de reference alors l'autre gene de reference
-# repasse en isRef = Qt.Unchecked
+
             if state == Qt.Checked:
-                self.project.geneRef = g
-                for gene in self.project.hashGene.values():
-                    if gene.isRef == Qt.Checked:
+# si le gene de ref est pour toutes les plaques, toutes les autres passent a zero
+                if dialog.whichPlates.currentText() == QString('All Plates'):
+                    for pl in self.project.dicoPlates.values():
+                        pl.geneRef = nomgene
+                    for gene in self.project.hashGene.values():
                         gene.setRef(Qt.Unchecked)
+# sinon, tous les autres genes de cette plaque passent a non ref
+                else:
+                    currentPlate = dialog.whichPlates.currentText()
+                    pl = self.project.dicoPlates[currentPlate]
+                    pl.geneRef = nomgene
+                    for geneName in pl.dicoGene.keys():
+                        gene = self.project.hashGene[geneName]
+                        if gene.isRef == Qt.Checked and gene.name != name:
+                            gene.setRef(Qt.Unchecked)
+
             g.setColor(QColor(Qt.black))
-            if not self.project.hashGene.has_key(gene):
-                self.project.hashGene[gene] = g
+            if not self.project.hashGene.has_key(nomgene):
+                self.project.hashGene[nomgene] = g
                 self.populateList()
             else:
+
                 QMessageBox.warning(self, "Already exist",
-                        "The gene %s is already defined !" % gene)
+                        "The gene %s is already defined !" % nomgene)
 
     def edit(self):
         gene_before = self.listWidget.currentItem().statusTip()
         gene = self.project.hashGene[gene_before]
-        dialog = AddGeneDialog(self, ge=gene)
+        dialog = AddGeneDialog(self, ge=gene, 
+                               listPlates=self.project.dicoPlates.keys())
         if dialog.exec_():
             name = dialog.gene.text()
             eff = dialog.eff.value()
             pm = dialog.pmerror.value()
             state = dialog.ref.checkState()
-# Si le gene etait gene de reference et qu'il est desactive
-# alors la plaque n'a plus de gene de reference
-            if gene.isRef == Qt.Checked and state == Qt.Unchecked:
-                delattr(self.project, "geneRef")
+
             gene.setRef(state)
             gene.setEff(eff)
             gene.setPm(pm)
             gene.setName(name)
-# Si le gene ajoute est un gene de reference alors l'autre gene de reference
-# repasse en isRef = Qt.Unchecked
+
             if state == Qt.Checked:
-                self.project.geneRef = gene
-                for g in self.project.hashGene.values():
-                    if g.isRef == Qt.Checked and g.name != name:
-                        g.setRef(Qt.Unchecked)
+# si le gene de ref est pour toutes les plaques, toutes les autres passent a zero
+                if dialog.whichPlates.currentText() == QString('All Plates'):
+                    for pl in self.project.dicoPlates.values():
+                        pl.geneRef = name
+                    for gene in self.project.hashGene.values():
+                        if gene.isRef == Qt.Checked and gene.name != name:
+                            gene.setRef(Qt.Unchecked)
+# sinon, tous les autres genes de cette plaque passent a non ref
+                else:
+                    currentPlate = dialog.whichPlates.currentText()
+                    pl = self.project.dicoPlates[currentPlate]
+                    pl.geneRef = name
+                    for geneName in pl.dicoGene.keys():
+                        gene = self.project.hashGene[geneName]
+                        if gene.isRef == Qt.Checked and gene.name != name:
+                            gene.setRef(Qt.Unchecked)
+
 # dico
             for pl in self.project.dicoPlates.values():
                 if pl.dicoGene.has_key(gene_before) and gene_before != name:
@@ -169,7 +191,7 @@ class GeneDialog(QDialog):
 
 class AddGeneDialog(QDialog):
     
-    def __init__(self, parent=None, ge=None):
+    def __init__(self, parent=None, ge=None, listPlates=None):
         self.parent = parent
         QDialog.__init__(self, parent)
         lab = QLabel("Target:")
@@ -205,6 +227,10 @@ class AddGeneDialog(QDialog):
         hlayout.addWidget(self.pmerror)
         labRef = QLabel("Reference:")
         self.ref = QCheckBox()
+        self.whichPlates = QComboBox()
+        self.whichPlates.addItem("All Plates")
+        if listPlates is not None:
+            self.whichPlates.addItems(listPlates)
         if ge is not None:
             self.ref.setCheckState(g.isRef)
         else:
@@ -215,8 +241,11 @@ class AddGeneDialog(QDialog):
         layout.addWidget(self.gene, 0, 1)
         layout.addWidget(lab2, 1, 0)
         layout.addLayout(hlayout, 1, 1)
-        layout.addWidget(labRef, 2, 0)
-        layout.addWidget(self.ref, 2, 1)
+        hLay = QHBoxLayout()
+        hLay.addWidget(labRef)
+        hLay.addWidget(self.ref)
+        hLay.addWidget(self.whichPlates)
+        layout.addLayout(hLay, 2, 0, 1, 2)
         layout.addWidget(buttonBox, 3, 0, 1, 2)
         self.setLayout(layout)
 

@@ -61,6 +61,10 @@ class SaxProjectHandler(QXmlDefaultHandler):
         elif qName == "PLATE":
             self.pl = Plaque()
             self.platetitle = attributes.value("NAME")
+        elif qName == "REFSAMPLE":
+            self.refSample = attributes.value("NAME")
+        elif qName == "REFTARGET":
+            self.refTarget = attributes.value("NAME")
         elif qName == "TYPE":
             self.text = QString()
         return True
@@ -85,6 +89,10 @@ class SaxProjectHandler(QXmlDefaultHandler):
             self.pl.listePuits.append(self.well)
         elif qName == "TYPE":
             self.well.setType(self.text)
+        elif qName == "REFTARGET":
+            self.pl.geneRef = self.refTarget
+        elif qName == "REFSAMPLE":
+            self.pl.echRef = self.refSample
         elif qName == "SAMPLE":
             ech = Ech(self.text)
             self.well.setEch(ech)

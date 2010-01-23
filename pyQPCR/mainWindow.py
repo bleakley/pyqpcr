@@ -429,7 +429,6 @@ class Qpcr_qt(QMainWindow):
         fname = unicode(QFileDialog.getOpenFileName(self,
                        "pyQPCR - Choose a file", dir, 
                        "Input files (%s)" % " ".join(formats)))
-
         if fname:
             if not self.project.dicoPlates.has_key(QFileInfo(fname).fileName()):
                 self.addPlate(fname)
@@ -562,14 +561,13 @@ class Qpcr_qt(QMainWindow):
             ancestor = QTreeWidgetItem(self.tree, ["untitled project"])
         for key in self.project.dicoPlates.keys():
             item = QTreeWidgetItem(ancestor, [key])
-        itemQuant = QTreeWidgetItem(ancestor, ["Quantification"])
-        itemRefGene = QTreeWidgetItem(itemQuant , ["Reference Target"])
-        itemRefEch = QTreeWidgetItem(itemQuant , ["Reference Sample"])
+            pl = self.project.dicoPlates[key]
+            itemQuant = QTreeWidgetItem(item, ["Quantification"])
+            itemRefGene = QTreeWidgetItem(itemQuant , ["Reference Target"])
+            itemRefEch = QTreeWidgetItem(itemQuant , ["Reference Sample"])
+            item = QTreeWidgetItem(itemRefGene, [pl.geneRef])
+            item = QTreeWidgetItem(itemRefEch, [pl.echRef])
         itemStd = QTreeWidgetItem(ancestor, ["Standard"])
-        if hasattr(self.project, "geneRef"):
-            item = QTreeWidgetItem(itemRefGene, [self.project.geneRef.name])
-        if hasattr(self.project, "echRef"):
-            item = QTreeWidgetItem(itemRefEch, [self.project.echRef.name])
         for gene in self.project.hashGene.values()[1:]:
             eff = "%s:%.2f%s%.2f" % (gene.name, gene.eff, unichr(177), gene.pm)
             item = QTreeWidgetItem(itemStd, [eff])
