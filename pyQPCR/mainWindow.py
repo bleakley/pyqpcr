@@ -1144,7 +1144,6 @@ class Qpcr_qt(QMainWindow):
                 else:
                     ind = 0
 
-
         if self.nplotEch == 0:
             ind = 0
             for ech in self.project.hashEch.values()[1:]:
@@ -1155,6 +1154,7 @@ class Qpcr_qt(QMainWindow):
                     ind = 0
 
         legPos = [] ; legName = [] ; xlabel = []
+        dicoAbs = OrderedDict()
 
 # Gene vs Ech
         if self.cboxSens.currentIndex() == 0:
@@ -1163,41 +1163,27 @@ class Qpcr_qt(QMainWindow):
                 pl = self.project.dicoPlates[plname]
                 for gene in self.project.hashGene.keys():
                     if gene != '' and pl.dicoGene.has_key(gene):
-                        listNRQ = [] ; listNRQerror = [] ; poped = []
+                        valx = []; listNRQ = [] ; listNRQerror = []
                         if self.project.hashGene[gene].enabled == Qt.Checked:
                             localDict = self.project.dicoTriplicat[plname].getRow(gene)
-                            nech = 0
                             for ech in self.project.hashEch.values()[1:]:
                                 if ech.enabled == Qt.Checked:
                                     if localDict.has_key(ech.name):
                                         listNRQ.append(localDict[ech.name].NRQ)
                                         listNRQerror.append(localDict[ech.name].NRQerror)
-                                        if not xlabel.__contains__(str(ech.name)):
-                                            xlabel.append(str(ech.name))
-                                    else:
-                                        poped.append(nech)
-                                    nech += 1
-                            valmax = spacing * (nech-1)
-                            valx =linspace(0, valmax, nech) + ind*width
-                            if len(listNRQ) != nech:
-                                #QMessageBox.warning(self, "Warning sample",
-                                           #"<b>Warning</b>: the replicate (%s, %s)" \
-                                           #" doesn't seem to be defined !" \
-                                           #" Results may be wrong !" \
-                                            #% (gene, xlabel[poped[0]]))
-                                valx = delete(valx, poped)
+                                        if not dicoAbs.has_key(str(ech.name)):
+                                            dicoAbs[str(ech.name)] = self.project.hashEch.index(ech.name)*spacing
+                                        else:
+                                            dicoAbs[str(ech.name)] += width
+                                        valx.append(dicoAbs[str(ech.name)])
+
                             color = self.project.hashGene[gene].color.name()
                             p = self.mplCanUnknown.axes.bar(valx, 
                                     listNRQ, width, color=str(color), 
-                                    yerr=listNRQerror, ecolor='k')
-                            legPos.append(p[0])
-                            legName.append(str(gene))
+                                    yerr=listNRQerror, ecolor='k',
+                                    label=str(gene), align='center')
                             ind += 1
-                self.mplCanUnknown.axes.set_xticks( \
-                               linspace(0, valmax, nech)+ind/2.*width)
-                self.mplCanUnknown.axes.set_xticklabels(xlabel, fontsize=size)
-                self.mplCanUnknown.axes.set_ylim(ymin=0.)
-                self.nplotGene += 1
+            self.nplotGene += 1
 
 # Ech vs Gene
         elif self.cboxSens.currentIndex() == 1:
@@ -1206,54 +1192,48 @@ class Qpcr_qt(QMainWindow):
                 pl = self.project.dicoPlates[plname]
                 for ech in self.project.hashEch.keys():
                     if ech != '' and pl.dicoEch.has_key(ech):
-                        listNRQ = [] ; listNRQerror = [] ; poped = []
+                        listNRQ = [] ; listNRQerror = [] ; valx = []
                         if self.project.hashEch[ech].enabled == Qt.Checked:
                             localDict = self.project.dicoTriplicat[plname].getColumn(ech)
-                            ngene = 0
                             for gene in self.project.hashGene.values()[1:]:
                                 if gene.enabled == Qt.Checked:
                                     if localDict.has_key(gene.name):
                                         listNRQ.append(localDict[gene.name].NRQ)
                                         listNRQerror.append(localDict[gene.name].NRQerror)
-                                        if not xlabel.__contains__(str(gene.name)):
-                                            xlabel.append(str(gene.name))
-                                    else:
-                                        poped.append(ngene)
-                                    ngene += 1
-                            valmax = spacing * (ngene-1)
-                            valx = linspace(0, valmax, ngene) + ind*width
-                            if len(listNRQ) != ngene:
-                                #QMessageBox.warning(self, "Warning gene",
-                                           #"<b>Warning</b>: the replicate (%s, %s)" \
-                                           #" doesn't seem to be defined !" \
-                                           #" Results may be wrong !" \
-                                            #% (xlabel[poped[0]], ech))
-                                valx = delete(valx, poped)
-                            color = self.project.hashEch[ech].color.name()
-                            p = self.mplCanUnknown.axes.bar(valx,
-                                    listNRQ, width, color=str(color), 
-                                    yerr=listNRQerror, ecolor='k')
-                            legPos.append(p[0])
-                            legName.append(str(ech))
-                            ind += 1
-                self.mplCanUnknown.axes.set_xticks( \
-                              linspace(0, valmax, ngene)+ind/2.*width)
-                self.mplCanUnknown.axes.set_xticklabels(xlabel, fontsize=size)
-                self.mplCanUnknown.axes.set_ylim(ymin=0.)
-                self.nplotEch += 1
+                                        if not dicoAbs.has_key(str(gene.name)):
+                                            dicoAbs[str(gene.name)] = self.project.hashGene.index(gene.name)*spacing
+                                        else:
+                                            dicoAbs[str(gene.name)] += width
+                                        valx.append(dicoAbs[str(gene.name)])
 
+                            color = self.project.hashEch[ech].color.name()
+                            p = self.mplCanUnknown.axes.bar(valx, 
+                                    listNRQ, width, color=str(color), 
+                                    yerr=listNRQerror, ecolor='k',
+                                    label=str(ech), align='center')
+                            ind += 1
+            self.nplotEch += 1
+
+# plot
+        initloc = linspace(spacing, spacing*len(dicoAbs.values()), len(dicoAbs.values()))
+        xticks = (dicoAbs.values() - initloc)/2. + initloc
+        self.mplCanUnknown.axes.set_xticks(xticks)
+        self.mplCanUnknown.axes.set_xticklabels(dicoAbs.keys(), fontsize=size)
+        self.mplCanUnknown.axes.set_ylim(ymin=0.)
 # Legend + xlim
-        leg = self.mplCanUnknown.axes.legend(legPos, legName, 
-                           loc='upper right', shadow=True, labelspacing=0.005)
+        leg = self.mplCanUnknown.axes.legend(loc='upper right', 
+                               shadow=True, labelspacing=0.005)
 # Fontsize and legend texts
         for t in leg.get_texts():
-            t.set_fontsize(10)
+            t.set_fontsize(size)
         for ytick in self.mplCanUnknown.axes.get_yticklabels():
             ytick.set_fontsize(size)
         leftMargin = 0.2
-        legendWidth = 0.3*(valmax+(ind+1)*width)
-        self.mplCanUnknown.axes.set_xlim((-leftMargin, 
-                       valmax+(ind+1)*width+leftMargin+legendWidth))
+        rightmargin = 0.5
+        legendHeight = leg.get_frame().get_height()
+        legendWidth = 0.2 * (dicoAbs.values()[-1] - initloc[0])
+        self.mplCanUnknown.axes.set_xlim((initloc[0]-initloc[0]*leftMargin, 
+                       dicoAbs.values()[-1]+legendWidth+ rightmargin))
         self.mplCanUnknown.draw()
 
     def plotStd(self):
