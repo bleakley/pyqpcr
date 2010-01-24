@@ -19,8 +19,7 @@
 
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
-#from pyQPCR.utils.odict import *
-from odict import *
+from pyQPCR.utils.odict import *
 
 __author__ = "$Author$"
 __date__ = "$Date$"
