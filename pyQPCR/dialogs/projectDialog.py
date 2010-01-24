@@ -22,9 +22,9 @@ from PyQt4.QtCore import *
 #from pyQPCR.utils.odict import *
 from odict import *
 
-__author__ = "$Author: tgastine $"
-__date__ = "$Date: 2010-01-24 11:25:34 +0100 (dim. 24 janv. 2010) $"
-__version__ = "$Rev: 128 $"
+__author__ = "$Author$"
+__date__ = "$Date$"
+__version__ = "$Rev$"
 
 class NewProjectDialog(QDialog):
     
