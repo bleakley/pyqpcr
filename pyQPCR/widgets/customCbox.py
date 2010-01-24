@@ -22,9 +22,9 @@ from PyQt4.QtCore import *
 #from pyQPCR.wellGeneSample import *
 import pyQPCR.qrc_resources
 
-__author__ = "$Author: tgastine $"
-__date__ = "$Date: 2010-01-22 22:18:20 +0100 (ven. 22 janv. 2010) $"
-__version__ = "$Rev: 119 $"
+__author__ = "$Author$"
+__date__ = "$Date$"
+__version__ = "$Rev$"
 
 
 class HeaderModel(QStandardItemModel):

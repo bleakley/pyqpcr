@@ -25,9 +25,9 @@ from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt4 import NavigationToolbar2QT
 from matplotlib.figure import Figure
 
-__author__ = "$Author: tgastine $"
-__date__ = "$Date: 2010-01-22 22:18:20 +0100 (ven. 22 janv. 2010) $"
-__version__ = "$Rev: 119 $"
+__author__ = "$Author$"
+__date__ = "$Date$"
+__version__ = "$Rev$"
 
 
 class MatplotlibWidget(FigureCanvas):
