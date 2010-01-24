@@ -604,7 +604,7 @@ class Qpcr_qt(QMainWindow):
             isQuant = dialog.btnQuant.isChecked()
         else:
             return
-        if not hasattr(self, "plaque"):
+        if not hasattr(self, "project"):
             return
         html = u""
         css = ("<html><head>\n"
@@ -616,13 +616,14 @@ class Qpcr_qt(QMainWindow):
         html += css
         html += "<h1 align=center> qPCR results </h1><br><br>"
         if isTable:
-            html += "<br><h2>Results table</h2><br>"
-            html += self.plaque.writeHtml()
+            for key in self.project.dicoPlates.keys():
+                html += "<br><h2>Results table (%s)</h2><br>" % key
+                html += self.project.dicoPlates[key].writeHtml()
         if isStd and self.nplotStd !=0:
             html += "<p style='page-break-before:always;'>"
             html += "<br><h2>Standard curves</h2><br>"
-            self.geneStdBox.addItems(self.plaque.dicoStd.keys())
-            for index in range(len(self.plaque.dicoStd.keys())):
+            self.geneStdBox.addItems(self.project.dicoStd.keys())
+            for index in range(len(self.project.dicoStd.keys())):
                 if (not index % 3 and index !=0):
                     html += "<p style='page-break-before:always;'>"
                 else:
