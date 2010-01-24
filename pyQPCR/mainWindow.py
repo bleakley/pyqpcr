@@ -436,25 +436,15 @@ class Qpcr_qt(QMainWindow):
             self.filename = fname
             message = "Loaded %s" % QFileInfo(fname).fileName()
             self.updateStatus(message)
-# Nettoyage du QTabWidget
-            for ind in range(self.tabulPlates.count()):
-                self.tabulPlates.removeTab(0)
-                self.tabulResults.removeTab(0)
-            self.onglet.removeTab(1)
-            self.onglet.removeTab(1)
-# Remise a zero des compteurs
-            self.nplotGene = 0
-            self.nplotStd = 0
-            self.nplotEch = 0
-# Nettoyage des tableaux avant l'eventuel remplissage
+
+            self.cleanBeforeOpen()
+
             self.project = Project(fname)
             for key in self.project.dicoPlates.keys():
                 pl = self.project.dicoPlates[key]
                 self.appendPlate(pl, key)
                 self.appendResult(pl, key)
 
-# Activation des actions
-            self.activateDesactivate(True)
 # Pile de plaques pour le Undo/Redo
             #self.projectStack.append(copy.deepcopy(self.plaque))
             self.populateTree()
@@ -463,22 +453,18 @@ class Qpcr_qt(QMainWindow):
             self.populateCbox(self.amComboBox, self.project.hashAmount, "Amount")
 
     def fileNew(self):
+        if not self.okToContinue():
+            return
         dir = os.path.dirname(self.filename) if self.filename is not None \
                 else "."
         dialog = NewProjectDialog(self, pwd=dir)
         if dialog.exec_():
+            self.cleanBeforeOpen()
             self.project = Project(dialog.projectName)
             for fname in dialog.fileNames.values():
                 self.addPlate(fname)
             self.filename = dialog.projectName
-            self.setWindowTitle("pyQPCR - %s[*]" % self.filename)
-            message = "New project %s" % self.filename
-            self.updateStatus(message)
-
-            self.nplotGene = 0
-            self.nplotStd = 0
-            self.nplotEch = 0
-
+            self.setWindowTitle("pyQPCR - %s[*]" % QFileInfo(self.filename).fileName())
 
     def fileImport(self):
         dir = os.path.dirname(self.filename) if self.filename is not None \
@@ -516,8 +502,6 @@ class Qpcr_qt(QMainWindow):
             self.appendPlate(plaque, key)
             self.appendResult(plaque, key)
 
-# Activation des actions
-            self.activateDesactivate(True)
 # Mise a jour des cbox
             self.populateCbox(self.geneComboBox, self.project.hashGene, "Target")
             self.populateCbox(self.echComboBox, self.project.hashEch, "Sample")
@@ -547,7 +531,6 @@ class Qpcr_qt(QMainWindow):
             self.project.unsaved = True
             self.fileSaveAction.setEnabled(True)
             self.populateTree()
-
 
     def activateDesactivate(self, bool):
         """
@@ -1336,6 +1319,25 @@ class Qpcr_qt(QMainWindow):
         mytab.populateResult(plaque)
         self.tabulResults.addTab(mytab, key)
         self.pileResults[key] = mytab
+
+    def cleanBeforeOpen(self):
+# Nettoyage du QTabWidget
+        for ind in range(self.tabulPlates.count()):
+            self.tabulPlates.removeTab(0)
+            self.tabulResults.removeTab(0)
+        self.onglet.removeTab(1)
+        self.onglet.removeTab(1)
+# Remise a zero des compteurs
+        self.nplotGene = 0
+        self.nplotStd = 0
+        self.nplotEch = 0
+# Nettoyage des tableaux avant l'eventuel remplissage
+
+# Activation des actions
+        self.activateDesactivate(True)
+# Pile de plaques pour le Undo/Redo
+        self.projectStack = []
+
 
 
 def run():
