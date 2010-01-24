@@ -19,7 +19,8 @@
 
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
-from pyQPCR.utils.odict import *
+#from pyQPCR.utils.odict import *
+from odict import *
 
 __author__ = "$Author: tgastine $"
 __date__ = "$Date: 2010-01-24 11:25:34 +0100 (dim. 24 janv. 2010) $"
@@ -76,7 +77,6 @@ class NewProjectDialog(QDialog):
         self.connect(btnAdd, SIGNAL("clicked()"), self.addPlate)
         self.connect(btnRemove, SIGNAL("clicked()"), self.removePlate)
         self.setWindowTitle("New project")
-
 
     def populateList(self):
         self.listFiles.clear()
