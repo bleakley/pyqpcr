@@ -1160,8 +1160,8 @@ class Qpcr_qt(QMainWindow):
             ind = 0
             for plname in self.project.dicoPlates.keys():
                 pl = self.project.dicoPlates[plname]
-                for gene in pl.dicoGene.keys():
-                    if gene != '':
+                for gene in self.project.hashGene.keys():
+                    if gene != '' and pl.dicoGene.has_key(gene):
                         listNRQ = [] ; listNRQerror = [] ; poped = []
                         if self.project.hashGene[gene].enabled == Qt.Checked:
                             localDict = self.project.dicoTriplicat[plname].getRow(gene)
@@ -1203,8 +1203,8 @@ class Qpcr_qt(QMainWindow):
             ind = 0
             for plname in self.project.dicoPlates.keys():
                 pl = self.project.dicoPlates[plname]
-                for ech in pl.dicoEch.keys():
-                    if ech != '':
+                for ech in self.project.hashEch.keys():
+                    if ech != '' and pl.dicoEch.has_key(ech):
                         listNRQ = [] ; listNRQerror = [] ; poped = []
                         if self.project.hashEch[ech].enabled == Qt.Checked:
                             localDict = self.project.dicoTriplicat[plname].getColumn(ech)

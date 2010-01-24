@@ -36,14 +36,14 @@ class PropDialog(QDialog):
         self.geneListWidget.setAlternatingRowColors(True)
         pix = QPixmap(32, 32)
         if hashGene is not None:
-            self.listGene = copy.deepcopy(hashGene.values()[1:])
+            self.hashGene = copy.deepcopy(hashGene)
             self.populateListGene()
 
         self.echListWidget = QListWidget()
         self.echListWidget.setAlternatingRowColors(True)
         pix = QPixmap(32, 32)
         if hashEch is not None:
-            self.listEch = copy.deepcopy(hashEch.values()[1:])
+            self.hashEch = copy.deepcopy(hashEch)
             self.populateListEch()
 
         buttonUp = QPushButton("&Up")
@@ -92,15 +92,15 @@ class PropDialog(QDialog):
         self.whois = "echList"
 
     def accept(self):
-        for ind, it in enumerate(self.listGene):
+        for ind, it in enumerate(self.hashGene.values()[1:]):
             it.setEnabled(self.geneListWidget.item(ind).checkState())
-        for ind, it in enumerate(self.listEch):
+        for ind, it in enumerate(self.hashEch.values()[1:]):
             it.setEnabled(self.echListWidget.item(ind).checkState())
         QDialog.accept(self)
 
     def populateListGene(self):
         pix = QPixmap(32, 32)
-        for ind, it in enumerate(self.listGene):
+        for it in self.hashGene.values()[1:]:
             item = QListWidgetItem(it.name)
             item.setCheckState(it.enabled)
             pix.fill(it.color)
@@ -109,7 +109,7 @@ class PropDialog(QDialog):
 
     def populateListEch(self):
         pix = QPixmap(32, 32)
-        for ind, it in enumerate(self.listEch):
+        for it in self.hashEch.values()[1:]:
             item = QListWidgetItem(it.name)
             item.setCheckState(it.enabled)
             pix.fill(it.color)
@@ -130,20 +130,16 @@ class PropDialog(QDialog):
         if len(activeGenes) != 0:
             row = self.geneListWidget.currentRow()
             if row >= 1:
-                thisObj = self.listGene[row]
-                prevObj = self.listGene[row-1]
-                self.listGene[row] = prevObj
-                self.listGene[row-1] = thisObj
+                key, popkey = self.hashGene.popitem(row)
+                self.hashGene.insert(row+1, key, popkey)
                 self.geneListWidget.clear()
                 self.populateListGene()
                 self.geneListWidget.setCurrentRow(row-1)
         elif len(activeEchs) != 0:
             row = self.echListWidget.currentRow()
             if row >= 1:
-                thisObj = self.listEch[row]
-                prevObj = self.listEch[row-1]
-                self.listEch[row] = prevObj
-                self.listEch[row-1] = thisObj
+                key, popkey = self.hashEch.popitem(row)
+                self.hashEch.insert(row+1, key, popkey)
                 self.echListWidget.clear()
                 self.populateListEch()
                 self.echListWidget.setCurrentRow(row-1)
@@ -154,20 +150,16 @@ class PropDialog(QDialog):
         if len(activeGenes) != 0:
             row  = self.geneListWidget.currentRow()
             if row < self.geneListWidget.count() -1:
-                thisObj = self.listGene[row]
-                nextObj = self.listGene[row+1]
-                self.listGene[row] = nextObj
-                self.listGene[row+1] = thisObj
+                key, popkey = self.hashGene.popitem(row+2)
+                self.hashGene.insert(row+1, key, popkey)
                 self.geneListWidget.clear()
                 self.populateListGene()
                 self.geneListWidget.setCurrentRow(row+1)
         elif len(activeEchs) != 0:
             row  = self.echListWidget.currentRow()
             if row < self.echListWidget.count() -1:
-                thisObj = self.listEch[row]
-                nextObj = self.listEch[row+1]
-                self.listEch[row] = nextObj
-                self.listEch[row+1] = thisObj
+                key, popkey = self.hashEch.popitem(row+2)
+                self.hashEch.insert(row+1, key, popkey)
                 self.echListWidget.clear()
                 self.populateListEch()
                 self.echListWidget.setCurrentRow(row+1)
@@ -176,26 +168,24 @@ class PropDialog(QDialog):
         pix = QPixmap(32, 32)
         if self.whois == "geneList":
             item = self.geneListWidget.currentItem()
-            row = self.geneListWidget.currentRow()
-            col = self.listGene[row].color
+            col = self.hashGene[item.text()].color
             dialog = QColorDialog(self)
             dialog.setCurrentColor(col)
             if dialog.exec_():
                 color = dialog.currentColor()
                 pix.fill(color)
                 item.setIcon(QIcon(pix))
-                self.listGene[row].setColor(color)
+                self.hashGene[item.text()].setColor(color)
         elif self.whois == "echList":
             item = self.echListWidget.currentItem()
-            row = self.echListWidget.currentRow()
-            col = self.listEch[row].color
+            col = self.hashEch[item.text()].color
             dialog = QColorDialog(self)
             dialog.setCurrentColor(col)
             if dialog.exec_():
                 color = dialog.currentColor()
                 pix.fill(color)
                 item.setIcon(QIcon(pix))
-                self.listEch[row].setColor(color)
+                self.hashEch[item.text()].setColor(color)
 
 
 if __name__=="__main__":
