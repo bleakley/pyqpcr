@@ -267,9 +267,9 @@ class Qpcr_qt(QMainWindow):
         self.addGeneAction = self.createAction("Add &Target...", self.addGene,
                 "Ctrl+T", "addgene", "Add a new target")
         self.addEchAction = self.createAction("Add &Sample...", self.addEch,
-                "Ctrl+G", "addgene", "Add a new sample")
+                "Ctrl+G", "addech", "Add a new sample")
         self.addAmAction = self.createAction("Add A&mount...", self.addAmount,
-                "Ctrl+M", "addgene", "Add a new amount")
+                "Ctrl+M", "addamount", "Add a new amount")
         self.plotAction = self.createAction("Quantifications", 
                              self.computeUnknown, "Ctrl+Shift+U", 
                              "plotUnknown", "Plot results")
@@ -354,8 +354,10 @@ class Qpcr_qt(QMainWindow):
         self.amComboBox.setFocusPolicy(Qt.NoFocus)
         editToolbar.addWidget(self.geneComboBox)
         editToolbar.addAction(self.addGeneAction)
+        editToolbar.addSeparator()
         editToolbar.addWidget(self.echComboBox)
         editToolbar.addAction(self.addEchAction)
+        editToolbar.addSeparator()
         editToolbar.addWidget(self.amComboBox)
         editToolbar.addAction(self.addAmAction)
         editToolbar.addSeparator()
@@ -408,7 +410,6 @@ class Qpcr_qt(QMainWindow):
 
     def updateStatus(self, message, time=5000):
         self.statusBar().showMessage(message, time)
-
 
     def fileOpen(self):
         if not self.okToContinue():
@@ -473,6 +474,10 @@ class Qpcr_qt(QMainWindow):
             self.setWindowTitle("pyQPCR - %s[*]" % self.filename)
             message = "New project %s" % self.filename
             self.updateStatus(message)
+
+            self.nplotGene = 0
+            self.nplotStd = 0
+            self.nplotEch = 0
 
 
     def fileImport(self):
