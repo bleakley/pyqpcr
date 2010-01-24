@@ -28,7 +28,7 @@ __version__ = "$Rev$"
 
 class PropDialog(QDialog):
     
-    def __init__(self, parent=None, hashGene=None, listEch=None):
+    def __init__(self, parent=None, hashGene=None, hashEch=None):
         self.parent = parent
         QDialog.__init__(self, parent)
 
@@ -42,8 +42,8 @@ class PropDialog(QDialog):
         self.echListWidget = QListWidget()
         self.echListWidget.setAlternatingRowColors(True)
         pix = QPixmap(32, 32)
-        if listEch is not None:
-            self.listEch = copy.deepcopy(listEch)
+        if hashEch is not None:
+            self.listEch = copy.deepcopy(hashEch.values()[1:])
             self.populateListEch()
 
         buttonUp = QPushButton("&Up")
