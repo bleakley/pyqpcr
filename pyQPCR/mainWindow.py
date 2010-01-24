@@ -35,6 +35,7 @@ import copy
 __author__ = "$Author$"
 __date__ = "$Date$"
 __version__ = "$Rev$"
+__progversion__ = "0.3dev"
 
 class Qpcr_qt(QMainWindow):
 
@@ -241,9 +242,9 @@ class Qpcr_qt(QMainWindow):
                 QKeySequence.Open, "fileopen", "Open an existing project")
         fileNewAction = self.createAction("&New project...", self.fileNew, 
                 QKeySequence.New, "filenew", "Create a new project")
-        fileImportAction = self.createAction("&Import...", self.fileImport, 
+        self.fileImportAction = self.createAction("&Import...", self.fileImport, 
                 "Ctrl+I", "fileimport", "Import/add an existing plate")
-        closeTabAction = self.createAction("&Close a plate", self.closePlate, 
+        self.closeTabAction = self.createAction("&Close a plate", self.closePlate, 
                 QKeySequence.Close, "closeplate", "Close an existing plate")
         self.filePrintAction = self.createAction("&Print", self.filePrint,
                 QKeySequence.Print, "fileprint", "Print results")
@@ -288,7 +289,7 @@ class Qpcr_qt(QMainWindow):
 # Menus
         fileMenu = self.menuBar().addMenu("&File")
         self.addActions(fileMenu, (fileOpenAction, fileNewAction, 
-                                   fileImportAction, closeTabAction))
+                                   self.fileImportAction, self.closeTabAction))
         self.recentFileMenu = fileMenu.addMenu(QIcon(":/filerecent.png"),
                 "Open recent files")
         fileMenu.addSeparator()
@@ -316,9 +317,9 @@ class Qpcr_qt(QMainWindow):
         fileToolbar = self.addToolBar("File")
         fileToolbar.setObjectName("FileToolBar")
         self.addActions(fileToolbar, (fileOpenAction, fileNewAction,
-                        fileImportAction, closeTabAction, self.filePrintAction, 
-                        self.exportAction, self.fileSaveAction, 
-                        self.fileSaveAsAction))
+                        self.fileImportAction, self.closeTabAction, 
+                        self.filePrintAction, self.exportAction, 
+                        self.fileSaveAction, self.fileSaveAsAction))
         fileToolbar.setIconSize(QSize(22, 22))
 
         editToolbar = self.addToolBar("Edit")
@@ -369,9 +370,10 @@ class Qpcr_qt(QMainWindow):
         self.projWidget.setContextMenuPolicy(Qt.ActionsContextMenu)
         self.resulWidget.setContextMenuPolicy(Qt.ActionsContextMenu)
         self.addActions(self.projWidget, (fileOpenAction, fileNewAction, 
-                       fileImportAction, closeTabAction, self.editAction, 
-                       self.undoAction, self.redoAction, self.addGeneAction, 
-                       self.addEchAction, self.enableAction, self.disableAction))
+                       self.fileImportAction, self.closeTabAction, 
+                       self.editAction, self.undoAction, self.redoAction, 
+                       self.addGeneAction, self.addEchAction, 
+                       self.enableAction, self.disableAction))
         self.addActions(self.resulWidget, (self.filePrintAction, self.exportAction,
                                       self.fileSaveAction, self.fileSaveAsAction,
                                       self.plotStdAction, self.plotAction))
@@ -407,8 +409,6 @@ class Qpcr_qt(QMainWindow):
     def updateStatus(self, message, time=5000):
         self.statusBar().showMessage(message, time)
 
-    def fileNew(self):
-        print "not implemented yet"
 
     def fileOpen(self):
         if not self.okToContinue():
@@ -421,72 +421,6 @@ class Qpcr_qt(QMainWindow):
                 dir, "Input files (%s)" % " ".join(formats)))
         if fname:
             self.loadFile(fname)
-
-    def fileImport(self):
-        dir = os.path.dirname(self.filename) if self.filename is not None \
-                else "."
-        formats =[u"*.txt", u"*.csv"]
-        fname = unicode(QFileDialog.getOpenFileName(self,
-                       "pyQPCR - Choose a file", dir, 
-                       "Input files (%s)" % " ".join(formats)))
-        if fname:
-            if not self.project.dicoPlates.has_key(QFileInfo(fname).fileName()):
-                self.addPlate(fname)
-            else:
-                name = QFileInfo(fname).fileName()
-                QMessageBox.warning(self, "Import cancelled",
-                  "<b>Warning</b>: the plate %s is already in the project %s ! \
-                   As a consequence, it has not been added to the project."       
-                                % (name, QFileInfo(self.filename).fileName()))
-
-    def addPlate(self, fname=None):
-        if fname is None:
-            action = self.sender()
-            if isinstance(action, QAction):
-                fname = unicode(action.data().toString())
-                if not self.okToContinue():
-                    return
-        if fname:
-            message = "Loaded %s" % QFileInfo(fname).fileName()
-            self.updateStatus(message)
-# Nettoyage des tableaux avant l'eventuel remplissage
-            plaque = Plaque(fname)
-            self.project.addPlate(plaque)
-            key = QFileInfo(fname).fileName()
-
-            self.appendPlate(plaque, key)
-            self.appendResult(plaque, key)
-
-# Activation des actions
-            self.activateDesactivate(True)
-# Mise a jour des cbox
-            self.populateCbox(self.geneComboBox, self.project.hashGene, "Target")
-            self.populateCbox(self.echComboBox, self.project.hashEch, "Sample")
-            self.populateCbox(self.amComboBox, self.project.hashAmount, "Amount")
-            self.project.unsaved = True
-            self.fileSaveAction.setEnabled(True)
-
-    def closePlate(self):
-        reply = QMessageBox.question(self, "Remove a plate",
-                            "Are you sure to remove %s ?" % self.currentPlate,
-                            QMessageBox.Yes|QMessageBox.No)
-        plToDestroy = self.currentPlate
-        if reply == QMessageBox.Yes:
-            message = "Closed %s" % plToDestroy
-            index = self.project.dicoPlates.index(plToDestroy)
-            self.project.removePlate(plToDestroy)
-# Nettoyage des onglets et des tableaux
-            self.tabulPlates.removeTab(index)
-            self.pileTables.__delitem__(plToDestroy)
-            self.tabulResults.removeTab(index)
-            self.pileResults.__delitem__(plToDestroy)
-# Maj des cbox et Remplissage du tree
-            self.populateCbox(self.geneComboBox, self.project.hashGene, "Target")
-            self.populateCbox(self.echComboBox, self.project.hashEch, "Sample")
-            self.populateCbox(self.amComboBox, self.project.hashAmount, "Amount")
-            self.project.unsaved = True
-            self.fileSaveAction.setEnabled(True)
-            self.populateTree()
 
     def loadFile(self, fname=None):
         if fname is None:
@@ -527,6 +461,89 @@ class Qpcr_qt(QMainWindow):
             self.populateCbox(self.echComboBox, self.project.hashEch, "Sample")
             self.populateCbox(self.amComboBox, self.project.hashAmount, "Amount")
 
+    def fileNew(self):
+        dir = os.path.dirname(self.filename) if self.filename is not None \
+                else "."
+        dialog = NewProjectDialog(self, pwd=dir)
+        if dialog.exec_():
+            self.project = Project(dialog.projectName)
+            for fname in dialog.fileNames.values():
+                self.addPlate(fname)
+            self.filename = dialog.projectName
+            self.setWindowTitle("pyQPCR - %s[*]" % self.filename)
+            message = "New project %s" % self.filename
+            self.updateStatus(message)
+
+
+    def fileImport(self):
+        dir = os.path.dirname(self.filename) if self.filename is not None \
+                else "."
+        formats =[u"*.txt", u"*.csv"]
+        fileNames = QFileDialog.getOpenFileNames(self,
+                       "pyQPCR - Choose a file", dir, 
+                       "Input files (%s)" % " ".join(formats))
+        if fileNames:
+            for file in fileNames:
+                if not self.project.dicoPlates.has_key(QFileInfo(file).fileName()):
+                    self.addPlate(file)
+                else:
+                    name = QFileInfo(file).fileName()
+                    QMessageBox.warning(self, "Import cancelled",
+                      "<b>Warning</b>: the plate %s is already in the project %s ! \
+                       As a consequence, it has not been added to the project."       
+                                    % (name, QFileInfo(self.filename).fileName()))
+
+    def addPlate(self, fname=None):
+        if fname is None:
+            action = self.sender()
+            if isinstance(action, QAction):
+                fname = unicode(action.data().toString())
+                if not self.okToContinue():
+                    return
+        if fname:
+            message = "Loaded %s" % QFileInfo(fname).fileName()
+            self.updateStatus(message)
+# Nettoyage des tableaux avant l'eventuel remplissage
+            plaque = Plaque(fname)
+            self.project.addPlate(plaque)
+            key = QFileInfo(fname).fileName()
+
+            self.appendPlate(plaque, key)
+            self.appendResult(plaque, key)
+
+# Activation des actions
+            self.activateDesactivate(True)
+# Mise a jour des cbox
+            self.populateCbox(self.geneComboBox, self.project.hashGene, "Target")
+            self.populateCbox(self.echComboBox, self.project.hashEch, "Sample")
+            self.populateCbox(self.amComboBox, self.project.hashAmount, "Amount")
+            self.populateTree()
+            self.project.unsaved = True
+            self.fileSaveAction.setEnabled(True)
+
+    def closePlate(self):
+        reply = QMessageBox.question(self, "Remove a plate",
+                            "Are you sure to remove %s ?" % self.currentPlate,
+                            QMessageBox.Yes|QMessageBox.No)
+        plToDestroy = self.currentPlate
+        if reply == QMessageBox.Yes:
+            message = "Closed %s" % plToDestroy
+            index = self.project.dicoPlates.index(plToDestroy)
+            self.project.removePlate(plToDestroy)
+# Nettoyage des onglets et des tableaux
+            self.tabulPlates.removeTab(index)
+            self.pileTables.__delitem__(plToDestroy)
+            self.tabulResults.removeTab(index)
+            self.pileResults.__delitem__(plToDestroy)
+# Maj des cbox et Remplissage du tree
+            self.populateCbox(self.geneComboBox, self.project.hashGene, "Target")
+            self.populateCbox(self.echComboBox, self.project.hashEch, "Sample")
+            self.populateCbox(self.amComboBox, self.project.hashAmount, "Amount")
+            self.project.unsaved = True
+            self.fileSaveAction.setEnabled(True)
+            self.populateTree()
+
+
     def activateDesactivate(self, bool):
         """
         This method allows to enable/disable several QAction
@@ -551,6 +568,8 @@ class Qpcr_qt(QMainWindow):
         self.redoAction.setEnabled(bool)
         self.enableAction.setEnabled(bool)
         self.disableAction.setEnabled(bool)
+        self.fileImportAction.setEnabled(bool)
+        self.closeTabAction.setEnabled(bool)
 
     def populateTree(self):
         self.tree.clear()
@@ -732,7 +751,7 @@ class Qpcr_qt(QMainWindow):
         simple qPCR analysis.
         <p> It may be used, copied and modified with no restriction
         <p>Python %s - PyQt %s - Matplotlib %s
-        on %s""" % (0.2, platform.python_version(),
+        on %s""" % (__progversion__, platform.python_version(),
         PYQT_VERSION_STR, matplotlib.__version__, platform.system()))
 
     def helpHelp(self):
@@ -898,8 +917,6 @@ class Qpcr_qt(QMainWindow):
             self.pileResults[self.currentPlate].populateResult( \
                    self.project.dicoPlates[self.currentPlate])
 
-
-
     def addGene(self):
         dialog = GeneDialog(self, project=self.project)
         if dialog.exec_():
@@ -1053,16 +1070,20 @@ class Qpcr_qt(QMainWindow):
             if pl.geneRef == '':
                 QMessageBox.warning(self, "Warning",
                     "Reference target undefined for plate %s!" % plname)
+                raise ValueError
             if pl.echRef == '':
                 QMessageBox.warning(self, "Warning",
                     "Reference sample undefined for plate %s!" % plname)
-
+                raise ValueError
 
     def computeUnknown(self):
 # On verifie la qualite des negative control
         self.checkNegative(self.ctMin)
 # On fixe le gene de reference et le triplicat de reference
-        self.setRefs()
+        try:
+            self.setRefs()
+        except ValueError:
+            return
 # On construit tous les triplicats
         try:
             self.project.findTrip(self.ectMax, self.confidence,
