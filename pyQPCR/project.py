@@ -25,6 +25,9 @@ from PyQt4.QtXml import QXmlSimpleReader, QXmlInputSource
 from numpy import mean, std, sqrt, log, log10, polyval, polyfit, sum, \
 array, append
 
+__author__ = "$Author$"
+__date__ = "$Date$"
+__version__ = "$Rev$"
 
 class Project:
 

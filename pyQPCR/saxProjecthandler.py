@@ -22,6 +22,9 @@ from PyQt4.QtCore import QString, QFile
 from pyQPCR.plate import *
 from pyQPCR.project import *
 
+__author__ = "$Author$"
+__date__ = "$Date$"
+__version__ = "$Rev$"
 
 def fltFromQStr(qstr):
     i, ok = qstr.toFloat()
