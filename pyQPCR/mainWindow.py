@@ -164,8 +164,8 @@ class Qpcr_qt(QMainWindow):
         self.spinSpacing = QDoubleSpinBox()
         self.spinSpacing.setLocale(QLocale(QLocale.English, 
                                            QLocale.UnitedStates))
-        self.spinSpacing.setValue(1)
-        self.spinSpacing.setRange(0.5, 5)
+        self.spinSpacing.setValue(0.3)
+        self.spinSpacing.setRange(0.1, 2)
         self.spinSpacing.setSingleStep(0.1)
         lab3 = QLabel("Bar &spacing:")
         lab3.setBuddy(self.spinSpacing)
@@ -1170,30 +1170,52 @@ class Qpcr_qt(QMainWindow):
 # Gene vs Ech
         if self.cboxSens.currentIndex() == 0:
             ind = 0
-            for plname in self.project.dicoPlates.keys():
-                pl = self.project.dicoPlates[plname]
-                for gene in self.project.hashGene.keys():
-                    if gene != '' and pl.dicoGene.has_key(gene):
-                        valx = []; listNRQ = [] ; listNRQerror = []
-                        if self.project.hashGene[gene].enabled == Qt.Checked:
-                            localDict = self.project.dicoTriplicat[plname].getRow(gene)
-                            for ech in self.project.hashEch.values()[1:]:
-                                if ech.enabled == Qt.Checked:
-                                    if localDict.has_key(ech.name):
-                                        listNRQ.append(localDict[ech.name].NRQ)
-                                        listNRQerror.append(localDict[ech.name].NRQerror)
-                                        if not dicoAbs.has_key(str(ech.name)):
-                                            dicoAbs[str(ech.name)] = self.project.hashEch.index(ech.name)*spacing
-                                        else:
-                                            dicoAbs[str(ech.name)] += width
-                                        valx.append(dicoAbs[str(ech.name)])
 
-                            color = self.project.hashGene[gene].color.name()
-                            p = self.mplCanUnknown.axes.bar(valx, 
-                                    listNRQ, width, color=str(color), 
-                                    yerr=listNRQerror, ecolor='k',
-                                    label=str(gene), align='center')
-                            ind += 1
+            self.project.findBars(width, spacing)
+            for g in self.project.hashGene.keys():
+                for pl in self.project.dicoPlates.keys():
+                    if self.project.dicoTriplicat[pl].has_key(g) and \
+                        self.project.hashGene[g].enabled == Qt.Checked:
+                        NRQ = [] ; NRQerror = [] ; valx = []
+                        for ech in self.project.hashEch.keys():
+                            if self.project.dicoTriplicat[pl][g].has_key(ech) \
+                                    and self.project.hashEch[ech].enabled \
+                                    == Qt.Checked:
+                                NRQ.append(\
+                                  self.project.dicoTriplicat[pl][g][ech].NRQ)
+                                NRQerror.append(\
+                                  self.project.dicoTriplicat[pl][g][ech].NRQerror)
+                                valx.append(self.project.barWidth[ech])
+                                self.project.barWidth[ech] += width
+                        color = self.project.hashGene[g].color.name()
+                        p = self.mplCanUnknown.axes.bar(valx, 
+                                NRQ, width, color=str(color), 
+                                yerr=NRQerror, ecolor='k',
+                                label=str(g), align='center')
+            #for plname in self.project.dicoPlates.keys():
+                #pl = self.project.dicoPlates[plname]
+                #for gene in self.project.hashGene.keys():
+                    #if gene != '' and pl.dicoGene.has_key(gene):
+                        #valx = []; listNRQ = [] ; listNRQerror = []
+                        #if self.project.hashGene[gene].enabled == Qt.Checked:
+                            #localDict = self.project.dicoTriplicat[plname].getRow(gene)
+                            #for ech in self.project.hashEch.values()[1:]:
+                                #if ech.enabled == Qt.Checked:
+                                    #if localDict.has_key(ech.name):
+                                        #listNRQ.append(localDict[ech.name].NRQ)
+                                        #listNRQerror.append(localDict[ech.name].NRQerror)
+                                        #if not dicoAbs.has_key(str(ech.name)):
+                                            #dicoAbs[str(ech.name)] = self.project.hashEch.index(ech.name)*spacing
+                                        #else:
+                                            #dicoAbs[str(ech.name)] += width
+                                        #valx.append(dicoAbs[str(ech.name)])
+#
+                            #color = self.project.hashGene[gene].color.name()
+                            #p = self.mplCanUnknown.axes.bar(valx, 
+                                    #listNRQ, width, color=str(color), 
+                                    #yerr=listNRQerror, ecolor='k',
+                                    #label=str(gene), align='center')
+                            #ind += 1
             self.nplotGene += 1
 
 # Ech vs Gene
@@ -1226,25 +1248,24 @@ class Qpcr_qt(QMainWindow):
             self.nplotEch += 1
 
 # plot
-        initloc = linspace(spacing, spacing*len(dicoAbs.values()), len(dicoAbs.values()))
-        xticks = (dicoAbs.values() - initloc)/2. + initloc
-        self.mplCanUnknown.axes.set_xticks(xticks)
-        self.mplCanUnknown.axes.set_xticklabels(dicoAbs.keys(), fontsize=size)
+        self.mplCanUnknown.axes.set_xticks(self.project.barXticks.values())
+        self.mplCanUnknown.axes.set_xticklabels(self.project.barXticks.keys(), 
+                                                fontsize=size)
         self.mplCanUnknown.axes.set_ylim(ymin=0.)
 # Legend + xlim
         leg = self.mplCanUnknown.axes.legend(loc='upper right', 
-                               shadow=True, labelspacing=0.005)
+                              shadow=True, labelspacing=0.005)
 # Fontsize and legend texts
         for t in leg.get_texts():
             t.set_fontsize(size)
         for ytick in self.mplCanUnknown.axes.get_yticklabels():
             ytick.set_fontsize(size)
-        leftMargin = 0.2
-        rightmargin = 0.5
-        legendHeight = leg.get_frame().get_height()
-        legendWidth = 0.2 * (dicoAbs.values()[-1] - initloc[0])
-        self.mplCanUnknown.axes.set_xlim((initloc[0]-initloc[0]*leftMargin, 
-                       dicoAbs.values()[-1]+legendWidth+ rightmargin))
+        #leftMargin = 0.2
+        #rightmargin = 0.5
+        #legendHeight = leg.get_frame().get_height()
+        #legendWidth = 0.2 * (dicoAbs.values()[-1] - initloc[0])
+        #self.mplCanUnknown.axes.set_xlim((initloc[0]-initloc[0]*leftMargin, 
+                       #dicoAbs.values()[-1]+legendWidth+ rightmargin))
         self.mplCanUnknown.draw()
 
     def plotStd(self):
