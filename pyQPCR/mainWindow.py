@@ -1169,82 +1169,52 @@ class Qpcr_qt(QMainWindow):
 
 # Gene vs Ech
         if self.cboxSens.currentIndex() == 0:
-            ind = 0
-
-            self.project.findBars(width, spacing)
-            for g in self.project.hashGene.keys():
-                for pl in self.project.dicoPlates.keys():
-                    if self.project.dicoTriplicat[pl].has_key(g) and \
-                        self.project.hashGene[g].enabled == Qt.Checked:
-                        NRQ = [] ; NRQerror = [] ; valx = []
-                        for ech in self.project.hashEch.keys():
-                            if self.project.dicoTriplicat[pl][g].has_key(ech) \
-                                    and self.project.hashEch[ech].enabled \
-                                    == Qt.Checked:
-                                NRQ.append(\
+            self.project.findBars(width, spacing, 'geneEch')
+            for g in self.project.hashGene.keys()[1:]:
+                NRQ = [] ; NRQerror = [] ; valx = []
+                for ech in self.project.hashEch.keys()[1:]:
+                    for pl in self.project.dicoPlates.keys():
+                        if self.project.dicoTriplicat[pl].has_key(g) and \
+                          self.project.hashGene[g].enabled == Qt.Checked and \
+                          self.project.dicoTriplicat[pl][g].has_key(ech) and \
+                          self.project.hashEch[ech].enabled == Qt.Checked:
+                            NRQ.append(\
                                   self.project.dicoTriplicat[pl][g][ech].NRQ)
-                                NRQerror.append(\
+                            NRQerror.append(\
                                   self.project.dicoTriplicat[pl][g][ech].NRQerror)
-                                valx.append(self.project.barWidth[ech])
-                                self.project.barWidth[ech] += width
-                        color = self.project.hashGene[g].color.name()
-                        p = self.mplCanUnknown.axes.bar(valx, 
-                                NRQ, width, color=str(color), 
-                                yerr=NRQerror, ecolor='k',
-                                label=str(g), align='center')
-            #for plname in self.project.dicoPlates.keys():
-                #pl = self.project.dicoPlates[plname]
-                #for gene in self.project.hashGene.keys():
-                    #if gene != '' and pl.dicoGene.has_key(gene):
-                        #valx = []; listNRQ = [] ; listNRQerror = []
-                        #if self.project.hashGene[gene].enabled == Qt.Checked:
-                            #localDict = self.project.dicoTriplicat[plname].getRow(gene)
-                            #for ech in self.project.hashEch.values()[1:]:
-                                #if ech.enabled == Qt.Checked:
-                                    #if localDict.has_key(ech.name):
-                                        #listNRQ.append(localDict[ech.name].NRQ)
-                                        #listNRQerror.append(localDict[ech.name].NRQerror)
-                                        #if not dicoAbs.has_key(str(ech.name)):
-                                            #dicoAbs[str(ech.name)] = self.project.hashEch.index(ech.name)*spacing
-                                        #else:
-                                            #dicoAbs[str(ech.name)] += width
-                                        #valx.append(dicoAbs[str(ech.name)])
-#
-                            #color = self.project.hashGene[gene].color.name()
-                            #p = self.mplCanUnknown.axes.bar(valx, 
-                                    #listNRQ, width, color=str(color), 
-                                    #yerr=listNRQerror, ecolor='k',
-                                    #label=str(gene), align='center')
-                            #ind += 1
+                            valx.append(self.project.barWidth[ech])
+                            self.project.barWidth[ech] += width
+                color = self.project.hashGene[g].color.name()
+                if len(valx) != 0:
+                    p = self.mplCanUnknown.axes.bar(valx, 
+                            NRQ, width, color=str(color), 
+                            yerr=NRQerror, ecolor='k',
+                            label=str(g), align='center')
             self.nplotGene += 1
 
 # Ech vs Gene
         elif self.cboxSens.currentIndex() == 1:
-            ind = 0
-            for plname in self.project.dicoPlates.keys():
-                pl = self.project.dicoPlates[plname]
-                for ech in self.project.hashEch.keys():
-                    if ech != '' and pl.dicoEch.has_key(ech):
-                        listNRQ = [] ; listNRQerror = [] ; valx = []
-                        if self.project.hashEch[ech].enabled == Qt.Checked:
-                            localDict = self.project.dicoTriplicat[plname].getColumn(ech)
-                            for gene in self.project.hashGene.values()[1:]:
-                                if gene.enabled == Qt.Checked:
-                                    if localDict.has_key(gene.name):
-                                        listNRQ.append(localDict[gene.name].NRQ)
-                                        listNRQerror.append(localDict[gene.name].NRQerror)
-                                        if not dicoAbs.has_key(str(gene.name)):
-                                            dicoAbs[str(gene.name)] = self.project.hashGene.index(gene.name)*spacing
-                                        else:
-                                            dicoAbs[str(gene.name)] += width
-                                        valx.append(dicoAbs[str(gene.name)])
-
-                            color = self.project.hashEch[ech].color.name()
-                            p = self.mplCanUnknown.axes.bar(valx, 
-                                    listNRQ, width, color=str(color), 
-                                    yerr=listNRQerror, ecolor='k',
-                                    label=str(ech), align='center')
-                            ind += 1
+            self.project.findBars(width, spacing, 'echGene')
+            for ech in self.project.hashEch.keys()[1:]:
+                NRQ = [] ; NRQerror = [] ; valx = []
+                for g in self.project.hashGene.keys()[1:]:
+                    for pl in self.project.dicoPlates.keys():
+                        if self.project.dicoTriplicat[pl].has_key(g) and \
+                          self.project.hashGene[g].enabled == Qt.Checked and \
+                          self.project.dicoTriplicat[pl][g].has_key(ech) and \
+                          self.project.hashEch[ech].enabled == Qt.Checked:
+                            NRQ.append(\
+                                  self.project.dicoTriplicat[pl][g][ech].NRQ)
+                            NRQerror.append(\
+                                  self.project.dicoTriplicat[pl][g][ech].NRQerror)
+                            valx.append(self.project.barWidth[g])
+                            self.project.barWidth[g] += width
+                color = self.project.hashEch[ech].color.name()
+                if len(valx) != 0:
+                    p = self.mplCanUnknown.axes.bar(valx, 
+                            NRQ, width, color=str(color), 
+                            yerr=NRQerror, ecolor='k',
+                            label=str(ech), align='center')
             self.nplotEch += 1
 
 # plot

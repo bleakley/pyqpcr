@@ -356,21 +356,34 @@ class Project:
             self.hashGene[geneName].setEff(eff)
             self.hashGene[geneName].setPm(stdeff)
 
-    def findBars(self, width, spacing):
+    def findBars(self, width, spacing, sens='geneEch'):
+        """
+        Fonction qui determine le nb de barres dans chaque categorie
+        (gene, ech) en vue du trace. Le dictionnaire barWidth est d'abord
+        rempli du nombre de barre:
+           ex. barWidth[ctrl] = 8
+        Puis a partir de la, on trouve les abscisses correspondantes.
+        """
         leftMargin = 0.1
         self.barWidth = OrderedDict()
         self.barXticks = OrderedDict()
-        for g in self.hashGene.keys():
-            for pl in self.dicoPlates.keys():
-                if self.dicoTriplicat[pl].has_key(g) and \
-                        self.hashGene[g].enabled == Qt.Checked:
-                    for ech in self.hashEch.keys():
-                        if self.dicoTriplicat[pl][g].has_key(ech) and \
-                                self.hashEch[ech].enabled == Qt.Checked:
+        for g in self.hashGene.keys()[1:]:
+            for ech in self.hashEch.keys()[1:]:
+                for pl in self.dicoPlates.keys():
+                    if self.dicoTriplicat[pl].has_key(g) and \
+                            self.hashGene[g].enabled == Qt.Checked and \
+                            self.dicoTriplicat[pl][g].has_key(ech) and \
+                            self.hashEch[ech].enabled == Qt.Checked:
+                        if sens == 'geneEch':
                             if self.barWidth.has_key(ech):
                                 self.barWidth[ech] += 1
                             else:
                                 self.barWidth[ech] = 1
+                        elif sens == 'echGene':
+                            if self.barWidth.has_key(g):
+                                self.barWidth[g] += 1
+                            else:
+                                self.barWidth[g] = 1
         nbar = array(self.barWidth.values())
         largeur = nbar*width+spacing
         i = 0
