@@ -19,6 +19,7 @@
 
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
+import pyQPCR.qrc_resources
 from pyQPCR.utils.odict import *
 
 __author__ = "$Author$"
@@ -33,19 +34,30 @@ class NewProjectDialog(QDialog):
         self.fileNames = OrderedDict()
         QDialog.__init__(self, parent)
 
-        lab1 = QLabel("1. &Project name")
+        lab1 = QLabel("<b>1. &Project name</b>")
         self.edt = QLineEdit()
         lab1.setBuddy(self.edt)
 
-        lab2 = QLabel("2. &Machine type")
+        lab2 = QLabel("<b>2. &Machine type</b>")
         cbox = QComboBox()
         lab2.setBuddy(cbox)
         cbox.addItem("Eppendorf")
 
-        lab3 = QLabel("3. Plates files")
+        lab3 = QLabel("<b>3. Plates files</b>")
         self.listFiles = QListWidget()
         self.listFiles.setAlternatingRowColors(True)
         self.listFiles.setSelectionMode(3)
+
+        lab4 = QLabel("<b>4. Destination file</b>")
+        self.file = QLineEdit()
+        lab1.setBuddy(self.file)
+        self.file.setReadOnly(True)
+        btn = QToolButton()
+        ic = QIcon(":/fileopen")
+        btn.setIcon(ic)
+        hLay2 = QHBoxLayout()
+        hLay2.addWidget(self.file)
+        hLay2.addWidget(btn)
 
         btnAdd = QPushButton("&Add")
         btnRemove = QPushButton("&Remove")
@@ -67,6 +79,8 @@ class NewProjectDialog(QDialog):
         finalLayout.addWidget(cbox)
         finalLayout.addWidget(lab3)
         finalLayout.addLayout(hLay)
+        finalLayout.addWidget(lab4)
+        finalLayout.addLayout(hLay2)
         finalLayout.addWidget(buttonBox)
 
         self.setLayout(finalLayout)
@@ -75,6 +89,8 @@ class NewProjectDialog(QDialog):
         self.connect(buttonBox, SIGNAL("rejected()"), self, SLOT("reject()"))
         self.connect(btnAdd, SIGNAL("clicked()"), self.addPlate)
         self.connect(btnRemove, SIGNAL("clicked()"), self.removePlate)
+        self.connect(btn, SIGNAL("clicked()"), self.setFilePath)
+
         self.setWindowTitle("New project")
 
     def populateList(self):
@@ -105,12 +121,22 @@ class NewProjectDialog(QDialog):
         if self.edt.text() == '':
             QMessageBox.warning(self, "No project name",
                "<b>Warning</b>: you must give a project name ! " )
+        elif self.file.text() == '':
+            QMessageBox.warning(self, "No project directory",
+               "<b>Warning</b>: you must choose a directory for the project ! " )
         else:
             if self.edt.text().endsWith('xml') or self.edt.text().endsWith('XML'):
-                self.projectName = self.edt.text()
+                projectName = self.edt.text()
             else:
-                self.projectName = QString("%s.xml" % self.edt.text())
+                projectName = QString("%s.xml" % self.edt.text())
+            self.projectName = "%s/%s" % (self.workDir, projectName)
             QDialog.accept(self)
+
+    def setFilePath(self):
+        dir = QFileDialog.getExistingDirectory(self, 'Choose the directory')
+        if dir:
+            self.workDir = dir
+            self.file.setText(self.workDir)
 
 
 if __name__=="__main__":

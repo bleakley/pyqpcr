@@ -463,10 +463,10 @@ class Qpcr_qt(QMainWindow):
             self.cleanBeforeOpen()
             self.project = Project(dialog.projectName)
             self.projectStack.append(copy.deepcopy(self.project))
-            for fname in dialog.fileNames.values():
-                self.addPlate(fname)
             self.filename = dialog.projectName
             self.setWindowTitle("pyQPCR - %s[*]" % QFileInfo(self.filename).fileName())
+            for fname in dialog.fileNames.values():
+                self.addPlate(fname)
 
     def fileImport(self):
         dir = os.path.dirname(self.filename) if self.filename is not None \
@@ -588,6 +588,7 @@ class Qpcr_qt(QMainWindow):
         cbox.addItems(items)
 
     def fileSave(self):
+        self.addRecentFile(fname)
         self.project.exportXml(self.filename)
         self.updateStatus("Saved %s" % self.filename)
         self.project.unsaved = False
@@ -600,7 +601,6 @@ class Qpcr_qt(QMainWindow):
                 "pyQPCR - Save a file", fname,
                 "Result files (%s)" % " ".join(formats)))
         if fname:
-            self.addRecentFile(fname)
             self.setWindowTitle("pyQPCR - %s[*]" % QFileInfo(fname).fileName())
             self.filename = fname
             self.fileSave()
