@@ -178,6 +178,9 @@ class EchDialog(QDialog):
                         for well in pl.dicoEch[ech.name]:
                             well.setEch(Ech(''))
                         pl.setDicoEch()
+
+                    if pl.echRef == ech.name:
+                        pl.echRef = ''
                 self.project.hashEch.__delitem__(ech.name)
             self.project.unsaved = True
             self.populateList()
