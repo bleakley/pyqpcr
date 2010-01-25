@@ -129,32 +129,35 @@ class EchDialog(QDialog):
                 if dialog.whichPlates.currentText() == QString('All Plates'):
                     for pl in self.project.dicoPlates.values():
                         pl.echRef = name
-                    for ech in self.project.hashEch.values():
-                        if ech.isRef == Qt.Checked and ech.name != name:
-                            ech.setRef(Qt.Unchecked)
+                    for e in self.project.hashEch.values():
+                        if e.isRef == Qt.Checked and e.name != name:
+                            e.setRef(Qt.Unchecked)
 
                 else:
                     currentPlate = dialog.whichPlates.currentText()
                     pl = self.project.dicoPlates[currentPlate]
                     pl.echRef = name
                     for echName in pl.dicoEch.keys():
-                        ech = self.project.hashEch[echName]
-                        if ech.isRef == Qt.Checked and ech.name != name:
-                            ech.setRef(Qt.Unchecked)
+                        e = self.project.hashEch[echName]
+                        if e.isRef == Qt.Checked and e.name != name:
+                            e.setRef(Qt.Unchecked)
 # dico
+            ind = None
             for pl in self.project.dicoPlates.values():
                 if pl.dicoEch.has_key(ech_before) and ech_before != name:
                     ind = pl.dicoEch.index(ech_before)
                     pl.dicoEch.insert(ind, name, pl.dicoEch[ech_before])
                     ind = self.project.hashEch.index(ech_before)
-                    self.project.hashEch.insert(ind, name,
-                                                self.project.hashEch[ech_before])
 
-                    for well in pl.dicoEch[ech_before]:
+                    for well in pl.dicoEch[name]:
                         well.setEch(ech)
                     pl.dicoEch.__delitem__(ech_before)
-                    self.project.hashEch.__delitem__(ech_before)
-                    self.project.unsaved = True
+
+            if ind is not None:
+                self.project.hashEch.insert(ind, name,
+                                            self.project.hashEch[ech_before])
+                self.project.hashEch.__delitem__(ech_before)
+                self.project.unsaved = True
             self.populateList()
 
     def remove(self):

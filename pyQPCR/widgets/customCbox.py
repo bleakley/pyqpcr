@@ -19,7 +19,6 @@
 
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
-#from pyQPCR.wellGeneSample import *
 import pyQPCR.qrc_resources
 
 __author__ = "$Author$"

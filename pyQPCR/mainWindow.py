@@ -440,13 +440,14 @@ class Qpcr_qt(QMainWindow):
             self.cleanBeforeOpen()
 
             self.project = Project(fname)
+
             for key in self.project.dicoPlates.keys():
                 pl = self.project.dicoPlates[key]
                 self.appendPlate(pl, key)
                 self.appendResult(pl, key)
 
 # Pile de plaques pour le Undo/Redo
-            #self.projectStack.append(copy.deepcopy(self.plaque))
+            self.projectStack.append(copy.deepcopy(self.project))
             self.populateTree()
             self.populateCbox(self.geneComboBox, self.project.hashGene, "Target")
             self.populateCbox(self.echComboBox, self.project.hashEch, "Sample")
@@ -461,6 +462,7 @@ class Qpcr_qt(QMainWindow):
         if dialog.exec_():
             self.cleanBeforeOpen()
             self.project = Project(dialog.projectName)
+            self.projectStack.append(copy.deepcopy(self.project))
             for fname in dialog.fileNames.values():
                 self.addPlate(fname)
             self.filename = dialog.projectName
