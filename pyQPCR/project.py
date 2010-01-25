@@ -293,7 +293,6 @@ class Project:
                     for well in self.dicoTriplicat[pl][g][ech].listePuits:
                         well.setNRQerror(NRQerror)
 
-
     def findStd(self, ectMax, confidence, errtype):
         """
         This method allows to build a dictionnary for standard
@@ -356,6 +355,31 @@ class Project:
             # qui servent a remplir les comboBox
             self.hashGene[geneName].setEff(eff)
             self.hashGene[geneName].setPm(stdeff)
+
+    def findBars(self, width, spacing):
+        leftMargin = 0.1
+        self.barWidth = OrderedDict()
+        self.barXticks = OrderedDict()
+        for g in self.hashGene.keys():
+            for pl in self.dicoPlates.keys():
+                if self.dicoTriplicat[pl].has_key(g) and \
+                        self.hashGene[g].enabled == Qt.Checked:
+                    for ech in self.hashEch.keys():
+                        if self.dicoTriplicat[pl][g].has_key(ech) and \
+                                self.hashEch[ech].enabled == Qt.Checked:
+                            if self.barWidth.has_key(ech):
+                                self.barWidth[ech] += 1
+                            else:
+                                self.barWidth[ech] = 1
+        nbar = array(self.barWidth.values())
+        largeur = nbar*width+spacing
+        i = 0
+        for e in self.barWidth.keys():
+            self.barWidth[e] = largeur[:i].sum() + leftMargin
+# matplotlib veut des str et non des QString
+            self.barXticks[str(e)] = largeur[:i].sum() + \
+                                     leftMargin +(nbar[i]-1.)*width/2.
+            i += 1
 
 
 if __name__ == "__main__":
