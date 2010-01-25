@@ -242,66 +242,6 @@ class Plaque:
             self.echRef = self.listEch[ind]
             self.listEch[ind].setRef(Qt.Checked)
 
-    def findTriplicat(self, ectMax, confidence, errtype):
-# Elimination du gene avec la chaine vide puis calcul du ctref
-        for g in self.listGene[1:]:
-            if self.dicoGene.has_key(g.name):
-                g.calcCtRef(self.dicoGene[g.name])
-                for well in self.dicoGene[g.name]:
-                    well.setGene(g)
-        self.dicoTrip = RaggedArray2D()
-        for key in self.dicoGene.keys():
-            dicoEch = RaggedArray2D()
-            for well in self.dicoGene[key]:
-                if well.type == QString('unknown') and well.enabled == True:
-                    if dicoEch.has_key(well.ech.name):
-                        dicoEch[well.ech.name].append(well)
-                    else:
-                        dicoEch[well.ech.name] = [well]
-# Suppression de la chaine vide
-            if dicoEch.has_key(""):
-                dicoEch.pop("")
-            for ech in dicoEch.keys():
-                trip = Replicate(dicoEch[ech], ectMax=ectMax, 
-                                 confidence=confidence, errtype=errtype)
-                if not hasattr(trip, "ctdev"):
-                    # if ctdev undefined raise an exception
-                    raise ValueError
-                trip.calcDCt()
-                dicoEch[ech] = trip
-                self.dicoTrip[key] = dicoEch
-            
-    def calcNRQ(self):
-        for g in self.dicoTrip.keys():
-            for ech in self.dicoTrip[g].keys():
-# Calcul de NRQ et rajout comme argument a chaque triplicat
-                NRQ = self.dicoTrip[g][ech].RQ/ \
-                    self.dicoTrip[g][self.echRef.name].RQ* \
-                    self.dicoTrip[self.geneRef.name][self.echRef.name].RQ/ \
-                    self.dicoTrip[self.geneRef.name][ech].RQ
-                self.dicoTrip[g][ech].setNRQ(NRQ)
-                self.dicoTrip[g][ech].calcRQerror()
-                for well in self.dicoTrip[g][ech].listePuits:
-                    well.setNRQ(NRQ)
-# Calcul de NRQerror et rajout comme argument a chaque triplicat
-        for g in self.dicoTrip.keys():
-            for ech in self.dicoTrip[g].keys():
-                NRQerror = self.dicoTrip[g][ech].NRQ  \
-                        * sqrt((self.dicoTrip[self.geneRef.name][ech].RQerror \
-                        / self.dicoTrip[self.geneRef.name][ech].RQ)**2 \
-                        + (self.dicoTrip[g][ech].RQerror \
-                        / self.dicoTrip[g][ech].RQ)**2 
-# Rajout de 2 termes supplementaires avec notre definition de NRQ
-                        + (self.dicoTrip[g][self.echRef.name].RQerror \
-                        / self.dicoTrip[g][self.echRef.name].RQ)**2
-                        + (self.dicoTrip[self.geneRef.name][self.echRef.name].RQerror \
-                        / self.dicoTrip[self.geneRef.name][self.echRef.name].RQ)**2)
-                self.dicoTrip[g][ech].setNRQerror(NRQerror)
-                for well in self.dicoTrip[g][ech].listePuits:
-                    well.setNRQerror(NRQerror)
-
-
-
 
 class Replicate(QDialog):
 
