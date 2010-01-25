@@ -1061,9 +1061,19 @@ class Qpcr_qt(QMainWindow):
                 QMessageBox.warning(self, "Warning",
                     "Reference target undefined for plate %s!" % plname)
                 raise ValueError
+            elif not pl.dicoGene.has_key(pl.geneRef):
+                QMessageBox.warning(self, "Warning",
+                    """Wrong reference target for plate %s!
+                       This plate does not contain %s.""" % (plname, pl.geneRef))
+                raise ValueError
             if pl.echRef == '':
                 QMessageBox.warning(self, "Warning",
                     "Reference sample undefined for plate %s!" % plname)
+                raise ValueError
+            elif not pl.dicoEch.has_key(pl.echRef):
+                QMessageBox.warning(self, "Warning",
+                    """Wrong reference sample for plate %s!
+                       This plate does not contain %s.""" % (plname, pl.echRef))
                 raise ValueError
 
     def computeUnknown(self):
