@@ -188,6 +188,9 @@ class GeneDialog(QDialog):
                         for well in pl.dicoGene[gene.name]:
                             well.setGene(Gene(''))
                             pl.setDicoGene()
+
+                    if pl.geneRef == gene.name:
+                        pl.geneRef = ''
                 self.project.hashGene.__delitem__(gene.name)
             self.populateList()
             self.project.unsaved = True
