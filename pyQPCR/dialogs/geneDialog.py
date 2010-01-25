@@ -134,33 +134,36 @@ class GeneDialog(QDialog):
                 if dialog.whichPlates.currentText() == QString('All Plates'):
                     for pl in self.project.dicoPlates.values():
                         pl.geneRef = name
-                    for gene in self.project.hashGene.values():
-                        if gene.isRef == Qt.Checked and gene.name != name:
-                            gene.setRef(Qt.Unchecked)
+                    for g in self.project.hashGene.values():
+                        if g.isRef == Qt.Checked and g.name != name:
+                            g.setRef(Qt.Unchecked)
 # sinon, tous les autres genes de cette plaque passent a non ref
                 else:
                     currentPlate = dialog.whichPlates.currentText()
                     pl = self.project.dicoPlates[currentPlate]
                     pl.geneRef = name
                     for geneName in pl.dicoGene.keys():
-                        gene = self.project.hashGene[geneName]
-                        if gene.isRef == Qt.Checked and gene.name != name:
-                            gene.setRef(Qt.Unchecked)
+                        g = self.project.hashGene[geneName]
+                        if g.isRef == Qt.Checked and g.name != name:
+                            g.setRef(Qt.Unchecked)
 
 # dico
+            ind = None
             for pl in self.project.dicoPlates.values():
                 if pl.dicoGene.has_key(gene_before) and gene_before != name:
                     ind = pl.dicoGene.index(gene_before)
                     pl.dicoGene.insert(ind, name, pl.dicoGene[gene_before])
                     ind = self.project.hashGene.index(gene_before)
-                    self.project.hashGene.insert(ind, name,
-                                                self.project.hashGene[gene_before])
 
-                    for well in pl.dicoGene[gene_before]:
+                    for well in pl.dicoGene[name]:
                         well.setGene(gene)
                     pl.dicoGene.__delitem__(gene_before)
-                    self.project.hashGene.__delitem__(gene_before)
-                    self.project.unsaved = True
+
+            if ind is not None:
+                self.project.hashGene.insert(ind, name,
+                                            self.project.hashGene[gene_before])
+                self.project.hashGene.__delitem__(gene_before)
+                self.project.unsaved = True
             self.populateList()
 
     def remove(self):
