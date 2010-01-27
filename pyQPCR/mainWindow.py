@@ -466,6 +466,7 @@ class Qpcr_qt(QMainWindow):
             self.filename = dialog.projectName
             self.setWindowTitle("pyQPCR - %s[*]" % QFileInfo(self.filename).fileName())
             for fname in dialog.fileNames.values():
+                print fname
                 self.addPlate(fname)
 
     def fileImport(self):
@@ -588,7 +589,6 @@ class Qpcr_qt(QMainWindow):
         cbox.addItems(items)
 
     def fileSave(self):
-        self.addRecentFile(fname)
         self.project.exportXml(self.filename)
         self.updateStatus("Saved %s" % self.filename)
         self.project.unsaved = False
