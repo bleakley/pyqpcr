@@ -225,7 +225,6 @@ class Plaque:
             else:
                 self.dicoEch[nomech] = [well]
 
-
     def getRefsFromFile(self):
         """
         This methods allows to determine both the Gene of Interest and
