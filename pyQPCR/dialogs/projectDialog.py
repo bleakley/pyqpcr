@@ -21,6 +21,7 @@ from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 import pyQPCR.qrc_resources
 from pyQPCR.utils.odict import *
+import os
 
 __author__ = "$Author$"
 __date__ = "$Date$"
@@ -48,7 +49,7 @@ class NewProjectDialog(QDialog):
         self.listFiles.setAlternatingRowColors(True)
         self.listFiles.setSelectionMode(3)
 
-        lab4 = QLabel("<b>4. Destination file</b>")
+        lab4 = QLabel("<b>4. Destination directory</b>")
         self.file = QLineEdit()
         lab1.setBuddy(self.file)
         self.file.setReadOnly(True)
@@ -130,7 +131,12 @@ class NewProjectDialog(QDialog):
             else:
                 projectName = QString("%s.xml" % self.edt.text())
             self.projectName = "%s/%s" % (self.workDir, projectName)
-            QDialog.accept(self)
+            if os.path.exists(self.projectName):
+                QMessageBox.warning(self, "This project already exists",
+                  """<b>Warning</b>: you must choose a project name that
+                     does not exists. %s is already used""" % projectName)
+            else:
+                QDialog.accept(self)
 
     def setFilePath(self):
         dir = QFileDialog.getExistingDirectory(self, 'Choose the directory')
