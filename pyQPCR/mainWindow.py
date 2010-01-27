@@ -1240,12 +1240,8 @@ class Qpcr_qt(QMainWindow):
             t.set_fontsize(size)
         for ytick in self.mplCanUnknown.axes.get_yticklabels():
             ytick.set_fontsize(size)
-        #leftMargin = 0.2
-        #rightmargin = 0.5
-        #legendHeight = leg.get_frame().get_height()
-        #legendWidth = 0.2 * (dicoAbs.values()[-1] - initloc[0])
-        #self.mplCanUnknown.axes.set_xlim((initloc[0]-initloc[0]*leftMargin, 
-                       #dicoAbs.values()[-1]+legendWidth+ rightmargin))
+        legendWidth = 0.3 * valx[-1]
+        self.mplCanUnknown.axes.set_xlim((0., valx[-1]+legendWidth))
         self.mplCanUnknown.draw()
 
     def plotStd(self):
