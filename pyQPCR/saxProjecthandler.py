@@ -105,7 +105,7 @@ class SaxProjectHandler(QXmlDefaultHandler):
         return True
 
     def fatalError(self, exception):
-        self.error = "parse error at line {0} column {1}: {2}".format(
+        self.error = "parse error at line %d column %d: %s" % (
                 exception.lineNumber(), exception.columnNumber(),
                 exception.message())
         return False
