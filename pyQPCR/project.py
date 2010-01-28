@@ -89,11 +89,11 @@ class Project:
                 raise IOError, unicode(fh.errorString())
             stream = QTextStream(fh)
             stream.setCodec(CODEC)
-            stream << ("<?xml version='1.0' encoding='{0}'?>\n"
+            stream << ("<?xml version='1.0' encoding='%s'?>\n"
                        "<!DOCTYPE QPCR>\n"
-                       "<QPCR VERSION='1.0'>\n".format(CODEC))
+                       "<QPCR VERSION='1.0'>\n" % CODEC)
             for key in self.dicoPlates.keys():
-                stream << ("<PLATE NAME='{0}'>\n".format(key))
+                stream << ("<PLATE NAME='%s'>\n" % key)
                 stream << ("<REFTARGET NAME='%s'></REFTARGET>\n") % \
                         self.dicoPlates[key].geneRef
                 stream << ("<REFSAMPLE NAME='%s'></REFSAMPLE>\n") % \
@@ -103,7 +103,7 @@ class Project:
                 stream << "</PLATE>\n"
             stream << "</QPCR>\n"
         except (IOError, OSError), e:
-            error = "Failed to export: {0}".format(e)
+            error = "Failed to export: %s" % e
         finally:
             if fh is not None:
                 fh.close()
