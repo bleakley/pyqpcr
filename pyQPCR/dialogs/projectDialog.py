@@ -130,7 +130,8 @@ class NewProjectDialog(QDialog):
                 projectName = self.edt.text()
             else:
                 projectName = QString("%s.xml" % self.edt.text())
-            self.projectName = "%s/%s" % (self.workDir, projectName)
+# Gestion du / ou du \ selon l'OS utilise avec os.sep
+            self.projectName = "%s%s%s" % (self.workDir, os.sep, projectName)
             if os.path.exists(self.projectName):
                 QMessageBox.warning(self, "This project already exists",
                   """<b>Warning</b>: you must choose a project name that
