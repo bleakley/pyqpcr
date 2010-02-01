@@ -219,7 +219,8 @@ class Puits:
             NRQerror = ''
 
         st ="<WELL CT='%s' CTMEAN='%s' CTDEV='%s' " % (ct, ctmean, ctdev)
-        st += "AMOUNT='%s' NRQ='%s' NRQERROR='%s'>\n" % (amount, NRQ, NRQerror)
+        st += "AMOUNT='%s' NRQ='%s' NRQERROR='%s' " % (amount, NRQ, NRQerror)
+        st += "ENABLED='%i' >\n" % self.enabled.real
         st += "<NAME>%s</NAME>\n" % self.name
         st += "<TYPE>%s</TYPE>\n" % self.type
         st += "<TARGET EFF='%s' PM='%s'>%s</TARGET>\n" % \

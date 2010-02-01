@@ -33,6 +33,12 @@ def fltFromQStr(qstr):
     else:
         return qstr
 
+def logicalFromQStr(qstr):
+    if qstr == '' or int(qstr) == 1:
+        return True
+    else:
+        return False
+
 class SaxProjectHandler(QXmlDefaultHandler):
 
     def __init__(self, project):
@@ -50,7 +56,7 @@ class SaxProjectHandler(QXmlDefaultHandler):
             self.ctmean = fltFromQStr(attributes.value("CTMEAN"))
             self.ctdev = fltFromQStr(attributes.value("CTDEV"))
             self.amount = fltFromQStr(attributes.value("AMOUNT"))
-            #self.amount = attributes.value("AMOUNT")
+            self.enabled = logicalFromQStr(attributes.value("ENABLED"))
             self.NRQ = fltFromQStr(attributes.value("NRQ"))
             self.NRQerror = fltFromQStr(attributes.value("NRQERROR"))
         elif qName == "TARGET":
@@ -88,6 +94,7 @@ class SaxProjectHandler(QXmlDefaultHandler):
             self.well.setAmount(self.amount)
             self.well.setNRQ(self.NRQ)
             self.well.setNRQerror(self.NRQerror)
+            self.well.setEnabled(self.enabled)
             setattr(self.pl, self.well.name, self.well)
             self.pl.listePuits.append(self.well)
         elif qName == "TYPE":
