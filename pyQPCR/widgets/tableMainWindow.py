@@ -41,12 +41,6 @@ class PlateWidget(QTableWidget):
             self.verticalHeader().setResizeMode(j, QHeaderView.Stretch)
         self.setEditTriggers(QTableWidget.NoEditTriggers)
 
-#        self.connect(self, SIGNAL("cellDoubleClicked(int,int)"),
-#                     self.editWell)
-
-    def editWell(self):
-        print "coucou"
-
     def clear(self):
         QTableWidget.clear(self)
         self.setVerticalHeaderLabels(self.tableLabels)

@@ -466,7 +466,6 @@ class Qpcr_qt(QMainWindow):
             self.filename = dialog.projectName
             self.setWindowTitle("pyQPCR - %s[*]" % QFileInfo(self.filename).fileName())
             for fname in dialog.fileNames.values():
-                print fname
                 self.addPlate(fname)
 
     def fileImport(self):
