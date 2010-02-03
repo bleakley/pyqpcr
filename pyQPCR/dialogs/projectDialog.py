@@ -47,7 +47,7 @@ class NewProjectDialog(QDialog):
         lab3 = QLabel("<b>3. Plates files</b>")
         self.listFiles = QListWidget()
         self.listFiles.setAlternatingRowColors(True)
-        self.listFiles.setSelectionMode(3)
+        self.listFiles.setSelectionMode(QAbstractItemView.ExtendedSelection)
 
         lab4 = QLabel("<b>4. Destination directory</b>")
         self.file = QLineEdit()

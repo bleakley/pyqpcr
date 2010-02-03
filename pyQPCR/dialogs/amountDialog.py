@@ -36,7 +36,7 @@ class AmountDialog(QDialog):
 
         self.listWidget = QListWidget()
         self.listWidget.setAlternatingRowColors(True)
-        self.listWidget.setSelectionMode(3)
+        self.listWidget.setSelectionMode(QAbstractItemView.ExtendedSelection)
 
         if project is not None:
             self.project = copy.deepcopy(project)
@@ -94,6 +94,8 @@ class AmountDialog(QDialog):
                             "The amount %s is already defined !" % amname)
 
     def edit(self):
+        if len(self.listWidget.selectedItems()) == 0:
+            return
         am_before = self.listWidget.currentItem().statusTip()
 
         dialog = AddAmDialog(self, am=am_before)

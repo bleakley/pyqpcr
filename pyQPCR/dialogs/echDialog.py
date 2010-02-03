@@ -36,7 +36,7 @@ class EchDialog(QDialog):
 
         self.listWidget = QListWidget()
         self.listWidget.setAlternatingRowColors(True)
-        self.listWidget.setSelectionMode(3)
+        self.listWidget.setSelectionMode(QAbstractItemView.ExtendedSelection)
 
         if project is not None:
             self.project = copy.deepcopy(project)
@@ -110,6 +110,8 @@ class EchDialog(QDialog):
                         "The sample %s is already defined !" % ech)
 
     def edit(self):
+        if len(self.listWidget.selectedItems()) == 0:
+            return
         ech_before = self.listWidget.currentItem().statusTip()
         ech = self.project.hashEch[ech_before]
         dialog = AddEchDialog(self, ech=ech, 

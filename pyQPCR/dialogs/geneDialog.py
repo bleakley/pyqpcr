@@ -35,7 +35,7 @@ class GeneDialog(QDialog):
 
         self.listWidget = QListWidget()
         self.listWidget.setAlternatingRowColors(True)
-        self.listWidget.setSelectionMode(3)
+        self.listWidget.setSelectionMode(QAbstractItemView.ExtendedSelection)
         if project is not None:
             self.project = copy.deepcopy(project)
             self.populateList()
@@ -114,6 +114,8 @@ class GeneDialog(QDialog):
                         "The gene %s is already defined !" % nomgene)
 
     def edit(self):
+        if len(self.listWidget.selectedItems()) == 0:
+            return
         gene_before = self.listWidget.currentItem().statusTip()
         gene = self.project.hashGene[gene_before]
         dialog = AddGeneDialog(self, ge=gene, 
