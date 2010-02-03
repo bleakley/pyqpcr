@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version='2.0'>
-<xsl:output method='xml' indent="yes"/>
+<xsl:output method='html' indent="yes"/>
 
 <xsl:template match='QPCR'>
   <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
