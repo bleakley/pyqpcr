@@ -1,9 +1,13 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version='2.0'>
-<xsl:output method='html' indent="yes"/>
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version='2.0'
+                xmlns="http://www.w3.org/1999/xhtml">
+<xsl:output 
+      doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN"
+      doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"
+      method='html' indent="yes" encoding='UTF-8'/>
 
 <xsl:template match='QPCR'>
-  <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+  <html lang="en">
 
     <head>
       <title> qPCR results </title>
