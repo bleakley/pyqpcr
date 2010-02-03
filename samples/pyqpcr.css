@@ -1,0 +1,6 @@
+h1 { text-align: center; color: white; background: orange !important; }
+h2 { text-align: center; color: white; background: green !important; }
+table { padding: 2; table-layout: fixed; width: 100%; border-spacing: 0;}
+td, th { background-position: center; border: 1px solid black;}
+th.th_title{ background: #ffffe0;}
+th.th_inside{ font-size: 90%;}
