@@ -1235,13 +1235,9 @@ class Qpcr_qt(QMainWindow):
                                                 fontsize=size)
         self.mplCanUnknown.axes.set_ylim(ymin=0.)
 # Legend + xlim
-        leg = self.mplCanUnknown.axes.legend(loc='upper right', 
+        self.leg = self.mplCanUnknown.axes.legend(loc='upper right', 
                               shadow=True, labelspacing=0.005)
-# Fontsize and legend texts
-        for t in leg.get_texts():
-            t.set_fontsize(size)
-        for ytick in self.mplCanUnknown.axes.get_yticklabels():
-            ytick.set_fontsize(size)
+        self.changeFontsize()
         legendWidth = 0.3 * valx[-1]
         self.mplCanUnknown.axes.set_xlim((0., valx[-1]+legendWidth))
         self.mplCanUnknown.draw()
@@ -1289,6 +1285,8 @@ class Qpcr_qt(QMainWindow):
         A method to change the matplotlib axes font sizes.
         """
         size = int(self.cboxFontsize.value())
+        for t in self.leg.get_texts():
+            t.set_fontsize(size)
         for ytick in self.mplCanUnknown.axes.get_yticklabels():
             ytick.set_fontsize(size)
         for xtick in self.mplCanUnknown.axes.get_xticklabels():
