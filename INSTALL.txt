@@ -6,15 +6,18 @@ Dependencies
 
 Before installing pyQPCR, you need to have these libraries:
 
- * PyQt 4.1 with Qt 4.2 or newer
+ * PyQt 4.3 with Qt 4.2 or newer
    http://www.riverbankcomputing.co.uk/pyqt/
    http://www.trolltech.com/products/qt/
 
- * python-matplotlib 0.91 or newer
+ * python-matplotlib 0.98 or newer
    http://matplotlib.sourceforge.net/
 
  * numpy 1.1 or newer
    http://numpy.scipy.org/
+
+ * scipy 0.7 or newer
+   http://www.scipy.org
 
 Running From the Source Tree
 ----------------------------
