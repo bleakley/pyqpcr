@@ -845,6 +845,9 @@ class Qpcr_qt(QMainWindow):
 #
         for key in self.project.dicoPlates.keys():
             pl = self.project.dicoPlates[key]
+            if not self.pileTables.has_key(key):
+                self.appendPlate(pl, key)
+                self.appendResult(pl, key)
             self.pileTables[key].populateTable(pl)
             self.pileResults[key].populateResult(pl)
         self.populateTree()
