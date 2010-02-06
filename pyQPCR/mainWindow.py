@@ -1180,6 +1180,7 @@ class Qpcr_qt(QMainWindow):
         dicoAbs = OrderedDict()
 
 # Gene vs Ech
+        valmax = 0
         if self.cboxSens.currentIndex() == 0:
             self.project.findBars(width, spacing, 'geneEch')
             for g in self.project.hashGene.keys()[1:]:
@@ -1202,6 +1203,7 @@ class Qpcr_qt(QMainWindow):
                             NRQ, width, color=str(color), 
                             yerr=NRQerror, ecolor='k',
                             label=str(g), align='center')
+                    valmax = max(valmax, max(valx))
             self.nplotGene += 1
 
 # Ech vs Gene
@@ -1227,6 +1229,7 @@ class Qpcr_qt(QMainWindow):
                             NRQ, width, color=str(color), 
                             yerr=NRQerror, ecolor='k',
                             label=str(ech), align='center')
+                    valmax = max(valmax, max(valx))
             self.nplotEch += 1
 
 # plot
@@ -1238,8 +1241,8 @@ class Qpcr_qt(QMainWindow):
         self.leg = self.mplCanUnknown.axes.legend(loc='upper right', 
                               shadow=True, labelspacing=0.005)
         self.changeFontsize()
-        legendWidth = 0.3 * valx[-1]
-        self.mplCanUnknown.axes.set_xlim((0., valx[-1]+legendWidth))
+        legendWidth = 0.3 * valmax
+        self.mplCanUnknown.axes.set_xlim((0., valmax+legendWidth))
         self.mplCanUnknown.draw()
 
     def plotStd(self):
