@@ -301,7 +301,8 @@ class Qpcr_qt(QMainWindow):
         editMenu.addSeparator()
         self.addActions(editMenu, (self.undoAction, self.redoAction))
         editMenu.addSeparator()
-        self.addActions(editMenu, (self.addEchAction, self.addGeneAction))
+        self.addActions(editMenu, (self.addEchAction, self.addGeneAction,
+                                   self.addAmAction))
         calculMenu = self.menuBar().addMenu("&Computations")
         self.addActions(calculMenu, (self.enableAction, self.disableAction,
                                   None, self.plotStdAction, self.plotAction))
