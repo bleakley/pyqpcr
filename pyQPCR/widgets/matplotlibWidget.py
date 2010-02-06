@@ -31,12 +31,32 @@ __version__ = "$Rev$"
 
 
 class MatplotlibWidget(FigureCanvas):
+    """
+    This class allows to define a MatplotlibWidget as a classical
+    PyQt widget and use it in QDialog or QMainWindow (as any other
+    widget).
+
+    @ivar fig: the matplotlib figure
+    @type fig: matplotlib.figure.Figure
+    @ivar axes: the matplotlib axes
+    @type axes: matplotlib.axes.AxesSubplot
+    """
 
     def __init__(self, parent=None, width=5, height=4, dpi=100):
+        """
+        Constructor of the matplotlib widget
+
+        @param parent: the parent QWidget
+        @type parent: PyQt4.QtGui.QWidget
+        @param width: the width of the widget
+        @type width: float
+        @param height: the height of the widget
+        @type height: float
+        @param dpi: the DPI of the matplotlib widget
+        @type dpi: int
+        """
         self.fig = Figure(figsize=(width, height), dpi=dpi)
         self.axes = self.fig.add_subplot(111)
-        # We don't want the axes cleared every time plot() is called
-        #self.axes.hold(True)
 
         FigureCanvas.__init__(self, self.fig)
         self.setParent(parent)
@@ -46,22 +66,42 @@ class MatplotlibWidget(FigureCanvas):
         FigureCanvas.updateGeometry(self)
 
     def sizeHint(self):
+        """
+        size hint of the new MatplotlibWidget
+        """
         w, h = self.get_width_height()
         return QSize(w, h)
 
     def minimumSizeHint(self):
+        """
+        minimum size hint of the new MatplotlibWidget
+        """
         return QSize(10, 10)
 
 class NavToolBar(NavigationToolbar2QT):
+    """
+    This class overloads the NavigationToolbar of matplotlib.
+    The original icons are replaced by oxygen ones.
+    """
 
     def __init__(self, canvas, parent, coordinates=True):
+        """
+        Constructor
+
+        @param canvas: the matplotlib canvas
+        @type canvas: matplotlib.backends.backend_qt4agg.FigureCanvasQTAgg
+        @param parent: the parent QWidget
+        @type parent: PyQt4.QtGui.QWidget
+        @param coordinates: boolean coordinates
+        @type coordinates: bool
+        """
         NavigationToolbar2QT.__init__(self, canvas, parent, coordinates)
         self.setIconSize(QSize(16, 16))
 
     def _init_toolbar(self):
         """
-        modification of the toolbar definition in order to get
-        the oxygen icons in the matplotib toolbar
+        This function is a simple modification of the toolbar 
+        definition in order to get the oxygen icons in the matplotib toolbar
         """
         a = self.addAction(QIcon(':/home.png'), 'Home', self.home)
         a.setToolTip('Reset original view')
