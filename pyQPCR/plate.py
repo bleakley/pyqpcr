@@ -63,6 +63,9 @@ class Plaque:
             raise IOError
 
     def read(self):
+        """
+        This method allows to parse Eppendorf raw data.
+        """
         file = open(self.filename, "r")
         motif = re.compile(r"[\w\s]*")
         amountMotif = re.compile(r"Amount SYBR ?\[(.*)\]")

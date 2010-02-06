@@ -27,12 +27,35 @@ __date__ = "$Date$"
 __version__ = "$Rev$"
 
 class Ech:
+    """
+    This class defines the sample.
+
+    @ivar name: the sample name
+    @type name: PyQt4.QtCore.QString
+    @ivar isRef: a boolean to determine if the sample is a reference
+                 sample
+    @type isRef: PyQt4.QtCore.CheckState
+    @ivar enabled: a boolean to determine if the sample is enabled or
+                   disabled
+    @type enabled: PyQt4.QtCore.CheckState
+    @ivar color: the sample color (for plotting purpose)
+    @type color: PyQt4.QtGui.QColor
+    """
 
     def __init__(self, nom, isRef=Qt.Unchecked):
+        """
+        Ech constructor:
+
+            >>> Ech('A1', isRef=Qt.Unchecked)
+
+        @param nom: the sample name
+        @type nom: PyQt4.QtCore.QString
+        @param isRef: a boolean to determine if the sample is enabled or
+                      disabled
+        @type isRef: PyQt4.QtCore.CheckState
+        """
         self.name = QString(nom)
-# Pour dire si l'echantillon est un echantillon de reference
         self.isRef = isRef
-# Pour dire si on veut tracer un echantillon
         self.enabled = Qt.Checked
 
     def __str__(self):
@@ -58,7 +81,7 @@ class Ech:
 
         @param checkBoxState: a boolean which indicates wheter the sample
                               is a reference sample or not.
-        @type(checkBoxState): PyQt4.QtCore.CheckState
+        @type checkBoxState: PyQt4.QtCore.CheckState
         """
         self.isRef = checkBoxState
 
@@ -115,9 +138,21 @@ class Gene:
         self.name = name
 
     def setPm(self, pm):
+        """
+        Set the target efficiency relative-error
+
+        @param eff: the target efficiency relative-error
+        @type eff: float
+        """
         self.pm = pm
 
     def setEff(self, eff):
+        """
+        Set the target efficiency
+
+        @param eff: the target efficiency
+        @type eff: float
+        """
         self.eff = eff
 
     def setRef(self, checkBoxState):
@@ -126,7 +161,7 @@ class Gene:
 
         @param checkBoxState: a boolean which indicates wheter the target
                               is a reference one or not.
-        @type(checkBoxState): PyQt4.QtCore.CheckState
+        @type checkBoxState: PyQt4.QtCore.CheckState
         """
         self.isRef = checkBoxState
 
@@ -153,6 +188,13 @@ class Gene:
         self.R2 = R
 
     def calcCtRef(self, listePuits):
+        """
+        This methods calculates the mean ct of every wells of a given
+        target.
+
+        @param listePuits: the list of wells of the current gene
+        @type listePuits: pyQPCR.wellGeneSample.Puits
+        """
         qt = 0
         k = 0
         dontContinue = False
@@ -303,6 +345,12 @@ class Puits:
         return st
 
     def getPosition(self):
+        """
+        This method gives the well position (x,y) of a given well
+        according to its name.
+
+        ex. A11 xpos=0 ypos=10
+        """
         motif = re.compile(r"([A-H])(\d+)")
         groups = motif.search(self.name).groups()
         self.ypos = int(groups[1])-1
