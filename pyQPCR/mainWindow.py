@@ -531,8 +531,8 @@ class Qpcr_qt(QMainWindow):
         """
         This method allows to enable/disable several QAction
 
-        @param: the boolean value
-        @type: logical
+        @param bool: the boolean value
+        @type bool: bool
         """
         self.addGeneAction.setEnabled(bool)
         self.addEchAction.setEnabled(bool)
@@ -1354,7 +1354,6 @@ class Qpcr_qt(QMainWindow):
         self.populateCbox(self.amComboBox, self.project.hashAmount, "Amount")
         self.populateTree()
 
-
     def cleanBeforeOpen(self):
         """
         This methods allows to clean up the UI before a new project.
@@ -1374,7 +1373,6 @@ class Qpcr_qt(QMainWindow):
         self.activateDesactivate(True)
         # undo/redo buffer
         self.projectStack = []
-
 
 
 def run():

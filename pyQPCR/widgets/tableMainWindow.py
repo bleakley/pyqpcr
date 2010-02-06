@@ -19,7 +19,6 @@
 
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
-#from pyQPCR.wellGeneSample import *
 import pyQPCR.qrc_resources
 
 __author__ = "$Author$"
@@ -28,8 +27,22 @@ __version__ = "$Rev$"
 
 
 class PlateWidget(QTableWidget):
+    """
+    This class allows to construct and populate a Q-PCR plate (A-H lines
+    and 1-12 lines). The different table elements are filled depending on 
+    their type.
+
+    @ivar tableLabels: the list of wells names (i.e. A-H)
+    @type tableLabels: list
+    """
 
     def __init__(self, parent=None):
+        """
+        Constructor of the Plate Widget. 
+
+        @param parent: the QWidget parent
+        @type parent: PyQt4.QtGui.QWidget
+        """
         QTableWidget.__init__(self, parent)
         self.tableLabels = ["A", "B", "C", "D", "E", "F", "G", "H"]
         self.setRowCount(8)
@@ -42,10 +55,20 @@ class PlateWidget(QTableWidget):
         self.setEditTriggers(QTableWidget.NoEditTriggers)
 
     def clear(self):
+        """
+        Overload the clear method by puting the tableLabels back after
+        clearing.
+        """
         QTableWidget.clear(self)
         self.setVerticalHeaderLabels(self.tableLabels)
 
     def populateTable(self, plate):
+        """
+        This method is used to fill the PCR plate thanks to the wells data.
+
+        @param plate: the input plate of the table
+        @type plate: pyQPCR.plate.Plaque
+        """
         for well in plate.listePuits:
             if well.type in (QString('unknown'), QString('negative')):
                 name = "%s\n%s" % (well.ech, well.gene.name)
@@ -67,6 +90,21 @@ class PlateWidget(QTableWidget):
                    fore=Qt.black, icon=None):
         """
         This method highly simplifies the creation of QTableWidgetItem
+
+        @param text: the texte of the cell
+        @type text: string
+        @param tip: the tool tip of the cell
+        @type tip: string
+        @param status: the status tip of the cell
+        @type status: string
+        @param back: the background color of the cell
+        @type back: PyQt4.QtGui.QColor
+        @param fore: the foreground color of the cell
+        @type fore: PyQt4.QtGui.QColor
+        @param icon: the possible icon of the cell
+        @type icon: string
+        @return: the cell of the table
+        @rtype: PyQt4.QtGui.QTableWidgetItem
         """
         item = QTableWidgetItem(text)
         item.setForeground(fore)
@@ -88,9 +126,25 @@ class PlateWidget(QTableWidget):
         item.setTextAlignment(Qt.AlignCenter|Qt.AlignVCenter)
         return item
 
+
+
 class ResultWidget(QTableWidget):
+    """
+    This class allows to construct and populate the result table of a
+    Q-PCR experiment.
+
+    @ivar resultLabels: the list of the names of the different columns used
+                        in the result table
+    @type resultLabels: list
+    """
 
     def __init__(self, parent=None):
+        """
+        Constructor of the Result Widget. 
+
+        @param parent: the QWidget parent
+        @type parent: PyQt4.QtGui.QWidget
+        """
         QTableWidget.__init__(self, parent)
         self.resultLabels=["Well", "Target", "Ct", "<Ct>", "E(Ct)", "Amount",
                 "Sample", "Eff", "Type", "NRQ"]
@@ -105,10 +159,20 @@ class ResultWidget(QTableWidget):
                                        QSizePolicy.Maximum))
 
     def clear(self):
+        """
+        Overload the clear method by puting the headers of the table back after
+        clearing.
+        """
         QTableWidget.clear(self)
         self.setVerticalHeaderLabels(self.resultLabels)
 
     def populateResult(self, plaque):
+        """
+        This method is used to fill the PCR result thanks to the computed data?
+
+        @param plaque: the input plate of the table
+        @type plaque: pyQPCR.plate.Plaque
+        """
         for ind, well in enumerate(plaque.listePuits):
             if well.enabled == True:
                 item = QTableWidgetItem("")
@@ -161,5 +225,3 @@ class ResultWidget(QTableWidget):
             self.setItem(ind, 7, itEff)
             self.setItem(ind, 8, itType)
             self.setItem(ind, 9, itNRQ)
-
-
