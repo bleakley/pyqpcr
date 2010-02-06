@@ -1158,18 +1158,18 @@ class Qpcr_qt(QMainWindow):
                   QColor(Qt.black)]
 
 # color attributions
-        if self.nplotGene == 0:
-            ind = 0
-            for gene in self.project.hashGene.values()[1:]:
+        ind = 0
+        for gene in self.project.hashGene.values()[1:]:
+            if not hasattr(gene, 'color'):
                 gene.setColor(colors[ind])
                 if ind <= len(colors):
                     ind += 1
                 else:
                     ind = 0
 
-        if self.nplotEch == 0:
-            ind = 0
-            for ech in self.project.hashEch.values()[1:]:
+        ind = 0
+        for ech in self.project.hashEch.values()[1:]:
+            if not hasattr(ech, 'color'):
                 ech.setColor(colors[ind])
                 if ind <= len(colors):
                     ind += 1
