@@ -448,10 +448,7 @@ class Qpcr_qt(QMainWindow):
 
 # Pile de plaques pour le Undo/Redo
             self.projectStack.append(copy.deepcopy(self.project))
-            self.populateTree()
-            self.populateCbox(self.geneComboBox, self.project.hashGene, "Target")
-            self.populateCbox(self.echComboBox, self.project.hashEch, "Sample")
-            self.populateCbox(self.amComboBox, self.project.hashAmount, "Amount")
+            self.updateUi()
 
     def fileNew(self):
         if not self.okToContinue():
@@ -504,13 +501,10 @@ class Qpcr_qt(QMainWindow):
             self.appendPlate(plaque, key)
             self.appendResult(plaque, key)
 
-# Mise a jour des cbox
-            self.populateCbox(self.geneComboBox, self.project.hashGene, "Target")
-            self.populateCbox(self.echComboBox, self.project.hashEch, "Sample")
-            self.populateCbox(self.amComboBox, self.project.hashAmount, "Amount")
-            self.populateTree()
+            self.updateUi()
             self.project.unsaved = True
             self.fileSaveAction.setEnabled(True)
+            self.projectStack.append(copy.deepcopy(self.project))
 
     def closePlate(self):
         reply = QMessageBox.question(self, "Remove a plate",
@@ -527,12 +521,10 @@ class Qpcr_qt(QMainWindow):
             self.tabulResults.removeTab(index)
             self.pileResults.__delitem__(plToDestroy)
 # Maj des cbox et Remplissage du tree
-            self.populateCbox(self.geneComboBox, self.project.hashGene, "Target")
-            self.populateCbox(self.echComboBox, self.project.hashEch, "Sample")
-            self.populateCbox(self.amComboBox, self.project.hashAmount, "Amount")
+            self.updateUi()
             self.project.unsaved = True
             self.fileSaveAction.setEnabled(True)
-            self.populateTree()
+            self.projectStack.append(copy.deepcopy(self.project))
 
     def activateDesactivate(self, bool):
         """
@@ -818,15 +810,24 @@ class Qpcr_qt(QMainWindow):
         if self.undoInd < -1:
             self.undoInd += 1
         self.project = copy.deepcopy(self.projectStack[self.undoInd])
-        self.populateCbox(self.geneComboBox, self.project.hashGene, "Target")
-        self.populateCbox(self.echComboBox, self.project.hashEch, "Sample")
-        self.populateCbox(self.amComboBox, self.project.hashAmount, "Amount")
+        self.updateUi()
 #
         for key in self.project.dicoPlates.keys():
             pl = self.project.dicoPlates[key]
+            if not self.pileTables.has_key(key):
+                self.appendPlate(pl, key)
+                self.appendResult(pl, key)
             self.pileTables[key].populateTable(pl)
             self.pileResults[key].populateResult(pl)
-        self.populateTree()
+
+        for key in self.pileTables.keys():
+            if not self.project.dicoPlates.has_key(key):
+                index = self.pileTables.index(key)
+                self.tabulPlates.removeTab(index)
+                self.tabulResults.removeTab(index)
+                self.pileTables.__delitem__(key)
+                self.pileResults.__delitem__(key)
+
         if self.undoInd == 0 or self.undoInd == -len(self.projectStack):
             self.project.unsaved = False
             self.fileSaveAction.setEnabled(False)
@@ -838,10 +839,7 @@ class Qpcr_qt(QMainWindow):
         if abs(self.undoInd) < abs(len(self.projectStack)):
             self.undoInd -= 1
         self.project = copy.deepcopy(self.projectStack[self.undoInd])
-# Ces lignes reremplissent les comboBox (idem dans redo)
-        self.populateCbox(self.geneComboBox, self.project.hashGene, "Target")
-        self.populateCbox(self.echComboBox, self.project.hashEch, "Sample")
-        self.populateCbox(self.amComboBox, self.project.hashAmount, "Amount")
+        self.updateUi()
 #
         for key in self.project.dicoPlates.keys():
             pl = self.project.dicoPlates[key]
@@ -850,7 +848,15 @@ class Qpcr_qt(QMainWindow):
                 self.appendResult(pl, key)
             self.pileTables[key].populateTable(pl)
             self.pileResults[key].populateResult(pl)
-        self.populateTree()
+
+        for key in self.pileTables.keys():
+            if not self.project.dicoPlates.has_key(key):
+                index = self.pileTables.index(key)
+                self.tabulPlates.removeTab(index)
+                self.tabulResults.removeTab(index)
+                self.pileTables.__delitem__(key)
+                self.pileResults.__delitem__(key)
+
 # Si on remonte tous les undo pas besoin de sauvegarder
         if self.undoInd == 0 or self.undoInd == -len(self.projectStack):
             self.project.unsaved = False
@@ -966,8 +972,10 @@ class Qpcr_qt(QMainWindow):
         self.fileSaveAction.setEnabled(True)
         self.project.dicoPlates[self.currentPlate].setDicoGene()
         self.projectStack.append(copy.deepcopy(self.project))
-        self.pileTables[self.currentPlate].populateTable(self.project.dicoPlates[self.currentPlate])
-        self.pileResults[self.currentPlate].populateResult(self.project.dicoPlates[self.currentPlate])
+        self.pileTables[self.currentPlate].populateTable( \
+                      self.project.dicoPlates[self.currentPlate])
+        self.pileResults[self.currentPlate].populateResult( \
+                      self.project.dicoPlates[self.currentPlate])
 
     def modifyEch(self):
         for it in self.pileTables[self.currentPlate].selectedItems():
@@ -979,8 +987,10 @@ class Qpcr_qt(QMainWindow):
         self.fileSaveAction.setEnabled(True)
         self.project.dicoPlates[self.currentPlate].setDicoEch()
         self.projectStack.append(copy.deepcopy(self.project))
-        self.pileTables[self.currentPlate].populateTable(self.project.dicoPlates[self.currentPlate])
-        self.pileResults[self.currentPlate].populateResult(self.project.dicoPlates[self.currentPlate])
+        self.pileTables[self.currentPlate].populateTable( \
+                     self.project.dicoPlates[self.currentPlate])
+        self.pileResults[self.currentPlate].populateResult( \
+                     self.project.dicoPlates[self.currentPlate])
 
     def modifyAm(self):
         for it in self.pileTables[self.currentPlate].selectedItems():
@@ -992,8 +1002,10 @@ class Qpcr_qt(QMainWindow):
         self.fileSaveAction.setEnabled(True)
         self.project.setDicoAm()
         self.projectStack.append(copy.deepcopy(self.project))
-        self.pileTables[self.currentPlate].populateTable(self.project.dicoPlates[self.currentPlate])
-        self.pileResults[self.currentPlate].populateResult(self.project.dicoPlates[self.currentPlate])
+        self.pileTables[self.currentPlate].populateTable( \
+                    self.project.dicoPlates[self.currentPlate])
+        self.pileResults[self.currentPlate].populateResult( \
+                    self.project.dicoPlates[self.currentPlate])
 
     def setType(self):
         for it in self.pileTables[self.currentPlate].selectedItems():
@@ -1004,8 +1016,10 @@ class Qpcr_qt(QMainWindow):
         self.project.unsaved = True
         self.fileSaveAction.setEnabled(True)
         self.projectStack.append(copy.deepcopy(self.project))
-        self.pileTables[self.currentPlate].populateTable(self.project.dicoPlates[self.currentPlate])
-        self.pileResults[self.currentPlate].populateResult(self.project.dicoPlates[self.currentPlate])
+        self.pileTables[self.currentPlate].populateTable( \
+                    self.project.dicoPlates[self.currentPlate])
+        self.pileResults[self.currentPlate].populateResult( \
+                    self.project.dicoPlates[self.currentPlate])
 
     def enable(self):
         for it in self.pileTables[self.currentPlate].selectedItems():
@@ -1016,8 +1030,10 @@ class Qpcr_qt(QMainWindow):
         self.project.unsaved = True
         self.fileSaveAction.setEnabled(True)
         self.projectStack.append(copy.deepcopy(self.project))
-        self.pileTables[self.currentPlate].populateTable(self.project.dicoPlates[self.currentPlate])
-        self.pileResults[self.currentPlate].populateResult(self.project.dicoPlates[self.currentPlate])
+        self.pileTables[self.currentPlate].populateTable( \
+                    self.project.dicoPlates[self.currentPlate])
+        self.pileResults[self.currentPlate].populateResult( \
+                    self.project.dicoPlates[self.currentPlate])
 
     def disable(self):
         for it in self.pileTables[self.currentPlate].selectedItems():
@@ -1032,8 +1048,10 @@ class Qpcr_qt(QMainWindow):
         self.project.unsaved = True
         self.fileSaveAction.setEnabled(True)
         self.projectStack.append(copy.deepcopy(self.project))
-        self.pileTables[self.currentPlate].populateTable(self.project.dicoPlates[self.currentPlate])
-        self.pileResults[self.currentPlate].populateResult(self.project.dicoPlates[self.currentPlate])
+        self.pileTables[self.currentPlate].populateTable( \
+                        self.project.dicoPlates[self.currentPlate])
+        self.pileResults[self.currentPlate].populateResult( \
+                        self.project.dicoPlates[self.currentPlate])
 
     def displayWarnings(self):
         for key in self.project.dicoPlates.keys():
@@ -1097,8 +1115,8 @@ class Qpcr_qt(QMainWindow):
                     if well.warning:
                         brokenWells.append(well.name) 
             QMessageBox.warning(self, "Problem occurs in ctref calculation !",
-                "A problem occured in the calculations. It seems to come from the \
-                 well %s. Check whether ct are correctly defined." \
+               "A problem occured in the calculations. It seems to come from the \
+                well %s. Check whether ct are correctly defined." \
                 % brokenWells)  
             self.displayWarnings()
             return
@@ -1305,6 +1323,9 @@ class Qpcr_qt(QMainWindow):
             self.plotUnknown()
 
     def changeCurrentIndex(self):
+        """
+        A simple method which determines the current plate.
+        """
         self.currentIndex = self.tabulPlates.currentIndex()
         self.currentPlate = self.tabulPlates.tabText(self.currentIndex)
 
@@ -1322,22 +1343,35 @@ class Qpcr_qt(QMainWindow):
         self.tabulResults.addTab(mytab, key)
         self.pileResults[key] = mytab
 
+    def updateUi(self):
+        """
+        This methods allows to clean up and populate the UI when
+        changing some elements.
+        """
+        self.populateCbox(self.geneComboBox, self.project.hashGene, "Target")
+        self.populateCbox(self.echComboBox, self.project.hashEch, "Sample")
+        self.populateCbox(self.amComboBox, self.project.hashAmount, "Amount")
+        self.populateTree()
+
+
     def cleanBeforeOpen(self):
-# Nettoyage du QTabWidget
+        """
+        This methods allows to clean up the UI before a new project.
+        """
+        # clean-up the QTabWidget
         for ind in range(self.tabulPlates.count()):
             self.tabulPlates.removeTab(0)
             self.tabulResults.removeTab(0)
         self.onglet.removeTab(1)
         self.onglet.removeTab(1)
-# Remise a zero des compteurs
+        # counters=0
         self.nplotGene = 0
         self.nplotStd = 0
         self.nplotEch = 0
-# Nettoyage des tableaux avant l'eventuel remplissage
 
-# Activation des actions
+        # descativate actions
         self.activateDesactivate(True)
-# Pile de plaques pour le Undo/Redo
+        # undo/redo buffer
         self.projectStack = []
 
 
