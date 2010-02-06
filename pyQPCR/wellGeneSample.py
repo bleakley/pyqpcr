@@ -141,8 +141,8 @@ class Gene:
         """
         Set the target efficiency relative-error
 
-        @param eff: the target efficiency relative-error
-        @type eff: float
+        @param pm: the target efficiency relative-error
+        @type pm: float
         """
         self.pm = pm
 
