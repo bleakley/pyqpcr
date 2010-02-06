@@ -48,11 +48,18 @@ class Ech:
         Set the sample name
 
         @param name: the new name of the sample
-        @type name: string
+        @type name: PyQt4.QtCore.QString
         """
         self.name = name
 
     def setRef(self, checkBoxState):
+        """
+        Set if the sample is a reference sample or not.
+
+        @param checkBoxState: a boolean which indicates wheter the sample
+                              is a reference sample or not.
+        @type(checkBoxState): PyQt4.QtCore.CheckState
+        """
         self.isRef = checkBoxState
 
     def setColor(self, color):
@@ -65,6 +72,13 @@ class Ech:
         self.color = color
 
     def setEnabled(self, ena):
+        """
+        enable/disable the current sample
+
+        @param ena: a boolean which indicates whether the sample
+                    is enabled or disabled
+        @type ena: PyQt4.QtCore.CheckState
+        """
         self.enabled = ena
 
 class Gene:
@@ -92,6 +106,12 @@ class Gene:
         self.pos = pos
 
     def setName(self, name):
+        """
+        Set the target name
+
+        @param name: the new name of the target
+        @type name: PyQt4.QtCore.QString
+        """
         self.name = name
 
     def setPm(self, pm):
@@ -101,6 +121,13 @@ class Gene:
         self.eff = eff
 
     def setRef(self, checkBoxState):
+        """
+        Set if the target is a reference sample or not.
+
+        @param checkBoxState: a boolean which indicates wheter the target
+                              is a reference one or not.
+        @type(checkBoxState): PyQt4.QtCore.CheckState
+        """
         self.isRef = checkBoxState
 
     def setColor(self, color):
@@ -113,6 +140,13 @@ class Gene:
         self.color = color
 
     def setEnabled(self, ena):
+        """
+        enable/disable the current target
+
+        @param ena: a boolean which indicates whether the target
+                    is enabled or disabled
+        @type ena: PyQt4.QtCore.CheckState
+        """
         self.enabled = ena
 
     def setR2(self, R):
@@ -307,9 +341,6 @@ class Puits:
             self.NRQ = float(nrq)
         except ValueError:
             self.NRQ = nrq
-
-    def setCNRQ(self, cnrq):
-        self.CNRQ = cnrq
 
     def setNRQerror(self, err):
         self.NRQerror = err
