@@ -197,7 +197,7 @@ class Gene:
         """
         qt = 0
         k = 0
-        dontContinue = False
+        brokenWells = []
         for well in listePuits:
             try:
                 if well.enabled:
@@ -205,12 +205,12 @@ class Gene:
                     k += 1
             except TypeError:
                 well.setWarning(True)
-                dontContinue = True
+                brokenWells.append(well.name)
                 continue
-        if not dontContinue:
-            self.ctref = float(qt/k)
+        if len(brokenWells) != 0:
+            raise WellError(brokenWells)
         else:
-            raise ValueError
+            self.ctref = float(qt/k)
 
 class Puits:
 
@@ -396,6 +396,16 @@ class Puits:
     def setWarning(self, warn):
         """Si un puit est casse, on met un flag warning dessus"""
         self.warning = warn
+
+
+class WellError(Exception):
+
+    def __init__(self, brokenWells):
+        self.brokenWells = brokenWells
+
+    def __str__(self):
+        return repr(self.brokenWells)
+
 
 
 if __name__=="__main__":
