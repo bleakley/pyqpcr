@@ -23,7 +23,8 @@ from PyQt4.QtCore import *
 import pyQPCR.qrc_resources
 from pyQPCR.dialogs import *
 from pyQPCR.widgets import *
-from pyQPCR.plate import Plaque, ReplicateError, WellError
+from pyQPCR.plate import Plaque, ReplicateError
+from pyQPCR.wellGeneSample import WellError
 from project import Project
 import matplotlib
 from numpy import linspace, log10, log, sqrt, sum, mean, polyfit, polyval, \
@@ -1120,17 +1121,12 @@ class Qpcr_qt(QMainWindow):
             st += "</ul>"
             QMessageBox.warning(self, "Warning Replicates", st)
 
-        except ValueError:
-            brokenWells = []
-            for pl in self.project.dicoPlates.values():
-                for well in pl.listePuits:
-                    if well.warning:
-                        brokenWells.append(well.name) 
-            QMessageBox.warning(self, "Problem occurs in ctref calculation !",
+        except WellError, e:
+            QMessageBox.warning(self, "Problem occurs in calculation !",
                 "<b>Warning</b>: A problem occured in the calculations. " \
                 "It seems to come from the well(s) <b>%s</b>. " \
                 "Check whether ct are correctly defined." \
-                % brokenWells)  
+                % e.brokenWells)  
             self.displayWarnings()
             return
 
@@ -1163,7 +1159,13 @@ class Qpcr_qt(QMainWindow):
             st += "</ul>"
             QMessageBox.warning(self, "Warning Replicates", st)
 
-        except ValueError:
+        except WellError, e:
+            QMessageBox.warning(self, "Problem occurs in standard calculation !",
+                "<b>Warning</b>: A problem occured in the calculations. " \
+                "It seems to come from the well(s) <b>%s</b>. " \
+                "Check whether ct are correctly defined." \
+                % e.brokenWells)  
+            self.displayWarnings()
             self.displayWarnings()
             return
 

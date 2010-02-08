@@ -19,7 +19,7 @@
 
 import re
 import csv
-from pyQPCR.wellGeneSample import Ech, Gene, Puits
+from pyQPCR.wellGeneSample import Ech, Gene, Puits, WellError
 from scipy.stats import t, norm
 from PyQt4.QtCore import Qt, QString
 from PyQt4.QtGui import *
@@ -338,15 +338,6 @@ class Replicate:
                 + (log(1.+self.gene.eff/100.)*self.ctdevtalpha)**2 \
                 ))
         self.RQerror = err
-
-class WellError(Exception):
-
-    def __init__(self, brokenWells):
-        self.brokenWells = brokenWells
-
-    def __str__(self):
-        return repr(self.brokenWells)
-
 
 
 class ReplicateError(Exception):
