@@ -1133,7 +1133,15 @@ class Qpcr_qt(QMainWindow):
         if self.nplotGene == 0:
             self.onglet.addTab(self.plotUnknownWidget, "Quantification")
 # On calcule NRQ
-        self.project.calcNRQ()
+        try:
+            self.project.calcNRQ()
+        except KeyError, ke:
+            QMessageBox.warning(self, "Problem occurs in calculation !",
+                "<b>Warning</b>: A problem occured in the calculations. " \
+                "It seems to come from the sample <b>%s</b>. " \
+                "Check whether <b>%s</b> has the reference target." \
+                % (ke, ke))  
+            return
 # On reremplit la table de resultats
         for key in self.project.dicoPlates.keys():
             pl = self.project.dicoPlates[key]
