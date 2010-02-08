@@ -245,15 +245,12 @@ class Plaque:
             self.listEch[ind].setRef(Qt.Checked)
 
 
-class Replicate(QDialog):
+class Replicate:
 
     def __init__(self, listePuits, type=QString('unknown'), 
-                 parent=None, ectMax=0.3, confidence=0.9, errtype="normal"):
-        self.parent = parent
-        self.ectMax = ectMax
+                 confidence=0.9, errtype="normal"):
         self.confidence = confidence
         self.errtype = errtype
-        QDialog.__init__(self, parent)
         self.type = type
         self.listePuits = listePuits
         if len(self.listePuits) != 0:
@@ -310,12 +307,7 @@ class Replicate(QDialog):
                 except ValueError:
                     brokenWells.append(well.name)
                     well.setWarning(True)
-
-            QMessageBox.warning(self, "Problem in calculation !",
-                "A problem occured in the calculations. It seems to come from the \
-                 well %s. Check whether ct are correctly defined." \
-                 % (brokenWells))
-            return
+            raise WellError(brokenWells)
 
         if len(self.ctList) > 1:
             # Formule 8
@@ -335,16 +327,6 @@ class Replicate(QDialog):
             well.setCtmean(self.ctmean)
             well.setCtdev(self.ctdev)
 
-        if self.ctdev >= self.ectMax:
-            if self.type == QString('unknown'):
-                QMessageBox.warning(self, "Warning Replicates",
-                    "<b>Warning</b>: E(ct) of replicate (%s, %s) greater than %.2f (E(ct)=%.2f)" \
-                    % (self.gene, self.ech, self.ectMax, self.ctdev))
-            elif self.type == QString('standard'):
-                QMessageBox.warning(self, "Warning Replicates",
-                    "Warning: E(ct) of replicate (%s, %s) greater than %.2f" \
-                    % (self.gene, self.amList[0], self.ectMax))
-
     def calcDCt(self):
         self.dct = self.gene.ctref - self.ctmean # Formule 10
         self.RQ = (1.+self.gene.eff/100.)**(self.dct) # Formule 11
@@ -357,6 +339,23 @@ class Replicate(QDialog):
                 ))
         self.RQerror = err
 
+class WellError(Exception):
+
+    def __init__(self, brokenWells):
+        self.brokenWells = brokenWells
+
+    def __str__(self):
+        return repr(self.brokenWells)
+
+
+
+class ReplicateError(Exception):
+
+    def __init__(self, listRep):
+        self.listRep = listRep
+
+    def __str__(self):
+        return repr(self.listRep)
 
 if __name__ == '__main__':
     pl = Plaque('../samples/raw_std.txt')
