@@ -146,7 +146,7 @@ class ResultWidget(QTableWidget):
         @type parent: PyQt4.QtGui.QWidget
         """
         QTableWidget.__init__(self, parent)
-        self.resultLabels=["Well", "Target", "Ct", "<Ct>", "E(Ct)", "Amount",
+        self.resultLabels = ["Well", "Target", "Ct", "<Ct>", "E(Ct)", "Amount",
                 "Sample", "Eff", "Type", "NRQ"]
         self.setRowCount(96)
         self.setColumnCount(10)

@@ -211,6 +211,7 @@ class Project:
 
     def findTrip(self, ectMax, confidence, errtype):
         self.dicoTriplicat = OrderedDict()
+        largeCtTrip = []
         for plate in self.dicoPlates.keys():
             pl = self.dicoPlates[plate]
             for g in self.hashGene.values()[1:]:
@@ -231,15 +232,19 @@ class Project:
                 if dicoEch.has_key(""):
                     dicoEch.pop("")
                 for ech in dicoEch.keys():
-                    trip = Replicate(dicoEch[ech], ectMax=ectMax,
-                                     confidence=confidence, errtype=errtype)
+                    trip = Replicate(dicoEch[ech], confidence=confidence, 
+                                     errtype=errtype)
                     if not hasattr(trip, "ctdev"):
                         # if ctdev undefined raise an exception
                         raise ValueError
+                    if trip.ctdev >= ectMax:
+                        largeCtTrip.append(trip)
                     trip.calcDCt()
                     dicoEch[ech] = trip
                     dicoTrip[key] = dicoEch
             self.dicoTriplicat[plate] = dicoTrip
+        if len(largeCtTrip) != 0:
+            raise ReplicateError(largeCtTrip)
 
     def calcCF(self):
         self.CF = OrderedDict()
@@ -299,6 +304,7 @@ class Project:
         wells.
         """
         self.dicoStd = RaggedArray2D()
+        largeCtTrip = []
         for pl in self.dicoPlates.values():
             for key in pl.dicoGene.keys():
                 dicoAmount = RaggedArray2D()
@@ -312,13 +318,16 @@ class Project:
                     dicoAmount.pop("")
                 for amount in dicoAmount.keys():
                     trip = Replicate(dicoAmount[amount], type=QString('standard'),
-                                     ectMax=ectMax, confidence=confidence,
-                                     errtype=errtype)
+                                     confidence=confidence, errtype=errtype)
                     if not hasattr(trip, "ctdev"):
                         # if ctdev undefined raise an exception
                         raise ValueError
+                    if trip.ctdev >= ectMax:
+                        largeCtTrip.append(trip)
                     dicoAmount[amount] = trip
                     self.dicoStd[key] = dicoAmount
+        if len(largeCtTrip) != 0:
+            raise ReplicateError(largeCtTrip)
 
     def calcStd(self, confidence, errtype):
         for geneName in self.dicoStd.keys():

@@ -23,7 +23,7 @@ from PyQt4.QtCore import *
 import pyQPCR.qrc_resources
 from pyQPCR.dialogs import *
 from pyQPCR.widgets import *
-from pyQPCR.plate import Plaque
+from pyQPCR.plate import Plaque, ReplicateError, WellError
 from project import Project
 import matplotlib
 from numpy import linspace, log10, log, sqrt, sum, mean, polyfit, polyval, \
@@ -1109,6 +1109,17 @@ class Qpcr_qt(QMainWindow):
         try:
             self.project.findTrip(self.ectMax, self.confidence,
                                       self.errtype)
+
+        except ReplicateError, e:
+            st = "<b>Warning</b>: E(ct) of the following replicates is greater"
+            st+= " than %.2f" % self.ectMax
+            st += "<ul>"
+            for trip in e.listRep:
+                st += "<li><b>%s, %s</b> : E(ct)=%.2f </li>" % (trip.gene, \
+                                                      trip.ech, trip.ctdev)
+            st += "</ul>"
+            QMessageBox.warning(self, "Warning Replicates", st)
+
         except ValueError:
             brokenWells = []
             for pl in self.project.dicoPlates.values():
@@ -1116,11 +1127,13 @@ class Qpcr_qt(QMainWindow):
                     if well.warning:
                         brokenWells.append(well.name) 
             QMessageBox.warning(self, "Problem occurs in ctref calculation !",
-               "A problem occured in the calculations. It seems to come from the \
-                well %s. Check whether ct are correctly defined." \
+                "<b>Warning</b>: A problem occured in the calculations. " \
+                "It seems to come from the well(s) <b>%s</b>. " \
+                "Check whether ct are correctly defined." \
                 % brokenWells)  
             self.displayWarnings()
             return
+
         if self.nplotGene == 0:
             self.onglet.addTab(self.plotUnknownWidget, "Quantification")
 # On calcule NRQ
@@ -1139,9 +1152,21 @@ class Qpcr_qt(QMainWindow):
         try:
             self.project.findStd(self.ectMax, self.confidence,
                                 self.errtype)
+
+        except ReplicateError, e:
+            st = "<b>Warning</b>: E(ct) of the following replicates is greater"
+            st += " than %.2f" % self.ectMax
+            st += "<ul>"
+            for trip in e.listRep:
+                st += "<li><b>%s, %.2f</b> : E(ct)=%.2f </li>" % (trip.gene, \
+                                                  trip.amList[0], trip.ctdev)
+            st += "</ul>"
+            QMessageBox.warning(self, "Warning Replicates", st)
+
         except ValueError:
             self.displayWarnings()
             return
+
 # On trace le resultat on rajoute un onglet si c'est la premiere fois
         if len(self.project.dicoStd.keys()) != 0:
             if self.nplotStd == 0:
