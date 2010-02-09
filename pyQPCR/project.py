@@ -268,35 +268,46 @@ class Project:
             self.CFerror[pl] = self.CF[pl] * sqrt(self.CFerror[pl].sum())
 
     def calcNRQ(self):
+        broken = []
         for pl in self.dicoTriplicat.keys():
             plate = self.dicoPlates[pl]
             for g in self.dicoTriplicat[pl].keys():
                 for ech in self.dicoTriplicat[pl][g].keys():
 # Calcul de NRQ et rajout comme argument a chaque triplicat
-                    NRQ = self.dicoTriplicat[pl][g][ech].RQ/ \
-                          self.dicoTriplicat[pl][g][plate.echRef].RQ* \
-                          self.dicoTriplicat[pl][plate.geneRef][plate.echRef].RQ/ \
-                          self.dicoTriplicat[pl][plate.geneRef][ech].RQ
-                    self.dicoTriplicat[pl][g][ech].setNRQ(NRQ)
-                    self.dicoTriplicat[pl][g][ech].calcRQerror()
-                    for well in self.dicoTriplicat[pl][g][ech].listePuits:
-                        #print pl, well.name, NRQ
-                        well.setNRQ(NRQ)
+                    try:
+                        NRQ = self.dicoTriplicat[pl][g][ech].RQ/ \
+                              self.dicoTriplicat[pl][g][plate.echRef].RQ* \
+                              self.dicoTriplicat[pl][plate.geneRef][plate.echRef].RQ/ \
+                              self.dicoTriplicat[pl][plate.geneRef][ech].RQ
+                        self.dicoTriplicat[pl][g][ech].setNRQ(NRQ)
+                        self.dicoTriplicat[pl][g][ech].calcRQerror()
+                        for well in self.dicoTriplicat[pl][g][ech].listePuits:
+                            #print pl, well.name, NRQ
+                            well.setNRQ(NRQ)
+                    except KeyError, ke:
+                        broken.append(str(ke))
+                        continue
 # Calcul de NRQerror et rajout comme argument a chaque triplicat
             for g in self.dicoTriplicat[pl].keys():
                 for ech in self.dicoTriplicat[pl][g].keys():
-                    NRQerror = self.dicoTriplicat[pl][g][ech].NRQ  \
-                         * sqrt((self.dicoTriplicat[pl][plate.geneRef][ech].RQerror \
-                         / self.dicoTriplicat[pl][plate.geneRef][ech].RQ)**2 \
-                         + (self.dicoTriplicat[pl][g][ech].RQerror \
-                         / self.dicoTriplicat[pl][g][ech].RQ)**2  \
-                         + (self.dicoTriplicat[pl][g][plate.echRef].RQerror \
-                         / self.dicoTriplicat[pl][g][plate.echRef].RQ)**2 \
-                         + (self.dicoTriplicat[pl][plate.geneRef][plate.echRef].RQerror \
-                         / self.dicoTriplicat[pl][plate.geneRef][plate.echRef].RQ)**2)
-                    self.dicoTriplicat[pl][g][ech].setNRQerror(NRQerror)
-                    for well in self.dicoTriplicat[pl][g][ech].listePuits:
-                        well.setNRQerror(NRQerror)
+                    try:
+                        NRQerror = self.dicoTriplicat[pl][g][ech].NRQ  \
+                             * sqrt((self.dicoTriplicat[pl][plate.geneRef][ech].RQerror \
+                             / self.dicoTriplicat[pl][plate.geneRef][ech].RQ)**2 \
+                             + (self.dicoTriplicat[pl][g][ech].RQerror \
+                             / self.dicoTriplicat[pl][g][ech].RQ)**2  \
+                             + (self.dicoTriplicat[pl][g][plate.echRef].RQerror \
+                             / self.dicoTriplicat[pl][g][plate.echRef].RQ)**2 \
+                             + (self.dicoTriplicat[pl][plate.geneRef][plate.echRef].RQerror \
+                             / self.dicoTriplicat[pl][plate.geneRef][plate.echRef].RQ)**2)
+                        self.dicoTriplicat[pl][g][ech].setNRQerror(NRQerror)
+                        for well in self.dicoTriplicat[pl][g][ech].listePuits:
+                            well.setNRQerror(NRQerror)
+                    except (KeyError, AttributeError):
+                        continue
+        if len(broken) != 0:
+            raise NRQError(broken)
+
 
     def findStd(self, ectMax, confidence, errtype):
         """
@@ -402,6 +413,14 @@ class Project:
             self.barXticks[str(e)] = largeur[:i].sum() + \
                                      leftMargin +(nbar[i]-1.)*width/2.
             i += 1
+
+class NRQError(Exception):
+
+    def __init__(self, broken):
+        self.broken = broken
+
+    def __str__(self):
+        return repr(self.broken)
 
 
 if __name__ == "__main__":

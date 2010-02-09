@@ -1133,15 +1133,7 @@ class Qpcr_qt(QMainWindow):
         if self.nplotGene == 0:
             self.onglet.addTab(self.plotUnknownWidget, "Quantification")
 # On calcule NRQ
-        try:
-            self.project.calcNRQ()
-        except KeyError, ke:
-            QMessageBox.warning(self, "Problem occurs in calculation !",
-                "<b>Warning</b>: A problem occured in the calculations. " \
-                "It seems to come from the sample <b>%s</b>. " \
-                "Check whether <b>%s</b> has the reference target." \
-                % (ke, ke))  
-            return
+        self.project.calcNRQ()
 # On reremplit la table de resultats
         for key in self.project.dicoPlates.keys():
             pl = self.project.dicoPlates[key]
@@ -1244,7 +1236,8 @@ class Qpcr_qt(QMainWindow):
                         if self.project.dicoTriplicat[pl].has_key(g) and \
                           self.project.hashGene[g].enabled == Qt.Checked and \
                           self.project.dicoTriplicat[pl][g].has_key(ech) and \
-                          self.project.hashEch[ech].enabled == Qt.Checked:
+                          self.project.hashEch[ech].enabled == Qt.Checked and \
+                          hasattr(self.project.dicoTriplicat[pl][g][ech], 'NRQ'):
                             NRQ.append(\
                                   self.project.dicoTriplicat[pl][g][ech].NRQ)
                             NRQerror.append(\
@@ -1270,7 +1263,8 @@ class Qpcr_qt(QMainWindow):
                         if self.project.dicoTriplicat[pl].has_key(g) and \
                           self.project.hashGene[g].enabled == Qt.Checked and \
                           self.project.dicoTriplicat[pl][g].has_key(ech) and \
-                          self.project.hashEch[ech].enabled == Qt.Checked:
+                          self.project.hashEch[ech].enabled == Qt.Checked and \
+                          hasattr(self.project.dicoTriplicat[pl][g][ech], 'NRQ'):
                             NRQ.append(\
                                   self.project.dicoTriplicat[pl][g][ech].NRQ)
                             NRQerror.append(\
