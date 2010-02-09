@@ -286,7 +286,7 @@ class Project:
                             #print pl, well.name, NRQ
                             well.setNRQ(NRQ)
                     except KeyError, ke:
-                        broken.append(str(ke))
+                        broken.append((g,ech))
                         continue
 # Calcul de NRQerror et rajout comme argument a chaque triplicat
             for g in self.dicoTriplicat[pl].keys():
@@ -421,7 +421,11 @@ class NRQError(Exception):
         self.broken = broken
 
     def __str__(self):
-        return repr(self.broken)
+        st = "<ul>"
+        for line in self.broken:
+            st += "<li>(<b>%s, %s</b>)</li>" % (line[0], line[1])
+        st += "</ul>"
+        return st
 
 
 if __name__ == "__main__":

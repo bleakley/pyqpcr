@@ -25,7 +25,7 @@ from pyQPCR.dialogs import *
 from pyQPCR.widgets import *
 from pyQPCR.plate import Plaque, ReplicateError
 from pyQPCR.wellGeneSample import WellError
-from project import Project
+from project import Project, NRQError
 import matplotlib
 from numpy import linspace, log10, log, sqrt, sum, mean, polyfit, polyval, \
         asarray, append, array, delete
@@ -1113,12 +1113,8 @@ class Qpcr_qt(QMainWindow):
 
         except ReplicateError, e:
             st = "<b>Warning</b>: E(ct) of the following replicates is greater"
-            st+= " than %.2f" % self.ectMax
-            st += "<ul>"
-            for trip in e.listRep:
-                st += "<li><b>%s, %s</b> : E(ct)=%.2f </li>" % (trip.gene, \
-                                                      trip.ech, trip.ctdev)
-            st += "</ul>"
+            st += " than %.2f :" % self.ectMax
+            st += str(e)
             QMessageBox.warning(self, "Warning Replicates", st)
 
         except WellError, e:
@@ -1132,8 +1128,18 @@ class Qpcr_qt(QMainWindow):
 
         if self.nplotGene == 0:
             self.onglet.addTab(self.plotUnknownWidget, "Quantification")
+
 # On calcule NRQ
-        self.project.calcNRQ()
+        try:
+            self.project.calcNRQ()
+        except NRQError, e:
+            QMessageBox.warning(self, "Problem occurs in calculation !",
+                "<b>Warning</b>: A problem occured in the following replicates : " \
+                "%s It probably comes from the reference target or sample which" \
+                " is undefined for this gene or sample." \
+                "<p> As a consequence these replicates have not been plotted." \
+                % str(e))
+
 # On reremplit la table de resultats
         for key in self.project.dicoPlates.keys():
             pl = self.project.dicoPlates[key]

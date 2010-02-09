@@ -346,7 +346,12 @@ class ReplicateError(Exception):
         self.listRep = listRep
 
     def __str__(self):
-        return repr(self.listRep)
+        st = "<ul>"
+        for trip in self.listRep:
+            st += "<li>(<b>%s, %s</b>) : E(ct)=%.2f </li>" % (trip.gene, trip.ech, trip.ctdev)
+        st += "</ul>"
+
+        return st
 
 if __name__ == '__main__':
     pl = Plaque('../samples/raw_std.txt')
