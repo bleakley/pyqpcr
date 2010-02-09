@@ -76,12 +76,14 @@ class PropDialog(QDialog):
         self.connect(self.geneListWidget, SIGNAL("itemSelectionChanged()"),
                      self.unselectEch)
         self.connect(self.geneListWidget, 
-                     SIGNAL("itemActivated(QListWidgetItem *)"),
+                     #SIGNAL("itemActivated(QListWidgetItem *)"),
+                     SIGNAL("itemClicked(QListWidgetItem *)"),
                      self.chooseGeneList)
         self.connect(self.echListWidget, SIGNAL("itemSelectionChanged()"),
                      self.unselectGene)
         self.connect(self.echListWidget, 
-                     SIGNAL("itemActivated(QListWidgetItem *)"),
+                     #SIGNAL("itemActivated(QListWidgetItem *)"),
+                     SIGNAL("itemClicked(QListWidgetItem *)"),
                      self.chooseEchList)
         self.setWindowTitle("Plot properties")
 

@@ -221,27 +221,28 @@ class Project:
                         well.setGene(g)
             dicoTrip = RaggedArray2D()
             for key in pl.dicoGene.keys():
-                dicoEch = RaggedArray2D()
-                for well in pl.dicoGene[key]:
-                    if well.type == QString('unknown') and well.enabled == True:
-                        if dicoEch.has_key(well.ech.name):
-                            dicoEch[well.ech.name].append(well)
-                        else:
-                            dicoEch[well.ech.name] = [well]
+                if key != '':
+                    dicoEch = RaggedArray2D()
+                    for well in pl.dicoGene[key]:
+                        if well.type == QString('unknown') and well.enabled == True:
+                            if dicoEch.has_key(well.ech.name):
+                                dicoEch[well.ech.name].append(well)
+                            else:
+                                dicoEch[well.ech.name] = [well]
 # Suppression de la chaine vide
-                if dicoEch.has_key(""):
-                    dicoEch.pop("")
-                for ech in dicoEch.keys():
-                    trip = Replicate(dicoEch[ech], confidence=confidence, 
-                                     errtype=errtype)
-                    if not hasattr(trip, "ctdev"):
-                        # if ctdev undefined raise an exception
-                        raise ValueError
-                    if trip.ctdev >= ectMax:
-                        largeCtTrip.append(trip)
-                    trip.calcDCt()
-                    dicoEch[ech] = trip
-                    dicoTrip[key] = dicoEch
+                    if dicoEch.has_key(""):
+                        dicoEch.pop("")
+                    for ech in dicoEch.keys():
+                        trip = Replicate(dicoEch[ech], confidence=confidence, 
+                                         errtype=errtype)
+                        if not hasattr(trip, "ctdev"):
+                            # if ctdev undefined raise an exception
+                            raise ValueError
+                        if trip.ctdev >= ectMax:
+                            largeCtTrip.append(trip)
+                        trip.calcDCt()
+                        dicoEch[ech] = trip
+                        dicoTrip[key] = dicoEch
             self.dicoTriplicat[plate] = dicoTrip
         if len(largeCtTrip) != 0:
             raise ReplicateError(largeCtTrip)
