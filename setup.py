@@ -16,9 +16,11 @@ if sys.platform == 'darwin':
                         )
     extra_options['options'] = \
            {
-         'py2app': {'argv_emulation' : True}
+         'py2app': {'argv_emulation' : True,
+                    'iconfile' : 'logo.icns',
+                    'semi_standalone' : 'False'
                     #'includes': ['sip', 'PyQt4._qt', 'matplotlib', 'scipy', 'numpy']
-                   #}
+                   }
            }       
 
 elif sys.platform == 'win32':
