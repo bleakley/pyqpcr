@@ -22,10 +22,12 @@ from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 import pyQPCR.qrc_resources
 from pyQPCR.dialogs import *
-from pyQPCR.widgets import *
+from pyQPCR.widgets.matplotlibWidget import MatplotlibWidget, NavToolBar
+from pyQPCR.widgets.tableMainWindow import PlateWidget, ResultWidget
+from pyQPCR.widgets.customCbox import GeneEchComboBox
 from pyQPCR.plate import Plaque, ReplicateError
 from pyQPCR.wellGeneSample import WellError
-from project import Project, NRQError
+from pyQPCR.project import Project, NRQError
 import matplotlib
 from numpy import linspace, log10, log, sqrt, sum, mean, polyfit, polyval, \
         asarray, append, array, delete
@@ -36,7 +38,7 @@ import copy
 __author__ = "$Author$"
 __date__ = "$Date$"
 __version__ = "$Rev$"
-__progversion__ = "0.3dev"
+__progversion__ = "0.3"
 
 class Qpcr_qt(QMainWindow):
 
