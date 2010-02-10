@@ -9,8 +9,17 @@ shutil.rmtree("build", ignore_errors=True)
 
 if sys.platform == 'darwin':
     extra_options = dict(
-                         setup_requires=['py2app']
+                         setup_requires=['py2app'],
+                         app=['scripts/qpcr'],
+                         # Cross-platform applications generally expect sys.argv to
+                         # be used for opening files.
                         )
+    extra_options['options'] = \
+           {
+         'py2app': {'argv_emulation' : True}
+                    #'includes': ['sip', 'PyQt4._qt', 'matplotlib', 'scipy', 'numpy']
+                   #}
+           }       
 
 elif sys.platform == 'win32':
     import py2exe
@@ -56,7 +65,7 @@ else:
         extra_options['options'] = \
                 {
                 'bdist_rpm': { 
-                    'requires': ['python-matplotlib', 'PyQt4'],
+                    'requires': ['python-matplotlib', 'PyQt4', 'scipy'],
                     'distribution_name': 'fedora'
                              },
                 'install': {'optimize': '1', 'prefix' : '/usr'}
@@ -65,7 +74,7 @@ else:
         extra_options['options'] = \
                 {
                 'bdist_rpm': { 
-                    'requires': ['python-matplotlib', 'python-qt4'],
+                    'requires': ['python-matplotlib', 'python-qt4', 'python-scipy'],
                     'distribution_name': 'opensuse'
                              },
                 'install': {'prefix': '/usr'}
@@ -77,7 +86,7 @@ setup(name='pyQPCR',
       long_description='a qt4 based interface to deal qPCR',
       author='Thomas Gastine',
       author_email='thomas.gastine@wanadoo.fr',
-      url='http://sourceforge.net/projects/pyqpcr',
+      url='http://pyqpcr.sourceforge.net',
       licence='GPLv3',
       packages=['pyQPCR', 'pyQPCR.dialogs', 'pyQPCR.utils', 'pyQPCR.widgets'],
       scripts=['scripts/qpcr'],
