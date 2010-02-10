@@ -1214,19 +1214,19 @@ class Qpcr_qt(QMainWindow):
         for gene in self.project.hashGene.values()[1:]:
             if not hasattr(gene, 'color'):
                 gene.setColor(colors[ind])
-                if ind <= len(colors):
-                    ind += 1
-                else:
-                    ind = 0
+            if ind < len(colors)-1:
+                ind += 1
+            else:
+                ind = 0
 
         ind = 0
         for ech in self.project.hashEch.values()[1:]:
             if not hasattr(ech, 'color'):
                 ech.setColor(colors[ind])
-                if ind <= len(colors):
-                    ind += 1
-                else:
-                    ind = 0
+            if ind < len(colors)-1:
+                ind += 1
+            else:
+                ind = 0
 
         legPos = [] ; legName = [] ; xlabel = []
         dicoAbs = OrderedDict()
@@ -1290,13 +1290,13 @@ class Qpcr_qt(QMainWindow):
         self.mplCanUnknown.axes.set_xticks(self.project.barXticks.values())
         self.mplCanUnknown.axes.set_xticklabels(self.project.barXticks.keys(), 
                                                 fontsize=size)
-        self.mplCanUnknown.axes.set_ylim(ymin=0.)
 # Legend + xlim
         self.leg = self.mplCanUnknown.axes.legend(loc='upper right', 
                               shadow=True, labelspacing=0.005)
-        self.changeFontsize()
         legendWidth = 0.3 * valmax
+        self.changeFontsize(idraw=False)
         self.mplCanUnknown.axes.set_xlim((0., valmax+legendWidth))
+        self.mplCanUnknown.axes.set_ylim(ymin=0.)
         self.mplCanUnknown.draw()
 
     def plotStd(self):
@@ -1337,7 +1337,7 @@ class Qpcr_qt(QMainWindow):
         self.mplCanStd.draw()
         self.nplotStd += 1
 
-    def changeFontsize(self):
+    def changeFontsize(self, idraw=True):
         """
         A method to change the matplotlib axes font sizes.
         """
@@ -1348,7 +1348,8 @@ class Qpcr_qt(QMainWindow):
             ytick.set_fontsize(size)
         for xtick in self.mplCanUnknown.axes.get_xticklabels():
             xtick.set_fontsize(size)
-        self.mplCanUnknown.draw()
+        if idraw:
+            self.mplCanUnknown.draw()
 
     def setPlotColor(self):
         dialog = PropDialog(self, hashGene=self.project.hashGene,
