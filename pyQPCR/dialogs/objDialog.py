@@ -18,7 +18,6 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 import copy
-from pyQPCR.widgets.customCbox import *
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 

@@ -2,6 +2,11 @@ from distutils.core import setup
 import glob
 import sys
 
+# Remove the build folder, a bit slower but ensures that build contains the latest
+import shutil
+shutil.rmtree("build", ignore_errors=True)
+
+
 if sys.platform == 'darwin':
     extra_options = dict(
                          setup_requires=['py2app']
@@ -67,14 +72,14 @@ else:
                 } 
 
 setup(name='pyQPCR',
-      version='0.1',
+      version='0.3',
       description='a free software to deal qPCR',
       long_description='a qt4 based interface to deal qPCR',
       author='Thomas Gastine',
       author_email='thomas.gastine@wanadoo.fr',
       url='http://sourceforge.net/projects/pyqpcr',
       licence='GPLv3',
-      packages=['pyQPCR', 'pyQPCR.dialogs', 'pyQPCR.utils'],
+      packages=['pyQPCR', 'pyQPCR.dialogs', 'pyQPCR.utils', 'pyQPCR.widgets'],
       scripts=['scripts/qpcr'],
       **extra_options
       )
