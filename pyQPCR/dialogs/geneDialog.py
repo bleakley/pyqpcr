@@ -104,7 +104,6 @@ class GeneDialog(QDialog):
                         if gene.isRef == Qt.Checked and gene.name != name:
                             gene.setRef(Qt.Unchecked)
 
-            g.setColor(QColor(Qt.black))
             if not self.project.hashGene.has_key(nomgene):
                 self.project.hashGene[nomgene] = g
                 self.populateList()

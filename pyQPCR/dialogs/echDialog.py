@@ -84,7 +84,6 @@ class EchDialog(QDialog):
             nomech = dialog.ech.text()
             state = dialog.ref.checkState()
             ech = Ech(nomech, state)
-            ech.setColor(QColor(Qt.black))
 
             if state == Qt.Checked:
                 if dialog.whichPlates.currentText() == QString('All Plates'):
