@@ -214,19 +214,21 @@ class Plaque:
         self.dicoGene = OrderedDict()
         for well in self.listePuits:
             nomgene = well.gene.name
-            if self.dicoGene.has_key(nomgene):
-                self.dicoGene[nomgene].append(well)
-            else:
-                self.dicoGene[nomgene] = [well]
+            if nomgene != '':
+                if self.dicoGene.has_key(nomgene):
+                    self.dicoGene[nomgene].append(well)
+                else:
+                    self.dicoGene[nomgene] = [well]
 
     def setDicoEch(self):
         self.dicoEch = OrderedDict()
         for well in self.listePuits:
             nomech = well.ech.name
-            if self.dicoEch.has_key(nomech):
-                self.dicoEch[nomech].append(well)
-            else:
-                self.dicoEch[nomech] = [well]
+            if nomech != '':
+                if self.dicoEch.has_key(nomech):
+                    self.dicoEch[nomech].append(well)
+                else:
+                    self.dicoEch[nomech] = [well]
 
     def getRefsFromFile(self):
         """
