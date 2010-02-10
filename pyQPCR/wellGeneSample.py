@@ -276,7 +276,10 @@ class Puits:
     def writeWellXml(self):
         amount = str(self.amount)
         if str(self.ct) != '':
-            ct = str(self.ct)
+            try:
+                ct = "%.2f" % self.ct
+            except TypeError:
+                ct = str(self.ct)
         else:
             ct = ''
         if str(self.ctmean) != '':
@@ -299,7 +302,7 @@ class Puits:
         st += "ENABLED='%i' >\n" % int(self.enabled)
         st += "<NAME>%s</NAME>\n" % self.name
         st += "<TYPE>%s</TYPE>\n" % self.type
-        st += "<TARGET EFF='%s' PM='%s'>%s</TARGET>\n" % \
+        st += "<TARGET EFF='%.2f' PM='%.2f'>%s</TARGET>\n" % \
             (self.gene.eff, self.gene.pm, self.gene.name)
         st += "<SAMPLE>%s</SAMPLE>\n" % self.ech.name
         st += "</WELL>\n"
