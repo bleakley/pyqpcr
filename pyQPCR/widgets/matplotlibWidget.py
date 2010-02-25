@@ -20,7 +20,6 @@
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 import pyQPCR.qrc_resources
-import matplotlib
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt4 import NavigationToolbar2QT
 from matplotlib.figure import Figure

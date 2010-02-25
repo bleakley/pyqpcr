@@ -5,12 +5,14 @@ import sys
 # Remove the build folder, a bit slower but ensures that build contains the latest
 import shutil
 shutil.rmtree("build", ignore_errors=True)
+shutil.rmtree("dist", ignore_errors=True)
 
 
 if sys.platform == 'darwin':
+    import py2app
     extra_options = dict(
                          setup_requires=['py2app'],
-                         app=['scripts/qpcr'],
+                         app=['direct-run.py']
                          # Cross-platform applications generally expect sys.argv to
                          # be used for opening files.
                         )
@@ -18,8 +20,8 @@ if sys.platform == 'darwin':
            {
          'py2app': {'argv_emulation' : True,
                     'iconfile' : 'logo.icns',
-                    'semi_standalone' : 'False'
-                    #'includes': ['sip', 'PyQt4._qt', 'matplotlib', 'scipy', 'numpy']
+                    'semi_standalone' : 'False',
+                    'includes': ['sip', 'PyQt4._qt']
                    }
            }       
 
@@ -94,3 +96,10 @@ setup(name='pyQPCR',
       scripts=['scripts/qpcr'],
       **extra_options
       )
+
+if sys.platform == 'darwin':
+    import os
+    print "cp qt.conf dist/pyQPCR.app/Contents/Resources"
+    os.system("cp qt.conf dist/pyQPCR.app/Contents/Resources")
+
+
