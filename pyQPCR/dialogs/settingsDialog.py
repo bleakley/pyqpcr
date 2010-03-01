@@ -46,7 +46,7 @@ class SuffixComboBox(QComboBox):
 class SettingsDialog(QDialog):
 
     def __init__(self, parent=None, ect=0.3, ctmin=35, confidence=0.9,
-                 errtype="normal"):
+                 errtype="normal", machine='Eppendorf'):
         self.parent = parent
         QDialog.__init__(self, parent)
 
@@ -96,6 +96,16 @@ class SettingsDialog(QDialog):
             self.confCbox.setCurrentIndex(4)
         lab4.setBuddy(self.confCbox)
 
+        labMachine = QLabel("<b>PCR device :</b>")
+        lab5 = QLabel("&Machine type : ")
+        self.machBox = QComboBox()
+        self.machBox.addItems(['Eppendorf', 'Applied'])
+        if machine == 'Eppendorf':
+            self.machBox.setCurrentIndex(0)
+        elif machine == 'Applied':
+            self.machBox.setCurrentIndex(1)
+        lab5.setBuddy(self.machBox)
+
         buttonBox = QDialogButtonBox(QDialogButtonBox.Ok|
                                      QDialogButtonBox.Cancel)
 
@@ -110,7 +120,10 @@ class SettingsDialog(QDialog):
         gLayout.addWidget(self.typeCbox, 4, 1)
         gLayout.addWidget(lab4, 5, 0)
         gLayout.addWidget(self.confCbox, 5, 1)
-        gLayout.addWidget(buttonBox, 6, 0, 1, 2)
+        gLayout.addWidget(labMachine, 6, 0, 1, 2)
+        gLayout.addWidget(lab5, 7, 0)
+        gLayout.addWidget(self.machBox, 7, 1)
+        gLayout.addWidget(buttonBox, 8, 0, 1, 2)
 
         self.setLayout(gLayout)
 

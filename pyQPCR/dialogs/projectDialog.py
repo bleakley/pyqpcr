@@ -105,11 +105,13 @@ class NewProjectDialog(QDialog):
         dir = self.pwd if self.pwd is not None else "."
         if self.machBox.currentText() == 'Eppendorf':
             formats =[u"*.txt", u"*.csv"]
+            type = 'Eppendorf machines'
         elif self.machBox.currentText() == 'Applied':
             formats =[u"*.txt"]
+            type = 'Applied machines'
         fileNames = QFileDialog.getOpenFileNames(self,
                        "pyQPCR - Choose plates", dir,
-                       "Input files (%s)" % " ".join(formats))
+                       "Input files (%s) (%s)" % (type, " ".join(formats)))
         if fileNames:
             for fname in fileNames:
                 self.fileNames[QFileInfo(fname).fileName()] = fname
