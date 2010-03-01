@@ -22,7 +22,6 @@ import csv
 from pyQPCR.wellGeneSample import Ech, Gene, Puits, WellError
 from scipy.stats import t, norm
 from PyQt4.QtCore import Qt, QString
-from PyQt4.QtGui import *
 from numpy import mean, std, sqrt, log, log10, polyval, polyfit, sum, \
 array, append
 from pyQPCR.utils.odict import OrderedDict
@@ -49,7 +48,8 @@ class Plaque:
  
         if self.filename is not None:
             self.determineFileType(self.filename)
-            self.read()
+            self.parseEppendorf()
+            #self.parseApplied()
 # Permet eventuellement de connaitre les genes/ech de ref 
         #self.getRefsFromFile()
 
@@ -62,7 +62,7 @@ class Plaque:
         else:
             raise IOError
 
-    def read(self):
+    def parseEppendorf(self):
         """
         This method allows to parse Eppendorf raw data.
         """
@@ -70,7 +70,7 @@ class Plaque:
         motif = re.compile(r"[\w\s]*")
         amountMotif = re.compile(r"Amount SYBR ?\[(.*)\]")
         if self.fileType == "txt":
-            splitter = re.compile(r'("[\w\s.,\-\(\)\[\]\+]*"|\d+[.,]?\d*)')
+            splitter = re.compile(r'("[\w\s.,\-\(\)\[\]\+\\/]*"|\d+[.,]?\d*)')
             iterator = file.readlines()
         if self.fileType == "csv":
             iterator = csv.reader(file, delimiter=";")
@@ -131,7 +131,7 @@ class Plaque:
                 if self.header.has_key('NRQerror'):
                     nrqerror = champs[self.header['NRQerror']]
                     x.setNRQerror(nrqerror)
-#
+ 
                 setattr(self, x.name, x)
                 self.listePuits.append(x)
 
@@ -143,6 +143,77 @@ class Plaque:
                 except ValueError:
                     pass
                 setattr(self, name, value)
+        file.close()
+
+
+    def parseApplied(self):
+        """
+        This method allows to parse Applied raw data.
+        """
+        file = open(self.filename, 'r')
+        iterator = file.readlines()
+        fileencoding = "utf-8"
+        splitter = re.compile(r'([\w .,\-\(\)\[\]\+\\/]*|\d+[.,]?\d*)\t', re.UNICODE)
+        result = re.compile(r'\[Results\]')
+        hasHeader = False
+        for ind, line in enumerate(iterator):
+            if len(result.findall(line)) != 0:
+                hasHeader = True
+                initTab = ind + 1
+                continue
+            line = line.decode(fileencoding)
+            line = splitter.findall(line)
+
+            if hasHeader:
+                if ind == initTab:
+                    self.header = {}
+                    for i, field in enumerate(line):
+                        self.header[field] = i
+                    ncol = len(self.header.keys())
+            if hasHeader:
+                if ind != initTab and len(line) == ncol:
+                    champs = []
+                    for field in line:
+                        try:
+                            dat = float(field.replace(',', '.'))
+                        except ValueError:
+                            dat = field
+                        champs.append(dat)
+                    if self.header.has_key('Well'):
+                        name = champs[self.header['Well']]
+                        x = Puits(name)
+                    else:
+                        raise KeyError
+                    if self.header.has_key('Sample Name'):
+                        echName = champs[self.header['Sample Name']]
+                        x.setEch(Ech(echName))
+                    if self.header.has_key(u'C\u0442'):
+                        ct = champs[self.header[u'C\u0442']]
+                        x.setCt(ct)
+                    if self.header.has_key(u'C\u0442 Mean'):
+                        ctmean = champs[self.header[u'C\u0442 Mean']]
+                        x.setCtmean(ctmean)
+                    if self.header.has_key(u'C\u0442 SD'):
+                        ctdev = champs[self.header[u'C\u0442 SD']]
+                        x.setCtdev(ctdev)
+                    if self.header.has_key('Quantity'):
+                        amount = champs[self.header['Quantity']]
+                    if self.header.has_key('Target Name'):
+                        geneName = champs[self.header['Target Name']]
+                        x.setGene(Gene(geneName))
+                    if self.header.has_key('Task'):
+                        type = champs[self.header['Task']]
+                        x.setType(type)
+                    if self.header.has_key(u'\u0394\u0394C\u0442'):
+                        nrq = champs[self.header[u'\u0394\u0394C\u0442']]
+                        x.setNRQ(nrq)
+                    #if self.header.has_key('NRQerror'):
+                        #nrqerror = champs[self.header['NRQerror']]
+                        #x.setNRQerror(nrqerror)
+
+                    setattr(self, x.name, x)
+                    self.listePuits.append(x)
+
         file.close()
 
     def write(self, filename):
