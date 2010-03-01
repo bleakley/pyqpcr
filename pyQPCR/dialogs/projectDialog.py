@@ -40,9 +40,10 @@ class NewProjectDialog(QDialog):
         lab1.setBuddy(self.edt)
 
         lab2 = QLabel("<b>2. &Machine type</b>")
-        cbox = QComboBox()
-        lab2.setBuddy(cbox)
-        cbox.addItem("Eppendorf")
+        self.machBox = QComboBox()
+        lab2.setBuddy(self.machBox)
+        self.machBox.addItem("Eppendorf")
+        self.machBox.addItem("Applied")
 
         lab3 = QLabel("<b>3. Plates files</b>")
         self.listFiles = QListWidget()
@@ -77,7 +78,7 @@ class NewProjectDialog(QDialog):
         finalLayout.addWidget(lab1)
         finalLayout.addWidget(self.edt)
         finalLayout.addWidget(lab2)
-        finalLayout.addWidget(cbox)
+        finalLayout.addWidget(self.machBox)
         finalLayout.addWidget(lab3)
         finalLayout.addLayout(hLay)
         finalLayout.addWidget(lab4)
@@ -102,7 +103,10 @@ class NewProjectDialog(QDialog):
 
     def addPlate(self):
         dir = self.pwd if self.pwd is not None else "."
-        formats =[u"*.txt", u"*.csv"]
+        if self.machBox.currentText() == 'Eppendorf':
+            formats =[u"*.txt", u"*.csv"]
+        elif self.machBox.currentText() == 'Applied':
+            formats =[u"*.txt"]
         fileNames = QFileDialog.getOpenFileNames(self,
                        "pyQPCR - Choose plates", dir,
                        "Input files (%s)" % " ".join(formats))
@@ -132,6 +136,7 @@ class NewProjectDialog(QDialog):
                 projectName = QString("%s.xml" % self.edt.text())
 # Gestion du / ou du \ selon l'OS utilise avec os.sep
             self.projectName = "%s%s%s" % (self.workDir, os.sep, projectName)
+            self.machineType = self.machBox.currentText()
             if os.path.exists(self.projectName):
                 QMessageBox.warning(self, "This project already exists",
                   """<b>Warning</b>: you must choose a project name that

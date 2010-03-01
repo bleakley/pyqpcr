@@ -34,7 +34,7 @@ __version__ = "$Rev$"
 
 class Plaque:
     
-    def __init__(self, filename=None):
+    def __init__(self, filename=None, machine='Eppendorf'):
         self.unsaved = False
         self.filename = filename
 
@@ -48,8 +48,10 @@ class Plaque:
  
         if self.filename is not None:
             self.determineFileType(self.filename)
-            self.parseEppendorf()
-            #self.parseApplied()
+            if machine == 'Eppendorf':
+                self.parseEppendorf()
+            elif machine == 'Applied':
+                self.parseApplied()
 # Permet eventuellement de connaitre les genes/ech de ref 
         #self.getRefsFromFile()
 
@@ -145,7 +147,6 @@ class Plaque:
                 setattr(self, name, value)
         file.close()
 
-
     def parseApplied(self):
         """
         This method allows to parse Applied raw data.
@@ -166,16 +167,19 @@ class Plaque:
 
             if hasHeader:
                 if ind == initTab:
-                    self.header = {}
+                    self.header = OrderedDict()
                     for i, field in enumerate(line):
                         self.header[field] = i
                     ncol = len(self.header.keys())
             if hasHeader:
                 if ind != initTab and len(line) == ncol:
                     champs = []
-                    for field in line:
+                    for k, field in enumerate(line):
                         try:
-                            dat = float(field.replace(',', '.'))
+                            if self.header.keys()[k] not in ('Sample Name', 'Target Name'):
+                                dat = float(field.replace(',', '.'))
+                            else:
+                                dat = field
                         except ValueError:
                             dat = field
                         champs.append(dat)
@@ -201,9 +205,9 @@ class Plaque:
                     if self.header.has_key('Target Name'):
                         geneName = champs[self.header['Target Name']]
                         x.setGene(Gene(geneName))
-                    if self.header.has_key('Task'):
-                        type = champs[self.header['Task']]
-                        x.setType(type)
+                    #if self.header.has_key('Task'):
+                        #type = champs[self.header['Task']]
+                        #x.setType(type)
                     if self.header.has_key(u'\u0394\u0394C\u0442'):
                         nrq = champs[self.header[u'\u0394\u0394C\u0442']]
                         x.setNRQ(nrq)

@@ -47,6 +47,7 @@ class Qpcr_qt(QMainWindow):
  
         self.filename = None
         self.printer = None
+        self.machine = 'Eppendorf'
 
         self.tree = QTreeWidget()
         self.tree.setHeaderLabel("Parameters")
@@ -467,6 +468,7 @@ class Qpcr_qt(QMainWindow):
             self.filename = dialog.projectName
             self.setWindowTitle("pyQPCR - %s[*]" % QFileInfo(self.filename).fileName())
             for fname in dialog.fileNames.values():
+                self.machine = dialog.machineType
                 self.addPlate(fname)
 
     def fileImport(self):
@@ -498,17 +500,23 @@ class Qpcr_qt(QMainWindow):
             message = "Loaded %s" % QFileInfo(fname).fileName()
             self.updateStatus(message)
 # Nettoyage des tableaux avant l'eventuel remplissage
-            plaque = Plaque(fname)
-            self.project.addPlate(plaque)
-            key = QFileInfo(fname).fileName()
+            try:
+                plaque = Plaque(fname, self.machine)
+                self.project.addPlate(plaque)
+                key = QFileInfo(fname).fileName()
 
-            self.appendPlate(plaque, key)
-            self.appendResult(plaque, key)
+                self.appendPlate(plaque, key)
+                self.appendResult(plaque, key)
 
-            self.updateUi()
-            self.project.unsaved = True
-            self.fileSaveAction.setEnabled(True)
-            self.projectStack.append(copy.deepcopy(self.project))
+                self.updateUi()
+                self.project.unsaved = True
+                self.fileSaveAction.setEnabled(True)
+                self.projectStack.append(copy.deepcopy(self.project))
+            except KeyError:
+                st = "<b>Warning:</b>: an error occurs during import ! "
+                st += "It probably comes from your file which has not been correctly parsed. "
+                st += "Is it a raw <b>%s</b> file ?" % self.machine
+                QMessageBox.warning(self, "Warning file import", st)
 
     def closePlate(self):
         reply = QMessageBox.question(self, "Remove a plate",
