@@ -25,7 +25,7 @@ from pyQPCR.dialogs import *
 from pyQPCR.widgets.matplotlibWidget import MatplotlibWidget, NavToolBar
 from pyQPCR.widgets.tableMainWindow import PlateWidget, ResultWidget
 from pyQPCR.widgets.customCbox import GeneEchComboBox
-from pyQPCR.plate import Plaque, ReplicateError
+from pyQPCR.plate import Plaque, ReplicateError, PlateError
 from pyQPCR.wellGeneSample import WellError
 from pyQPCR.project import Project, NRQError
 import matplotlib
@@ -523,6 +523,8 @@ class Qpcr_qt(QMainWindow):
                 st += "It probably comes from your file which has not been correctly parsed. "
                 st += "Is it a raw <b>%s</b> file ?" % self.machine
                 QMessageBox.warning(self, "Warning file import", st)
+            except PlateError, e:
+                QMessageBox.warning(self, "Warning file import", str(e))
 
     def closePlate(self):
         reply = QMessageBox.question(self, "Remove a plate",
