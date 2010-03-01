@@ -21,7 +21,7 @@ import re
 import csv
 from pyQPCR.wellGeneSample import Ech, Gene, Puits, WellError
 from scipy.stats import t, norm
-from PyQt4.QtCore import Qt, QString
+from PyQt4.QtCore import Qt, QString, QFileInfo
 from numpy import mean, std, sqrt, log, log10, polyval, polyfit, sum, \
 array, append
 from pyQPCR.utils.odict import OrderedDict
@@ -52,6 +52,9 @@ class Plaque:
                 self.parseEppendorf()
             elif machine == 'Applied':
                 self.parseApplied()
+            # Raise exception if no well are detected
+            if len(self.listePuits) == 0:
+                raise PlateError(self.filename, machine)
 # Permet eventuellement de connaitre les genes/ech de ref 
         #self.getRefsFromFile()
 
@@ -429,6 +432,23 @@ class ReplicateError(Exception):
         st += "</ul>"
 
         return st
+
+class PlateError(Exception):
+
+    def __init__(self, filename, machine):
+        self.filename = filename
+        self.machine = machine
+
+    def __str__(self):
+        st = "<b>Warning</b> : The file <b>%s </b> does not contain any well at the right format. " %  \
+              QFileInfo(self.filename).fileName()
+        st += "It probably comes from your raw data file. Your current PCR device is"
+        st += " <b>%s</b>, check your file corresponds to this machine !" % self.machine
+        st += " If the error continues to occur, post a message at "
+        st += r' <a href="http://sourceforge.net/projects/pyqpcr/forums/forum/918935">'
+        st += r'http://sourceforge.net/projects/pyqpcr/forums/forum/918935</a>'
+        return st
+
 
 if __name__ == '__main__':
     pl = Plaque('../samples/raw_std.txt')
