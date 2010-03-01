@@ -120,11 +120,11 @@ class Qpcr_qt(QMainWindow):
             self.ctMin = 35.
         self.confidence, status = settings.value("confidence").toDouble()
         self.errtype = settings.value("errtype").toString()
+        self.machine = settings.value("machine").toString()
         if not status:
             self.confidence = 0.9
             self.errtype = "normal"
             self.machine = 'Eppendorf'
-        self.machine = settings.value("machine").toString()
         geom = settings.value("Geometry").toByteArray()
         self.restoreGeometry(geom)
         self.restoreState(settings.value("MainWindow/State").toByteArray())
@@ -481,6 +481,9 @@ class Qpcr_qt(QMainWindow):
         elif self.machine == 'Applied':
             formats =[u"*.txt"]
             type = 'Applied machines'
+        else:
+            formats =[u"*.txt", u"*.csv"]
+            type = 'Eppendorf machines'
         fileNames = QFileDialog.getOpenFileNames(self,
                        "pyQPCR - Choose a file", dir, 
                        "Input files (%s) (%s)" % (type, " ".join(formats)))
