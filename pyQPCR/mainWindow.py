@@ -47,7 +47,6 @@ class Qpcr_qt(QMainWindow):
  
         self.filename = None
         self.printer = None
-        self.machine = 'Eppendorf'
 
         self.tree = QTreeWidget()
         self.tree.setHeaderLabel("Parameters")
@@ -124,6 +123,8 @@ class Qpcr_qt(QMainWindow):
         if not status:
             self.confidence = 0.9
             self.errtype = "normal"
+            self.machine = 'Eppendorf'
+        self.machine = settings.value("machine").toString()
         geom = settings.value("Geometry").toByteArray()
         self.restoreGeometry(geom)
         self.restoreState(settings.value("MainWindow/State").toByteArray())
@@ -474,10 +475,15 @@ class Qpcr_qt(QMainWindow):
     def fileImport(self):
         dir = os.path.dirname(self.filename) if self.filename is not None \
                 else "."
-        formats =[u"*.txt", u"*.csv"]
+        if self.machine == 'Eppendorf':
+            formats =[u"*.txt", u"*.csv"]
+            type = 'Eppendorf machines'
+        elif self.machine == 'Applied':
+            formats =[u"*.txt"]
+            type = 'Applied machines'
         fileNames = QFileDialog.getOpenFileNames(self,
                        "pyQPCR - Choose a file", dir, 
-                       "Input files (%s)" % " ".join(formats))
+                       "Input files (%s) (%s)" % (type, " ".join(formats)))
         if fileNames:
             for file in fileNames:
                 if not self.project.dicoPlates.has_key(QFileInfo(file).fileName()):
@@ -725,12 +731,14 @@ class Qpcr_qt(QMainWindow):
         dialog = SettingsDialog(self, ect=self.ectMax,
                                 ctmin=self.ctMin,
                                 confidence=self.confidence,
-                                errtype=self.errtype)
+                                errtype=self.errtype,
+                                machine=self.machine)
         if dialog.exec_():
             self.ectMax, st = dialog.ectLineEdit.text().toFloat()
             self.ctMin, st = dialog.ctMinLineEdit.text().toFloat()
             self.confidence, st = dialog.confCbox.currentText().toFloat()
             errtype = dialog.typeCbox.currentText()
+            self.machine = dialog.machBox.currentText()
             self.errtype = dialog.types[errtype]
             self.confidence /= 100
 
@@ -794,8 +802,11 @@ class Qpcr_qt(QMainWindow):
                   else QVariant()
             errtype = QVariant(self.errtype) if self.errtype \
                   else QVariant()
+            machine = QVariant(self.machine) if self.machine \
+                  else QVariant()
             settings.setValue("confidence", confidence)
             settings.setValue("errtype", errtype)
+            settings.setValue("machine", machine)
             settings.setValue("Geometry", QVariant(self.saveGeometry()))
             settings.setValue("MainWindow/State", QVariant(self.saveState()))
             settings.setValue("VerticalSplitter", 
