@@ -1,0 +1,66 @@
+* Block Type = 96well
+* Chemistry = SYBR_GREEN
+* Experiment File Name = D:\Applied Biosystems\StepOne Software v2.0\experiments\mh0303.eds
+* Experiment Run End Time = 2008-03-03 18:02:16 PM CET
+* Instrument Type = steponeplus
+* Passive Reference = 
+
+[Results]
+Well	Sample Name	Target Name	Task	Reporter	Quencher	Cт	Cт Mean	Cт SD	Quantity	Normalized Quantity	Normalized Quantity Mean	Normalized Quantity SEM	RQ	RQ Min	RQ Max	Efficiency	Slope	Automatic Ct Threshold	Ct Threshold	Automatic Baseline	Baseline Start	Baseline End	Tm1	Tm2	Tm3	Comments	AMPNC	HIGHSD
+A1	5	18S	UNKNOWN	SYBR	None	4.5686	4.3874	0.1574			1	0						true	3036.1658	true	1	2					N	N
+A2	5	18S	UNKNOWN	SYBR	None	4.3102	4.3874	0.1574			1	0						true	3036.1658	true	1	2					N	N
+A3	5	18S	UNKNOWN	SYBR	None	4.2835	4.3874	0.1574			1	0						true	3036.1658	true	1	2	78.5177				N	N
+A4	7	18S	UNKNOWN	SYBR	None	6.0946	6.1233	0.0248			1	0						true	3036.1658	true	1	2	78.5177				N	N
+A5	7	18S	UNKNOWN	SYBR	None	6.1389	6.1233	0.0248			1	0						true	3036.1658	true	1	2	78.5058				N	N
+A6	7	18S	UNKNOWN	SYBR	None	6.1362	6.1233	0.0248			1	0						true	3036.1658	true	1	2	78.5058				N	N
+A7	9	18S	UNKNOWN	SYBR	None	8.1606	8.117	0.108			1	0						true	3036.1658	true	1	2	78.5035				N	N
+A8	9	18S	UNKNOWN	SYBR	None	7.994	8.117	0.108			1	0						true	3036.1658	true	1	2	78.5035				N	N
+A9	9	18S	UNKNOWN	SYBR	None	8.1964	8.117	0.108			1	0						true	3036.1658	true	1	2	78.1191				N	N
+A10	11	18S	UNKNOWN	SYBR	None	10.2138	10.1594	0.0476			1	0						true	3036.1658	true	1	2	78.1191				N	N
+A11	11	18S	UNKNOWN	SYBR	None	10.1253	10.1594	0.0476			1	0						true	3036.1658	true	1	2	78.4997				N	N
+A12	11	18S	UNKNOWN	SYBR	None	10.1391	10.1594	0.0476			1	0						true	3036.1658	true	1	2	78.4997				N	N
+B1	13	18S	UNKNOWN	SYBR	None	12.3807	12.5123	0.1288			1	0						true	3036.1658	true	1	2					N	N
+B2	13	18S	UNKNOWN	SYBR	None	12.5183	12.5123	0.1288			1	0						true	3036.1658	true	1	2					N	N
+B3	13	18S	UNKNOWN	SYBR	None	12.638	12.5123	0.1288			1	0						true	3036.1658	true	1	2	78.5177				N	N
+B4	15	18S	UNKNOWN	SYBR	None	14.7658	14.6844	0.1179			1	0						true	3036.1658	true	1	2	78.5177				N	N
+B5	15	18S	UNKNOWN	SYBR	None	14.7382	14.6844	0.1179			1	0						true	3036.1658	true	3	5	78.5058				N	N
+B6	15	18S	UNKNOWN	SYBR	None	14.5493	14.6844	0.1179			1	0						true	3036.1658	true	1	2	78.5058				N	N
+B7	17	18S	UNKNOWN	SYBR	None	16.7346	16.761	0.0442			1	0						true	3036.1658	true	3	9	78.1158				N	N
+B8	17	18S	UNKNOWN	SYBR	None	16.7364	16.761	0.0442			1	0						true	3036.1658	true	3	9	78.1158				N	N
+B9	17	18S	UNKNOWN	SYBR	None	16.8119	16.761	0.0442			1	0						true	3036.1658	true	3	9	78.1191				N	N
+B10	19	18S	UNKNOWN	SYBR	None	18.7549	18.7702	0.0945			1	0						true	3036.1658	true	3	8	78.1191				N	N
+B11	19	18S	UNKNOWN	SYBR	None	18.8715	18.7702	0.0945			1	0						true	3036.1658	true	3	10	78.4997				N	N
+B12	19	18S	UNKNOWN	SYBR	None	18.6844	18.7702	0.0945			1	0						true	3036.1658	true	3	8	78.1119				N	N
+C1	21	18S	UNKNOWN	SYBR	None	20.8024	20.7881	0.0412			1	0						true	3036.1658	true	3	12					N	N
+C2	21	18S	UNKNOWN	SYBR	None	20.7417	20.7881	0.0412			1	0						true	3036.1658	true	3	12					N	N
+C3	21	18S	UNKNOWN	SYBR	None	20.8203	20.7881	0.0412			1	0						true	3036.1658	true	3	12	78.5177				N	N
+C4	23	18S	UNKNOWN	SYBR	None	22.6345	22.699	0.0577			1	0						true	3036.1658	true	3	13	78.5177				N	N
+C5	23	18S	UNKNOWN	SYBR	None	22.7457	22.699	0.0577			1	0						true	3036.1658	true	3	15	78.5058				N	N
+C6	23	18S	UNKNOWN	SYBR	None	22.7167	22.699	0.0577			1	0						true	3036.1658	true	3	10	78.5058				N	N
+C7	25	18S	UNKNOWN	SYBR	None	24.6605	24.5705	0.0859			1	0						true	3036.1658	true	3	16	78.1158				N	N
+C8	25	18S	UNKNOWN	SYBR	None	24.4894	24.5705	0.0859			1	0						true	3036.1658	true	3	16	78.1158				N	N
+C9	25	18S	UNKNOWN	SYBR	None	24.5617	24.5705	0.0859			1	0						true	3036.1658	true	3	12	78.1191				N	N
+C10	27	18S	UNKNOWN	SYBR	None	26.7654	26.8224	0.1525			1	0						true	3036.1658	true	3	16	78.1191				N	N
+C11	27	18S	UNKNOWN	SYBR	None	26.9952	26.8224	0.1525			1	0						true	3036.1658	true	3	17	78.1119				N	N
+C12	27	18S	UNKNOWN	SYBR	None	26.7067	26.8224	0.1525			1	0						true	3036.1658	true	3	18	78.1119				N	N
+D1	29	18S	UNKNOWN	SYBR	None	28.8887	28.748	0.23			1	0						true	3036.1658	true	3	12					N	N
+D2	29	18S	UNKNOWN	SYBR	None	28.4826	28.748	0.23			1	0						true	3036.1658	true	3	14					N	N
+D3	29	18S	UNKNOWN	SYBR	None	28.8727	28.748	0.23			1	0						true	3036.1658	true	3	21	78.1303				N	N
+D4	31	18S	UNKNOWN	SYBR	None	30.0764	30.2949	0.1893			1	0						true	3036.1658	true	3	22	78.1303				N	N
+D5	31	18S	UNKNOWN	SYBR	None	30.4098	30.2949	0.1893			1	0						true	3036.1658	true	3	15	78.1182				N	N
+D6	31	18S	UNKNOWN	SYBR	None	30.3985	30.2949	0.1893			1	0						true	3036.1658	true	3	22	78.1182				N	N
+D7	33	18S	UNKNOWN	SYBR	None	32.2836	32.401	0.4961			1	0						true	3036.1658	true	3	25	78.1158				N	N
+D8	33	18S	UNKNOWN	SYBR	None	32.9452	32.401	0.4961			1	0						true	3036.1658	true	3	22	78.1158				N	N
+D9	33	18S	UNKNOWN	SYBR	None	31.974	32.401	0.4961			1	0						true	3036.1658	true	3	19	77.7315				N	N
+D10	35	18S	UNKNOWN	SYBR	None	35.9402	35.0732	0.774			1	0						true	3036.1658	true	3	28	77.7315				N	Y
+D11	35	18S	UNKNOWN	SYBR	None	34.4519	35.0732	0.774			1	0						true	3036.1658	true	3	25	78.1119				N	Y
+D12	35	18S	UNKNOWN	SYBR	None	34.8273	35.0732	0.774			1	0						true	3036.1658	true	3	26	78.1119				N	Y
+E1		18S	NTC	SYBR	None	Undetermined	34.553											true	3036.1658	true	3	28	77.6413				N	N
+E2		18S	NTC	SYBR	None	34.553	34.553											true	3036.1658	true	3	27					Y	N
+E3		18S	NTC	SYBR	None	Undetermined	34.553											true	3036.1658	true	3	39					N	N
+
+Analysis Type = Singleplex
+Endogenous Control = 18S
+RQ Min/Max Confidence Level = 95.0
+Reference Sample = 5
+
