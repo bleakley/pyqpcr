@@ -163,6 +163,9 @@ class Project:
                 nomgene = well.gene.name
                 if not self.hashGene.has_key(nomgene):
                     self.hashGene[nomgene] = Gene(nomgene)
+                    if hasattr(plate, 'geneRef'):
+                        if plate.geneRef == nomgene:
+                            self.hashGene[nomgene].setRef(Qt.Checked)
 
     def initLocEch(self, plate=None):
         if plate is None:
@@ -176,6 +179,9 @@ class Project:
                 nomech = well.ech.name
                 if not self.hashEch.has_key(nomech):
                     self.hashEch[nomech] = Ech(nomech)
+                    if hasattr(plate, 'echRef'):
+                        if plate.echRef == nomech:
+                            self.hashEch[nomech].setRef(Qt.Checked)
 
     def initLocAm(self, plate=None):
         if plate is None:

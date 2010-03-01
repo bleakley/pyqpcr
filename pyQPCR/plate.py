@@ -159,14 +159,16 @@ class Plaque:
         fileencoding = "utf-8"
         splitter = re.compile(r'([\w .,\-\(\)\[\]\+\\/]*|\d+[.,]?\d*)\t', re.UNICODE)
         result = re.compile(r'\[Results\]')
+        motifSample = re.compile(r'Reference Sample = (.*)')
+        motifTarget = re.compile(r'Endogenous Control = (.*)')
         hasHeader = False
-        for ind, line in enumerate(iterator):
-            if len(result.findall(line)) != 0:
+        for ind, rawline in enumerate(iterator):
+            if len(result.findall(rawline)) != 0:
                 hasHeader = True
                 initTab = ind + 1
                 continue
-            line = line.decode(fileencoding)
-            line = splitter.findall(line)
+            rawline = rawline.decode(fileencoding)
+            line = splitter.findall(rawline)
 
             if hasHeader:
                 if ind == initTab:
@@ -220,6 +222,11 @@ class Plaque:
 
                     setattr(self, x.name, x)
                     self.listePuits.append(x)
+            if motifSample.match(rawline):
+                self.echRef = QString(motifSample.findall(rawline)[0])
+            if motifTarget.match(rawline):
+                self.geneRef = QString(motifTarget.findall(rawline)[0])
+
 
         file.close()
 
