@@ -101,7 +101,7 @@ class GeneDialog(QDialog):
                     pl.geneRef = nomgene
                     for geneName in pl.dicoGene.keys():
                         gene = self.project.hashGene[geneName]
-                        if gene.isRef == Qt.Checked and gene.name != geneName:
+                        if gene.isRef == Qt.Checked and gene.name != nomgene:
                             gene.setRef(Qt.Unchecked)
 
             if not self.project.hashGene.has_key(nomgene):

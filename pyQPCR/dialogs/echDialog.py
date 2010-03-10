@@ -98,7 +98,7 @@ class EchDialog(QDialog):
                     pl.echRef = nomech
                     for echName in pl.dicoEch.keys():
                         ech = self.project.hashEch[echName]
-                        if ech.isRef == Qt.Checked and ech.name != echName:
+                        if ech.isRef == Qt.Checked and ech.name != nomech:
                             ech.setRef(Qt.Unchecked)
 
             if not self.project.hashEch.has_key(nomech):
