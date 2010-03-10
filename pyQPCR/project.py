@@ -314,7 +314,6 @@ class Project:
         if len(broken) != 0:
             raise NRQError(broken)
 
-
     def findStd(self, ectMax, confidence, errtype):
         """
         This method allows to build a dictionnary for standard
@@ -419,6 +418,23 @@ class Project:
             self.barXticks[str(e)] = largeur[:i].sum() + \
                                      leftMargin +(nbar[i]-1.)*width/2.
             i += 1
+
+    def findUnknown(self):
+        """
+        This methods computes a list of length nplate which contains booleans
+        which indicate wheter a plate contains 'unknown' wells or not.
+        """
+        for pl in self.dicoPlates:
+            liste = []
+            for well in self.dicoPlates[pl].listePuits:
+                if well.type == QString('unknown'):
+                    liste.append(well)
+
+            if len(liste) == 0:
+                self.dicoPlates[pl].setUkn(False)
+            else:
+                self.dicoPlates[pl].setUkn(True)
+
 
 class NRQError(Exception):
 
