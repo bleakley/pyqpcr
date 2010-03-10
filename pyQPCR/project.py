@@ -157,12 +157,12 @@ class Project:
                 for well in self.dicoPlates[pl].listePuits:
                     nomgene = well.gene.name
                     if not self.hashGene.has_key(nomgene):
-                        self.hashGene[nomgene] = Gene(nomgene)
+                        self.hashGene[nomgene] = well.gene
         else:
             for well in plate.listePuits:
                 nomgene = well.gene.name
                 if not self.hashGene.has_key(nomgene):
-                    self.hashGene[nomgene] = Gene(nomgene)
+                    self.hashGene[nomgene] = well.gene
                     if hasattr(plate, 'geneRef'):
                         if plate.geneRef == nomgene:
                             self.hashGene[nomgene].setRef(Qt.Checked)
@@ -173,12 +173,12 @@ class Project:
                 for well in self.dicoPlates[pl].listePuits:
                     nomech = well.ech.name
                     if not self.hashEch.has_key(nomech):
-                        self.hashEch[nomech] = Ech(nomech)
+                        self.hashEch[nomech] = well.ech
         else:
             for well in plate.listePuits:
                 nomech = well.ech.name
                 if not self.hashEch.has_key(nomech):
-                    self.hashEch[nomech] = Ech(nomech)
+                    self.hashEch[nomech] = well.ech
                     if hasattr(plate, 'echRef'):
                         if plate.echRef == nomech:
                             self.hashEch[nomech].setRef(Qt.Checked)
