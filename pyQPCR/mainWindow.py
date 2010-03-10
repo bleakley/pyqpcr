@@ -1091,13 +1091,16 @@ class Qpcr_qt(QMainWindow):
         """
         A method to check negative samples quality
         """
+        st = "<b>Warning</b>: ct of the following wells are lower than %.2f :" % \
+                ctMin
+        st += '<ul>'
         for pl in self.project.dicoPlates:
             for well in self.project.dicoPlates[pl].listePuits:
                 if well.type == QString('negative'):
                     if well.ct <= ctMin:
-                        QMessageBox.warning(self, "Warning Negative",
-                               "<b>Warning</b>: ct of well %s lower than %.2f" \
-                                        % (well.name, ctMin))
+                        st += '<li><b>%s</b></li>' % well.name
+        st += '</ul>'
+        QMessageBox.warning(self, "Warning Negative", st)
 
     def setRefs(self):
         """
