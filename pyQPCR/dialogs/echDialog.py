@@ -83,7 +83,7 @@ class EchDialog(QDialog):
         if dialog.exec_():
             nomech = dialog.ech.text()
             state = dialog.ref.checkState()
-            ech = Ech(nomech, state)
+            e = Ech(nomech, state)
 
             if state == Qt.Checked:
                 if dialog.whichPlates.currentText() == QString('All Plates'):
@@ -102,11 +102,11 @@ class EchDialog(QDialog):
                             ech.setRef(Qt.Unchecked)
 
             if not self.project.hashEch.has_key(nomech):
-                self.project.hashEch[nomech] = ech
+                self.project.hashEch[nomech] = e
                 self.populateList()
             else:
                 QMessageBox.warning(self, "Already exist",
-                        "The sample %s is already defined !" % ech)
+                        "The sample %s is already defined !" % e)
 
     def edit(self):
         if len(self.listWidget.selectedItems()) == 0:
