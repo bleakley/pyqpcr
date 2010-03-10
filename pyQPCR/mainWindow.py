@@ -1094,47 +1094,60 @@ class Qpcr_qt(QMainWindow):
         st = "<b>Warning</b>: ct of the following wells are lower than %.2f :" % \
                 ctMin
         st += '<ul>'
+        bad = False
         for pl in self.project.dicoPlates:
             for well in self.project.dicoPlates[pl].listePuits:
                 if well.type == QString('negative'):
                     if well.ct <= ctMin:
-                        st += '<li><b>%s</b></li>' % well.name
+                        st += '<li><b>%s</b> : %.2f </li>' % (well.name, well.ct)
+                        bad = True
         st += '</ul>'
-        QMessageBox.warning(self, "Warning Negative", st)
+        if bad:
+            QMessageBox.warning(self, "Warning Negative", st)
 
     def setRefs(self):
         """
         Determine the reference target and sample
         """
+        bad = True
         for plname in self.project.dicoPlates.keys():
             pl = self.project.dicoPlates[plname]
-            if pl.geneRef == '':
-                QMessageBox.warning(self, "Warning",
-                    "Reference target undefined for plate %s!" % plname)
-                raise ValueError
-            elif not pl.dicoGene.has_key(pl.geneRef):
-                QMessageBox.warning(self, "Warning",
-                    """Wrong reference target for plate %s!
-                       This plate does not contain %s.""" % (plname, pl.geneRef))
-                raise ValueError
-            if pl.echRef == '':
-                QMessageBox.warning(self, "Warning",
-                    "Reference sample undefined for plate %s!" % plname)
-                raise ValueError
-            elif not pl.dicoEch.has_key(pl.echRef):
-                QMessageBox.warning(self, "Warning",
-                    """Wrong reference sample for plate %s!
-                       This plate does not contain %s.""" % (plname, pl.echRef))
-                raise ValueError
+            if pl.contUkn:
+                bad = False
+                if pl.geneRef == '':
+                    QMessageBox.warning(self, "Warning",
+                        "Reference target undefined for plate %s!" % plname)
+                    raise ValueError
+                elif not pl.dicoGene.has_key(pl.geneRef):
+                    QMessageBox.warning(self, "Warning",
+                        """Wrong reference target for plate %s!
+                           This plate does not contain %s.""" % (plname, pl.geneRef))
+                    raise ValueError
+                if pl.echRef == '':
+                    QMessageBox.warning(self, "Warning",
+                        "Reference sample undefined for plate %s!" % plname)
+                    raise ValueError
+                elif not pl.dicoEch.has_key(pl.echRef):
+                    QMessageBox.warning(self, "Warning",
+                        """Wrong reference sample for plate %s!
+                           This plate does not contain %s.""" % (plname, pl.echRef))
+                    raise ValueError
+        if bad:
+            QMessageBox.warning(self, "Warning",
+                "The plates does not contain 'unknown'-type wells."
+                "The quantification can't be proceeded.")
+            raise ValueError
 
     def computeUnknown(self):
-# On verifie la qualite des negative control
-        self.checkNegative(self.ctMin)
+# On verifie que chaque plaque contient des unknown
+        self.project.findUnknown()
 # On fixe le gene de reference et le triplicat de reference
         try:
             self.setRefs()
         except ValueError:
             return
+# On verifie la qualite des negative control
+        self.checkNegative(self.ctMin)
 # On construit tous les triplicats
         try:
             self.project.findTrip(self.ectMax, self.confidence,
@@ -1220,6 +1233,11 @@ class Qpcr_qt(QMainWindow):
                 self.pileResults[key].populateResult(pl)
             self.populateTree()
             self.plotStd()
+        else:
+            QMessageBox.warning(self, "Warning",
+                "The plates does not contain 'standard'-type wells."
+                "The standard curves can't be proceeded.")
+
 
     def plotUnknown(self):
         """

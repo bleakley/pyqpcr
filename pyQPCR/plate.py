@@ -45,6 +45,7 @@ class Plaque:
 
         self.geneRef = ''
         self.echRef = ''
+        self.contUkn = True
  
         if self.filename is not None:
             self.determineFileType(self.filename)
@@ -294,6 +295,15 @@ class Plaque:
             html += well.writeHtml()
         html += "</table>"
         return html
+
+    def setUkn(self, cont):
+        """
+        A method to change the attribute contUkn.
+
+        @param cont: a boolean with the new value o contUkn
+        @type cont: logical
+        """
+        self.contUkn = cont
 
     def setDicoGene(self):
         self.dicoGene = OrderedDict()
