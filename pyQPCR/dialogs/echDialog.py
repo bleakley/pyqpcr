@@ -79,7 +79,7 @@ class EchDialog(QDialog):
             self.listWidget.addItem(item)
 
     def add(self):
-        dialog = AddEchDialog(self, listPlates=self.project.dicoPlates.keys())
+        dialog = AddEchDialog(self, listPlates=self.project.dicoPlates)
         if dialog.exec_():
             nomech = dialog.ech.text()
             state = dialog.ref.checkState()
@@ -98,7 +98,7 @@ class EchDialog(QDialog):
                     pl.echRef = nomech
                     for echName in pl.dicoEch.keys():
                         ech = self.project.hashEch[echName]
-                        if ech.isRef == Qt.Checked and ech.name != name:
+                        if ech.isRef == Qt.Checked and ech.name != echName:
                             ech.setRef(Qt.Unchecked)
 
             if not self.project.hashEch.has_key(nomech):
@@ -113,8 +113,7 @@ class EchDialog(QDialog):
             return
         ech_before = self.listWidget.currentItem().statusTip()
         ech = self.project.hashEch[ech_before]
-        dialog = AddEchDialog(self, ech=ech, 
-                              listPlates=self.project.dicoPlates.keys())
+        dialog = AddEchDialog(self, ech=ech, listPlates=self.project.dicoPlates)
         if dialog.exec_():
             name = dialog.ech.text()
             state = dialog.ref.checkState()
@@ -200,8 +199,8 @@ class AddEchDialog(QDialog):
         self.ref = QCheckBox()
         self.whichPlates = QComboBox()
         self.whichPlates.addItem("All Plates")
-        if listPlates is not None:
-            self.whichPlates.addItems(listPlates)
+        if listPlates.keys() is not None:
+            self.whichPlates.addItems(listPlates.keys())
 
         if ech is not None:
             self.ref.setCheckState(ech.isRef)
@@ -209,6 +208,17 @@ class AddEchDialog(QDialog):
             self.ref.setCheckState(Qt.Unchecked)
         buttonBox = QDialogButtonBox(QDialogButtonBox.Ok|
                                      QDialogButtonBox.Cancel)
+
+        liste = []
+        if ech is not None:
+            for pl in listPlates.keys():
+                if ech.name == listPlates[pl].echRef:
+                    liste.append(pl)
+        if len(liste) != 1:
+            self.whichPlates.setCurrentIndex(0)
+        else:
+            self.whichPlates.setCurrentIndex(listPlates.index(liste[0])+1)
+
 
         layout = QGridLayout()
         layout.addWidget(lab, 0, 0)

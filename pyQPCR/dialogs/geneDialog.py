@@ -78,7 +78,7 @@ class GeneDialog(QDialog):
             self.listWidget.addItem(item)
 
     def add(self):
-        dialog = AddGeneDialog(self, listPlates=self.project.dicoPlates.keys())
+        dialog = AddGeneDialog(self, listPlates=self.project.dicoPlates)
         if dialog.exec_():
             nomgene = dialog.gene.text()
             eff = dialog.eff.value()
@@ -101,14 +101,13 @@ class GeneDialog(QDialog):
                     pl.geneRef = nomgene
                     for geneName in pl.dicoGene.keys():
                         gene = self.project.hashGene[geneName]
-                        if gene.isRef == Qt.Checked and gene.name != name:
+                        if gene.isRef == Qt.Checked and gene.name != geneName:
                             gene.setRef(Qt.Unchecked)
 
             if not self.project.hashGene.has_key(nomgene):
                 self.project.hashGene[nomgene] = g
                 self.populateList()
             else:
-
                 QMessageBox.warning(self, "Already exist",
                         "The gene %s is already defined !" % nomgene)
 
@@ -117,8 +116,7 @@ class GeneDialog(QDialog):
             return
         gene_before = self.listWidget.currentItem().statusTip()
         gene = self.project.hashGene[gene_before]
-        dialog = AddGeneDialog(self, ge=gene, 
-                               listPlates=self.project.dicoPlates.keys())
+        dialog = AddGeneDialog(self, ge=gene, listPlates=self.project.dicoPlates)
         if dialog.exec_():
             name = dialog.gene.text()
             eff = dialog.eff.value()
@@ -236,12 +234,22 @@ class AddGeneDialog(QDialog):
         self.ref = QCheckBox()
         self.whichPlates = QComboBox()
         self.whichPlates.addItem("All Plates")
-        if listPlates is not None:
-            self.whichPlates.addItems(listPlates)
+        if listPlates.keys() is not None:
+            self.whichPlates.addItems(listPlates.keys())
         if ge is not None:
             self.ref.setCheckState(g.isRef)
         else:
             self.ref.setCheckState(Qt.Unchecked)
+
+        liste = []
+        if ge is not None:
+            for pl in listPlates.keys():
+                if ge.name == listPlates[pl].geneRef:
+                    liste.append(pl)
+        if len(liste) != 1:
+            self.whichPlates.setCurrentIndex(0)
+        else:
+            self.whichPlates.setCurrentIndex(listPlates.index(liste[0])+1)
 
         layout = QGridLayout()
         layout.addWidget(lab, 0, 0)
