@@ -89,7 +89,6 @@ class GeneDialog(QDialog):
 
             if not self.project.hashGene.has_key(nomgene):
                 self.project.hashGene[nomgene] = g
-                self.populateList()
             else:
                 QMessageBox.warning(self, "Already exist",
                         "The gene %s is already defined !" % nomgene)
@@ -106,10 +105,8 @@ class GeneDialog(QDialog):
                         gene = self.project.hashGene[geneName]
                         if gene.isRef == Qt.Checked and gene.name != nomgene:
                             gene.setRef(Qt.Unchecked)
+            self.populateList()
 
-            if not self.project.hashGene.has_key(nomgene):
-                self.project.hashGene[nomgene] = g
-                self.populateList()
 
     def edit(self):
         if len(self.listWidget.selectedItems()) == 0:
@@ -122,6 +119,14 @@ class GeneDialog(QDialog):
             eff = dialog.eff.value()
             pm = dialog.pmerror.value()
             state = dialog.ref.checkState()
+# Si le gene etait gene de reference et qu'il est desactive
+# alors la plaque n'a plus de gene de reference
+            if gene.isRef == Qt.Checked and state == Qt.Unchecked:
+                for pl in self.project.dicoPlates.values():
+                    if pl.geneRef == gene.name:
+                        pl.geneRef = ''
+
+            
 
             gene.setRef(state)
             gene.setEff(eff)
@@ -140,7 +145,16 @@ class GeneDialog(QDialog):
 
 # dico
             ind = None
-            for pl in self.project.dicoPlates.values():
+            for plaque in self.project.dicoPlates.keys():
+                pl = self.project.dicoPlates[plaque]
+                if plaque not in dialog.refPlates:
+                    if pl.geneRef == name:
+                        pl.geneRef = ''
+                    for geneName in pl.dicoGene.keys():
+                        g = self.project.hashGene[geneName]
+                        if pl.geneRef == geneName:
+                            g.setRef(Qt.Checked)
+
                 if pl.dicoGene.has_key(gene_before) and gene_before != name:
                     ind = pl.dicoGene.index(gene_before)
                     pl.dicoGene.insert(ind, name, pl.dicoGene[gene_before])

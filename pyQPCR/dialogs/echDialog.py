@@ -85,28 +85,24 @@ class EchDialog(QDialog):
             state = dialog.ref.checkState()
             e = Ech(nomech, state)
 
-            if state == Qt.Checked:
-                if dialog.whichPlates.currentText() == QString('All Plates'):
-                    for pl in self.project.dicoPlates.values():
-                        pl.echRef = nomech
-                    for ech in self.project.hashEch.values():
-                        ech.setRef(Qt.Unchecked)
-
-                else:
-                    currentPlate = dialog.whichPlates.currentText()
-                    pl = self.project.dicoPlates[currentPlate]
-                    pl.echRef = nomech
-                    for echName in pl.dicoEch.keys():
-                        ech = self.project.hashEch[echName]
-                        if ech.isRef == Qt.Checked and ech.name != nomech:
-                            ech.setRef(Qt.Unchecked)
-
             if not self.project.hashEch.has_key(nomech):
                 self.project.hashEch[nomech] = e
-                self.populateList()
             else:
                 QMessageBox.warning(self, "Already exist",
                         "The sample %s is already defined !" % e)
+
+            if state == Qt.Checked:
+                for pl in dialog.refPlates:
+                    plaque = self.project.dicoPlates[pl]
+                    if not plaque.dicoEch.has_key(nomech):
+                        plaque.dicoEch[nomech] = []
+                    plaque.echRef = nomech
+                    for echName in plaque.dicoEch.keys():
+                        ech = self.project.hashEch[echName]
+                        if ech.isRef == Qt.Checked and ech.name != nomech:
+                            ech.setRef(Qt.Unchecked)
+            self.populateList()
+
 
     def edit(self):
         if len(self.listWidget.selectedItems()) == 0:
@@ -118,32 +114,35 @@ class EchDialog(QDialog):
             name = dialog.ech.text()
             state = dialog.ref.checkState()
 # Si l'echantillon etait ech de reference et qu'il est desactive
-# alors la project n'a plus d'echantillon de reference
+# alors la plaque n'a plus d'echantillon de reference
             if ech.isRef == Qt.Checked and state == Qt.Unchecked:
-                delattr(self.project, "echRef")
+                for pl in self.project.dicoPlates.values():
+                    if pl.echRef == ech.name:
+                        pl.echRef = ''
 
             ech.setName(name)
             ech.setRef(state)
 
             if state == Qt.Checked:
-                if dialog.whichPlates.currentText() == QString('All Plates'):
-                    for pl in self.project.dicoPlates.values():
-                        pl.echRef = name
-                    for e in self.project.hashEch.values():
-                        if e.isRef == Qt.Checked and e.name != name:
-                            e.setRef(Qt.Unchecked)
-
-                else:
-                    currentPlate = dialog.whichPlates.currentText()
-                    pl = self.project.dicoPlates[currentPlate]
-                    pl.echRef = name
-                    for echName in pl.dicoEch.keys():
+                for pl in dialog.refPlates:
+                    plaque = self.project.dicoPlates[pl]
+                    plaque.echRef = name
+                    for echName in plaque.dicoEch.keys():
                         e = self.project.hashEch[echName]
                         if e.isRef == Qt.Checked and e.name != name:
                             e.setRef(Qt.Unchecked)
+
 # dico
             ind = None
-            for pl in self.project.dicoPlates.values():
+            for plaque in self.project.dicoPlates.keys():
+                pl = self.project.dicoPlates[plaque]
+                if plaque not in dialog.refPlates:
+                    if pl.echRef == name:
+                        pl.echRef = ''
+                    for echName in pl.dicoEch.keys():
+                        e = self.project.hashEch[echName]
+                        if pl.echRef == echName:
+                            e.setRef(Qt.Checked)
                 if pl.dicoEch.has_key(ech_before) and ech_before != name:
                     ind = pl.dicoEch.index(ech_before)
                     pl.dicoEch.insert(ind, name, pl.dicoEch[ech_before])
@@ -197,27 +196,21 @@ class AddEchDialog(QDialog):
             self.ech = QLineEdit()
         labRef = QLabel("Reference:")
         self.ref = QCheckBox()
-        self.whichPlates = QComboBox()
-        self.whichPlates.addItem("All Plates")
-        if listPlates.keys() is not None:
-            self.whichPlates.addItems(listPlates.keys())
 
         if ech is not None:
             self.ref.setCheckState(ech.isRef)
         else:
             self.ref.setCheckState(Qt.Unchecked)
+
+        self.widList = QListWidget()
+        self.widList.setVisible(self.ref.isChecked())
+        self.widList.setAlternatingRowColors(True)
+        self.widList.setSelectionMode(QAbstractItemView.MultiSelection)
+        self.populateList(listPlates, ech)
+
         buttonBox = QDialogButtonBox(QDialogButtonBox.Ok|
                                      QDialogButtonBox.Cancel)
 
-        liste = []
-        if ech is not None:
-            for pl in listPlates.keys():
-                if ech.name == listPlates[pl].echRef:
-                    liste.append(pl)
-        if len(liste) != 1:
-            self.whichPlates.setCurrentIndex(0)
-        else:
-            self.whichPlates.setCurrentIndex(listPlates.index(liste[0])+1)
 
 
         layout = QGridLayout()
@@ -226,14 +219,38 @@ class AddEchDialog(QDialog):
         hLay = QHBoxLayout()
         hLay.addWidget(labRef)
         hLay.addWidget(self.ref)
-        hLay.addWidget(self.whichPlates)
         layout.addLayout(hLay, 1, 0, 1, 2)
-        layout.addWidget(buttonBox, 2, 0, 1, 2)
+        layout.addWidget(self.widList, 2, 0, 1, 2)
+        layout.addWidget(buttonBox, 3, 0, 1, 2)
+        layout.setSizeConstraint(QLayout.SetFixedSize)
         self.setLayout(layout)
 
         self.connect(buttonBox, SIGNAL("accepted()"), self, SLOT("accept()"))
         self.connect(buttonBox, SIGNAL("rejected()"), self, SLOT("reject()"))
+        self.connect(self.ref, SIGNAL("stateChanged(int)"), self.unHide)
+
         self.setWindowTitle("New sample")
+
+    def populateList(self, data, ech):
+        self.widList.clear()
+        for it in data.keys():
+            item = QListWidgetItem(it)
+            item.setStatusTip(it)
+            self.widList.addItem(item)
+            if ech is not None:
+                if ech.name == data[it].echRef:
+                    self.widList.setItemSelected(item, True)
+
+    def unHide(self):
+        self.widList.setVisible(self.ref.isChecked())
+
+
+    def accept(self):
+        self.refPlates = []
+        for it in self.widList.selectedItems():
+            self.refPlates.append(it.text())
+        QDialog.accept(self)
+
 
 if __name__ == "__main__":
     import sys
