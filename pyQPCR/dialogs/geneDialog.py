@@ -87,19 +87,22 @@ class GeneDialog(QDialog):
             g = Gene(nomgene, eff, pm)
             g.setRef(state)
 
+            if not self.project.hashGene.has_key(nomgene):
+                self.project.hashGene[nomgene] = g
+                self.populateList()
+            else:
+                QMessageBox.warning(self, "Already exist",
+                        "The gene %s is already defined !" % nomgene)
+                return
+
             if state == Qt.Checked:
 # si le gene de ref est pour toutes les plaques, toutes les autres passent a zero
-                if dialog.whichPlates.currentText() == QString('All Plates'):
-                    for pl in self.project.dicoPlates.values():
-                        pl.geneRef = nomgene
-                    for gene in self.project.hashGene.values():
-                        gene.setRef(Qt.Unchecked)
-# sinon, tous les autres genes de cette plaque passent a non ref
-                else:
-                    currentPlate = dialog.whichPlates.currentText()
-                    pl = self.project.dicoPlates[currentPlate]
-                    pl.geneRef = nomgene
-                    for geneName in pl.dicoGene.keys():
+                for pl in dialog.refPlates:
+                    plaque = self.project.dicoPlates[pl]
+                    if not plaque.dicoGene.has_key(nomgene):
+                        plaque.dicoGene[nomgene] = []
+                    plaque.geneRef = nomgene
+                    for geneName in plaque.dicoGene.keys():
                         gene = self.project.hashGene[geneName]
                         if gene.isRef == Qt.Checked and gene.name != nomgene:
                             gene.setRef(Qt.Unchecked)
@@ -107,9 +110,6 @@ class GeneDialog(QDialog):
             if not self.project.hashGene.has_key(nomgene):
                 self.project.hashGene[nomgene] = g
                 self.populateList()
-            else:
-                QMessageBox.warning(self, "Already exist",
-                        "The gene %s is already defined !" % nomgene)
 
     def edit(self):
         if len(self.listWidget.selectedItems()) == 0:
@@ -130,18 +130,10 @@ class GeneDialog(QDialog):
 
             if state == Qt.Checked:
 # si le gene de ref est pour toutes les plaques, toutes les autres passent a zero
-                if dialog.whichPlates.currentText() == QString('All Plates'):
-                    for pl in self.project.dicoPlates.values():
-                        pl.geneRef = name
-                    for g in self.project.hashGene.values():
-                        if g.isRef == Qt.Checked and g.name != name:
-                            g.setRef(Qt.Unchecked)
-# sinon, tous les autres genes de cette plaque passent a non ref
-                else:
-                    currentPlate = dialog.whichPlates.currentText()
-                    pl = self.project.dicoPlates[currentPlate]
-                    pl.geneRef = name
-                    for geneName in pl.dicoGene.keys():
+                for pl in dialog.refPlates:
+                    plaque = self.project.dicoPlates[pl]
+                    plaque.geneRef = name
+                    for geneName in plaque.dicoGene.keys():
                         g = self.project.hashGene[geneName]
                         if g.isRef == Qt.Checked and g.name != name:
                             g.setRef(Qt.Unchecked)
@@ -232,24 +224,16 @@ class AddGeneDialog(QDialog):
         hlayout.addWidget(self.pmerror)
         labRef = QLabel("Reference:")
         self.ref = QCheckBox()
-        self.whichPlates = QComboBox()
-        self.whichPlates.addItem("All Plates")
-        if listPlates.keys() is not None:
-            self.whichPlates.addItems(listPlates.keys())
         if ge is not None:
             self.ref.setCheckState(g.isRef)
         else:
             self.ref.setCheckState(Qt.Unchecked)
 
-        liste = []
-        if ge is not None:
-            for pl in listPlates.keys():
-                if ge.name == listPlates[pl].geneRef:
-                    liste.append(pl)
-        if len(liste) != 1:
-            self.whichPlates.setCurrentIndex(0)
-        else:
-            self.whichPlates.setCurrentIndex(listPlates.index(liste[0])+1)
+        self.widList = QListWidget()
+        self.widList.setVisible(self.ref.isChecked())
+        self.widList.setAlternatingRowColors(True)
+        self.widList.setSelectionMode(QAbstractItemView.MultiSelection)
+        self.populateList(listPlates, ge)
 
         layout = QGridLayout()
         layout.addWidget(lab, 0, 0)
@@ -259,21 +243,43 @@ class AddGeneDialog(QDialog):
         hLay = QHBoxLayout()
         hLay.addWidget(labRef)
         hLay.addWidget(self.ref)
-        hLay.addWidget(self.whichPlates)
+        layout.setSizeConstraint(QLayout.SetFixedSize)
         layout.addLayout(hLay, 2, 0, 1, 2)
-        layout.addWidget(buttonBox, 3, 0, 1, 2)
+        layout.addWidget(self.widList, 3, 0, 1, 2)
+        layout.addWidget(buttonBox, 4, 0, 1, 2)
         self.setLayout(layout)
 
         self.connect(buttonBox, SIGNAL("accepted()"), self, SLOT("accept()"))
         self.connect(buttonBox, SIGNAL("rejected()"), self, SLOT("reject()"))
+        self.connect(self.ref, SIGNAL("stateChanged(int)"), self.unHide)
         self.setWindowTitle("New target")
+
+    def populateList(self, data, ge):
+        self.widList.clear()
+        for it in data.keys():
+            item = QListWidgetItem(it)
+            item.setStatusTip(it)
+            self.widList.addItem(item)
+            if ge is not None:
+                if ge.name == data[it].geneRef:
+                    self.widList.setItemSelected(item, True)
+
+    def unHide(self):
+        self.widList.setVisible(self.ref.isChecked())
+
+
+    def accept(self):
+        self.refPlates = []
+        for it in self.widList.selectedItems():
+            self.refPlates.append(it.text())
+        QDialog.accept(self)        
 
 
 if __name__=="__main__":
     import sys
-    from plaque import *
+    from project import *
     app = QApplication(sys.argv)
-    pl = Plaque('toto.csv')
-    f = GeneDialog(plaque=pl)
+    pl = Project('../../samples/2plates.xml')
+    f = GeneDialog(project=pl)
     f.show()
     app.exec_()
