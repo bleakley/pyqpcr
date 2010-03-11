@@ -85,7 +85,7 @@ else:
                 } 
 
 setup(name='pyQPCR',
-      version='0.3',
+      version='0.4',
       description='a free software to deal qPCR',
       long_description='a qt4 based interface to deal qPCR',
       author='Thomas Gastine',
