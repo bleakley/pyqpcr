@@ -38,7 +38,7 @@ import copy
 __author__ = "$Author$"
 __date__ = "$Date$"
 __version__ = "$Rev$"
-__progversion__ = "0.3"
+__progversion__ = "0.4"
 
 class Qpcr_qt(QMainWindow):
 
@@ -751,7 +751,7 @@ class Qpcr_qt(QMainWindow):
         import platform
         QMessageBox.about(self, "About pyQPCR",
         """<b>pyQPCR</b> v %s
-        <p>Copyright &copy; 2008- Thomas Gastine
+        <p>Copyright &copy; 2008- Thomas Gastine - Magali Hennion
         All rights reserved.
         <p>This application can be used to perform
         simple qPCR analysis.
