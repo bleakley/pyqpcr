@@ -45,6 +45,7 @@ class Qpcr_qt(QMainWindow):
     def __init__(self, parent=None):
         QMainWindow.__init__(self, parent)
  
+        self.setMinimumSize(640, 480)
         self.filename = None
         self.printer = None
 
@@ -73,9 +74,9 @@ class Qpcr_qt(QMainWindow):
         self.setCentralWidget(self.mainSplitter)
 
         self.vSplitter.setStretchFactor(0, 1)
-        self.vSplitter.setStretchFactor(1, 3)
-        self.mainSplitter.setStretchFactor(0, 1)
-        self.mainSplitter.setStretchFactor(1, 2)
+        self.vSplitter.setStretchFactor(1, 9)
+        self.mainSplitter.setStretchFactor(0, 2)
+        self.mainSplitter.setStretchFactor(1, 1)
 
         status = self.statusBar()
 
