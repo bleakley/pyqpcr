@@ -51,8 +51,10 @@ class Plaque:
             self.determineFileType(self.filename)
             if machine == 'Eppendorf':
                 self.parseEppendorf()
-            elif machine == 'Applied':
-                self.parseApplied()
+            elif machine == 'Applied StepOne':
+                self.parseAppliedStepOne()
+            elif machine == 'Applied 7000':
+                self.parseApplied7000()
             # Raise exception if no well are detected
             if len(self.listePuits) == 0:
                 raise PlateError(self.filename, machine)
@@ -151,9 +153,58 @@ class Plaque:
                 setattr(self, name, value)
         file.close()
 
-    def parseApplied(self):
+    def parseApplied7000(self):
         """
-        This method allows to parse Applied raw data.
+        This method allows to parse Applied 7000 raw data.
+        """
+        file = open(self.filename, 'r')
+        iterator = csv.reader(file, delimiter=",")
+        hasHeader = False
+        for ind, line in enumerate(iterator):
+            if len(line) != 0:
+                if line[0] == 'Well':
+                    hasHeader = True
+                    initTab = ind
+            if hasHeader:
+                if ind == initTab:
+                    self.header = OrderedDict()
+                    for i, field in enumerate(line):
+                        self.header[field] = i
+                    ncol = len(self.header.keys())
+
+                if ind != initTab and len(line) == ncol:
+                    champs = []
+                    for k, field in enumerate(line):
+                        try:
+                            if self.header.keys()[k] not in ('Sample Name', 'Detector'):
+                                dat = float(field.replace(',', '.'))
+                            else:
+                                dat = field
+                        except ValueError:
+                            dat = field
+                        champs.append(dat)
+                    if self.header.has_key('Well'):
+                        name = champs[self.header['Well']]
+                        x = Puits(name)
+                    else:
+                        raise KeyError
+                    if self.header.has_key('Sample Name'):
+                        echName = champs[self.header['Sample Name']]
+                        x.setEch(Ech(echName))
+                    if self.header.has_key('Ct'):
+                        ct = champs[self.header['Ct']]
+                        x.setCt(ct)
+                    if self.header.has_key('Qty'):
+                        amount = champs[self.header['Qty']]
+                    if self.header.has_key('Detector'):
+                        geneName = champs[self.header['Detector']]
+                        x.setGene(Gene(geneName))
+                    setattr(self, x.name, x)
+                    self.listePuits.append(x)
+
+    def parseAppliedStepOne(self):
+        """
+        This method allows to parse Applied StepOne raw data.
         """
         file = open(self.filename, 'r')
         iterator = file.readlines()
@@ -177,7 +228,6 @@ class Plaque:
                     for i, field in enumerate(line):
                         self.header[field] = i
                     ncol = len(self.header.keys())
-            if hasHeader:
                 if ind != initTab and len(line) == ncol:
                     champs = []
                     for k, field in enumerate(line):
