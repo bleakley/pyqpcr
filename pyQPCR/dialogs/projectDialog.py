@@ -115,7 +115,7 @@ class NewProjectDialog(QDialog):
             type = 'Applied 7000 machines'
         fileNames = QFileDialog.getOpenFileNames(self,
                        "pyQPCR - Choose plates", dir,
-                       "Input files (%s) (%s)" % (type, " ".join(formats)))
+                       "Input files [%s] (%s)" % (type, " ".join(formats)))
         if fileNames:
             for fname in fileNames:
                 self.fileNames[QFileInfo(fname).fileName()] = fname
