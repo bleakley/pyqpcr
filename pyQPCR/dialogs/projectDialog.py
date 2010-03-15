@@ -43,7 +43,8 @@ class NewProjectDialog(QDialog):
         self.machBox = QComboBox()
         lab2.setBuddy(self.machBox)
         self.machBox.addItem("Eppendorf")
-        self.machBox.addItem("Applied")
+        self.machBox.addItem("Applied StepOne")
+        self.machBox.addItem("Applied 7000")
 
         lab3 = QLabel("<b>3. Plates files</b>")
         self.listFiles = QListWidget()
@@ -106,9 +107,12 @@ class NewProjectDialog(QDialog):
         if self.machBox.currentText() == 'Eppendorf':
             formats =[u"*.txt", u"*.csv"]
             type = 'Eppendorf machines'
-        elif self.machBox.currentText() == 'Applied':
+        elif self.machBox.currentText() == 'Applied StepOne':
             formats =[u"*.txt"]
-            type = 'Applied machines'
+            type = 'Applied StepOne machines'
+        elif self.machBox.currentText() == 'Applied 7000':
+            formats =[u"*.csv"]
+            type = 'Applied 7000 machines'
         fileNames = QFileDialog.getOpenFileNames(self,
                        "pyQPCR - Choose plates", dir,
                        "Input files (%s) (%s)" % (type, " ".join(formats)))
