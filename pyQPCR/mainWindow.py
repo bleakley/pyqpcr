@@ -490,7 +490,7 @@ class Qpcr_qt(QMainWindow):
             type = 'Eppendorf machines'
         fileNames = QFileDialog.getOpenFileNames(self,
                        "pyQPCR - Choose a file", dir, 
-                       "Input files (%s) (%s)" % (type, " ".join(formats)))
+                       "Input files [%s] (%s)" % (type, " ".join(formats)))
         if fileNames:
             for file in fileNames:
                 if not self.project.dicoPlates.has_key(QFileInfo(file).fileName()):
