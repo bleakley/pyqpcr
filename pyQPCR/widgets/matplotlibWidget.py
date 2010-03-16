@@ -56,6 +56,7 @@ class MatplotlibWidget(FigureCanvas):
         """
         self.fig = Figure(figsize=(width, height), dpi=dpi)
         self.axes = self.fig.add_subplot(111)
+        self.fig.subplots_adjust(right=0.98, top=0.95, left=0.09)
 
         FigureCanvas.__init__(self, self.fig)
         self.setParent(parent)

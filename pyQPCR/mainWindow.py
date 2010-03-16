@@ -103,6 +103,8 @@ class Qpcr_qt(QMainWindow):
                      self.plotUnknown)
         self.connect(self.cboxFontsize, SIGNAL("valueChanged(int)"),
                      self.changeFontsize)
+        self.connect(self.cboxRot, SIGNAL("valueChanged(int)"),
+                     self.changeLabelsRotation)
         self.connect(self.btnPlot, SIGNAL("clicked()"),
                      self.setPlotColor)
         self.connect(self.geneStdBox, SIGNAL("activated(int)"),
@@ -181,6 +183,12 @@ class Qpcr_qt(QMainWindow):
         lab4.setBuddy(self.cboxFontsize)
         self.cboxFontsize.setValue(10)
         self.cboxFontsize.setRange(4, 16)
+        lab5 = QLabel("Labels &rotation:")
+        self.cboxRot = QSpinBox()
+        lab5.setBuddy(self.cboxRot)
+        self.cboxRot.setValue(0)
+        self.cboxRot.setRange(0, 45)
+        self.cboxRot.setSingleStep(5)
 
         vLay.addStretch()
         vLay.addWidget(lab1)
@@ -191,6 +199,8 @@ class Qpcr_qt(QMainWindow):
         vLay.addWidget(self.spinSpacing)
         vLay.addWidget(lab4)
         vLay.addWidget(self.cboxFontsize)
+        vLay.addWidget(lab5)
+        vLay.addWidget(self.cboxRot)
         vLay.addWidget(self.btnPlot)
         vLay.addStretch()
         vLayout = QVBoxLayout()
@@ -1340,7 +1350,8 @@ class Qpcr_qt(QMainWindow):
 # plot
         self.mplCanUnknown.axes.set_xticks(self.project.barXticks.values())
         self.mplCanUnknown.axes.set_xticklabels(self.project.barXticks.keys(), 
-                                                fontsize=size)
+                                                fontsize=size, 
+                                                rotation=int(self.cboxRot.value()))
 # Legend + xlim
         self.leg = self.mplCanUnknown.axes.legend(loc='upper right', 
                               shadow=True, labelspacing=0.005)
@@ -1401,6 +1412,15 @@ class Qpcr_qt(QMainWindow):
             xtick.set_fontsize(size)
         if idraw:
             self.mplCanUnknown.draw()
+
+    def changeLabelsRotation(self):
+        """
+        A method to change the matplotlib xlabels orientation
+        """
+        size = int(self.cboxRot.value())
+        for xtick in self.mplCanUnknown.axes.get_xticklabels():
+            xtick.set_rotation(size)
+        self.mplCanUnknown.draw()
 
     def setPlotColor(self):
         dialog = PropDialog(self, hashGene=self.project.hashGene,
