@@ -75,7 +75,7 @@ class Qpcr_qt(QMainWindow):
 
         self.vSplitter.setStretchFactor(0, 1)
         self.vSplitter.setStretchFactor(1, 9)
-        self.mainSplitter.setStretchFactor(0, 2)
+        self.mainSplitter.setStretchFactor(0, 1)
         self.mainSplitter.setStretchFactor(1, 1)
 
         status = self.statusBar()
@@ -128,8 +128,15 @@ class Qpcr_qt(QMainWindow):
             self.confidence = 0.9
             self.errtype = "normal"
             self.machine = 'Eppendorf'
-        geom = settings.value("Geometry").toByteArray()
-        self.restoreGeometry(geom)
+        #geom = settings.value("Geometry").toByteArray()
+
+        size = settings.value("MainWindow/Size",
+                              QVariant(QSize(1024, 768))).toSize()
+        self.resize(size)
+        position = settings.value("MainWindow/Position",
+                                  QVariant(QPoint(0, 0))).toPoint()
+        self.move(position)
+        #self.restoreGeometry(geom)
         self.restoreState(settings.value("MainWindow/State").toByteArray())
         self.vSplitter.restoreState(
                 settings.value("VerticalSplitter").toByteArray())
@@ -826,7 +833,10 @@ class Qpcr_qt(QMainWindow):
             settings.setValue("confidence", confidence)
             settings.setValue("errtype", errtype)
             settings.setValue("machine", machine)
-            settings.setValue("Geometry", QVariant(self.saveGeometry()))
+            #settings.setValue("Geometry", QVariant(self.saveGeometry()))
+            settings.setValue("MainWindow/Size", QVariant(self.size()))
+            settings.setValue("MainWindow/Position",
+                    QVariant(self.pos()))
             settings.setValue("MainWindow/State", QVariant(self.saveState()))
             settings.setValue("VerticalSplitter", 
                     QVariant(self.vSplitter.saveState()))
