@@ -126,8 +126,6 @@ class GeneDialog(QDialog):
                     if pl.geneRef == gene.name:
                         pl.geneRef = ''
 
-            
-
             gene.setRef(state)
             gene.setEff(eff)
             gene.setPm(pm)
@@ -142,7 +140,6 @@ class GeneDialog(QDialog):
                         g = self.project.hashGene[geneName]
                         if g.isRef == Qt.Checked and g.name != name:
                             g.setRef(Qt.Unchecked)
-
 # dico
             ind = None
             for plaque in self.project.dicoPlates.keys():
@@ -204,6 +201,7 @@ class AddGeneDialog(QDialog):
     
     def __init__(self, parent=None, ge=None, listPlates=None):
         self.parent = parent
+        self.listPlates = listPlates
         QDialog.__init__(self, parent)
         lab = QLabel("Target:")
         if ge is not None:
@@ -244,10 +242,13 @@ class AddGeneDialog(QDialog):
             self.ref.setCheckState(Qt.Unchecked)
 
         self.widList = QListWidget()
-        self.widList.setVisible(self.ref.isChecked())
+        if len(self.listPlates.keys()) > 1:
+            self.widList.setVisible(self.ref.isChecked())
+        else:
+            self.widList.setVisible(False)
         self.widList.setAlternatingRowColors(True)
         self.widList.setSelectionMode(QAbstractItemView.MultiSelection)
-        self.populateList(listPlates, ge)
+        self.populateList(ge)
 
         layout = QGridLayout()
         layout.addWidget(lab, 0, 0)
@@ -268,24 +269,34 @@ class AddGeneDialog(QDialog):
         self.connect(self.ref, SIGNAL("stateChanged(int)"), self.unHide)
         self.setWindowTitle("New target")
 
-    def populateList(self, data, ge):
+    def populateList(self, ge):
         self.widList.clear()
-        for it in data.keys():
+        for it in self.listPlates.keys():
             item = QListWidgetItem(it)
             item.setStatusTip(it)
             self.widList.addItem(item)
             if ge is not None:
-                if ge.name == data[it].geneRef:
+                if ge.name == self.listPlates[it].geneRef:
                     self.widList.setItemSelected(item, True)
 
     def unHide(self):
-        self.widList.setVisible(self.ref.isChecked())
+        if len(self.listPlates.keys()) == 1:
+            self.widList.clear()
+            item = QListWidgetItem(self.listPlates.keys()[0])
+            self.widList.addItem(item)
+            self.widList.setItemSelected(item, True)
+        else:
+            self.widList.setVisible(self.ref.isChecked())
 
 
     def accept(self):
         self.refPlates = []
-        for it in self.widList.selectedItems():
-            self.refPlates.append(it.text())
+        if len(self.widList.selectedItems()) != 0:
+            for it in self.widList.selectedItems():
+                self.refPlates.append(it.text())
+        else:
+            self.ref.setCheckState(Qt.Unchecked)
+
         QDialog.accept(self)        
 
 
