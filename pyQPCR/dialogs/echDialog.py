@@ -188,6 +188,7 @@ class AddEchDialog(QDialog):
     
     def __init__(self, parent=None, ech=None, listPlates=None):
         self.parent = parent
+        self.listPlates = listPlates
         QDialog.__init__(self, parent)
         lab = QLabel("Sample:")
         if ech is not None:
@@ -203,15 +204,16 @@ class AddEchDialog(QDialog):
             self.ref.setCheckState(Qt.Unchecked)
 
         self.widList = QListWidget()
-        self.widList.setVisible(self.ref.isChecked())
+        if len(self.listPlates.keys()) > 1:
+            self.widList.setVisible(self.ref.isChecked())
+        else:
+            self.widList.setVisible(False)
         self.widList.setAlternatingRowColors(True)
         self.widList.setSelectionMode(QAbstractItemView.MultiSelection)
-        self.populateList(listPlates, ech)
+        self.populateList(ech)
 
         buttonBox = QDialogButtonBox(QDialogButtonBox.Ok|
                                      QDialogButtonBox.Cancel)
-
-
 
         layout = QGridLayout()
         layout.addWidget(lab, 0, 0)
@@ -231,24 +233,34 @@ class AddEchDialog(QDialog):
 
         self.setWindowTitle("New sample")
 
-    def populateList(self, data, ech):
+    def populateList(self, ech):
         self.widList.clear()
-        for it in data.keys():
+        for it in self.listPlates.keys():
             item = QListWidgetItem(it)
             item.setStatusTip(it)
             self.widList.addItem(item)
             if ech is not None:
-                if ech.name == data[it].echRef:
+                if ech.name == self.listPlates[it].echRef:
                     self.widList.setItemSelected(item, True)
 
     def unHide(self):
-        self.widList.setVisible(self.ref.isChecked())
+        if len(self.listPlates.keys()) == 1:
+            self.widList.clear()
+            item = QListWidgetItem(self.listPlates.keys()[0])
+            self.widList.addItem(item)
+            self.widList.setItemSelected(item, True)
+        else:
+            self.widList.setVisible(self.ref.isChecked())
 
 
     def accept(self):
         self.refPlates = []
-        for it in self.widList.selectedItems():
-            self.refPlates.append(it.text())
+        if len(self.widList.selectedItems()) != 0:
+            for it in self.widList.selectedItems():
+                self.refPlates.append(it.text())
+        else:
+            self.ref.setCheckState(Qt.Unchecked)
+
         QDialog.accept(self)
 
 
