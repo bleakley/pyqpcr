@@ -30,6 +30,9 @@ __version__ = "$Rev$"
 class GeneDialog(QDialog):
     
     def __init__(self, parent=None, project=None):
+        """
+        Constructor
+        """
         self.parent = parent
         QDialog.__init__(self, parent)
 
@@ -68,6 +71,10 @@ class GeneDialog(QDialog):
         self.setWindowTitle("New target")
 
     def populateList(self):
+        """
+        This methods allows to populate the QListWidget which contains the different
+        targets of an experiment.
+        """
         self.listWidget.clear()
         for it in self.project.hashGene.values()[1:]:
             name = "%s (%.2f%%%s%.2f)" % (it.name, it.eff, unichr(177), it.pm)
@@ -78,6 +85,10 @@ class GeneDialog(QDialog):
             self.listWidget.addItem(item)
 
     def add(self):
+        """
+        This method allows to add a new Gene to your experiment. You cannot enter
+        a name which already exists
+        """
         dialog = AddGeneDialog(self, listPlates=self.project.dicoPlates)
         if dialog.exec_():
             nomgene = dialog.gene.text()
@@ -91,7 +102,7 @@ class GeneDialog(QDialog):
                 self.project.hashGene[nomgene] = g
             else:
                 QMessageBox.warning(self, "Already exist",
-                        "The gene %s is already defined !" % nomgene)
+                        "The gene <b>%s</b> is already defined !" % nomgene)
                 return
 
             if state == Qt.Checked:
@@ -100,15 +111,15 @@ class GeneDialog(QDialog):
                     plaque = self.project.dicoPlates[pl]
                     if not plaque.dicoGene.has_key(nomgene):
                         plaque.dicoGene[nomgene] = []
-                    plaque.geneRef = nomgene
-                    for geneName in plaque.dicoGene.keys():
-                        gene = self.project.hashGene[geneName]
-                        if gene.isRef == Qt.Checked and gene.name != nomgene:
-                            gene.setRef(Qt.Unchecked)
+                    plaque.geneRef.append(nomgene)
             self.populateList()
 
 
     def edit(self):
+        """
+        This method allows to change the properties of a gene. You cannot change its
+        name in an existing one.
+        """
         if len(self.listWidget.selectedItems()) == 0:
             return
         gene_before = self.listWidget.currentItem().statusTip()
@@ -119,12 +130,17 @@ class GeneDialog(QDialog):
             eff = dialog.eff.value()
             pm = dialog.pmerror.value()
             state = dialog.ref.checkState()
+            if self.project.hashGene.has_key(name) and gene_before != name:
+                QMessageBox.warning(self, "Already exist",
+                        "The gene <b>%s</b> is already defined !" % name)
+                return
 # Si le gene etait gene de reference et qu'il est desactive
-# alors la plaque n'a plus de gene de reference
+# alors la plaque a un gene de ref de moins
             if gene.isRef == Qt.Checked and state == Qt.Unchecked:
                 for pl in self.project.dicoPlates.values():
-                    if pl.geneRef == gene.name:
-                        pl.geneRef = ''
+                    for geneName in pl.geneRef:
+                        if geneName == gene.name:
+                            pl.geneRef.remove(gene.name)
 
             gene.setRef(state)
             gene.setEff(eff)
@@ -135,22 +151,23 @@ class GeneDialog(QDialog):
 # si le gene de ref est pour toutes les plaques, toutes les autres passent a zero
                 for pl in dialog.refPlates:
                     plaque = self.project.dicoPlates[pl]
-                    plaque.geneRef = name
-                    for geneName in plaque.dicoGene.keys():
-                        g = self.project.hashGene[geneName]
-                        if g.isRef == Qt.Checked and g.name != name:
-                            g.setRef(Qt.Unchecked)
+                    if not plaque.geneRef.__contains__(name):
+                        plaque.geneRef.append(name)
 # dico
             ind = None
             for plaque in self.project.dicoPlates.keys():
                 pl = self.project.dicoPlates[plaque]
                 if plaque not in dialog.refPlates:
-                    if pl.geneRef == name:
-                        pl.geneRef = ''
+                    for gg in pl.geneRef:
+                        if gg == name:
+                            pl.geneRef.remove(gg)
                     for geneName in pl.dicoGene.keys():
+                        if pl.geneRef == name:
+                            pl.geneRef = ''
                         g = self.project.hashGene[geneName]
-                        if pl.geneRef == geneName:
-                            g.setRef(Qt.Checked)
+                        for gg in pl.geneRef:
+                            if gg == geneName:
+                                g.setRef(Qt.Checked)
 
                 if pl.dicoGene.has_key(gene_before) and gene_before != name:
                     ind = pl.dicoGene.index(gene_before)
@@ -169,6 +186,10 @@ class GeneDialog(QDialog):
             self.populateList()
 
     def remove(self):
+        """
+        This method deletes an existing gene from your experiment. Every well containing
+        this gene are now on the empty '' gene.
+        """
         genes = []
         if len(self.listWidget.selectedItems()) == 0:
             return
@@ -191,8 +212,9 @@ class GeneDialog(QDialog):
                             well.setGene(Gene(''))
                             pl.setDicoGene()
 
-                    if pl.geneRef == gene.name:
-                        pl.geneRef = ''
+                    for geneName in pl.geneRef:
+                        if geneName == gene.name:
+                            pl.geneRef.remove(gene.name)
                 self.project.hashGene.__delitem__(gene.name)
             self.populateList()
             self.project.unsaved = True
@@ -276,7 +298,7 @@ class AddGeneDialog(QDialog):
             item.setStatusTip(it)
             self.widList.addItem(item)
             if ge is not None:
-                if ge.name == self.listPlates[it].geneRef:
+                if ge.name in self.listPlates[it].geneRef:
                     self.widList.setItemSelected(item, True)
 
     def unHide(self):
