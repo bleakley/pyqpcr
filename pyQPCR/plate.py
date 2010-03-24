@@ -43,7 +43,7 @@ class Plaque:
         self.listEch = [Ech('')]
         self.listAmount = ['']
 
-        self.geneRef = ''
+        self.geneRef = []
         self.echRef = ''
         self.contUkn = True
  
@@ -276,7 +276,7 @@ class Plaque:
             if motifSample.match(rawline):
                 self.echRef = QString(motifSample.findall(rawline)[0])
             if motifTarget.match(rawline):
-                self.geneRef = QString(motifTarget.findall(rawline)[0])
+                self.geneRef.append(QString(motifTarget.findall(rawline)[0]))
 
 
         file.close()

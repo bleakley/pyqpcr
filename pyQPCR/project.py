@@ -67,8 +67,9 @@ class Project:
             for pl in self.dicoPlates.values():
                 pl.setDicoGene()
                 pl.setDicoEch()
-                if pl.geneRef != '':
-                    self.hashGene[pl.geneRef].setRef(Qt.Checked)
+                if len(pl.geneRef) != 0:
+                    for geneName in pl.geneRef:
+                        self.hashGene[geneName].setRef(Qt.Checked)
                 if pl.echRef != '':
                     self.hashEch[pl.echRef].setRef(Qt.Checked)
             self.setDicoAm()
@@ -94,8 +95,9 @@ class Project:
                        "<QPCR VERSION='1.0'>\n" % CODEC)
             for key in self.dicoPlates.keys():
                 stream << ("<PLATE NAME='%s'>\n" % key)
-                stream << ("<REFTARGET NAME='%s'></REFTARGET>\n") % \
-                        self.dicoPlates[key].geneRef
+                for geneName in self.dicoPlates[key].geneRef:
+                    stream << ("<REFTARGET NAME='%s'></REFTARGET>\n") % \
+                               geneName
                 stream << ("<REFSAMPLE NAME='%s'></REFSAMPLE>\n") % \
                         self.dicoPlates[key].echRef
                 for well in self.dicoPlates[key].listePuits:
@@ -164,8 +166,9 @@ class Project:
                 if not self.hashGene.has_key(nomgene):
                     self.hashGene[nomgene] = well.gene
                     if hasattr(plate, 'geneRef'):
-                        if plate.geneRef == nomgene:
-                            self.hashGene[nomgene].setRef(Qt.Checked)
+                        for geneName in plate.geneRef:
+                            if geneName == nomgene:
+                                self.hashGene[nomgene].setRef(Qt.Checked)
 
     def initLocEch(self, plate=None):
         if plate is None:
@@ -246,6 +249,7 @@ class Project:
                     if trip.ctdev >= ectMax:
                         largeCtTrip.append(trip)
                     trip.calcDCt()
+                    trip.calcRQerror()
                     dicoEch[ech] = trip
                     dicoTrip[key] = dicoEch
             self.dicoTriplicat[plate] = dicoTrip
@@ -275,18 +279,30 @@ class Project:
 
     def calcNRQ(self):
         broken = []
+        NF = {} ; NFerror = {}
         for pl in self.dicoTriplicat.keys():
             plate = self.dicoPlates[pl]
+# Boucle de calcul des NF : plusieurs genes de references
+            for ech in self.hashEch.keys():
+                tabRQ = array([]) ; tabRQerror = array([])
+                for g in plate.geneRef:
+                    if self.dicoTriplicat[pl][g].has_key(ech):
+                        tmp = self.dicoTriplicat[pl][g][ech].RQ
+                        tmp2 = (self.dicoTriplicat[pl][g][ech].RQerror / \
+                               self.dicoTriplicat[pl][g][ech].RQ)**2
+                        tabRQ = append(tabRQ, tmp)
+                        tabRQerror = append(tabRQerror, tmp2)
+                if len(tabRQ) != 0:
+                    NF[ech] = (tabRQ.prod())**(1./len(tabRQ))
+                    NFerror[ech] = NF[ech]*sqrt(tabRQerror.sum())/len(tabRQ)
             for g in self.dicoTriplicat[pl].keys():
                 for ech in self.dicoTriplicat[pl][g].keys():
 # Calcul de NRQ et rajout comme argument a chaque triplicat
                     try:
                         NRQ = self.dicoTriplicat[pl][g][ech].RQ/ \
                               self.dicoTriplicat[pl][g][plate.echRef].RQ* \
-                              self.dicoTriplicat[pl][plate.geneRef][plate.echRef].RQ/ \
-                              self.dicoTriplicat[pl][plate.geneRef][ech].RQ
+                              NF[plate.echRef]/ NF[ech]
                         self.dicoTriplicat[pl][g][ech].setNRQ(NRQ)
-                        self.dicoTriplicat[pl][g][ech].calcRQerror()
                         for well in self.dicoTriplicat[pl][g][ech].listePuits:
                             #print pl, well.name, NRQ
                             well.setNRQ(NRQ)
@@ -298,14 +314,12 @@ class Project:
                 for ech in self.dicoTriplicat[pl][g].keys():
                     try:
                         NRQerror = self.dicoTriplicat[pl][g][ech].NRQ  \
-                             * sqrt((self.dicoTriplicat[pl][plate.geneRef][ech].RQerror \
-                             / self.dicoTriplicat[pl][plate.geneRef][ech].RQ)**2 \
+                             * sqrt((NFerror[ech] / NF[ech])**2 \
                              + (self.dicoTriplicat[pl][g][ech].RQerror \
                              / self.dicoTriplicat[pl][g][ech].RQ)**2  \
                              + (self.dicoTriplicat[pl][g][plate.echRef].RQerror \
                              / self.dicoTriplicat[pl][g][plate.echRef].RQ)**2 \
-                             + (self.dicoTriplicat[pl][plate.geneRef][plate.echRef].RQerror \
-                             / self.dicoTriplicat[pl][plate.geneRef][plate.echRef].RQ)**2)
+                             + (NFerror[plate.echRef] / NF[plate.echRef])**2)
                         self.dicoTriplicat[pl][g][ech].setNRQerror(NRQerror)
                         for well in self.dicoTriplicat[pl][g][ech].listePuits:
                             well.setNRQerror(NRQerror)

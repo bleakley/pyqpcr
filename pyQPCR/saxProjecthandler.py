@@ -100,7 +100,7 @@ class SaxProjectHandler(QXmlDefaultHandler):
         elif qName == "TYPE":
             self.well.setType(self.text)
         elif qName == "REFTARGET":
-            self.pl.geneRef = self.refTarget
+            self.pl.geneRef.append( self.refTarget )
         elif qName == "REFSAMPLE":
             self.pl.echRef = self.refSample
         elif qName == "SAMPLE":

@@ -610,7 +610,8 @@ class Qpcr_qt(QMainWindow):
             itemQuant = QTreeWidgetItem(item, ["Quantification"])
             itemRefGene = QTreeWidgetItem(itemQuant , ["Reference Target"])
             itemRefEch = QTreeWidgetItem(itemQuant , ["Reference Sample"])
-            item = QTreeWidgetItem(itemRefGene, [pl.geneRef])
+            for geneName in pl.geneRef:
+                item = QTreeWidgetItem(itemRefGene, [geneName])
             item = QTreeWidgetItem(itemRefEch, [pl.echRef])
         itemStd = QTreeWidgetItem(ancestor, ["Standard"])
         for gene in self.project.hashGene.values()[1:]:
@@ -1138,15 +1139,18 @@ class Qpcr_qt(QMainWindow):
             pl = self.project.dicoPlates[plname]
             if pl.contUkn:
                 bad = False
-                if pl.geneRef == '':
+                if len(pl.geneRef) == 0:
                     QMessageBox.warning(self, "Warning",
                         "Reference target undefined for plate <b>%s</b>!" % plname)
                     raise ValueError
-                elif not pl.dicoGene.has_key(pl.geneRef):
-                    QMessageBox.warning(self, "Warning",
-                        """Wrong reference target for plate <b>%s</b>!
-                           This plate does not contain <b>%s</b>.""" % (plname, pl.geneRef))
-                    raise ValueError
+
+                for geneName in pl.geneRef:
+                    if not pl.dicoGene.has_key(geneName):
+                        QMessageBox.warning(self, "Warning",
+                            """Wrong reference target for plate <b>%s</b>!
+                               This plate does not contain <b>%s</b>.""" %  \
+                               (plname, geneName))
+                        raise ValueError
                 if pl.echRef == '':
                     QMessageBox.warning(self, "Warning",
                         "Reference sample undefined for plate <b>%s</b>!" % plname)
