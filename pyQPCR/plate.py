@@ -468,7 +468,7 @@ class Replicate:
             self.ctdevtalpha = talpha * stdctList
         else:
             self.ctdev = 0.
-            self.ctdevalpha = 0.
+            self.ctdevtalpha = 0.
 
         for well in self.listePuits:
             well.setCtmean(self.ctmean)
