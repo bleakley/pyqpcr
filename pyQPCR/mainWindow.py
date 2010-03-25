@@ -59,8 +59,8 @@ class Qpcr_qt(QMainWindow):
         self.onglet.addTab(self.projWidget, "Plates")
 #
         settings = QSettings()
-        self.labelRotation, status  = settings.value("labelRotation", 0).toInt()
-        self.labelFontSize, status  = settings.value("labelFontSize", 10).toInt()
+        self.labelRotation, status  = settings.value("labelRotation", QVariant(0)).toInt()
+        self.labelFontSize, status  = settings.value("labelFontSize", QVariant(10)).toInt()
 
         self.createMplUnknownWiget()
         self.createMplStdWiget()
@@ -118,19 +118,11 @@ class Qpcr_qt(QMainWindow):
 
 # Settings pour sauvegarde de l'application
         self.recentFiles = settings.value("RecentFiles").toStringList()
-        self.ectMax, status = settings.value("EctMax").toDouble()
-        if not status:
-            self.ectMax = 0.3
-        self.ctMin, status = settings.value("ctMin").toDouble()
-        if not status:
-            self.ctMin = 35.
-        self.confidence, status = settings.value("confidence").toDouble()
-        self.errtype = settings.value("errtype").toString()
-        self.machine = settings.value("machine").toString()
-        if not status:
-            self.confidence = 0.9
-            self.errtype = "normal"
-            self.machine = 'Eppendorf'
+        self.ectMax, status = settings.value("EctMax", QVariant(0.3)).toDouble()
+        self.ctMin, status = settings.value("ctMin", QVariant(35.)).toDouble()
+        self.confidence, status = settings.value("confidence", QVariant(0.9)).toDouble()
+        self.errtype = settings.value("errtype", QVariant('normal')).toString()
+        self.machine = settings.value("machine", QVariant('Eppendorf')).toString()
         #geom = settings.value("Geometry").toByteArray()
 
         size = settings.value("MainWindow/Size",
@@ -834,11 +826,10 @@ class Qpcr_qt(QMainWindow):
                   else QVariant()
             machine = QVariant(self.machine) if self.machine \
                   else QVariant()
-            rot = QVariant(int(self.cboxRot.value())) if self.labelRotation \
+            rot = QVariant(int(self.cboxRot.value())) if self.labelFontSize \
                   else QVariant()
             fontSize = QVariant(int(self.cboxFontsize.value())) if self.labelFontSize \
                   else QVariant()
-            print rot, self.labelRotation
             settings.setValue("confidence", confidence)
             settings.setValue("errtype", errtype)
             settings.setValue("machine", machine)
