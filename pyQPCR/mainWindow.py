@@ -58,6 +58,10 @@ class Qpcr_qt(QMainWindow):
         self.createProjWidget()
         self.onglet.addTab(self.projWidget, "Plates")
 #
+        settings = QSettings()
+        self.labelRotation, status  = settings.value("labelRotation", 0).toInt()
+        self.labelFontSize, status  = settings.value("labelFontSize", 10).toInt()
+
         self.createMplUnknownWiget()
         self.createMplStdWiget()
 #
@@ -113,7 +117,6 @@ class Qpcr_qt(QMainWindow):
                      self.changeCurrentIndex)
 
 # Settings pour sauvegarde de l'application
-        settings = QSettings()
         self.recentFiles = settings.value("RecentFiles").toStringList()
         self.ectMax, status = settings.value("EctMax").toDouble()
         if not status:
@@ -188,12 +191,12 @@ class Qpcr_qt(QMainWindow):
         lab4 = QLabel("&Font size:")
         self.cboxFontsize = QSpinBox()
         lab4.setBuddy(self.cboxFontsize)
-        self.cboxFontsize.setValue(10)
+        self.cboxFontsize.setValue(self.labelFontSize)
         self.cboxFontsize.setRange(4, 16)
         lab5 = QLabel("Labels &rotation:")
         self.cboxRot = QSpinBox()
         lab5.setBuddy(self.cboxRot)
-        self.cboxRot.setValue(0)
+        self.cboxRot.setValue(self.labelRotation)
         self.cboxRot.setRange(0, 45)
         self.cboxRot.setSingleStep(5)
 
@@ -831,9 +834,16 @@ class Qpcr_qt(QMainWindow):
                   else QVariant()
             machine = QVariant(self.machine) if self.machine \
                   else QVariant()
+            rot = QVariant(int(self.cboxRot.value())) if self.labelRotation \
+                  else QVariant()
+            fontSize = QVariant(int(self.cboxFontsize.value())) if self.labelFontSize \
+                  else QVariant()
+            print rot, self.labelRotation
             settings.setValue("confidence", confidence)
             settings.setValue("errtype", errtype)
             settings.setValue("machine", machine)
+            settings.setValue("labelRotation", rot)
+            settings.setValue("labelFontSize", fontSize)
             #settings.setValue("Geometry", QVariant(self.saveGeometry()))
             settings.setValue("MainWindow/Size", QVariant(self.size()))
             settings.setValue("MainWindow/Position",
