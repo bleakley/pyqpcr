@@ -57,17 +57,20 @@ class Qpcr_qt(QMainWindow):
         self.pileTables = OrderedDict()
         self.createProjWidget()
         self.onglet.addTab(self.projWidget, "Plates")
-#
+ 
         settings = QSettings()
-        self.labelRotation, status  = settings.value("labelRotation", QVariant(0)).toInt()
-        self.labelFontSize, status  = settings.value("labelFontSize", QVariant(10)).toInt()
+        self.labelRotation, status  = settings.value("Mpl/labelRotation", QVariant(0)).toInt()
+        self.labelFontSize, status  = settings.value("Mpl/labelFontSize", 
+                                                     QVariant(10)).toInt()
+        self.barWth, status  = settings.value("Mpl/barWidth", QVariant(0.1)).toDouble()
+        self.barSpacing, status = settings.value("Mpl/barSpacing", QVariant(0.3)).toDouble()
 
         self.createMplUnknownWiget()
         self.createMplStdWiget()
-#
+ 
         self.createResultWidget()
         self.pileResults = OrderedDict()
-#
+ 
         self.vSplitter = QSplitter(Qt.Horizontal)
         self.vSplitter.addWidget(self.tree)
         self.vSplitter.addWidget(self.onglet)
@@ -120,8 +123,8 @@ class Qpcr_qt(QMainWindow):
         self.recentFiles = settings.value("RecentFiles").toStringList()
         self.ectMax, status = settings.value("EctMax", QVariant(0.3)).toDouble()
         self.ctMin, status = settings.value("ctMin", QVariant(35.)).toDouble()
-        self.confidence, status = settings.value("confidence", QVariant(0.9)).toDouble()
-        self.errtype = settings.value("errtype", QVariant('normal')).toString()
+        self.confidence, status = settings.value("Error/confidence", QVariant(0.9)).toDouble()
+        self.errtype = settings.value("Error/errtype", QVariant('normal')).toString()
         self.machine = settings.value("machine", QVariant('Eppendorf')).toString()
         #geom = settings.value("Geometry").toByteArray()
 
@@ -134,9 +137,9 @@ class Qpcr_qt(QMainWindow):
         #self.restoreGeometry(geom)
         self.restoreState(settings.value("MainWindow/State").toByteArray())
         self.vSplitter.restoreState(
-                settings.value("VerticalSplitter").toByteArray())
+                settings.value("MainWindow/VerticalSplitter").toByteArray())
         self.mainSplitter.restoreState(
-                settings.value("MainSplitter").toByteArray())
+                settings.value("MainWindow/MainSplitter").toByteArray())
         self.setWindowTitle("pyQPCR")
         self.updateFileMenu()
 
@@ -166,7 +169,7 @@ class Qpcr_qt(QMainWindow):
         self.spinWidth = QDoubleSpinBox()
         self.spinWidth.setLocale(QLocale(QLocale.English, 
                                          QLocale.UnitedStates))
-        self.spinWidth.setValue(0.1)
+        self.spinWidth.setValue(self.barWth)
         self.spinWidth.setRange(0.01, 0.5)
         self.spinWidth.setSingleStep(0.02)
         lab2 = QLabel("Bar &width:")
@@ -174,7 +177,7 @@ class Qpcr_qt(QMainWindow):
         self.spinSpacing = QDoubleSpinBox()
         self.spinSpacing.setLocale(QLocale(QLocale.English, 
                                            QLocale.UnitedStates))
-        self.spinSpacing.setValue(0.3)
+        self.spinSpacing.setValue(self.barSpacing)
         self.spinSpacing.setRange(0.1, 2)
         self.spinSpacing.setSingleStep(0.1)
         lab3 = QLabel("Bar &spacing:")
@@ -828,21 +831,27 @@ class Qpcr_qt(QMainWindow):
                   else QVariant()
             rot = QVariant(int(self.cboxRot.value())) if self.labelFontSize \
                   else QVariant()
+            barW = QVariant(self.spinWidth.value()) if self.labelFontSize \
+                  else QVariant()
+            barS = QVariant(self.spinSpacing.value()) if self.labelFontSize \
+                  else QVariant()
             fontSize = QVariant(int(self.cboxFontsize.value())) if self.labelFontSize \
                   else QVariant()
-            settings.setValue("confidence", confidence)
-            settings.setValue("errtype", errtype)
+            settings.setValue("Error/confidence", confidence)
+            settings.setValue("Error/errtype", errtype)
             settings.setValue("machine", machine)
-            settings.setValue("labelRotation", rot)
-            settings.setValue("labelFontSize", fontSize)
+            settings.setValue("Mpl/labelRotation", rot)
+            settings.setValue("Mpl/labelFontSize", fontSize)
+            settings.setValue("Mpl/barWidth", barW)
+            settings.setValue("Mpl/barSpacing", barS)
             #settings.setValue("Geometry", QVariant(self.saveGeometry()))
             settings.setValue("MainWindow/Size", QVariant(self.size()))
             settings.setValue("MainWindow/Position",
                     QVariant(self.pos()))
             settings.setValue("MainWindow/State", QVariant(self.saveState()))
-            settings.setValue("VerticalSplitter", 
+            settings.setValue("MainWindow/VerticalSplitter", 
                     QVariant(self.vSplitter.saveState()))
-            settings.setValue("MainSplitter", 
+            settings.setValue("MainWindow/MainSplitter", 
                     QVariant(self.mainSplitter.saveState()))
         else:
             event.ignore()
