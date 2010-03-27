@@ -670,6 +670,11 @@ class Qpcr_qt(QMainWindow):
                                        [QFileInfo(self.filename).fileName()])
         else:
             ancestor = QTreeWidgetItem(self.tree, ["untitled project"])
+        itemErr = QTreeWidgetItem(ancestor, ["Error calculation"])
+        st = 'Error type : %s' % self.errtype
+        item = QTreeWidgetItem(itemErr, [st])
+        st = 'Confidence level : %s' % self.confidence
+        item = QTreeWidgetItem(itemErr, [st])
         for key in self.project.dicoPlates.keys():
             item = QTreeWidgetItem(ancestor, [key])
             pl = self.project.dicoPlates[key]
@@ -848,6 +853,7 @@ class Qpcr_qt(QMainWindow):
             self.machine = dialog.machBox.currentText()
             self.errtype = dialog.types[errtype]
             self.confidence /= 100
+            self.populateTree()
 
     def helpAbout(self):
         import platform
