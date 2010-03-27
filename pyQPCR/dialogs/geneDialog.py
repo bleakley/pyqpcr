@@ -114,7 +114,6 @@ class GeneDialog(QDialog):
                     plaque.geneRef.append(nomgene)
             self.populateList()
 
-
     def edit(self):
         """
         This method allows to change the properties of a gene. You cannot change its
@@ -152,6 +151,8 @@ class GeneDialog(QDialog):
                 for pl in dialog.refPlates:
                     plaque = self.project.dicoPlates[pl]
                     if not plaque.geneRef.__contains__(name):
+                        if gene_before != name and plaque.geneRef.__contains__(gene_before):
+                            plaque.geneRef.remove(gene_before)
                         plaque.geneRef.append(name)
 # dico
             ind = None
