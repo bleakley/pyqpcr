@@ -43,6 +43,9 @@ __progversion__ = "0.4"
 class Qpcr_qt(QMainWindow):
 
     def __init__(self, parent=None):
+        """
+        Construction of the main window. QSettings setup and connexions SIGNAL/SLOT.
+        """
         QMainWindow.__init__(self, parent)
  
         self.setMinimumSize(640, 480)
@@ -85,15 +88,15 @@ class Qpcr_qt(QMainWindow):
         self.mainSplitter.setStretchFactor(0, 1)
         self.mainSplitter.setStretchFactor(1, 1)
 
+        # Status bar
         status = self.statusBar()
-
-# Undo / Redo
+        # Undo / Redo
         self.projectStack = []
         self.undoInd = -1
-# Toolbar et Menus
+        # Toolbar and Menus
         self.createMenusAndToolbars()
 
-# Slots
+        # Connexions
         self.connect(self.geneComboBox, SIGNAL("activated(int)"),
                      self.modifyGene)
         self.connect(self.echComboBox, SIGNAL("activated(int)"),
@@ -121,14 +124,13 @@ class Qpcr_qt(QMainWindow):
         self.connect(self.tabulPlates, SIGNAL("currentChanged(int)"),
                      self.changeCurrentIndex)
 
-# Settings pour sauvegarde de l'application
+        # Settings pour sauvegarde de l'application
         self.recentFiles = settings.value("RecentFiles").toStringList()
         self.ectMax, status = settings.value("EctMax", QVariant(0.3)).toDouble()
         self.ctMin, status = settings.value("ctMin", QVariant(35.)).toDouble()
         self.confidence, status = settings.value("Error/confidence", QVariant(0.9)).toDouble()
         self.errtype = settings.value("Error/errtype", QVariant('normal')).toString()
         self.machine = settings.value("machine", QVariant('Eppendorf')).toString()
-        #geom = settings.value("Geometry").toByteArray()
 
         size = settings.value("MainWindow/Size",
                               QVariant(QSize(1024, 768))).toSize()
@@ -136,7 +138,6 @@ class Qpcr_qt(QMainWindow):
         position = settings.value("MainWindow/Position",
                                   QVariant(QPoint(0, 0))).toPoint()
         self.move(position)
-        #self.restoreGeometry(geom)
         self.restoreState(settings.value("MainWindow/State").toByteArray())
         self.vSplitter.restoreState(
                 settings.value("MainWindow/VerticalSplitter").toByteArray())
@@ -146,6 +147,9 @@ class Qpcr_qt(QMainWindow):
         self.updateFileMenu()
 
     def createProjWidget(self):
+        """
+        This methods create the plate widget.
+        """
         self.projWidget = QWidget(self)
         vLay = QVBoxLayout()
         self.tabulPlates = QTabWidget()
@@ -154,6 +158,9 @@ class Qpcr_qt(QMainWindow):
         self.projWidget.setLayout(vLay)
 
     def createResultWidget(self):
+        """
+        This methods create the result widget.
+        """
         self.resulWidget = QWidget(self)
         vLay = QVBoxLayout()
         self.tabulResults = QTabWidget()
@@ -162,6 +169,9 @@ class Qpcr_qt(QMainWindow):
         self.resulWidget.setLayout(vLay)
 
     def createMplUnknownWiget(self):
+        """
+        This methods create the plot associated to quantification curves.
+        """
         self.plotUnknownWidget = QWidget()
         vLay = QVBoxLayout()
         self.cboxPlate = QComboBox()
@@ -224,6 +234,9 @@ class Qpcr_qt(QMainWindow):
         self.plotUnknownWidget.setLayout(hLayout)
 
     def createMplStdWiget(self):
+        """
+        This methods create the plot associated to standard curves.
+        """
         layout = QVBoxLayout()
         layout.addStretch()
         self.geneStdBox = QComboBox()
@@ -263,6 +276,9 @@ class Qpcr_qt(QMainWindow):
         self.plotStdWidget.setLayout(hLayout)
 
     def createMenusAndToolbars(self):
+        """
+        This methods create the menus and toolbars of pyQPCR.
+        """
         fileOpenAction = self.createAction("&Open...", self.fileOpen, 
                 QKeySequence.Open, "fileopen", "Open an existing project")
         fileNewAction = self.createAction("&New project...", self.fileNew, 
@@ -638,6 +654,10 @@ class Qpcr_qt(QMainWindow):
         self.closeTabAction.setEnabled(bool)
 
     def populateTree(self):
+        """
+        This method allows to populate the QTreeWidget which displays informations
+        about the current project (reference target and samples, targets efficiencies, ...)
+        """
         self.tree.clear()
         if self.filename is not None:
             ancestor = QTreeWidgetItem(self.tree, 
@@ -660,6 +680,16 @@ class Qpcr_qt(QMainWindow):
         self.tree.expandAll()
 
     def populateCbox(self, cbox, items, name="Target"):
+        """
+        A simple method to populate a QComboBox object.
+
+        @param cbox: the comboBox we want to populate
+        @type cbox: PyQt4.QtGui.QComboBox
+        @param items: the items we want to add
+        @type items: list
+        @param name: the header of the QComboBox
+        @type name: string
+        """
         cbox.clear()
         cbox.addItem(name, QVariant("header"))
         cbox.addItems(items)
@@ -795,6 +825,10 @@ class Qpcr_qt(QMainWindow):
                 os.remove(file)
 
     def configure(self):
+        """
+        This method is called when the user want to configure pyQPCR settings.
+        It opens a dialog in which the user can change the preferences.
+        """
         dialog = SettingsDialog(self, ect=self.ectMax,
                                 ctmin=self.ctMin,
                                 confidence=self.confidence,
@@ -823,10 +857,19 @@ class Qpcr_qt(QMainWindow):
         PYQT_VERSION_STR, matplotlib.__version__, platform.system()))
 
     def helpHelp(self):
+        """
+        A method which display the help dialog.
+        """
         f = HelpDialog("index.html", self)
         f.show()
 
     def addRecentFile(self, fname):
+        """
+        A simple method to add the file name to the 'recent files' menu entry.
+
+        @param fname: the file name
+        @type fname: string
+        """
         if fname is None:
             return
         if not self.recentFiles.contains(fname):
@@ -912,6 +955,9 @@ class Qpcr_qt(QMainWindow):
         return True
 
     def redo(self):
+        """
+        Called when 'redo' is clicked.
+        """
         if self.undoInd < -1:
             self.undoInd += 1
         self.project = copy.deepcopy(self.projectStack[self.undoInd])
@@ -941,6 +987,9 @@ class Qpcr_qt(QMainWindow):
             self.fileSaveAction.setEnabled(True)
 
     def undo(self):
+        """
+        Called when 'undo' is clicked.
+        """
         if abs(self.undoInd) < abs(len(self.projectStack)):
             self.undoInd -= 1
         self.project = copy.deepcopy(self.projectStack[self.undoInd])
@@ -971,6 +1020,10 @@ class Qpcr_qt(QMainWindow):
             self.fileSaveAction.setEnabled(True)
 
     def editWell(self):
+        """
+        This method is called when the user want to edit the properties of the
+        selected wells.
+        """
         setType = set()
         setGene = set()
         setEch = set()
@@ -1021,6 +1074,11 @@ class Qpcr_qt(QMainWindow):
                    self.project.dicoPlates[self.currentPlate])
 
     def addGene(self):
+        """
+        This method is called when the user want to add/edit the targets of
+        the project. It opens a dialog which let the user add/remove/edit the
+        properties of the targets.
+        """
         dialog = GeneDialog(self, project=self.project)
         if dialog.exec_():
             project = dialog.project
@@ -1037,6 +1095,11 @@ class Qpcr_qt(QMainWindow):
             self.populateTree()
 
     def addEch(self):
+        """
+        This method is called when the user want to add/edit the samples of
+        the project. It opens a dialog which let the user add/remove/edit the
+        properties of the samples.
+        """
         dialog = EchDialog(self, project=self.project)
         if dialog.exec_():
             project = dialog.project
@@ -1053,6 +1116,11 @@ class Qpcr_qt(QMainWindow):
             self.populateTree()
 
     def addAmount(self):
+        """
+        This method is called when the user want to add/edit the amounts of
+        the project. It opens a dialog which let the user add/remove/edit the
+        values of the amounts.
+        """
         dialog = AmountDialog(self, project=self.project)
         if dialog.exec_():
             project = dialog.project
@@ -1068,6 +1136,9 @@ class Qpcr_qt(QMainWindow):
             self.populateTree()
 
     def modifyGene(self):
+        """
+        This method is called when the user changes the gene of the selected wells.
+        """
         for it in self.pileTables[self.currentPlate].selectedItems():
             gene = self.geneComboBox.currentObj()
             nom = it.statusTip()
@@ -1083,6 +1154,9 @@ class Qpcr_qt(QMainWindow):
                       self.project.dicoPlates[self.currentPlate])
 
     def modifyEch(self):
+        """
+        This method is called when the user changes the sample of the selected wells.
+        """
         for it in self.pileTables[self.currentPlate].selectedItems():
             ech = self.echComboBox.currentObj()
             nom = it.statusTip()
@@ -1098,6 +1172,9 @@ class Qpcr_qt(QMainWindow):
                      self.project.dicoPlates[self.currentPlate])
 
     def modifyAm(self):
+        """
+        This method is called when the user changes the amount of the selected wells.
+        """
         for it in self.pileTables[self.currentPlate].selectedItems():
             am = self.amComboBox.currentText()
             nom = it.statusTip()
@@ -1127,6 +1204,10 @@ class Qpcr_qt(QMainWindow):
                     self.project.dicoPlates[self.currentPlate])
 
     def enable(self):
+        """
+        This method is called when the user want to enable the selected wells
+        from the computation.
+        """
         for it in self.pileTables[self.currentPlate].selectedItems():
             ech = self.echComboBox.currentText()
             nom = it.statusTip()
@@ -1141,6 +1222,10 @@ class Qpcr_qt(QMainWindow):
                     self.project.dicoPlates[self.currentPlate])
 
     def disable(self):
+        """
+        This method is called when the user want to disable the selected wells
+        from the computation.
+        """
         for it in self.pileTables[self.currentPlate].selectedItems():
             ech = self.echComboBox.currentText()
             nom = it.statusTip()
@@ -1219,6 +1304,9 @@ class Qpcr_qt(QMainWindow):
             raise ValueError
 
     def computeUnknown(self):
+        """
+        A method to compute the NRQ of unknow-type wells.
+        """
 # On verifie que chaque plaque contient des unknown
         self.project.findUnknown()
 # On fixe le gene de reference et le triplicat de reference
@@ -1490,7 +1578,7 @@ class Qpcr_qt(QMainWindow):
 
     def changeLabelsRotation(self):
         """
-        A method to change the matplotlib xlabels orientation
+        A method to change the matplotlib xlabels orientation.
         """
         size = int(self.cboxRot.value())
         for xtick in self.mplCanUnknown.axes.get_xticklabels():
@@ -1498,6 +1586,11 @@ class Qpcr_qt(QMainWindow):
         self.mplCanUnknown.draw()
 
     def setPlotColor(self):
+        """
+        This method is called when the user want to change the colors
+        used in the histograms. It open a widget that lets the user change
+        the colors.
+        """
         dialog = PropDialog(self, hashGene=self.project.hashGene,
                             hashEch=self.project.hashEch)
         if dialog.exec_():
@@ -1511,8 +1604,18 @@ class Qpcr_qt(QMainWindow):
         """
         self.currentIndex = self.tabulPlates.currentIndex()
         self.currentPlate = self.tabulPlates.tabText(self.currentIndex)
+        self.tabulResults.setCurrentIndex(self.currentIndex)
 
     def appendPlate(self, plaque, key):
+        """
+        A method to add a new tab in the plate view corresponding to
+        the new plate we have added.
+
+        @param plaque: the plate we want to append 
+        @type plaque: pyQPCR.plaque
+        @param key: the name of the plate
+        @type key: str
+        """
         mytab = PlateWidget()
         mytab.populateTable(plaque)
         self.tabulPlates.addTab(mytab, key)
@@ -1521,6 +1624,15 @@ class Qpcr_qt(QMainWindow):
                      self.editWell)
 
     def appendResult(self, plaque, key):
+        """
+        A method to add a new tab in the result view corresponding to
+        the new plate we have added.
+
+        @param plaque: the plate we want to append 
+        @type plaque: pyQPCR.plaque
+        @param key: the name of the plate
+        @type key: str
+        """
         mytab = ResultWidget()
         mytab.populateResult(plaque)
         self.tabulResults.addTab(mytab, key)
@@ -1528,7 +1640,7 @@ class Qpcr_qt(QMainWindow):
 
     def updateUi(self):
         """
-        This methods allows to clean up and populate the UI when
+        This method allows to clean up and populate the UI when
         changing some elements.
         """
         self.populateCbox(self.geneComboBox, self.project.hashGene, "Target")
@@ -1538,7 +1650,7 @@ class Qpcr_qt(QMainWindow):
 
     def cleanBeforeOpen(self):
         """
-        This methods allows to clean up the UI before a new project.
+        This method allows to clean up the UI before a new project.
         """
         # clean-up the QTabWidget
         for ind in range(self.tabulPlates.count()):
