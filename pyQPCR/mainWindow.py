@@ -1681,6 +1681,7 @@ class Qpcr_qt(QMainWindow):
         self.activateDesactivate(True)
         # undo/redo buffer
         self.projectStack = []
+        self.undoInd = -1
 
 
 
