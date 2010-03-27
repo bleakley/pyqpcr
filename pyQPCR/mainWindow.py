@@ -70,6 +70,12 @@ class Qpcr_qt(QMainWindow):
 
         self.createMplUnknownWiget()
         self.createMplStdWiget()
+
+        top, status = settings.value("MplCan/top", QVariant(0.95)).toDouble()
+        bot, status = settings.value("MplCan/bottom", QVariant(0.10)).toDouble()
+        right, status = settings.value("MplCan/right", QVariant(0.98)).toDouble()
+        left, status = settings.value("MplCan/left", QVariant(0.09)).toDouble()
+        self.mplCanUnknown.fig.subplots_adjust(right=right, left=left, top=top, bottom=bot)
  
         self.createResultWidget()
         self.pileResults = OrderedDict()
@@ -914,6 +920,10 @@ class Qpcr_qt(QMainWindow):
                   else QVariant()
             machine = QVariant(self.machine) if self.machine \
                   else QVariant()
+            top = QVariant(self.mplCanUnknown.fig.subplotpars.top)
+            bottom = QVariant(self.mplCanUnknown.fig.subplotpars.bottom)
+            right = QVariant(self.mplCanUnknown.fig.subplotpars.right)
+            left = QVariant(self.mplCanUnknown.fig.subplotpars.left)
             rot = QVariant(int(self.cboxRot.value())) if self.labelFontSize \
                   else QVariant()
             barW = QVariant(self.spinWidth.value()) if self.labelFontSize \
@@ -925,6 +935,10 @@ class Qpcr_qt(QMainWindow):
             settings.setValue("Error/confidence", confidence)
             settings.setValue("Error/errtype", errtype)
             settings.setValue("machine", machine)
+            settings.setValue("MplCan/top", top)
+            settings.setValue("MplCan/bottom", bottom)
+            settings.setValue("MplCan/right", right)
+            settings.setValue("MplCan/left", left)
             settings.setValue("Mpl/labelRotation", rot)
             settings.setValue("Mpl/labelFontSize", fontSize)
             settings.setValue("Mpl/barWidth", barW)
