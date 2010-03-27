@@ -143,6 +143,7 @@ class EchDialog(QDialog):
                         e = self.project.hashEch[echName]
                         if pl.echRef == echName:
                             e.setRef(Qt.Checked)
+
                 if pl.dicoEch.has_key(ech_before) and ech_before != name:
                     ind = pl.dicoEch.index(ech_before)
                     pl.dicoEch.insert(ind, name, pl.dicoEch[ech_before])
