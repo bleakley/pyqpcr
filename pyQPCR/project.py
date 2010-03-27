@@ -395,7 +395,7 @@ class Project:
             self.hashGene[geneName].setEff(eff)
             self.hashGene[geneName].setPm(stdeff)
 
-    def findBars(self, width, spacing, sens='geneEch'):
+    def findBars(self, width, spacing, sens='geneEch', plates=None):
         """
         Fonction qui determine le nb de barres dans chaque categorie
         (gene, ech) en vue du trace. Le dictionnaire barWidth est d'abord
@@ -404,11 +404,13 @@ class Project:
         Puis a partir de la, on trouve les abscisses correspondantes.
         """
         leftMargin = 0.1
+        if plates is None:
+            plates = self.dicoPlates.keys() 
         self.barWidth = OrderedDict()
         self.barXticks = OrderedDict()
         for g in self.hashGene.keys()[1:]:
             for ech in self.hashEch.keys()[1:]:
-                for pl in self.dicoPlates.keys():
+                for pl in plates:
                     if self.dicoTriplicat[pl].has_key(g) and \
                             self.hashGene[g].enabled == Qt.Checked and \
                             self.dicoTriplicat[pl][g].has_key(ech) and \
