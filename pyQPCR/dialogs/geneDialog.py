@@ -162,13 +162,6 @@ class GeneDialog(QDialog):
                     for gg in pl.geneRef:
                         if gg == name:
                             pl.geneRef.remove(gg)
-                    for geneName in pl.dicoGene.keys():
-                        if pl.geneRef == name:
-                            pl.geneRef = ''
-                        g = self.project.hashGene[geneName]
-                        for gg in pl.geneRef:
-                            if gg == geneName:
-                                g.setRef(Qt.Checked)
 
                 if pl.dicoGene.has_key(gene_before) and gene_before != name:
                     ind = pl.dicoGene.index(gene_before)
