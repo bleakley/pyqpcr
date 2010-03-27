@@ -411,7 +411,7 @@ class Qpcr_qt(QMainWindow):
     def createAction(self, text, slot=None, shortcut=None, icon=None,
                      tip=None, checkable=None, signal="triggered()"):
         """
-        This method highly simplifies the creation of QAction
+        This method highly simplifies the creation of QAction.
         """
         action = QAction(text, self)
         if icon is not None:
@@ -435,6 +435,14 @@ class Qpcr_qt(QMainWindow):
                 target.addAction(action)
 
     def updateStatus(self, message, time=5000):
+        """
+        A simple method to display a message in the status bar
+
+        @param message: the message to be displayed
+        @type param: string
+        @param time: the time the message is displayed (in seconds)
+        @type time: int
+        """
         self.statusBar().showMessage(message, time)
 
     def fileOpen(self):
@@ -445,7 +453,7 @@ class Qpcr_qt(QMainWindow):
         formats =[u"*.xml"]
         fname = unicode(QFileDialog.getOpenFileName(self,
                                                     "pyQPCR - Choose a file", 
-                dir, "Input files (%s)" % " ".join(formats)))
+                dir, "pyQPCR files (%s)" % " ".join(formats)))
         if fname:
             self.loadFile(fname)
 
@@ -493,6 +501,11 @@ class Qpcr_qt(QMainWindow):
                 self.addPlate(fname)
 
     def fileImport(self):
+        """
+        This method allows to import raw data file and XML pyQPCR file format.
+        It lets the user choose the files corresponding to the device chosen in
+        the preference dialog.
+        """
         dir = os.path.dirname(self.filename) if self.filename is not None \
                 else "."
         if self.machine == 'Eppendorf':
@@ -509,17 +522,42 @@ class Qpcr_qt(QMainWindow):
             type = 'Eppendorf machines'
         fileNames = QFileDialog.getOpenFileNames(self,
                        "pyQPCR - Choose a file", dir, 
-                       "Input files [%s] (%s)" % (type, " ".join(formats)))
+                       "Input files [%s] (%s) ;; pyQPCR file (*.xml)" % (type, 
+                                " ".join(formats)))
         if fileNames:
             for file in fileNames:
-                if not self.project.dicoPlates.has_key(QFileInfo(file).fileName()):
-                    self.addPlate(file)
+                if file.endsWith('xml'):
+                    st = '<ul>'
+                    warn = False
+                    prtmp = Project(file)
+                    for plate in prtmp.dicoPlates.keys():
+                        if not self.project.dicoPlates.has_key(plate):
+                            self.project.addPlate(prtmp.dicoPlates[plate], key=plate)
+                            self.appendPlate(prtmp.dicoPlates[plate], plate)
+                            self.appendResult(prtmp.dicoPlates[plate], plate)
+                        else:
+                            st += '<li><b>%s</b></li>\n' % plate
+                            warn = True
+                    st += '</ul>'
+                    if warn:
+                        QMessageBox.warning(self, "Import not complete",
+                         "<b>Warning</b>: the plate(s): %s is (are) already in the project ! \
+                         As a consequence, it (they) has (have) not been added."       
+                                        % (st))
+
+                    self.updateUi()
+                    self.project.unsaved = True
+                    self.fileSaveAction.setEnabled(True)
+                    self.projectStack.append(copy.deepcopy(self.project))
                 else:
-                    name = QFileInfo(file).fileName()
-                    QMessageBox.warning(self, "Import cancelled",
-                      "<b>Warning</b>: the plate %s is already in the project %s ! \
-                       As a consequence, it has not been added to the project."       
-                                    % (name, QFileInfo(self.filename).fileName()))
+                    if not self.project.dicoPlates.has_key(QFileInfo(file).fileName()):
+                        self.addPlate(file)
+                    else:
+                        name = QFileInfo(file).fileName()
+                        QMessageBox.warning(self, "Import cancelled",
+                          "<b>Warning</b>: the plate %s is already in the project %s ! \
+                           As a consequence, it has not been added to the project."       
+                                        % (name, QFileInfo(self.filename).fileName()))
 
     def addPlate(self, fname=None):
         if fname is None:
@@ -1237,7 +1275,9 @@ class Qpcr_qt(QMainWindow):
         self.fileSaveAction.setEnabled(True)
 
     def computeStd(self):
-# On cherche les std
+        """
+        A method to compute standard samples
+        """
         try:
             self.project.findStd(self.ectMax, self.confidence,
                                 self.errtype)
@@ -1282,7 +1322,6 @@ class Qpcr_qt(QMainWindow):
             QMessageBox.warning(self, "Warning",
                 "The plates does not contain 'standard'-type wells."
                 "The standard curves can't be proceeded.")
-
 
     def plotUnknown(self, plates=None):
         """

@@ -112,8 +112,15 @@ class Project:
             if error is not None:
                 return False, error
             
-    def addPlate(self, plate):
-        key = QFileInfo(plate.filename).fileName()
+    def addPlate(self, plate, key=None):
+        """
+        This method allows to add a plate to an existing Project.
+
+        @param plate: the plate we want to add
+        @type plate: pyQPCR.Plaque
+        """
+        if not key:
+            key = QFileInfo(plate.filename).fileName()
         self.dicoPlates[key] = plate
 # For each plate, adress the Gene location
         self.initLocGene(plate)
@@ -128,6 +135,9 @@ class Project:
         """
         This method allows to delete a specific plate of an existing
         project.
+
+        @param plateName: the name of the plate we want to delete
+        @type plateName: string
         """
         oldGenes = self.dicoPlates[plateName].dicoGene.keys()
         oldEchs = self.dicoPlates[plateName].dicoEch.keys()
