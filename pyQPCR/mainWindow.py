@@ -102,6 +102,8 @@ class Qpcr_qt(QMainWindow):
                      self.modifyAm)
         self.connect(self.typeComboBox, SIGNAL("activated(int)"),
                      self.setType)
+        self.connect(self.cboxPlate, SIGNAL("activated(int)"),
+                     self.plotUnknown)
         self.connect(self.cboxSens, SIGNAL("activated(int)"),
                      self.plotUnknown)
         self.connect(self.spinWidth, SIGNAL("valueChanged(double)"),
@@ -162,6 +164,7 @@ class Qpcr_qt(QMainWindow):
     def createMplUnknownWiget(self):
         self.plotUnknownWidget = QWidget()
         vLay = QVBoxLayout()
+        self.cboxPlate = QComboBox()
         self.cboxSens = QComboBox()
         lab1 = QLabel("&Plot axis:")
         lab1.setBuddy(self.cboxSens)
@@ -196,6 +199,7 @@ class Qpcr_qt(QMainWindow):
         self.cboxRot.setSingleStep(5)
 
         vLay.addStretch()
+        vLay.addWidget(self.cboxPlate)
         vLay.addWidget(lab1)
         vLay.addWidget(self.cboxSens)
         vLay.addWidget(lab2)
@@ -1211,6 +1215,9 @@ class Qpcr_qt(QMainWindow):
 
 # On calcule NRQ
         try:
+            self.cboxPlate.clear()
+            self.cboxPlate.addItem('All plates')
+            self.cboxPlate.addItems(self.project.dicoPlates.keys())
             self.project.calcNRQ()
         except NRQError, e:
             QMessageBox.warning(self, "Problem occurs in calculation !",
@@ -1277,10 +1284,15 @@ class Qpcr_qt(QMainWindow):
                 "The standard curves can't be proceeded.")
 
 
-    def plotUnknown(self):
+    def plotUnknown(self, plates=None):
         """
         A method to plot the unknown histograms
         """
+        if self.cboxPlate.currentText()  == 'All plates':
+            platesToPlot = self.project.dicoPlates.keys()
+        else:
+            platesToPlot = [self.cboxPlate.currentText()]
+
         size = int(self.cboxFontsize.value())
         self.mplCanUnknown.axes.cla()
         width = self.spinWidth.value()
@@ -1319,11 +1331,11 @@ class Qpcr_qt(QMainWindow):
 # Gene vs Ech
         valmax = 0
         if self.cboxSens.currentIndex() == 0:
-            self.project.findBars(width, spacing, 'geneEch')
+            self.project.findBars(width, spacing, 'geneEch', platesToPlot)
             for g in self.project.hashGene.keys()[1:]:
                 NRQ = [] ; NRQerror = [] ; valx = []
                 for ech in self.project.hashEch.keys()[1:]:
-                    for pl in self.project.dicoPlates.keys():
+                    for pl in platesToPlot:
                         if self.project.dicoTriplicat[pl].has_key(g) and \
                           self.project.hashGene[g].enabled == Qt.Checked and \
                           self.project.dicoTriplicat[pl][g].has_key(ech) and \
@@ -1346,11 +1358,11 @@ class Qpcr_qt(QMainWindow):
 
 # Ech vs Gene
         elif self.cboxSens.currentIndex() == 1:
-            self.project.findBars(width, spacing, 'echGene')
+            self.project.findBars(width, spacing, 'echGene', platesToPlot)
             for ech in self.project.hashEch.keys()[1:]:
                 NRQ = [] ; NRQerror = [] ; valx = []
                 for g in self.project.hashGene.keys()[1:]:
-                    for pl in self.project.dicoPlates.keys():
+                    for pl in platesToPlot:
                         if self.project.dicoTriplicat[pl].has_key(g) and \
                           self.project.hashGene[g].enabled == Qt.Checked and \
                           self.project.dicoTriplicat[pl][g].has_key(ech) and \
@@ -1504,6 +1516,7 @@ class Qpcr_qt(QMainWindow):
         self.activateDesactivate(True)
         # undo/redo buffer
         self.projectStack = []
+
 
 
 def run():
