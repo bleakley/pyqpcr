@@ -138,7 +138,7 @@ class GeneDialog(QDialog):
             if gene.isRef == Qt.Checked and state == Qt.Unchecked:
                 for pl in self.project.dicoPlates.values():
                     for geneName in pl.geneRef:
-                        if geneName == gene.name:
+                        if geneName == gene.name or geneName == gene_before:
                             pl.geneRef.remove(gene.name)
 
             gene.setRef(state)
@@ -160,7 +160,7 @@ class GeneDialog(QDialog):
                 pl = self.project.dicoPlates[plaque]
                 if plaque not in dialog.refPlates:
                     for gg in pl.geneRef:
-                        if gg == name:
+                        if gg == name or gg == gene_before:
                             pl.geneRef.remove(gg)
 
                 if pl.dicoGene.has_key(gene_before) and gene_before != name:
