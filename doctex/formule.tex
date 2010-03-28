@@ -4,6 +4,8 @@
 \usepackage[francais]{babel}
 \usepackage[dvipsnames]{xcolor}
 \usepackage{amsmath,amsfonts,amssymb}
+\usepackage{geometry}
+\geometry{left=2cm, right=2cm}
 
 \begin{document}
 
@@ -49,11 +51,11 @@ linéaire s'écrit:
 \begin{equation}
  \sigma_{\epsilon}^2 = \displaystyle\frac{1}{n-2}\sum_{i=1}^{n}(y_i-\hat{y}_i)^2
 \end{equation}
-On en déduit l'erreur sur la pente $\sigma_a^2$
+On en déduit l'erreur standard sur la pente $\text{SE}(a)^2$
 
 \begin{equation}
- \sigma_a^2 = \dfrac{\sigma_{\epsilon}^2}{(n-1)\sigma_x^2} \Longrightarrow
-\boxed{\sigma_a =
+ \text{SE}(a)^2 = \dfrac{\sigma_{\epsilon}^2}{(n-1)\sigma_x^2} \Longrightarrow
+\boxed{\text{SE}(a) =
 \sqrt{\dfrac{\sum(y_i-\hat{y}_i)^2}{
 (n-2)\sum (x_i-\bar{x})^2}}}
 \end{equation}
@@ -63,10 +65,10 @@ On en déduit l'erreur sur la pente $\sigma_a^2$
 \begin{equation}
  R = \dfrac{\sigma_{xy}}{\sigma_x\sigma_y}
 \end{equation}
-Il est possible d'exprimer $\sigma_a$ en fonction de $R^2$ :
+Il est possible d'exprimer $\text{SE}(a)$ en fonction de $R^2$ :
 
 \begin{equation}
- \sigma_a = \dfrac{\sigma_y}{\sigma_x}\sqrt{\dfrac{1-R^2}{n-2}}
+ \text{SE}(a) = \dfrac{\sigma_y}{\sigma_x}\sqrt{\dfrac{1-R^2}{n-2}}
 \end{equation}
 
 
@@ -76,14 +78,15 @@ inconnu. Pour un niveau de confiance $\alpha$ donné, on estime que l'erreur sur
 $a$ est :
 
 \begin{equation}
- \Delta a = \sigma _a \cdot t_{(1-\alpha)/2}^{n-2}
+ \Delta a = \text{SE}(a) \cdot t_{(1-\alpha)/2}^{n-2}
 \end{equation}
 où $t_{(1-\alpha)/2}^{n-2}$ est est le quantile d'ordre $\alpha/2$ de la loi de
 Student à $n-2$ degrés de liberté. En termes de probabilité, on obtient donc
 
 \begin{equation}
 \boxed{%
- P\left[a- \sigma _a \cdot t_{(1-\alpha)/2}^{n-2}\le \beta\le a +\sigma _a \cdot
+ P\left[a- \text{SE}(a) \cdot t_{(1-\alpha)/2}^{n-2}\le \beta\le a +\text{SE}(a)
+\cdot
 t_{(1-\alpha)/2}^{n-2}\right] = \alpha}
 \end{equation}
 
@@ -101,7 +104,7 @@ sur l'efficacité :
 \end{equation}
 {\color{red} ou bien} 
 \begin{equation}
- \epsilon(\text{eff}) = \ln 10(\text{eff}+100) \dfrac{\sigma_a}{a^2}
+ \epsilon(\text{eff}) = \ln 10(\text{eff}+100) \dfrac{\text{SE}(a)}{a^2}
 \end{equation}
 
 
@@ -122,8 +125,8 @@ ainsi que l'erreur-type associée
 L'intervalle de confiance associé peut s'écrire
 
 \begin{equation}
- \left[{\bar{c_t}}_{sg}-t_{(1-\alpha)/2}^{n_w-1}\text{SE}(ct),\
-{\bar{c_t}}_{sg}+t_{(1-\alpha)/2}^{n_w-1}\text{SE}(ct)\right]
+ \left[{\bar{c_t}}_{sg}-t_{(1-\alpha)/2}^{n_w-1}\text{SE}(c_t),\
+{\bar{c_t}}_{sg}+t_{(1-\alpha)/2}^{n_w-1}\text{SE}(c_t)\right]
 \end{equation}
 Pour chaque gene, on calcule le coefficient ${c_t}_{\text{ref}}$
 
@@ -161,10 +164,51 @@ qui conduit à l'erreur suivante
 En remplaçant par les grandeurs d'intérêt, nous obtenons donc
 
 \begin{equation}
- \text{SE}(\text{RQ}_{sg}) =\sqrt{%
+ \text{SE}(\text{RQ}_{sg}) =\text{RQ}_{sg}\sqrt{%
  \left({\Delta c_t}_{sg}\dfrac{\text{SE}(\text{eff}_g)}{\text{eff}_g}\right)^2+
  \left(\text{SE}({\Delta c_t}_{sg}) \ln \text{eff}_g\right)^2}
 \end{equation}
+
+\section{Genes de référence}
+
+On réalise une moyenne géométrique des RQ des gènes que l'on veut comme
+référence. On définit alors pour chaque échantillon, la valeur $\text{NF}_{s}$
+telle que
+
+\begin{equation}
+ \text{NF}_s = \left( \prod_{p=1}^{n_{\text{generef}}} \text{RQ}_{ps}
+\right)^{1/n_{\text{generef}}}
+\end{equation}
+A cette valeur, est associée également une erreur standard
+
+\begin{equation} 
+\text{SE}(\text{NF}_s) = \text{NF}_s  \sqrt{\sum_{p=1}^{n_{\text{generef}}}
+\left( \dfrac{\text{SE}(\text{RQ}_{ps})}{n_{\text{generef}}\cdot 
+\text{RQ}_{ps}} \right)^2}
+\end{equation}
+
+\section{Normalisation des RQ}
+
+On normalise ensuite par rapport à un échantillon contrôle :
+
+\begin{equation}
+ \text{NRQ}_{gs} =
+\dfrac{\text{RQ}_{g,s}}{\text{NF}_s}
+\cdot \dfrac{\text{NF}_{\text{echref}}} {\text{RQ}_{g,\text{echref}}}
+\end{equation}
+L'erreur standard associée s'écrit :
+
+\begin{equation}
+ \text{SE}(\text{NRQ}_{g,s}) = \sqrt{%
+\left(\dfrac{\text{SE}(\text{RQ}_{g,s})}{\text{RQ}_{g,s}} \right)^2 +
+\left(\dfrac{\text{SE}(\text{NF}_{s})}{\text{NF}_{s}} \right)^2 +
+\left(\dfrac{\text{SE}(\text{NF}_{\text{echref}})}{\text{NF}_{\text{echref}}}
+\right)^2 +
+\left(\dfrac{\text{SE}(\text{RQ}_{g,\text{echref}})}{\text{RQ}_{g,\text{echref}}
+} \right)^2
+}
+\end{equation}
+
 
 
 
