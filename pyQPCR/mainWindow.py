@@ -1291,7 +1291,7 @@ class Qpcr_qt(QMainWindow):
         """
         Determine the reference target and sample
         """
-        bad = True
+        bad = True 
         for plname in self.project.dicoPlates.keys():
             pl = self.project.dicoPlates[plname]
             if pl.contUkn:
@@ -1302,12 +1302,24 @@ class Qpcr_qt(QMainWindow):
                     raise ValueError
 
                 for geneName in pl.geneRef:
+                    wrong = False
                     if not pl.dicoGene.has_key(geneName):
                         QMessageBox.warning(self, "Warning",
                             """Wrong reference target for plate <b>%s</b>!
                                This plate does not contain <b>%s</b>.""" %  \
                                (plname, geneName))
                         raise ValueError
+                    for well in pl.dicoGene[geneName]:
+                        if well.type == 'unknown':
+                            wrong = True
+                    if not wrong:
+                        QMessageBox.warning(self, "Warning",
+                            """Wrong reference target for plate <b>%s</b>!
+                               This plate does not contain <b>%s</b> for
+                               unknown-type wells.""" %  \
+                               (plname, geneName))
+                        raise ValueError
+
                 if pl.echRef == '':
                     QMessageBox.warning(self, "Warning",
                         "Reference sample undefined for plate <b>%s</b>!" % plname)
