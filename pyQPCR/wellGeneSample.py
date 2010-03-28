@@ -200,7 +200,7 @@ class Gene:
         brokenWells = []
         for well in listePuits:
             try:
-                if well.enabled:
+                if well.enabled and well.type == 'unknown':
                     qt += well.ct
                     k += 1
             except TypeError:

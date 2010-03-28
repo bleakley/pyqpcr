@@ -1327,16 +1327,16 @@ class Qpcr_qt(QMainWindow):
         """
         A method to compute the NRQ of unknow-type wells.
         """
-# On verifie que chaque plaque contient des unknown
+        # On verifie que chaque plaque contient des unknown
         self.project.findUnknown()
-# On fixe le gene de reference et le triplicat de reference
+        # On fixe le gene de reference et le triplicat de reference
         try:
             self.setRefs()
         except ValueError:
             return
-# On verifie la qualite des negative control
+        # On verifie la qualite des negative control
         self.checkNegative(self.ctMin)
-# On construit tous les triplicats
+        # On construit tous les triplicats
         try:
             self.project.findTrip(self.ectMax, self.confidence,
                                       self.errtype)
@@ -1359,7 +1359,7 @@ class Qpcr_qt(QMainWindow):
         if self.nplotGene == 0:
             self.onglet.addTab(self.plotUnknownWidget, "Quantification")
 
-# On calcule NRQ
+        # On calcule NRQ
         try:
             self.cboxPlate.clear()
             self.cboxPlate.addItem('All plates')
@@ -1373,14 +1373,15 @@ class Qpcr_qt(QMainWindow):
                 "<p> As a consequence these replicates have not been plotted." \
                 % str(e))
 
-# On reremplit la table de resultats
+        # On reremplit la table de resultats
         for key in self.project.dicoPlates.keys():
             pl = self.project.dicoPlates[key]
             self.pileResults[key].populateResult(pl)
-# On trace le resultat
+        # On trace le resultat
         self.plotUnknown()
         self.project.unsaved = True
         self.fileSaveAction.setEnabled(True)
+        self.projectStack.append(copy.deepcopy(self.project))
 
     def computeStd(self):
         """
@@ -1410,7 +1411,7 @@ class Qpcr_qt(QMainWindow):
             self.displayWarnings()
             return
 
-# On trace le resultat on rajoute un onglet si c'est la premiere fois
+        # On trace le resultat on rajoute un onglet si c'est la premiere fois
         if len(self.project.dicoStd.keys()) != 0:
             if self.nplotStd == 0:
                 self.onglet.addTab(self.plotStdWidget, "Standard curves")
@@ -1453,7 +1454,7 @@ class Qpcr_qt(QMainWindow):
                   QColor(Qt.darkGray), QColor(Qt.lightGray), 
                   QColor(Qt.black)]
 
-# color attributions
+        # color attributions
         ind = 0
         for gene in self.project.hashGene.values()[1:]:
             if not hasattr(gene, 'color'):
@@ -1475,7 +1476,7 @@ class Qpcr_qt(QMainWindow):
         legPos = [] ; legName = [] ; xlabel = []
         dicoAbs = OrderedDict()
 
-# Gene vs Ech
+        # Gene vs Ech
         valmax = 0
         if self.cboxSens.currentIndex() == 0:
             self.project.findBars(width, spacing, 'geneEch', platesToPlot)
@@ -1503,7 +1504,7 @@ class Qpcr_qt(QMainWindow):
                     valmax = max(valmax, max(valx))
             self.nplotGene += 1
 
-# Ech vs Gene
+        # Ech vs Gene
         elif self.cboxSens.currentIndex() == 1:
             self.project.findBars(width, spacing, 'echGene', platesToPlot)
             for ech in self.project.hashEch.keys()[1:]:
@@ -1530,12 +1531,12 @@ class Qpcr_qt(QMainWindow):
                     valmax = max(valmax, max(valx))
             self.nplotEch += 1
 
-# plot
+        # plot
         self.mplCanUnknown.axes.set_xticks(self.project.barXticks.values())
         self.mplCanUnknown.axes.set_xticklabels(self.project.barXticks.keys(), 
                                                 fontsize=size, 
                                                 rotation=int(self.cboxRot.value()))
-# Legend + xlim
+        # Legend + xlim
         self.leg = self.mplCanUnknown.axes.legend(loc='upper right', 
                               shadow=True, labelspacing=0.005)
         legendWidth = 0.3 * valmax
@@ -1663,6 +1664,9 @@ class Qpcr_qt(QMainWindow):
         This method allows to clean up and populate the UI when
         changing some elements.
         """
+        self.cboxPlate.clear()
+        self.cboxPlate.addItem('All plates')
+        self.cboxPlate.addItems(self.project.dicoPlates.keys())
         self.populateCbox(self.geneComboBox, self.project.hashGene, "Target")
         self.populateCbox(self.echComboBox, self.project.hashEch, "Sample")
         self.populateCbox(self.amComboBox, self.project.hashAmount, "Amount")
