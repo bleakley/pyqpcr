@@ -544,7 +544,7 @@ class Qpcr_qt(QMainWindow):
             type = 'Eppendorf machines'
         fileNames = QFileDialog.getOpenFileNames(self,
                        "pyQPCR - Choose a file", dir, 
-                       "Input files [%s] (%s) ;; pyQPCR file (*.xml)" % (type, 
+                       "Input files [%s] (%s);;pyQPCR file (*.xml)" % (type, 
                                 " ".join(formats)))
         if fileNames:
             for file in fileNames:
