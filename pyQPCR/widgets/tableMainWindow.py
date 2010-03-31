@@ -158,6 +158,12 @@ class ResultWidget(QTableWidget):
         self.setSizePolicy(QSizePolicy(QSizePolicy.Maximum,
                                        QSizePolicy.Maximum))
 
+        self.copyAction = QAction("Copy",  self)
+        self.copyAction.setStatusTip('Copy data')
+        self.copyAction.setShortcut(QKeySequence.Copy)
+        self.addAction(self.copyAction)
+        self.connect(self.copyAction, SIGNAL("triggered()"), self.copyCells)
+
     def clear(self):
         """
         Overload the clear method by puting the headers of the table back after
@@ -225,3 +231,25 @@ class ResultWidget(QTableWidget):
             self.setItem(ind, 7, itEff)
             self.setItem(ind, 8, itType)
             self.setItem(ind, 9, itNRQ)
+
+    def copyCells(self):
+        selRange  = self.selectedRanges()[0]#just take the first range
+        topRow = selRange.topRow()
+        bottomRow = selRange.bottomRow()
+        rightColumn = selRange.rightColumn()
+        leftColumn = selRange.leftColumn()
+        #item = self.tableWidget.item(topRow, leftColumn)
+        clipStr = QString()
+        for row in xrange(topRow, bottomRow+1):
+            for col in xrange(leftColumn, rightColumn+1):
+                cell = self.item(row, col)
+                if cell:
+                    clipStr.append(cell.text())
+                else:
+                    clipStr.append(QString(""))
+                clipStr.append(QString("\t"))
+            clipStr.chop(1)
+            clipStr.append(QString("\r\n"))
+        
+        cb = QApplication.clipboard()
+        cb.setText(clipStr)
