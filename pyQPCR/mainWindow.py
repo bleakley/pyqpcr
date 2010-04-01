@@ -859,7 +859,7 @@ class Qpcr_qt(QMainWindow):
         import platform
         QMessageBox.about(self, "About pyQPCR",
         """<b>pyQPCR</b> v %s
-        <p>Copyright &copy; 2008- Thomas Gastine - Magali Hennion
+        <p>Copyright &copy; 2008-2010 Thomas Gastine - Magali Hennion - 
         All rights reserved.
         <p>This application can be used to perform
         simple qPCR analysis.
