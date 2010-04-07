@@ -122,10 +122,6 @@ class NavToolBar(NavigationToolbar2QT):
                 self.save_figure)
         a.setToolTip('Save the figure')
 
-        self.combo = QComboBox()
-        self.combo.addItems(['Linear', 'Logarithmic'])
-        self.addWidget(self.combo)
-
         self.buttons = {}
 
         if self.coordinates:
