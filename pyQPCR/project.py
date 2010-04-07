@@ -69,8 +69,9 @@ class Project:
                 pl.setDicoEch()
                 if len(pl.geneRef) != 0:
                     for geneName in pl.geneRef:
-                        self.hashGene[geneName].setRef(Qt.Checked)
-                if pl.echRef != '':
+                        if self.hashGene.has_key(geneName):
+                            self.hashGene[geneName].setRef(Qt.Checked)
+                if pl.echRef != '' and self.hashEch.has_key(pl.echRef):
                     self.hashEch[pl.echRef].setRef(Qt.Checked)
             self.setDicoAm()
         except (IOError, OSError, ValueError), e:
