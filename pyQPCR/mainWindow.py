@@ -23,6 +23,7 @@ from PyQt4.QtCore import *
 import pyQPCR.qrc_resources
 from pyQPCR.dialogs import *
 from pyQPCR.widgets.matplotlibWidget import MatplotlibWidget, NavToolBar
+from pyQPCR.widgets.mplPlot import MplUnknownWidget
 from pyQPCR.widgets.tableMainWindow import PlateWidget, ResultWidget
 from pyQPCR.widgets.customCbox import GeneEchComboBox
 from pyQPCR.plate import Plaque, ReplicateError, PlateError
@@ -51,6 +52,7 @@ class Qpcr_qt(QMainWindow):
         self.setMinimumSize(640, 480)
         self.filename = None
         self.printer = None
+        self.nplotGene = 0
 
         self.tree = QTreeWidget()
         self.tree.setHeaderLabel("Parameters")
@@ -68,14 +70,12 @@ class Qpcr_qt(QMainWindow):
         self.barWth, status  = settings.value("Mpl/barWidth", QVariant(0.1)).toDouble()
         self.barSpacing, status = settings.value("Mpl/barSpacing", QVariant(0.3)).toDouble()
 
-        self.createMplUnknownWiget()
         self.createMplStdWiget()
 
-        top, status = settings.value("MplCan/top", QVariant(0.95)).toDouble()
-        bot, status = settings.value("MplCan/bottom", QVariant(0.10)).toDouble()
-        right, status = settings.value("MplCan/right", QVariant(0.98)).toDouble()
-        left, status = settings.value("MplCan/left", QVariant(0.09)).toDouble()
-        self.mplCanUnknown.fig.subplots_adjust(right=right, left=left, top=top, bottom=bot)
+        self.topMplCan, status = settings.value("MplCan/top", QVariant(0.95)).toDouble()
+        self.botMplCan, status = settings.value("MplCan/bottom", QVariant(0.10)).toDouble()
+        self.rightMplCan, status = settings.value("MplCan/right", QVariant(0.98)).toDouble()
+        self.leftMplCan, status = settings.value("MplCan/left", QVariant(0.09)).toDouble()
  
         self.createResultWidget()
         self.pileResults = OrderedDict()
@@ -111,20 +111,6 @@ class Qpcr_qt(QMainWindow):
                      self.modifyAm)
         self.connect(self.typeComboBox, SIGNAL("activated(int)"),
                      self.setType)
-        self.connect(self.cboxPlate, SIGNAL("activated(int)"),
-                     self.plotUnknown)
-        self.connect(self.cboxSens, SIGNAL("activated(int)"),
-                     self.plotUnknown)
-        self.connect(self.spinWidth, SIGNAL("valueChanged(double)"),
-                     self.plotUnknown)
-        self.connect(self.spinSpacing, SIGNAL("valueChanged(double)"),
-                     self.plotUnknown)
-        self.connect(self.cboxFontsize, SIGNAL("valueChanged(int)"),
-                     self.changeFontsize)
-        self.connect(self.cboxRot, SIGNAL("valueChanged(int)"),
-                     self.changeLabelsRotation)
-        self.connect(self.btnPlot, SIGNAL("clicked()"),
-                     self.setPlotColor)
         self.connect(self.geneStdBox, SIGNAL("activated(int)"),
                      self.plotStd)
         self.connect(self.tabulPlates, SIGNAL("currentChanged(int)"),
@@ -174,71 +160,6 @@ class Qpcr_qt(QMainWindow):
         vLay.addWidget(self.tabulResults)
         self.resulWidget.setLayout(vLay)
 
-    def createMplUnknownWiget(self):
-        """
-        This methods create the plot associated to quantification curves.
-        """
-        self.plotUnknownWidget = QWidget()
-        vLay = QVBoxLayout()
-        self.cboxPlate = QComboBox()
-        self.cboxSens = QComboBox()
-        lab1 = QLabel("&Plot axis:")
-        lab1.setBuddy(self.cboxSens)
-        self.cboxSens.addItems(["Target vs Sample", "Sample vs Target"])
-        self.spinWidth = QDoubleSpinBox()
-        self.spinWidth.setLocale(QLocale(QLocale.English, 
-                                         QLocale.UnitedStates))
-        self.spinWidth.setValue(self.barWth)
-        self.spinWidth.setRange(0.01, 0.5)
-        self.spinWidth.setSingleStep(0.02)
-        lab2 = QLabel("Bar &width:")
-        lab2.setBuddy(self.spinWidth)
-        self.spinSpacing = QDoubleSpinBox()
-        self.spinSpacing.setLocale(QLocale(QLocale.English, 
-                                           QLocale.UnitedStates))
-        self.spinSpacing.setValue(self.barSpacing)
-        self.spinSpacing.setRange(0.1, 2)
-        self.spinSpacing.setSingleStep(0.1)
-        lab3 = QLabel("Bar &spacing:")
-        lab3.setBuddy(self.spinSpacing)
-        self.btnPlot = QPushButton("&Colors and order...")
-        lab4 = QLabel("&Font size:")
-        self.cboxFontsize = QSpinBox()
-        lab4.setBuddy(self.cboxFontsize)
-        self.cboxFontsize.setValue(self.labelFontSize)
-        self.cboxFontsize.setRange(4, 16)
-        lab5 = QLabel("Labels &rotation:")
-        self.cboxRot = QSpinBox()
-        lab5.setBuddy(self.cboxRot)
-        self.cboxRot.setValue(self.labelRotation)
-        self.cboxRot.setRange(0, 45)
-        self.cboxRot.setSingleStep(5)
-
-        vLay.addStretch()
-        vLay.addWidget(self.cboxPlate)
-        vLay.addWidget(lab1)
-        vLay.addWidget(self.cboxSens)
-        vLay.addWidget(lab2)
-        vLay.addWidget(self.spinWidth)
-        vLay.addWidget(lab3)
-        vLay.addWidget(self.spinSpacing)
-        vLay.addWidget(lab4)
-        vLay.addWidget(self.cboxFontsize)
-        vLay.addWidget(lab5)
-        vLay.addWidget(self.cboxRot)
-        vLay.addWidget(self.btnPlot)
-        vLay.addStretch()
-        vLayout = QVBoxLayout()
-        self.mplCanUnknown = MatplotlibWidget(self.plotUnknownWidget, width=5,
-                                              height=4, dpi=100)
-        toolBar = NavToolBar(self.mplCanUnknown, self)
-        vLayout.addWidget(toolBar)
-        vLayout.addWidget(self.mplCanUnknown)
-        hLayout = QHBoxLayout()
-        hLayout.addLayout(vLay)
-        hLayout.addLayout(vLayout)
-        self.plotUnknownWidget.setLayout(hLayout)
-
     def createMplStdWiget(self):
         """
         This methods create the plot associated to standard curves.
@@ -270,7 +191,7 @@ class Qpcr_qt(QMainWindow):
 
         self.plotStdWidget = QWidget()
         vLayout = QVBoxLayout()
-        self.mplCanStd = MatplotlibWidget(self.plotUnknownWidget, width=5, 
+        self.mplCanStd = MatplotlibWidget(self.plotStdWidget, width=5, 
                                           height=4, dpi=100)
         toolBar = NavToolBar(self.mplCanStd, self)
         vLayout.addWidget(toolBar)
@@ -783,7 +704,7 @@ class Qpcr_qt(QMainWindow):
             html += "</p>"
         if isQuant:
             html += "<br><h2>Quantification curves</h2>"
-            fig = self.mplCanUnknown.figure.savefig("output.png", dpi=100)
+            fig = self.mplUknWidget.mplCanUnknown.figure.savefig("output.png", dpi=100)
             html += "<p><img src='output.png' width=500></p>"
         html += "</html>"
         return html
@@ -926,30 +847,28 @@ class Qpcr_qt(QMainWindow):
                   else QVariant()
             machine = QVariant(self.machine) if self.machine \
                   else QVariant()
-            top = QVariant(self.mplCanUnknown.fig.subplotpars.top)
-            bottom = QVariant(self.mplCanUnknown.fig.subplotpars.bottom)
-            right = QVariant(self.mplCanUnknown.fig.subplotpars.right)
-            left = QVariant(self.mplCanUnknown.fig.subplotpars.left)
-            rot = QVariant(int(self.cboxRot.value())) if self.labelFontSize \
-                  else QVariant()
-            barW = QVariant(self.spinWidth.value()) if self.labelFontSize \
-                  else QVariant()
-            barS = QVariant(self.spinSpacing.value()) if self.labelFontSize \
-                  else QVariant()
-            fontSize = QVariant(int(self.cboxFontsize.value())) if self.labelFontSize \
-                  else QVariant()
+
+            if self.nplotGene != 0:
+                top = QVariant(self.mplUknWidget.mplCanUnknown.fig.subplotpars.top)
+                bottom = QVariant(self.mplUknWidget.mplCanUnknown.fig.subplotpars.bottom)
+                right = QVariant(self.mplUknWidget.mplCanUnknown.fig.subplotpars.right)
+                left = QVariant(self.mplUknWidget.mplCanUnknown.fig.subplotpars.left)
+                rot = QVariant(int(self.mplUknWidget.cboxRot.value()))
+                barW = QVariant(self.mplUknWidget.spinWidth.value())
+                barS = QVariant(self.mplUknWidget.spinSpacing.value())
+                fontSize = QVariant(int(self.mplUknWidget.cboxFontsize.value()))
+                settings.setValue("MplCan/top", top)
+                settings.setValue("MplCan/bottom", bottom)
+                settings.setValue("MplCan/right", right)
+                settings.setValue("MplCan/left", left)
+                settings.setValue("Mpl/labelRotation", rot)
+                settings.setValue("Mpl/labelFontSize", fontSize)
+                settings.setValue("Mpl/barWidth", barW)
+                settings.setValue("Mpl/barSpacing", barS)
+
             settings.setValue("Error/confidence", confidence)
             settings.setValue("Error/errtype", errtype)
             settings.setValue("machine", machine)
-            settings.setValue("MplCan/top", top)
-            settings.setValue("MplCan/bottom", bottom)
-            settings.setValue("MplCan/right", right)
-            settings.setValue("MplCan/left", left)
-            settings.setValue("Mpl/labelRotation", rot)
-            settings.setValue("Mpl/labelFontSize", fontSize)
-            settings.setValue("Mpl/barWidth", barW)
-            settings.setValue("Mpl/barSpacing", barS)
-            #settings.setValue("Geometry", QVariant(self.saveGeometry()))
             settings.setValue("MainWindow/Size", QVariant(self.size()))
             settings.setValue("MainWindow/Position",
                     QVariant(self.pos()))
@@ -1339,6 +1258,12 @@ class Qpcr_qt(QMainWindow):
         """
         A method to compute the NRQ of unknow-type wells.
         """
+        if self.nplotGene == 0:
+            self.mplUknWidget = MplUnknownWidget(self, barWth=self.barWth, 
+                           barSpac=self.barSpacing, labelFt=self.labelFontSize,
+                           labelRot=self.labelRotation)
+            self.mplUknWidget.mplCanUnknown.fig.subplots_adjust(right=self.rightMplCan, 
+                           left=self.leftMplCan, top=self.topMplCan, bottom=self.botMplCan)
         # On verifie que chaque plaque contient des unknown
         self.project.findUnknown()
         # On fixe le gene de reference et le triplicat de reference
@@ -1369,13 +1294,14 @@ class Qpcr_qt(QMainWindow):
             return
 
         if self.nplotGene == 0:
-            self.onglet.addTab(self.plotUnknownWidget, "Quantification")
+            self.onglet.addTab(self.mplUknWidget, "Quantification")
+            self.nplotGene += 1
 
         # On calcule NRQ
         try:
-            self.cboxPlate.clear()
-            self.cboxPlate.addItem('All plates')
-            self.cboxPlate.addItems(self.project.dicoPlates.keys())
+            self.mplUknWidget.cboxPlate.clear()
+            self.mplUknWidget.cboxPlate.addItem('All plates')
+            self.mplUknWidget.cboxPlate.addItems(self.project.dicoPlates.keys())
             self.project.calcNRQ()
         except NRQError, e:
             QMessageBox.warning(self, "Problem occurs in calculation !",
@@ -1390,7 +1316,7 @@ class Qpcr_qt(QMainWindow):
             pl = self.project.dicoPlates[key]
             self.pileResults[key].populateResult(pl)
         # On trace le resultat
-        self.plotUnknown()
+        self.mplUknWidget.plotUnknown(self.project)
         self.project.unsaved = True
         self.fileSaveAction.setEnabled(True)
         self.projectStack.append(copy.deepcopy(self.project))
@@ -1427,6 +1353,7 @@ class Qpcr_qt(QMainWindow):
         if len(self.project.dicoStd.keys()) != 0:
             if self.nplotStd == 0:
                 self.onglet.addTab(self.plotStdWidget, "Standard curves")
+                self.nplotStd += 1
             self.geneStdBox.clear()
             self.geneStdBox.addItems(self.project.dicoStd.keys())
             # Calcul des courbes standards
@@ -1443,119 +1370,6 @@ class Qpcr_qt(QMainWindow):
             QMessageBox.warning(self, "Warning",
                 "The plates does not contain 'standard'-type wells."
                 "The standard curves can't be proceeded.")
-
-    def plotUnknown(self, plates=None):
-        """
-        A method to plot the unknown histograms
-        """
-        if self.cboxPlate.currentText()  == 'All plates':
-            platesToPlot = self.project.dicoPlates.keys()
-        else:
-            platesToPlot = [self.cboxPlate.currentText()]
-
-        size = int(self.cboxFontsize.value())
-        self.mplCanUnknown.axes.cla()
-        width = self.spinWidth.value()
-        spacing = self.spinSpacing.value()
-        colors = [QColor(Qt.blue), QColor(Qt.red), QColor(Qt.green), 
-                  QColor(Qt.yellow), QColor(Qt.magenta),
-                  QColor(Qt.cyan), QColor(Qt.gray),
-                  QColor(Qt.darkBlue), QColor(Qt.darkRed), 
-                  QColor(Qt.darkGreen), QColor(Qt.darkYellow),
-                  QColor(Qt.darkMagenta), QColor(Qt.darkCyan),
-                  QColor(Qt.darkGray), QColor(Qt.lightGray), 
-                  QColor(Qt.black)]
-
-        # color attributions
-        ind = 0
-        for gene in self.project.hashGene.values()[1:]:
-            if not hasattr(gene, 'color'):
-                gene.setColor(colors[ind])
-            if ind < len(colors)-1:
-                ind += 1
-            else:
-                ind = 0
-
-        ind = 0
-        for ech in self.project.hashEch.values()[1:]:
-            if not hasattr(ech, 'color'):
-                ech.setColor(colors[ind])
-            if ind < len(colors)-1:
-                ind += 1
-            else:
-                ind = 0
-
-        legPos = [] ; legName = [] ; xlabel = []
-        dicoAbs = OrderedDict()
-
-        # Gene vs Ech
-        valmax = 0
-        if self.cboxSens.currentIndex() == 0:
-            self.project.findBars(width, spacing, 'geneEch', platesToPlot)
-            for g in self.project.hashGene.keys()[1:]:
-                NRQ = [] ; NRQerror = [] ; valx = []
-                for ech in self.project.hashEch.keys()[1:]:
-                    for pl in platesToPlot:
-                        if self.project.dicoTriplicat[pl].has_key(g) and \
-                          self.project.hashGene[g].enabled == Qt.Checked and \
-                          self.project.dicoTriplicat[pl][g].has_key(ech) and \
-                          self.project.hashEch[ech].enabled == Qt.Checked and \
-                          hasattr(self.project.dicoTriplicat[pl][g][ech], 'NRQ'):
-                            NRQ.append(\
-                                  self.project.dicoTriplicat[pl][g][ech].NRQ)
-                            NRQerror.append(\
-                                  self.project.dicoTriplicat[pl][g][ech].NRQerror)
-                            valx.append(self.project.barWidth[ech])
-                            self.project.barWidth[ech] += width
-                color = self.project.hashGene[g].color.name()
-                if len(valx) != 0:
-                    p = self.mplCanUnknown.axes.bar(valx, 
-                            NRQ, width, color=str(color), 
-                            yerr=NRQerror, ecolor='k',
-                            label=str(g), align='center')
-                    valmax = max(valmax, max(valx))
-            self.nplotGene += 1
-
-        # Ech vs Gene
-        elif self.cboxSens.currentIndex() == 1:
-            self.project.findBars(width, spacing, 'echGene', platesToPlot)
-            for ech in self.project.hashEch.keys()[1:]:
-                NRQ = [] ; NRQerror = [] ; valx = []
-                for g in self.project.hashGene.keys()[1:]:
-                    for pl in platesToPlot:
-                        if self.project.dicoTriplicat[pl].has_key(g) and \
-                          self.project.hashGene[g].enabled == Qt.Checked and \
-                          self.project.dicoTriplicat[pl][g].has_key(ech) and \
-                          self.project.hashEch[ech].enabled == Qt.Checked and \
-                          hasattr(self.project.dicoTriplicat[pl][g][ech], 'NRQ'):
-                            NRQ.append(\
-                                  self.project.dicoTriplicat[pl][g][ech].NRQ)
-                            NRQerror.append(\
-                                  self.project.dicoTriplicat[pl][g][ech].NRQerror)
-                            valx.append(self.project.barWidth[g])
-                            self.project.barWidth[g] += width
-                color = self.project.hashEch[ech].color.name()
-                if len(valx) != 0:
-                    p = self.mplCanUnknown.axes.bar(valx, 
-                            NRQ, width, color=str(color), 
-                            yerr=NRQerror, ecolor='k',
-                            label=str(ech), align='center')
-                    valmax = max(valmax, max(valx))
-            self.nplotEch += 1
-
-        # plot
-        self.mplCanUnknown.axes.set_xticks(self.project.barXticks.values())
-        self.mplCanUnknown.axes.set_xticklabels(self.project.barXticks.keys(), 
-                                                fontsize=size, 
-                                                rotation=int(self.cboxRot.value()))
-        # Legend + xlim
-        self.leg = self.mplCanUnknown.axes.legend(loc='upper right', 
-                              shadow=True, labelspacing=0.005)
-        legendWidth = 0.3 * valmax
-        self.changeFontsize(idraw=False)
-        self.mplCanUnknown.axes.set_xlim((0., valmax+legendWidth))
-        self.mplCanUnknown.axes.set_ylim(ymin=0.)
-        self.mplCanUnknown.draw()
 
     def plotStd(self):
         """
@@ -1593,30 +1407,6 @@ class Qpcr_qt(QMainWindow):
         self.labR2.setText('%.3f' % R2)
         self.labEff.setText('%.2f%% %s %.2f' % (eff, unichr(177), stdeff))
         self.mplCanStd.draw()
-        self.nplotStd += 1
-
-    def changeFontsize(self, idraw=True):
-        """
-        A method to change the matplotlib axes font sizes.
-        """
-        size = int(self.cboxFontsize.value())
-        for t in self.leg.get_texts():
-            t.set_fontsize(size)
-        for ytick in self.mplCanUnknown.axes.get_yticklabels():
-            ytick.set_fontsize(size)
-        for xtick in self.mplCanUnknown.axes.get_xticklabels():
-            xtick.set_fontsize(size)
-        if idraw:
-            self.mplCanUnknown.draw()
-
-    def changeLabelsRotation(self):
-        """
-        A method to change the matplotlib xlabels orientation.
-        """
-        size = int(self.cboxRot.value())
-        for xtick in self.mplCanUnknown.axes.get_xticklabels():
-            xtick.set_rotation(size)
-        self.mplCanUnknown.draw()
 
     def setPlotColor(self):
         """
@@ -1676,9 +1466,10 @@ class Qpcr_qt(QMainWindow):
         This method allows to clean up and populate the UI when
         changing some elements.
         """
-        self.cboxPlate.clear()
-        self.cboxPlate.addItem('All plates')
-        self.cboxPlate.addItems(self.project.dicoPlates.keys())
+        if hasattr(self, 'mplUknWidget'):
+            self.mplUknWidget.cboxPlate.clear()
+            self.mplUknWidget.cboxPlate.addItem('All plates')
+            self.mplUknWidget.cboxPlate.addItems(self.project.dicoPlates.keys())
         self.populateCbox(self.geneComboBox, self.project.hashGene, "Target")
         self.populateCbox(self.echComboBox, self.project.hashEch, "Sample")
         self.populateCbox(self.amComboBox, self.project.hashAmount, "Amount")
@@ -1697,16 +1488,13 @@ class Qpcr_qt(QMainWindow):
         # counters=0
         self.nplotGene = 0
         self.nplotStd = 0
-        self.nplotEch = 0
 
         # descativate actions
         self.activateDesactivate(True)
         # undo/redo buffer
         self.projectStack = []
         self.undoInd = -1
-
-
-
+ 
 def run():
     import sys
     app = QApplication(sys.argv)
