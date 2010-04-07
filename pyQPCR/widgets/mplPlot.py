@@ -40,66 +40,130 @@ class MplUnknownWidget(QWidget):
         QWidget.__init__(self, parent)
 
         vLay = QVBoxLayout()
+
+        labPl = QLabel("&Displayed plate(s):")
         self.cboxPlate = QComboBox()
+        labPl.setBuddy(self.cboxPlate)
         self.cboxSens = QComboBox()
         lab1 = QLabel("&Plot axis:")
         lab1.setBuddy(self.cboxSens)
         self.cboxSens.addItems(["Target vs Sample", "Sample vs Target"])
+
+        self.cboxScale = QComboBox()
+        labScale = QLabel("Plot &scale:")
+        labScale.setBuddy(self.cboxScale)
+        self.cboxScale.addItems(["Linear", "Logarithmic"])
+
         self.spinWidth = QDoubleSpinBox()
         self.spinWidth.setLocale(QLocale(QLocale.English, 
                                          QLocale.UnitedStates))
         self.spinWidth.setValue(self.barWth)
         self.spinWidth.setRange(0.01, 0.5)
         self.spinWidth.setSingleStep(0.02)
-        lab2 = QLabel("Bar &width:")
-        lab2.setBuddy(self.spinWidth)
+        self.spinWidth.setVisible(False)
+        self.lab2 = QLabel("Bar &width:")
+        self.lab2.setBuddy(self.spinWidth)
+        self.lab2.setVisible(False)
+
         self.spinSpacing = QDoubleSpinBox()
         self.spinSpacing.setLocale(QLocale(QLocale.English, 
                                            QLocale.UnitedStates))
         self.spinSpacing.setValue(self.barSpacing)
         self.spinSpacing.setRange(0.1, 2)
         self.spinSpacing.setSingleStep(0.1)
-        lab3 = QLabel("Bar &spacing:")
-        lab3.setBuddy(self.spinSpacing)
+        self.spinSpacing.setVisible(False)
+
+        self.labNcol = QLabel("&Legend columns")
+        self.ncolLegend = QSpinBox()
+        self.labNcol.setBuddy(self.ncolLegend)
+        self.labNcol.setVisible(False)
+        self.ncolLegend.setMaximum(5)
+        self.ncolLegend.setMinimum(1)
+        self.ncolLegend.setVisible(False)
+
+        self.lab3 = QLabel("Bar &spacing:")
+        self.lab3.setBuddy(self.spinSpacing)
+        self.lab3.setVisible(False)
         self.btnPlot = QPushButton("&Colors and order...")
-        lab4 = QLabel("&Font size:")
+        self.lab4 = QLabel("&Font size:")
         self.cboxFontsize = QSpinBox()
-        lab4.setBuddy(self.cboxFontsize)
+        self.lab4.setBuddy(self.cboxFontsize)
+        self.lab4.setVisible(False)
         self.cboxFontsize.setValue(self.labelFontSize)
         self.cboxFontsize.setRange(4, 16)
-        lab5 = QLabel("Labels &rotation:")
+        self.cboxFontsize.setVisible(False)
+        self.lab5 = QLabel("Labels &rotation:")
         self.cboxRot = QSpinBox()
-        lab5.setBuddy(self.cboxRot)
+        self.lab5.setBuddy(self.cboxRot)
+        self.lab5.setVisible(False)
         self.cboxRot.setValue(self.labelRotation)
         self.cboxRot.setRange(0, 45)
         self.cboxRot.setSingleStep(5)
+        self.cboxRot.setVisible(False)
 
+        labLegend = QLabel("Display legend")
+        self.hideLeg = QCheckBox()
+        self.hideLeg.setCheckState(Qt.Checked)
+        layLeg = QHBoxLayout()
+        layLeg.addWidget(labLegend)
+        layLeg.addStretch()
+        layLeg.addWidget(self.hideLeg)
+
+        lab = QLabel("Advanced settings...")
+        self.ref = QCheckBox()
+        layAdv = QHBoxLayout()
+        layAdv.addWidget(lab)
+        layAdv.addStretch()
+        layAdv.addWidget(self.ref)
+
+        wid = QWidget()
         vLay.addStretch()
+        vLay.addWidget(labPl)
         vLay.addWidget(self.cboxPlate)
         vLay.addWidget(lab1)
         vLay.addWidget(self.cboxSens)
-        vLay.addWidget(lab2)
-        vLay.addWidget(self.spinWidth)
-        vLay.addWidget(lab3)
-        vLay.addWidget(self.spinSpacing)
-        vLay.addWidget(lab4)
-        vLay.addWidget(self.cboxFontsize)
-        vLay.addWidget(lab5)
-        vLay.addWidget(self.cboxRot)
+        vLay.addWidget(labScale)
+        vLay.addWidget(self.cboxScale)
         vLay.addWidget(self.btnPlot)
-        vLay.addStretch()
+        vLay.addLayout(layLeg)
+        vLay.addLayout(layAdv)
+        vLay.addWidget(self.lab2)
+        vLay.addWidget(self.spinWidth)
+        vLay.addWidget(self.lab3)
+        vLay.addWidget(self.spinSpacing)
+        vLay.addWidget(self.lab4)
+        vLay.addWidget(self.cboxFontsize)
+        vLay.addWidget(self.lab5)
+        vLay.addWidget(self.cboxRot)
+        vLay.addWidget(self.labNcol)
+        vLay.addWidget(self.ncolLegend)
+
+        wid.setLayout(vLay)
+
+        scrollArea = QScrollArea()
+        scrollArea.setWidget(wid) 
+        scrollArea.setSizePolicy(QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)) 
+        scrollArea.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+        scrollArea.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+
+
+        self.connect(self.ref, SIGNAL("stateChanged(int)"), self.unHide)
+        vLay.setSizeConstraint(QLayout.SetFixedSize)
+
         vLayout = QVBoxLayout()
         self.mplCanUnknown = MatplotlibWidget(self, width=5,
                                               height=4, dpi=100)
-        self.toolBar = NavToolBar(self.mplCanUnknown, self)
-        vLayout.addWidget(self.toolBar)
+        toolBar = NavToolBar(self.mplCanUnknown, self)
+        vLayout.addWidget(toolBar)
         vLayout.addWidget(self.mplCanUnknown)
         hLayout = QHBoxLayout()
-        hLayout.addLayout(vLay)
+        hLayout.addWidget(scrollArea)
         hLayout.addLayout(vLayout)
+
         self.setLayout(hLayout)
 
-        self.connect(self.toolBar.combo, SIGNAL("activated(int)"), self.changeAxesScale)
+        self.connect(self.hideLeg, SIGNAL("stateChanged(int)"), self.hideLegend)
+        self.connect(self.cboxScale, SIGNAL("activated(int)"), self.changeAxesScale)
         self.connect(self.cboxFontsize, SIGNAL("valueChanged(int)"),
                      self.changeFontsize)
         self.connect(self.cboxPlate, SIGNAL("activated(int)"),
@@ -110,12 +174,31 @@ class MplUnknownWidget(QWidget):
                      self.updatePlot)
         self.connect(self.spinSpacing, SIGNAL("valueChanged(double)"),
                      self.updatePlot)
-        self.connect(self.cboxFontsize, SIGNAL("valueChanged(int)"),
-                     self.changeFontsize)
+        self.connect(self.ncolLegend, SIGNAL("valueChanged(int)"),
+                     self.updatePlot)
         self.connect(self.cboxRot, SIGNAL("valueChanged(int)"),
                      self.changeLabelsRotation)
         self.connect(self.btnPlot, SIGNAL("clicked()"),
                      self.setPlotColor)
+
+    def unHide(self):
+        self.lab2.setVisible(self.ref.isChecked())
+        self.lab3.setVisible(self.ref.isChecked())
+        self.lab4.setVisible(self.ref.isChecked())
+        self.lab5.setVisible(self.ref.isChecked())
+        self.spinWidth.setVisible(self.ref.isChecked())
+        self.spinSpacing.setVisible(self.ref.isChecked())
+        self.cboxFontsize.setVisible(self.ref.isChecked())
+        self.cboxRot.setVisible(self.ref.isChecked())
+        self.labNcol.setVisible(self.ref.isChecked())
+        self.ncolLegend.setVisible(self.ref.isChecked())
+
+    def hideLegend(self):
+        self.leg.set_visible(self.hideLeg.isChecked())
+        bool = int(self.hideLeg.checkState())/2
+        xmax = 0.3*self.xmax*bool+self.xmax+0.05*self.xmax*(1-bool)
+        self.mplCanUnknown.axes.set_xlim((self.xmin, xmax))
+        self.mplCanUnknown.draw()
 
     def updatePlot(self):
         self.plotUnknown()
@@ -157,10 +240,17 @@ class MplUnknownWidget(QWidget):
         self.mplCanUnknown.draw()
 
     def changeAxesScale(self):
-        if self.toolBar.combo.currentText() == 'Linear':
+        if self.cboxScale.currentText() == 'Linear':
             self.mplCanUnknown.axes.set_yscale('linear')
-        if self.toolBar.combo.currentText() == 'Logarithmic':
+        if self.cboxScale.currentText() == 'Logarithmic':
             self.mplCanUnknown.axes.set_yscale('log')
+        bool = int(self.hideLeg.checkState())/2
+        xmax = 0.3*self.xmax*bool+self.xmax+0.05*self.xmax*(1-bool)
+        self.mplCanUnknown.axes.set_xlim((self.xmin, xmax))
+        if self.ymin not in (1e10, 0):
+            self.mplCanUnknown.axes.set_ylim(ymin=self.ymin/100)
+        else:
+            self.mplCanUnknown.axes.set_ylim(ymin=1e-5)
         self.mplCanUnknown.draw()
 
     def plotUnknown(self, project=None):
@@ -209,8 +299,8 @@ class MplUnknownWidget(QWidget):
         legPos = [] ; legName = [] ; xlabel = []
         dicoAbs = OrderedDict()
 
-        xmin, ymin = 0, 0
-        xmax, ymax = 0, 0
+        self.ymin = 1e10
+        self.xmax, ymax = 0, 0
         # Gene vs Ech
         if self.cboxSens.currentIndex() == 0:
             self.project.findBars(width, spacing, 'geneEch', platesToPlot)
@@ -235,9 +325,9 @@ class MplUnknownWidget(QWidget):
                             NRQ, width, color=str(color), bottom=1e-10,
                             yerr=NRQerror, ecolor='k',
                             label=str(g), align='center')
-                    xmin = min(xmin, min(valx))
-                    ymin = min(ymin, min(NRQ))
-                    xmax = max(xmax, max(valx))
+                    if min(NRQ) != 0:
+                        self.ymin = min(self.ymin, min(NRQ))
+                    self.xmax = max(self.xmax, max(valx))
                     ymax = max(ymax, max(NRQ))
 
         # Ech vs Gene
@@ -264,9 +354,9 @@ class MplUnknownWidget(QWidget):
                             NRQ, width, color=str(color), bottom=1e-10, 
                             yerr=NRQerror, ecolor='k',
                             label=str(ech), align='center')
-                    xmin = min(xmin, min(valx))
-                    ymin = min(ymin, min(NRQ))
-                    xmax = max(xmax, max(valx))
+                    if min(NRQ) != 0:
+                        self.ymin = min(self.ymin, min(NRQ))
+                    self.xmax = max(self.xmax, max(valx))
                     ymax = max(ymax, max(NRQ))
 
         # plot
@@ -275,17 +365,23 @@ class MplUnknownWidget(QWidget):
                                                 fontsize=size, 
                                                 rotation=int(self.cboxRot.value()))
         # Legend + xlim
+        ncol = self.ncolLegend.value()
         self.leg = self.mplCanUnknown.axes.legend(loc='upper right', 
                               shadow=True, labelspacing=0.005,
-                              fancybox=True)
+                              fancybox=True, ncol=ncol)
         legend = DraggableLegend(self.leg)
         # matplotlib 0.99.1 workaround :
         self.leg.set_axes(self.mplCanUnknown.axes)
         #
         self.leg.get_frame().set_alpha(0.2)
-        legendWidth = 0.3 * xmax
+        self.xmin = 0
+        bool = int(self.hideLeg.checkState())/2
+        xmax = 0.3*self.xmax*bool+self.xmax+0.05*self.xmax*(1-bool)
         self.changeFontsize(idraw=False)
-        self.mplCanUnknown.axes.set_xlim((0., xmax+legendWidth))
-        self.mplCanUnknown.axes.set_ylim(ymin=1.e-5)
-        #self.mplCanUnknown.axes.set_ylim(ymin=0.)
+        self.changeAxesScale()
+        self.mplCanUnknown.axes.set_xlim((self.xmin, xmax))
+        if self.ymin not in (1e10, 0):
+            self.mplCanUnknown.axes.set_ylim(ymin=self.ymin/100)
+        else:
+            self.mplCanUnknown.axes.set_ylim(ymin=1e-5)
         self.mplCanUnknown.draw()
