@@ -71,6 +71,8 @@ class Project:
                     for geneName in pl.geneRef:
                         if self.hashGene.has_key(geneName):
                             self.hashGene[geneName].setRef(Qt.Checked)
+                        else:
+                            pl.geneRef.remove(geneName)
                 if pl.echRef != '' and self.hashEch.has_key(pl.echRef):
                     self.hashEch[pl.echRef].setRef(Qt.Checked)
             self.setDicoAm()
