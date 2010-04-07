@@ -209,6 +209,8 @@ class Gene:
                 continue
         if len(brokenWells) != 0:
             raise WellError(brokenWells)
+        elif k == 0:
+            self.ctref = 0
         else:
             self.ctref = float(qt/k)
 
