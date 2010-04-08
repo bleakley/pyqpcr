@@ -1408,19 +1408,6 @@ class Qpcr_qt(QMainWindow):
         self.labEff.setText('%.2f%% %s %.2f' % (eff, unichr(177), stdeff))
         self.mplCanStd.draw()
 
-    def setPlotColor(self):
-        """
-        This method is called when the user want to change the colors
-        used in the histograms. It open a widget that lets the user change
-        the colors.
-        """
-        dialog = PropDialog(self, hashGene=self.project.hashGene,
-                            hashEch=self.project.hashEch)
-        if dialog.exec_():
-            self.project.hashGene = dialog.hashGene
-            self.project.hashEch = dialog.hashEch
-            self.plotUnknown()
-
     def changeCurrentIndex(self):
         """
         A simple method which determines the current plate.
