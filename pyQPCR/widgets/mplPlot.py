@@ -44,6 +44,7 @@ class MplUnknownWidget(QWidget):
         labPl = QLabel("&Displayed plate(s):")
         self.cboxPlate = QComboBox()
         labPl.setBuddy(self.cboxPlate)
+        self.cboxPlate.setSizeAdjustPolicy(QComboBox.AdjustToMinimumContentsLength)
         self.cboxSens = QComboBox()
         lab1 = QLabel("&Plot axis:")
         lab1.setBuddy(self.cboxSens)
@@ -109,6 +110,11 @@ class MplUnknownWidget(QWidget):
         layLeg.addStretch()
         layLeg.addWidget(self.hideLeg)
 
+        line = QFrame(self)
+        line.setFrameShape(QFrame.HLine)
+        line.setFrameShadow(QFrame.Sunken)
+        #line.setObjectName("line")
+
         lab = QLabel("Advanced settings...")
         self.ref = QCheckBox()
         layAdv = QHBoxLayout()
@@ -126,6 +132,7 @@ class MplUnknownWidget(QWidget):
         vLay.addWidget(self.cboxScale)
         vLay.addWidget(self.btnPlot)
         vLay.addLayout(layLeg)
+        vLay.addWidget(line)
         vLay.addLayout(layAdv)
         vLay.addWidget(self.lab2)
         vLay.addWidget(self.spinWidth)

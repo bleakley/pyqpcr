@@ -304,7 +304,6 @@ class AddGeneDialog(QDialog):
         else:
             self.widList.setVisible(self.ref.isChecked())
 
-
     def accept(self):
         self.refPlates = []
         if len(self.widList.selectedItems()) != 0:
