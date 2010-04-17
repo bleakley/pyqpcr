@@ -659,7 +659,7 @@ class Qpcr_qt(QMainWindow):
                '<style type="text/css">\n'
                "table {border-color:black; border-style:solid;}\n"
                "th, td {font-size:6pt;}"
-               "h1 {background-color:green; color:black;}"
+               "h1 {background-color:#9bcd9b; color:black;}"
                "h2 {background-color:SlateGrey; color:white;}"
                "</style>\n"
                "</head>\n")
