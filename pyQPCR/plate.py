@@ -325,7 +325,10 @@ class Plaque:
                 writer.writerow(['refSample', self.echRef.name])
         f.close()
 
-    def writeHtml(self):
+    def writeHtml(self, ctMin=35, ectMax=0.3):
+        """
+        This method allows to represent the results of a plate in a HTML table
+        """
         html = u""
         html += "<table cellpadding=2 cellspacing=0 border=1 width=100%>\n"
         html += ("<tr>\n"
@@ -342,7 +345,7 @@ class Plaque:
                  "<th align=center>NRQerror</th>\n"
                  "</tr>\n")
         for well in self.listePuits:
-            html += well.writeHtml()
+            html += well.writeHtml(ctMin, ectMax)
         html += "</table>"
         return html
 

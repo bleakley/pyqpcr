@@ -310,10 +310,17 @@ class Puits:
         st += "</WELL>\n"
         return st
 
-    def writeHtml(self):
-        amount = str(self.amount)
+    def writeHtml(self, ctMin=35, ectMax=0.3):
         try:
-            ct = "%.2f" % self.ct
+            amount = "%.2f" % self.amount
+        except TypeError:
+            amount =  str(self.amount)
+        try:
+            if self.ct <= ctMin and self.type == 'negative':
+                ct = "<img src=':/flag.png' width=8> "
+            else:
+                ct = ''
+            ct += "%.2f" % self.ct
         except TypeError:
             ct = ''
         try:
@@ -321,7 +328,11 @@ class Puits:
         except TypeError:
             ctmean = ''
         try:
-            ctdev = "%.2f" % self.ctdev
+            if self.ctdev >= ectMax:
+                ctdev = "<img src=':/flag.png' width=8> "
+            else:
+                ctdev = ''
+            ctdev += "%.2f" % self.ctdev
         except TypeError:
             ctdev = ''
         try:
@@ -334,6 +345,11 @@ class Puits:
             NRQerror = ''
         eff = "%.2f%s%.2f" % (self.gene.eff, unichr(177), self.gene.pm)
 
+        if self.enabled:
+            name = "<img src=':/enable.png' width=8> <b>%s</b>" % self.name
+        else:
+            name = "<img src=':/disable.png' width=8> <b>%s</b>" % self.name
+
         st = ("<tr><td align=center><b>%s</b></td>\n" # name
               "<td align=center>%s</td>\n" # type
               "<td align=center>%s</td>\n" # gene
@@ -344,7 +360,7 @@ class Puits:
               "<td align=center>%s</td>\n" # amount
               "<td align=center>%s</td>\n" # eff
               "<td align=center>%s</td>\n" # NRQ
-              "<td align=center>%s</td></tr>\n") % (self.name, 
+              "<td align=center>%s</td></tr>\n") % (name, 
                     self.type, self.gene.name, self.ech.name, ct, 
                     ctmean, ctdev, amount, eff, NRQ, NRQerror)
         return st
