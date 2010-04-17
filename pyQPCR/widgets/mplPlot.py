@@ -102,9 +102,10 @@ class MplUnknownWidget(QWidget):
         self.cboxRot.setSingleStep(5)
         self.cboxRot.setVisible(False)
 
-        labLegend = QLabel("Display legend")
+        labLegend = QLabel("Display &legend")
         self.hideLeg = QCheckBox()
         self.hideLeg.setCheckState(Qt.Checked)
+        labLegend.setBuddy(self.hideLeg)
         layLeg = QHBoxLayout()
         layLeg.addWidget(labLegend)
         layLeg.addStretch()
@@ -113,7 +114,6 @@ class MplUnknownWidget(QWidget):
         line = QFrame(self)
         line.setFrameShape(QFrame.HLine)
         line.setFrameShadow(QFrame.Sunken)
-        #line.setObjectName("line")
 
         lab = QLabel("Advanced settings...")
         self.ref = QCheckBox()
@@ -130,8 +130,8 @@ class MplUnknownWidget(QWidget):
         vLay.addWidget(self.cboxSens)
         vLay.addWidget(labScale)
         vLay.addWidget(self.cboxScale)
-        vLay.addWidget(self.btnPlot)
         vLay.addLayout(layLeg)
+        vLay.addWidget(self.btnPlot)
         vLay.addWidget(line)
         vLay.addLayout(layAdv)
         vLay.addWidget(self.lab2)
@@ -153,8 +153,6 @@ class MplUnknownWidget(QWidget):
         scrollArea.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
         scrollArea.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
-
-        self.connect(self.ref, SIGNAL("stateChanged(int)"), self.unHide)
         vLay.setSizeConstraint(QLayout.SetFixedSize)
 
         vLayout = QVBoxLayout()
@@ -169,6 +167,7 @@ class MplUnknownWidget(QWidget):
 
         self.setLayout(hLayout)
 
+        self.connect(self.ref, SIGNAL("stateChanged(int)"), self.unHide)
         self.connect(self.hideLeg, SIGNAL("stateChanged(int)"), self.hideLegend)
         self.connect(self.cboxScale, SIGNAL("activated(int)"), self.changeAxesScale)
         self.connect(self.cboxFontsize, SIGNAL("valueChanged(int)"),
@@ -258,6 +257,8 @@ class MplUnknownWidget(QWidget):
             self.mplCanUnknown.axes.set_ylim(ymin=self.ymin/100)
         else:
             self.mplCanUnknown.axes.set_ylim(ymin=1e-5)
+        if self.cboxScale.currentText() == 'Logarithmic'and self.ymax > 0:
+            self.mplCanUnknown.axes.set_ylim(ymax=self.ymax*50)
         self.mplCanUnknown.draw()
 
     def plotUnknown(self, project=None):
@@ -307,7 +308,7 @@ class MplUnknownWidget(QWidget):
         dicoAbs = OrderedDict()
 
         self.ymin = 1e10
-        self.xmax, ymax = 0, 0
+        self.xmax, self.ymax= 0, 0
         # Gene vs Ech
         if self.cboxSens.currentIndex() == 0:
             self.project.findBars(width, spacing, 'geneEch', platesToPlot)
@@ -335,7 +336,7 @@ class MplUnknownWidget(QWidget):
                     if min(NRQ) != 0:
                         self.ymin = min(self.ymin, min(NRQ))
                     self.xmax = max(self.xmax, max(valx))
-                    ymax = max(ymax, max(NRQ))
+                    self.ymax = max(self.ymax, max(NRQ))
 
         # Ech vs Gene
         elif self.cboxSens.currentIndex() == 1:
@@ -364,7 +365,7 @@ class MplUnknownWidget(QWidget):
                     if min(NRQ) != 0:
                         self.ymin = min(self.ymin, min(NRQ))
                     self.xmax = max(self.xmax, max(valx))
-                    ymax = max(ymax, max(NRQ))
+                    self.ymax = max(self.ymax, max(NRQ))
 
         # plot
         self.mplCanUnknown.axes.set_xticks(self.project.barXticks.values())
@@ -391,4 +392,6 @@ class MplUnknownWidget(QWidget):
             self.mplCanUnknown.axes.set_ylim(ymin=self.ymin/100)
         else:
             self.mplCanUnknown.axes.set_ylim(ymin=1e-5)
+        if self.cboxScale.currentText() == 'Logarithmic'and self.ymax > 0:
+            self.mplCanUnknown.axes.set_ylim(ymax=self.ymax*50)
         self.mplCanUnknown.draw()
