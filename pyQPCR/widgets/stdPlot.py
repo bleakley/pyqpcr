@@ -36,16 +36,16 @@ class MplStdWidget(QWidget):
         layout = QVBoxLayout()
         layout.addStretch()
         self.geneStdBox = QComboBox()
-        lab1 = QLabel("<b>&Gene:</b>")
+        lab1 = QLabel("<b>&Gene :</b>")
         lab1.setBuddy(self.geneStdBox)
-        lab2 = QLabel("<b>&Linear Regression:</b>")
+        lab2 = QLabel("<b>&Linear Regression :</b>")
         self.labEquation = QLabel()
         lab2.setBuddy(self.labEquation)
-        lab3 = QLabel("<b>R^2:</b>")
+        lab3 = QLabel("<b>R&#178; :</b>")
         self.labR2 =  QLabel()
         lab3.setBuddy(self.labR2)
         self.labEff =  QLabel()
-        lab4 = QLabel("<b>Efficiency:</b>")
+        lab4 = QLabel("<b>Efficiency :</b>")
         lab4.setBuddy(self.labEff)
 
         layout.addWidget(lab1)
@@ -77,17 +77,22 @@ class MplStdWidget(QWidget):
     def updatePlot(self):
         self.plotStd()
 
-    def plotStd(self, data=None):
+    def plotStd(self, data=None, nameGene=None):
         """
         This method allows to plot the standard curves.
 
         @param data: a dictionnary which contains the different plot
                      parameters
         @type data: pyQPCR.utils.odict.OrderedDict
+        @param nameGene: the name of a gene we want to plot
+        @type nameGene: PyQt4.QtCore.QString
         """
         if data is not None:
             self.data = data
-        geneName = self.geneStdBox.currentText()
+        if nameGene is None:
+            geneName = self.geneStdBox.currentText()
+        else:
+            geneName = nameGene
         obj = self.data[geneName]
         self.mplCanStd.axes.cla()
         self.mplCanStd.axes.scatter(obj.x, obj.y, marker='o')
