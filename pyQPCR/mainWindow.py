@@ -24,6 +24,7 @@ import pyQPCR.qrc_resources
 from pyQPCR.dialogs import *
 from pyQPCR.widgets.matplotlibWidget import MatplotlibWidget, NavToolBar
 from pyQPCR.widgets.mplPlot import MplUnknownWidget
+from pyQPCR.widgets.stdPlot import MplStdWidget
 from pyQPCR.widgets.tableMainWindow import PlateWidget, ResultWidget
 from pyQPCR.widgets.customCbox import GeneEchComboBox
 from pyQPCR.plate import Plaque, ReplicateError, PlateError
@@ -71,8 +72,6 @@ class Qpcr_qt(QMainWindow):
         self.barWth, status  = settings.value("Mpl/barWidth", QVariant(0.1)).toDouble()
         self.barSpacing, status = settings.value("Mpl/barSpacing", QVariant(0.3)).toDouble()
 
-        self.createMplStdWiget()
-
         self.topMplCan, status = settings.value("MplCan/top", QVariant(0.95)).toDouble()
         self.botMplCan, status = settings.value("MplCan/bottom", QVariant(0.10)).toDouble()
         self.rightMplCan, status = settings.value("MplCan/right", QVariant(0.98)).toDouble()
@@ -112,8 +111,6 @@ class Qpcr_qt(QMainWindow):
                      self.modifyAm)
         self.connect(self.typeComboBox, SIGNAL("activated(int)"),
                      self.setType)
-        self.connect(self.geneStdBox, SIGNAL("activated(int)"),
-                     self.plotStd)
         self.connect(self.tabulPlates, SIGNAL("currentChanged(int)"),
                      self.changeCurrentIndex)
 
@@ -160,48 +157,6 @@ class Qpcr_qt(QMainWindow):
         self.tabulResults.setTabPosition(QTabWidget.West)
         vLay.addWidget(self.tabulResults)
         self.resulWidget.setLayout(vLay)
-
-    def createMplStdWiget(self):
-        """
-        This methods create the plot associated to standard curves.
-        """
-        layout = QVBoxLayout()
-        layout.addStretch()
-        self.geneStdBox = QComboBox()
-        lab1 = QLabel("<b>&Gene:</b>")
-        lab1.setBuddy(self.geneStdBox)
-        lab2 = QLabel("<b>&Linear Regression:</b>")
-        self.labEquation = QLabel()
-        lab2.setBuddy(self.labEquation)
-        lab3 = QLabel("<b>R^2:</b>")
-        self.labR2 =  QLabel()
-        lab3.setBuddy(self.labR2)
-        self.labEff =  QLabel()
-        lab4 = QLabel("<b>Efficiency:</b>")
-        lab4.setBuddy(self.labEff)
-
-        layout.addWidget(lab1)
-        layout.addWidget(self.geneStdBox)
-        layout.addWidget(lab2)
-        layout.addWidget(self.labEquation)
-        layout.addWidget(lab3)
-        layout.addWidget(self.labR2)
-        layout.addWidget(lab4)
-        layout.addWidget(self.labEff)
-        layout.addStretch()
-
-        self.plotStdWidget = QWidget()
-        vLayout = QVBoxLayout()
-        self.mplCanStd = MatplotlibWidget(self.plotStdWidget, width=5, 
-                                          height=4, dpi=100)
-        toolBar = NavToolBar(self.mplCanStd, self)
-        vLayout.addWidget(toolBar)
-        vLayout.addWidget(self.mplCanStd)
-
-        hLayout = QHBoxLayout()
-        hLayout.addLayout(layout)
-        hLayout.addLayout(vLayout)
-        self.plotStdWidget.setLayout(hLayout)
 
     def createMenusAndToolbars(self):
         """
@@ -683,31 +638,32 @@ class Qpcr_qt(QMainWindow):
             for key in self.project.dicoPlates.keys():
                 html += "<br><h2>Results table (%s)</h2><br>" % key
                 html += self.project.dicoPlates[key].writeHtml(self.ctMin, self.ectMax)
+
         if isStd and self.nplotStd !=0:
             html += "<p style='page-break-before:always;'>"
             html += "<br><h2>Standard curves</h2><br>"
-            self.geneStdBox.addItems(self.project.dicoStd.keys())
+            self.plotStdWidget.geneStdBox.addItems(self.project.dicoStd.keys())
             for index in range(len(self.project.dicoStd.keys())):
                 if (not index % 3 and index !=0):
                     html += "<p style='page-break-before:always;'>"
                 else:
                     html += "<p>"
                 html += "<table border=0 width=100%>\n"
-                self.geneStdBox.setCurrentIndex(index)
-                self.plotStd()
-                fig = self.mplCanStd.figure.savefig("output%i.png" % index, 
+                self.plotStdWidget.geneStdBox.setCurrentIndex(index)
+                self.plotStdWidget.plotStd()
+                fig = self.plotStdWidget.mplCanStd.figure.savefig("output%i.png" % index, 
                                                     dpi=250)
                 html += "<tr valign=middle>\n"
                 html += ("<th align=center>"
                          "<table width=100% border=0>")
                 html += "<tr><th><font size 10pt><b>Gene:</b> %s</th></tr>" %\
-                        self.geneStdBox.currentText()
+                        self.plotStdWidget.geneStdBox.currentText()
                 html += "<tr><th><b>Linear Regression:</b> %s</th></tr>" %\
-                        self.labEquation.text() 
+                        self.plotStdWidget.labEquation.text() 
                 html += "<tr><th><b>Efficiency:</b> %s</th></tr>" % \
-                        self.labEff.text()
+                        self.plotStdWidget.labEff.text()
                 html += "<tr><th><b>R<SUP>2</SUP>:</b> %s</th></tr>" % \
-                        self.labR2.text()
+                        self.plotStdWidget.labR2.text()
                 html += ("</table>"
                          "</th>")
 
@@ -719,6 +675,7 @@ class Qpcr_qt(QMainWindow):
                 html += "</table>"
                 html += "</p>"
             html += "</p>"
+
         if isQuant:
             html += "<br><h2>Quantification curves</h2>"
             fig = self.mplUknWidget.mplCanUnknown.figure.savefig("output.png", dpi=500)
@@ -1275,14 +1232,14 @@ class Qpcr_qt(QMainWindow):
         """
         A method to compute the NRQ of unknow-type wells.
         """
+        # On verifie que chaque plaque contient des unknown
+        self.project.findUnknown()
         if self.nplotGene == 0:
             self.mplUknWidget = MplUnknownWidget(self, barWth=self.barWth, 
                            barSpac=self.barSpacing, labelFt=self.labelFontSize,
                            labelRot=self.labelRotation)
             self.mplUknWidget.mplCanUnknown.fig.subplots_adjust(right=self.rightMplCan, 
                            left=self.leftMplCan, top=self.topMplCan, bottom=self.botMplCan)
-        # On verifie que chaque plaque contient des unknown
-        self.project.findUnknown()
         # On fixe le gene de reference et le triplicat de reference
         try:
             self.setRefs()
@@ -1369,10 +1326,11 @@ class Qpcr_qt(QMainWindow):
         # On trace le resultat on rajoute un onglet si c'est la premiere fois
         if len(self.project.dicoStd.keys()) != 0:
             if self.nplotStd == 0:
+                self.plotStdWidget = MplStdWidget(self)
                 self.onglet.addTab(self.plotStdWidget, "Standard curves")
                 self.nplotStd += 1
-            self.geneStdBox.clear()
-            self.geneStdBox.addItems(self.project.dicoStd.keys())
+            self.plotStdWidget.geneStdBox.clear()
+            self.plotStdWidget.geneStdBox.addItems(self.project.dicoStd.keys())
             # Calcul des courbes standards
             self.project.calcStd(self.confidence, self.errtype)
             self.project.unsaved = True
@@ -1382,48 +1340,11 @@ class Qpcr_qt(QMainWindow):
                 pl = self.project.dicoPlates[key]
                 self.pileResults[key].populateResult(pl)
             self.populateTree()
-            self.plotStd()
+            self.plotStdWidget.plotStd(self.project.dicoPlotStd)
         else:
             QMessageBox.warning(self, "Warning",
                 "The plates does not contain 'standard'-type wells."
                 "The standard curves can't be proceeded.")
-
-    def plotStd(self):
-        """
-        A method to plot the standard curves
-        """
-        self.mplCanStd.axes.cla()
-        geneName = self.geneStdBox.currentText()
-        x = array([])
-        y = array([])
-        for trip in self.project.dicoStd[geneName].values():
-            x = append(x, asarray(trip.amList))
-            y = append(y, asarray(trip.ctList))
-        x = log10(x)
-        self.mplCanStd.axes.scatter(x, y, marker='o')
-        slope, orig = polyfit(x, y, 1)
-        yest = polyval([slope, orig], x)
-        seps = sqrt(sum((yest-y)**2)/(len(y)-2)) # Formule 2
-        sx = sqrt(sum((x-x.mean())**2)/(len(x))) # Formule 3
-        stderr = seps / (sx*sqrt(len(x))) # Formule 4 corrigee
-        if self.errtype == "student":
-            talpha = t.ppf(1.-(1.-self.confidence)/2., len(x)-2) # Student
-        elif self.errtype == "normal":
-            talpha = norm.ppf(1.-(1.-self.confidence)/2.) # Gaussian
-        slopeerr = talpha * stderr
-        eff = (10**(-1./slope)-1)*100 # Formule 5 adaptee
-        # Erreur(Eff) = (Eff+100) * slopeerr / slope**2 
-        stdeff = (eff+100)*log(10)*slopeerr/slope**2 # Formule 6 adaptee
-        # Coefficient de Pearsson de correlation
-        R2 = 1 - sum((y-yest)**2)/sum((y-mean(y))**2)
-
-        self.mplCanStd.axes.plot(x, yest)
-
-        self.labEquation.setText('ct = %.2f log q0 + %.2f' \
-                                % (slope, orig))
-        self.labR2.setText('%.3f' % R2)
-        self.labEff.setText('%.2f%% %s %.2f' % (eff, unichr(177), stdeff))
-        self.mplCanStd.draw()
 
     def changeCurrentIndex(self):
         """
@@ -1492,7 +1413,6 @@ class Qpcr_qt(QMainWindow):
         # counters=0
         self.nplotGene = 0
         self.nplotStd = 0
-
         # descativate actions
         self.activateDesactivate(True)
         # undo/redo buffer

@@ -113,19 +113,22 @@ class AmountDialog(QDialog):
                     well.setAmount(float(am))
                 self.project.dicoAmount.__delitem__(am_before)
                 self.project.hashAmount.__delitem__(am_before)
+                self.project.hashAmount[amname] = float(am)
                 self.project.unsaved = True
             self.populateList()
 
     def remove(self):
-        ams = []
+        ams = [] ; sts = []
         if len(self.listWidget.selectedItems()) == 0:
             return
         for it in self.listWidget.selectedItems():
             am = it.statusTip()
+            st = "%.2f" % self.project.hashAmount[am]
+            sts.append(st)
             ams.append(am)
 
         reply = QMessageBox.question(self, "Remove",
-                        "Remove %s ?" % ams,
+                        "Remove <b>%s</b> ?" % sts,
                         QMessageBox.Yes|QMessageBox.No)
         if reply == QMessageBox.Yes:
             for am in ams:

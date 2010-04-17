@@ -395,6 +395,19 @@ class Plaque:
             self.listEch[ind].setRef(Qt.Checked)
 
 
+class StdObject:
+
+    def __init__(self, x, y, yest, slope, orig, R2, eff, stdeff):
+        self.x = x
+        self.y = y
+        self.yest = yest
+        self.slope = slope
+        self.orig = orig
+        self.R2 = R2
+        self.eff = eff
+        self.stdeff = stdeff
+
+
 class Replicate:
 
     def __init__(self, listePuits, type=QString('unknown'), 

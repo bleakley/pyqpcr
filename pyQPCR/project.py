@@ -20,6 +20,7 @@
 from pyQPCR.saxProjecthandler import *
 from pyQPCR.utils.odict import OrderedDict
 from pyQPCR.utils.ragged import RaggedArray2D
+from pyQPCR.plate import StdObject
 from PyQt4.QtCore import *
 from PyQt4.QtXml import QXmlSimpleReader, QXmlInputSource
 from numpy import mean, std, sqrt, log, log10, polyval, polyfit, sum, \
@@ -373,6 +374,7 @@ class Project:
             raise ReplicateError(largeCtTrip)
 
     def calcStd(self, confidence, errtype):
+        self.dicoPlotStd = OrderedDict()
         for geneName in self.dicoStd.keys():
             x = array([])
             y = array([])
@@ -395,6 +397,7 @@ class Project:
             stdeff = (eff+100)*log(10)*slopeerr/slope**2 # Formule 6 adaptee
             # Coefficient de Pearsson de correlation
             R2 = 1 - sum((y-yest)**2)/sum((y-mean(y))**2)
+            self.dicoPlotStd[geneName] = StdObject(x, y, yest, slope, orig, R2, eff, stdeff)
             # output for debugging stuff:
             # print eff, stdeff, R2
             # Mise a jour de l'efficacite des puits
