@@ -35,11 +35,12 @@ from numpy import linspace, log10, log, sqrt, sum, mean, polyfit, polyval, \
 from scipy.stats import t, norm
 import os
 import copy
+import time
 
 __author__ = "$Author$"
 __date__ = "$Date$"
 __version__ = "$Rev$"
-__progversion__ = "0.4"
+__progversion__ = "0.5dev"
 
 class Qpcr_qt(QMainWindow):
 
@@ -658,14 +659,30 @@ class Qpcr_qt(QMainWindow):
                '<style type="text/css">\n'
                "table {border-color:black; border-style:solid;}\n"
                "th, td {font-size:6pt;}"
+               "h1 {background-color:green; color:black;}"
+               "h2 {background-color:SlateGrey; color:white;}"
                "</style>\n"
                "</head>\n")
         html += css
         html += "<h1 align=center> qPCR results </h1><br><br>"
+        html += "<br><h2>Setup</h2><br>\n"
+        html += "<ul>\n"
+        if self.errtype == "student":
+            html +=  "<li> <b>Error type :</b> Student t-test </li>\n" 
+        elif self.errtype == "normal":
+            html +=  "<li> <b>Error type :</b> Gaussian </li>\n" 
+        html +=  "<li> <b>Confidence interval :</b> %.2f &#37;</li>\n" % (100*self.confidence)
+        html +=  "<li> <b>Machine :</b> %s</li>\n" % self.machine
+        html +=  "<li> <b>Maximum E(Ct) :</b> %.2f</li>\n" % self.ectMax
+        html +=  "<li> <b>Minimum Ct :</b> %.2f</li>\n" % self.ctMin
+        html +=  "<li> <b>Date :</b> %s</li>\n" % time.strftime('%d/%m/%Y',time.localtime())
+        html +=  "<li> <b>pyQPCR version :</b> %s</li>\n" % __progversion__
+        html +=  "</ul>\n"
+
         if isTable:
             for key in self.project.dicoPlates.keys():
                 html += "<br><h2>Results table (%s)</h2><br>" % key
-                html += self.project.dicoPlates[key].writeHtml()
+                html += self.project.dicoPlates[key].writeHtml(self.ctMin, self.ectMax)
         if isStd and self.nplotStd !=0:
             html += "<p style='page-break-before:always;'>"
             html += "<br><h2>Standard curves</h2><br>"
@@ -679,7 +696,7 @@ class Qpcr_qt(QMainWindow):
                 self.geneStdBox.setCurrentIndex(index)
                 self.plotStd()
                 fig = self.mplCanStd.figure.savefig("output%i.png" % index, 
-                                                    dpi=100)
+                                                    dpi=250)
                 html += "<tr valign=middle>\n"
                 html += ("<th align=center>"
                          "<table width=100% border=0>")
@@ -704,8 +721,8 @@ class Qpcr_qt(QMainWindow):
             html += "</p>"
         if isQuant:
             html += "<br><h2>Quantification curves</h2>"
-            fig = self.mplUknWidget.mplCanUnknown.figure.savefig("output.png", dpi=100)
-            html += "<p><img src='output.png' width=500></p>"
+            fig = self.mplUknWidget.mplCanUnknown.figure.savefig("output.png", dpi=500)
+            html += "<p align=center><img src='output.png' width=500></p>"
         html += "</html>"
         return html
 
