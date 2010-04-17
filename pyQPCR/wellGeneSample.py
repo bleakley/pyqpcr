@@ -349,9 +349,15 @@ class Puits:
             name = "<img src=':/enable.png' width=8> <b>%s</b>" % self.name
         else:
             name = "<img src=':/disable.png' width=8> <b>%s</b>" % self.name
+        if self.type == 'unknown':
+            bgcolor = '#e6e6fa'
+        elif self.type == 'standard':
+            bgcolor = '#ffe4e1'
+        elif self.type == 'negative':
+            bgcolor = '#fff8d6'
 
         st = ("<tr><td align=center><b>%s</b></td>\n" # name
-              "<td align=center>%s</td>\n" # type
+              "<td bgcolor=%s align=center>%s</td>\n" # type
               "<td align=center>%s</td>\n" # gene
               "<td align=center>%s</td>\n" # sample
               "<td align=center>%s</td>\n" # ct
@@ -360,7 +366,7 @@ class Puits:
               "<td align=center>%s</td>\n" # amount
               "<td align=center>%s</td>\n" # eff
               "<td align=center>%s</td>\n" # NRQ
-              "<td align=center>%s</td></tr>\n") % (name, 
+              "<td align=center>%s</td></tr>\n") % (name, bgcolor,
                     self.type, self.gene.name, self.ech.name, ct, 
                     ctmean, ctdev, amount, eff, NRQ, NRQerror)
         return st
