@@ -642,27 +642,28 @@ class Qpcr_qt(QMainWindow):
         if isStd and self.nplotStd !=0:
             html += "<p style='page-break-before:always;'>"
             html += "<br><h2>Standard curves</h2><br>"
-            self.plotStdWidget.geneStdBox.addItems(self.project.dicoStd.keys())
-            for index in range(len(self.project.dicoStd.keys())):
-                if (not index % 3 and index !=0):
+            #self.plotStdWidget.geneStdBox.addItems(self.project.dicoStd.keys())
+            #for index in range(len(self.project.dicoStd.keys())):
+            for index, data in enumerate(self.project.dicoPlotStd.keys()):
+                if (not index % 3 and index != 0):
                     html += "<p style='page-break-before:always;'>"
                 else:
                     html += "<p>"
                 html += "<table border=0 width=100%>\n"
-                self.plotStdWidget.geneStdBox.setCurrentIndex(index)
-                self.plotStdWidget.plotStd()
+                #self.plotStdWidget.geneStdBox.setCurrentIndex(index)
+                self.plotStdWidget.plotStd(nameGene=data)
                 fig = self.plotStdWidget.mplCanStd.figure.savefig("output%i.png" % index, 
                                                     dpi=250)
                 html += "<tr valign=middle>\n"
                 html += ("<th align=center>"
                          "<table width=100% border=0>")
-                html += "<tr><th><font size 10pt><b>Gene:</b> %s</th></tr>" %\
-                        self.plotStdWidget.geneStdBox.currentText()
-                html += "<tr><th><b>Linear Regression:</b> %s</th></tr>" %\
+                html += "<tr><th><font size 10pt><b>Gene : </b> %s</th></tr>" %\
+                        data
+                html += "<tr><th><b>Linear Regression : </b> %s</th></tr>" %\
                         self.plotStdWidget.labEquation.text() 
-                html += "<tr><th><b>Efficiency:</b> %s</th></tr>" % \
+                html += "<tr><th><b>Efficiency : </b> %s</th></tr>" % \
                         self.plotStdWidget.labEff.text()
-                html += "<tr><th><b>R<SUP>2</SUP>:</b> %s</th></tr>" % \
+                html += "<tr><th><b>R&#178; : </b> %s</th></tr>" % \
                         self.plotStdWidget.labR2.text()
                 html += ("</table>"
                          "</th>")
