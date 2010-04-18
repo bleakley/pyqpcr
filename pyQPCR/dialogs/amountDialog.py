@@ -88,6 +88,7 @@ class AmountDialog(QDialog):
             amname = self.reformatFloat(am)
             if not self.project.hashAmount.has_key(amname):
                 self.project.hashAmount[amname] = float(am)
+                self.project.dicoAmount[amname] = []
                 self.populateList()
             else:
                 QMessageBox.warning(self, "Already exist",
