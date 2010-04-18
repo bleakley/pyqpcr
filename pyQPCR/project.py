@@ -300,15 +300,22 @@ class Project:
             for ech in self.hashEch.keys():
                 tabRQ = array([]) ; tabRQerror = array([])
                 for g in plate.geneRef:
-                    if self.dicoTriplicat[pl][g].has_key(ech):
-                        tmp = self.dicoTriplicat[pl][g][ech].RQ
-                        tmp2 = (self.dicoTriplicat[pl][g][ech].RQerror / \
-                               self.dicoTriplicat[pl][g][ech].RQ)**2
-                        tabRQ = append(tabRQ, tmp)
-                        tabRQerror = append(tabRQerror, tmp2)
+                    try:
+                        if self.dicoTriplicat[pl][g].has_key(ech):
+                            tmp = self.dicoTriplicat[pl][g][ech].RQ
+                            tmp2 = (self.dicoTriplicat[pl][g][ech].RQerror / \
+                                   self.dicoTriplicat[pl][g][ech].RQ)**2
+                            tabRQ = append(tabRQ, tmp)
+                            tabRQerror = append(tabRQerror, tmp2)
+                    except KeyError,e:
+                        if ech != '':
+                            broken.append((g, ech))
+                        continue
                 if len(tabRQ) != 0:
                     NF[ech] = (tabRQ.prod())**(1./len(tabRQ))
                     NFerror[ech] = NF[ech]*sqrt(tabRQerror.sum())/len(tabRQ)
+            if len(broken) != 0:
+                raise NRQError(broken)
             for g in self.dicoTriplicat[pl].keys():
                 for ech in self.dicoTriplicat[pl][g].keys():
 # Calcul de NRQ et rajout comme argument a chaque triplicat

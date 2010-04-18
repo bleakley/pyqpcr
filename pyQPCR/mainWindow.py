@@ -1235,12 +1235,6 @@ class Qpcr_qt(QMainWindow):
         """
         # On verifie que chaque plaque contient des unknown
         self.project.findUnknown()
-        if self.nplotGene == 0:
-            self.mplUknWidget = MplUnknownWidget(self, barWth=self.barWth, 
-                           barSpac=self.barSpacing, labelFt=self.labelFontSize,
-                           labelRot=self.labelRotation)
-            self.mplUknWidget.mplCanUnknown.fig.subplots_adjust(right=self.rightMplCan, 
-                           left=self.leftMplCan, top=self.topMplCan, bottom=self.botMplCan)
         # On fixe le gene de reference et le triplicat de reference
         try:
             self.setRefs()
@@ -1268,15 +1262,8 @@ class Qpcr_qt(QMainWindow):
             self.displayWarnings()
             return
 
-        if self.nplotGene == 0:
-            self.onglet.addTab(self.mplUknWidget, "Quantification")
-            self.nplotGene += 1
-
         # On calcule NRQ
         try:
-            self.mplUknWidget.cboxPlate.clear()
-            self.mplUknWidget.cboxPlate.addItem('All plates')
-            self.mplUknWidget.cboxPlate.addItems(self.project.dicoPlates.keys())
             self.project.calcNRQ()
         except NRQError, e:
             QMessageBox.warning(self, "Problem occurs in calculation !",
@@ -1285,6 +1272,19 @@ class Qpcr_qt(QMainWindow):
                 " is undefined for this gene or sample." \
                 "<p> As a consequence these replicates have not been plotted." \
                 % str(e))
+            return
+
+        if self.nplotGene == 0:
+            self.mplUknWidget = MplUnknownWidget(self, barWth=self.barWth, 
+                           barSpac=self.barSpacing, labelFt=self.labelFontSize,
+                           labelRot=self.labelRotation)
+            self.mplUknWidget.mplCanUnknown.fig.subplots_adjust(right=self.rightMplCan, 
+                           left=self.leftMplCan, top=self.topMplCan, bottom=self.botMplCan)
+            self.onglet.addTab(self.mplUknWidget, "Quantification")
+            self.nplotGene += 1
+        self.mplUknWidget.cboxPlate.clear()
+        self.mplUknWidget.cboxPlate.addItem('All plates')
+        self.mplUknWidget.cboxPlate.addItems(self.project.dicoPlates.keys())
 
         # On reremplit la table de resultats
         for key in self.project.dicoPlates.keys():
