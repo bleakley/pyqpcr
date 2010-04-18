@@ -394,10 +394,15 @@ class Puits:
         self.ech = ech
 
     def setType(self, name):
+        if self.type == 'standard' and name == 'unknown':
+            self.amount = ''
         self.type = QString(name)
 
     def setAmount(self, qte):
-        self.amount = qte
+        if self.type != 'unknown':
+            self.amount = qte
+        else:
+            self.amount = ''
 
     def setCt(self, ct):
         self.ct = ct
