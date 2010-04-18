@@ -100,8 +100,9 @@ class Project:
             for key in self.dicoPlates.keys():
                 stream << ("<PLATE NAME='%s'>\n" % key)
                 for geneName in self.dicoPlates[key].geneRef:
-                    stream << ("<REFTARGET NAME='%s'></REFTARGET>\n") % \
-                               geneName
+                    if geneName != '':
+                        stream << ("<REFTARGET NAME='%s'></REFTARGET>\n") % \
+                                   geneName
                 stream << ("<REFSAMPLE NAME='%s'></REFSAMPLE>\n") % \
                         self.dicoPlates[key].echRef
                 for well in self.dicoPlates[key].listePuits:
