@@ -1223,7 +1223,7 @@ class Qpcr_qt(QMainWindow):
                         """Wrong reference sample for plate <b>%s</b>!
                            This plate does not contain <b>%s</b>.""" % (plname, pl.echRef))
                     raise ValueError
-            else:
+            elif not pl.contUkn and len(pl.geneRef) != 0 :
                 QMessageBox.warning(self, "Warning",
                     """The plate <b>%s</b> does not contain 'unknown'-type wells.
                     Reference target and/or sample have probably been defined
