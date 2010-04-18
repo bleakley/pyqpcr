@@ -100,6 +100,9 @@ class GeneDialog(QDialog):
 
             if not self.project.hashGene.has_key(nomgene):
                 self.project.hashGene[nomgene] = g
+                for plaque in self.project.dicoPlates.keys():
+                    pl = self.project.dicoPlates[plaque]
+                    pl.dicoGene[nomgene] = []
             else:
                 QMessageBox.warning(self, "Already exist",
                         "The gene <b>%s</b> is already defined !" % nomgene)
@@ -109,8 +112,6 @@ class GeneDialog(QDialog):
 # si le gene de ref est pour toutes les plaques, toutes les autres passent a zero
                 for pl in dialog.refPlates:
                     plaque = self.project.dicoPlates[pl]
-                    if not plaque.dicoGene.has_key(nomgene):
-                        plaque.dicoGene[nomgene] = []
                     plaque.geneRef.append(nomgene)
             self.populateList()
 

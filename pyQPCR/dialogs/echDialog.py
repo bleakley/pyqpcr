@@ -87,6 +87,10 @@ class EchDialog(QDialog):
 
             if not self.project.hashEch.has_key(nomech):
                 self.project.hashEch[nomech] = e
+                for plaque in self.project.dicoPlates.keys():
+                    pl = self.project.dicoPlates[plaque]
+                    pl.dicoEch[nomech] = []
+
             else:
                 QMessageBox.warning(self, "Already exist",
                         "The sample %s is already defined !" % e)
@@ -94,15 +98,12 @@ class EchDialog(QDialog):
             if state == Qt.Checked:
                 for pl in dialog.refPlates:
                     plaque = self.project.dicoPlates[pl]
-                    if not plaque.dicoEch.has_key(nomech):
-                        plaque.dicoEch[nomech] = []
                     plaque.echRef = nomech
                     for echName in plaque.dicoEch.keys():
                         ech = self.project.hashEch[echName]
                         if ech.isRef == Qt.Checked and ech.name != nomech:
                             ech.setRef(Qt.Unchecked)
             self.populateList()
-
 
     def edit(self):
         if len(self.listWidget.selectedItems()) == 0:
