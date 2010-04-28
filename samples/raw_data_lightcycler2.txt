@@ -1,0 +1,97 @@
+"Experiment Name"	"Analysis Name"	Included	Position	"SampleName"	CrossingPoint	Concentration	Standard	"StatusCodes"	"StatusDesc"	Call	CpUncertain	CpState	CalcConcUncertain
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	A1	"mix oct4_smad1"	20.4231184085534	 	 	" "	" "	pdcPositive	0	cpsNormal	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	A2	"mix oct4_smad1"	22.6127175131559	 	 	" "	" "	pdcPositive	0	cpsNormal	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	A3	"mix oct4_smad1"	24.895921535208	 	 	" "	" "	pdcPositive	0	cpsNormal	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	A4	"mix oct4_smad1"	27.0116409605338	 	 	" "	" "	pdcPositive	0	cpsNormal	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	A5	"mix oct4_smad1"	29.6891003084666	 	 	" "	" "	pdcPositive	0	cpsNormal	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	A6	"mix oct4_smad5"	21.7159306618856	 	 	" "	" "	pdcPositive	0	cpsNormal	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	A7	"mix oct4_smad5"	23.8714017025962	 	 	" "	" "	pdcPositive	0	cpsNormal	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	A8	"mix oct4_smad5"	26.3418095276728	 	 	" "	" "	pdcPositive	0	cpsNormal	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	A9	"mix oct4_smad5"	28.5896770731102	 	 	" "	" "	pdcPositive	0	cpsNormal	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	A10	"mix oct4_smad5"	30.7842393449223	 	 	" "	" "	pdcPositive	0	cpsNormal	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	A11	"blanco_smad1"	 	 	 	" "	" "	pdcNegative	0	cpsNormal	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	A12	"blanco_smad5"	 	 	 	" "	" "	pdcNegative	0	cpsNormal	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	B1	"mix oct4_smad1"	20.2984494673085	 	 	" "	" "	pdcPositive	0	cpsNormal	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	B2	"mix oct4_smad1"	22.7079717585099	 	 	" "	" "	pdcPositive	0	cpsNormal	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	B3	"mix oct4_smad1"	24.7761484837885	 	 	" "	" "	pdcPositive	0	cpsNormal	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	B4	"mix oct4_smad1"	27.1316658092487	 	 	" "	" "	pdcPositive	0	cpsNormal	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	B5	"mix oct4_smad1"	29.1255660305327	 	 	" "	" "	pdcPositive	0	cpsNormal	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	B6	"mix oct4_smad5"	21.6835825458573	 	 	" "	" "	pdcPositive	0	cpsNormal	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	B7	"mix oct4_smad5"	24.0153702221163	 	 	" "	" "	pdcPositive	0	cpsNormal	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	B8	"mix oct4_smad5"	26.2268344665265	 	 	" "	" "	pdcPositive	0	cpsNormal	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	B9	"mix oct4_smad5"	28.6150055865187	 	 	" "	" "	pdcPositive	0	cpsNormal	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	B10	"mix oct4_smad5"	30.8112696104246	 	 	" "	" "	pdcPositive	0	cpsNormal	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	B11	"blanco_Rn18s"	35	 	 	">"	"Late Cp call (last five cycles) has higher uncertainty"	pdcPositive	0	cpsLarge	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	B12	"blanco_Ngn1"	 	 	 	" "	" "	pdcNegative	0	cpsNormal	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	C1	"mix oct4_smad1"	20.0963851264293	 	 	" "	" "	pdcPositive	0	cpsNormal	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	C2	"mix oct4_smad1"	22.6954222730668	 	 	" "	" "	pdcPositive	0	cpsNormal	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	C3	"mix oct4_smad1"	25.0046781462424	 	 	" "	" "	pdcPositive	0	cpsNormal	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	C4	"mix oct4_smad1"	27.2891119690723	 	 	" "	" "	pdcPositive	0	cpsNormal	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	C5	"mix oct4_smad1"	29.1117927856241	 	 	" "	" "	pdcPositive	0	cpsNormal	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	C6	"mix oct4_smad5"	21.6954364726139	 	 	" "	" "	pdcPositive	0	cpsNormal	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	C7	"mix oct4_smad5"	24.0064998334922	 	 	" "	" "	pdcPositive	0	cpsNormal	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	C8	"mix oct4_smad5"	26.5366273878384	 	 	" "	" "	pdcPositive	0	cpsNormal	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	C9	"mix oct4_smad5"	28.5645164534588	 	 	" "	" "	pdcPositive	0	cpsNormal	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	C10	"mix oct4_smad5"	30.813776377962	 	 	" "	" "	pdcPositive	0	cpsNormal	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	C11	"blanco_GFAP"	 	 	 	" "	" "	pdcNegative	0	cpsNormal	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	C12	"blanco_blanco"	 	 	 	" "	" "	pdcNegative	0	cpsNormal	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	D1	"mix oct4_Rn18s"	22.4335317741413	 	 	" "	" "	pdcPositive	0	cpsNormal	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	D2	"mix oct4_Rn18s"	22.4312733402768	 	 	" "	" "	pdcPositive	0	cpsNormal	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	D3	"mix oct4_Rn18s"	22.2136016930314	 	 	" "	" "	pdcPositive	0	cpsNormal	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	D4	"mix oct4_Ngn1"	35	 	 	">"	"Late Cp call (last five cycles) has higher uncertainty"	pdcPositive	0	cpsLarge	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	D5	"mix oct4_Ngn1"	 	 	 	" "	" "	pdcNegative	0	cpsNormal	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	D6	"mix oct4_Ngn1"	35	 	 	">"	"Late Cp call (last five cycles) has higher uncertainty"	pdcPositive	0	cpsLarge	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	D7	"mix oct4_GFAP"	 	 	 	" "	" "	pdcNegative	0	cpsNormal	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	D8	"mix oct4_GFAP"	 	 	 	" "	" "	pdcNegative	0	cpsNormal	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	D9	"mix oct4_GFAP"	 	 	 	" "	" "	pdcNegative	0	cpsNormal	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	D10	"mix oct4_gene D10"	 	 	 	" "	" "	pdcNegative	0	cpsNormal	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	D11	"mix oct4_gene D11"	 	 	 	" "	" "	pdcNegative	0	cpsNormal	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	D12	"mix oct4_gene D12"	 	 	 	" "	" "	pdcNegative	0	cpsNormal	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	E1	"mix oct4_Rn18s"	20.0788815546232	 	 	" "	" "	pdcPositive	0	cpsNormal	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	E2	"mix oct4_Rn18s"	19.9584524356734	 	 	" "	" "	pdcPositive	0	cpsNormal	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	E3	"mix oct4_Rn18s"	20.0829325197186	 	 	" "	" "	pdcPositive	0	cpsNormal	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	E4	"mix oct4_Ngn1"	35	 	 	">"	"Late Cp call (last five cycles) has higher uncertainty"	pdcPositive	0	cpsLarge	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	E5	"mix oct4_Ngn1"	35	 	 	">"	"Late Cp call (last five cycles) has higher uncertainty"	pdcPositive	0	cpsLarge	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	E6	"mix oct4_Ngn1"	35	 	 	">"	"Late Cp call (last five cycles) has higher uncertainty"	pdcPositive	0	cpsLarge	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	E7	"mix oct4_GFAP"	35	 	 	">"	"Late Cp call (last five cycles) has higher uncertainty"	pdcPositive	0	cpsLarge	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	E8	"mix oct4_GFAP"	35	 	 	">"	"Late Cp call (last five cycles) has higher uncertainty"	pdcPositive	0	cpsLarge	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	E9	"mix oct4_GFAP"	35	 	 	">"	"Late Cp call (last five cycles) has higher uncertainty"	pdcPositive	0	cpsLarge	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	E10	"mix oct4_gene E10"	 	 	 	" "	" "	pdcNegative	0	cpsNormal	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	E11	"mix oct4_gene E11"	 	 	 	" "	" "	pdcNegative	0	cpsNormal	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	E12	"mix oct4_gene E12"	 	 	 	" "	" "	pdcNegative	0	cpsNormal	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	F1	"mix oct4_Rn18s"	17.8539946700078	 	 	" "	" "	pdcPositive	0	cpsNormal	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	F2	"mix oct4_Rn18s"	17.8970860277207	 	 	" "	" "	pdcPositive	0	cpsNormal	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	F3	"mix oct4_Rn18s"	17.769380241733	 	 	" "	" "	pdcPositive	0	cpsNormal	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	F4	"mix oct4_Ngn1"	35	 	 	">"	"Late Cp call (last five cycles) has higher uncertainty"	pdcPositive	0	cpsLarge	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	F5	"mix oct4_Ngn1"	35	 	 	">"	"Late Cp call (last five cycles) has higher uncertainty"	pdcPositive	0	cpsLarge	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	F6	"mix oct4_Ngn1"	35	 	 	">"	"Late Cp call (last five cycles) has higher uncertainty"	pdcPositive	0	cpsLarge	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	F7	"mix oct4_GFAP"	34.2945695988313	 	 	" "	" "	pdcPositive	0	cpsNormal	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	F8	"mix oct4_GFAP"	32.737551096057	 	 	" "	" "	pdcPositive	0	cpsNormal	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	F9	"mix oct4_GFAP"	33.9382844938516	 	 	" "	" "	pdcPositive	0	cpsNormal	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	F10	"mix oct4_gene F10"	 	 	 	" "	" "	pdcNegative	0	cpsNormal	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	F11	"mix oct4_gene F11"	 	 	 	" "	" "	pdcNegative	0	cpsNormal	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	F12	"mix oct4_gene F12"	 	 	 	" "	" "	pdcNegative	0	cpsNormal	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	G1	"mix oct4_Rn18s"	15.3340649679707	 	 	" "	" "	pdcPositive	0	cpsNormal	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	G2	"mix oct4_Rn18s"	15.5397632187291	 	 	" "	" "	pdcPositive	0	cpsNormal	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	G3	"mix oct4_Rn18s"	15.3302449445914	 	 	" "	" "	pdcPositive	0	cpsNormal	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	G4	"mix oct4_Ngn1"	31.7141441307563	 	 	" "	" "	pdcPositive	0	cpsNormal	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	G5	"mix oct4_Ngn1"	31.7131251055784	 	 	" "	" "	pdcPositive	0	cpsNormal	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	G6	"mix oct4_Ngn1"	31.563485432594	 	 	" "	" "	pdcPositive	0	cpsNormal	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	G7	"mix oct4_GFAP"	29.8537588934936	 	 	" "	" "	pdcPositive	0	cpsNormal	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	G8	"mix oct4_GFAP"	30.0095373410185	 	 	" "	" "	pdcPositive	0	cpsNormal	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	G9	"mix oct4_GFAP"	30.2864066237725	 	 	" "	" "	pdcPositive	0	cpsNormal	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	G10	"mix oct4_gene G10"	 	 	 	" "	" "	pdcNegative	0	cpsNormal	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	G11	"mix oct4_gene G11"	 	 	 	" "	" "	pdcNegative	0	cpsNormal	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	G12	"mix oct4_gene G12"	 	 	 	" "	" "	pdcNegative	0	cpsNormal	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	H1	"mix oct4_Rn18s"	13.0272456717896	 	 	" "	" "	pdcPositive	0	cpsNormal	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	H2	"mix oct4_Rn18s"	13.1115074788832	 	 	" "	" "	pdcPositive	0	cpsNormal	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	H3	"mix oct4_Rn18s"	13.106591030426	 	 	" "	" "	pdcPositive	0	cpsNormal	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	H4	"mix oct4_Ngn1"	30.0503868773783	 	 	" "	" "	pdcPositive	0	cpsNormal	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	H5	"mix oct4_Ngn1"	30.0638912671587	 	 	" "	" "	pdcPositive	0	cpsNormal	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	H6	"mix oct4_Ngn1"	30.1175516135689	 	 	" "	" "	pdcPositive	0	cpsNormal	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	H7	"mix oct4_GFAP"	27.5329354924095	 	 	" "	" "	pdcPositive	0	cpsNormal	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	H8	"mix oct4_GFAP"	27.4665349575437	 	 	" "	" "	pdcPositive	0	cpsNormal	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	H9	"mix oct4_GFAP"	27.4898190714548	 	 	" "	" "	pdcPositive	0	cpsNormal	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	H10	"mix oct4_gene H10"	 	 	 	" "	" "	pdcNegative	0	cpsNormal	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	H11	"mix oct4_gene H11"	 	 	 	" "	" "	pdcNegative	0	cpsNormal	0
+"KC_qPCR_primers_validation27.04.10"	"Abs Quant/2nd Derivative Max for All Samples"	1	H12	"mix oct4_gene H12"	 	 	 	" "	" "	pdcNegative	0	cpsNormal	0
