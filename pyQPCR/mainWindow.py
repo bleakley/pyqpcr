@@ -416,6 +416,9 @@ class Qpcr_qt(QMainWindow):
         elif self.machine == 'Applied 7000':
             formats =[u"*.csv"]
             type = 'Applied 7000 machines'
+        elif self.machine == 'Roche LightCycler 480':
+            formats =[u"*.txt"]
+            type = 'Roche LightCycler 480'
         else:
             formats =[u"*.txt", u"*.csv"]
             type = 'Eppendorf machines'

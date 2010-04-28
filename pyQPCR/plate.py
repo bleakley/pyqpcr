@@ -55,6 +55,8 @@ class Plaque:
                 self.parseAppliedStepOne()
             elif machine == 'Applied 7000':
                 self.parseApplied7000()
+            elif machine == 'Roche LightCycler 480':
+                self.parseLightCycler480()
             # Raise exception if no well are detected
             if len(self.listePuits) == 0:
                 raise PlateError(self.filename, machine)
@@ -69,6 +71,52 @@ class Plaque:
             self.fileType = "csv"
         else:
             raise IOError
+
+    def parseLightCycler480(self):
+        """
+        This method allows to parse Roche Light Cycler 480 raw data.
+        """
+        file = open(self.filename, "r")
+        iterator = file.readlines()
+        file.close()
+        for ind, line in enumerate(iterator):
+            line = line.split('\t')
+            if ind == 0:
+                self.header = OrderedDict()
+                for i, field in enumerate(line):
+                    st = field.strip('"')
+                    self.header[st] = i
+                ncol = len(self.header.keys())
+
+            if len(line) == ncol and ind != 0:
+                champs = []
+                for field in line:
+                    dat = field.strip('"')
+                    try:
+                        dat = float(field.replace(',', '.'))
+                    except ValueError:
+                        pass
+                    champs.append(dat)
+                if self.header.has_key('Position'):
+                    name = champs[self.header['Position']]
+                    x = Puits(name)
+                else:
+                    raise KeyError
+                if self.header.has_key('SampleName'):
+                    geneEch = champs[self.header['SampleName']]
+                    echName, geneName = geneEch.split('_')
+                    x.setEch(Ech(echName))
+                    x.setGene(Gene(geneName))
+                if self.header.has_key('CrossingPoint'):
+                    ct = champs[self.header['CrossingPoint']]
+                    x.setCt(ct)
+                if self.header.has_key('Call'):
+                    type = champs[self.header['Call']]
+                    if type == "pdcNegative":
+                        x.setType('negative')
+ 
+                setattr(self, x.name, x)
+                self.listePuits.append(x)
 
     def parseEppendorf(self):
         """
@@ -534,5 +582,5 @@ class PlateError(Exception):
 
 
 if __name__ == '__main__':
-    pl = Plaque('../samples/raw_std.txt')
-    print str(pl.A1.NRQ)
+    pl = Plaque('../samples/roche.txt', machine='Roche LightCycler 480')
+    print str(pl.A1)
