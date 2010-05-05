@@ -17,8 +17,9 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-import re
 import csv
+import re
+import string
 from pyQPCR.wellGeneSample import Ech, Gene, Puits, WellError
 from scipy.stats import t, norm
 from PyQt4.QtCore import Qt, QString, QFileInfo
@@ -108,8 +109,12 @@ class Plaque:
                     if motif.match(geneEch):
                         geneEch = motif.findall(geneEch)[0][0]
                     dat = geneEch.split('_')
+                    if len(dat) > 2:
+                        geneName = string.join(dat[1:], '_')
+                    else:
+                        geneName = dat[1]
                     x.setEch(Ech(dat[0]))
-                    x.setGene(Gene(dat[1]))
+                    x.setGene(Gene(geneName))
                 if self.header.has_key('CrossingPoint'):
                     ct = champs[self.header['CrossingPoint']]
                     x.setCt(ct)
