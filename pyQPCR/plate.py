@@ -79,6 +79,7 @@ class Plaque:
         file = open(self.filename, "r")
         iterator = file.readlines()
         file.close()
+        motif = re.compile(r'^(.*) (\d*[\.,]?\d*)?$')
         for ind, line in enumerate(iterator):
             line = line.split('\t')
             if ind == 0:
@@ -104,12 +105,21 @@ class Plaque:
                     raise KeyError
                 if self.header.has_key('SampleName'):
                     geneEch = champs[self.header['SampleName']]
-                    echName, geneName = geneEch.split('_')
-                    x.setEch(Ech(echName))
-                    x.setGene(Gene(geneName))
+                    if motif.match(geneEch):
+                        geneEch = motif.findall(geneEch)[0][0]
+                    dat = geneEch.split('_')
+                    x.setEch(Ech(dat[0]))
+                    x.setGene(Gene(dat[1]))
                 if self.header.has_key('CrossingPoint'):
                     ct = champs[self.header['CrossingPoint']]
                     x.setCt(ct)
+                if self.header.has_key('Standard'):
+                    try:
+                        am = float(champs[self.header['Standard']])
+                        x.setType('standard')
+                        x.setAmount(am)
+                    except ValueError:
+                        pass
                 if self.header.has_key('Call'):
                     type = champs[self.header['Call']]
                     if type == "pdcNegative":
