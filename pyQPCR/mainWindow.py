@@ -41,7 +41,7 @@ import time
 __author__ = "$Author$"
 __date__ = "$Date$"
 __version__ = "$Rev$"
-__progversion__ = "0.5dev"
+__progversion__ = "0.5"
 
 class Qpcr_qt(QMainWindow):
 
