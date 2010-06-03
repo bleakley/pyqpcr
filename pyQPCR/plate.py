@@ -52,8 +52,8 @@ class Plaque:
             self.determineFileType(self.filename)
             if machine == 'Eppendorf':
                 self.parseEppendorf()
-            elif machine == 'Applied StepOne':
-                self.parseAppliedStepOne()
+            elif machine in ['Applied StepOne', 'Applied 7500']:
+                self.parseAppliedUniv()
             elif machine == 'Applied 7000':
                 self.parseApplied7000()
             elif machine == 'Roche LightCycler 480':
@@ -265,25 +265,36 @@ class Plaque:
                     setattr(self, x.name, x)
                     self.listePuits.append(x)
 
-    def parseAppliedStepOne(self):
+    def parseAppliedUniv(self):
         """
         This method allows to parse Applied StepOne raw data.
         """
-        file = open(self.filename, 'r')
-        iterator = file.readlines()
+        file = open(self.filename, 'Ur')
         fileencoding = "utf-8"
-        splitter = re.compile(r'([\w .,\-\(\)\[\]\+\\/]*|\d+[.,]?\d*)\t', re.UNICODE)
         result = re.compile(r'\[Results\]')
         motifSample = re.compile(r'Reference Sample = (.*)')
         motifTarget = re.compile(r'Endogenous Control = (.*)')
         hasHeader = False
-        for ind, rawline in enumerate(iterator):
+        if self.fileType == 'txt':
+            iterator = file.readlines()
+            splitter = re.compile(r'([\w .,\-\(\)\[\]\+\\/]*|\d+[.,]?\d*)\t', re.UNICODE)
+        if self.fileType == 'csv':
+            iterator = csv.reader(file, delimiter=",")
+
+        for ind, line in enumerate(iterator):
+            if self.fileType == 'txt': 
+                line = line.decode(fileencoding)
+                rawline = line
+                line = splitter.findall(line)
+            elif self.fileType == 'csv':
+                rawline = string.join(line, '')
+                for k in range(len(line)):
+                    line[k] = line[k].decode(fileencoding)
+
             if len(result.findall(rawline)) != 0:
                 hasHeader = True
                 initTab = ind + 1
                 continue
-            rawline = rawline.decode(fileencoding)
-            line = splitter.findall(rawline)
 
             if hasHeader:
                 if ind == initTab:
@@ -339,9 +350,9 @@ class Plaque:
             if motifSample.match(rawline):
                 self.echRef = QString(motifSample.findall(rawline)[0])
             if motifTarget.match(rawline):
-                self.geneRef.append(QString(motifTarget.findall(rawline)[0]))
-
-
+                newGeneRef = QString(motifTarget.findall(rawline)[0])
+                if newGeneRef not in self.geneRef:
+                    self.geneRef.append(newGeneRef)
         file.close()
 
     def write(self, filename):
@@ -597,5 +608,9 @@ class PlateError(Exception):
 
 
 if __name__ == '__main__':
-    pl = Plaque('../samples/roche.txt', machine='Roche LightCycler 480')
+    pl = Plaque('raw_data_AB7500.csv', machine='Applied 7500')
     print str(pl.A1)
+    print pl.geneRef
+    pl = Plaque('raw_data_applied.txt', machine='Applied StepOne')
+    print str(pl.A1)
+    print pl.geneRef
