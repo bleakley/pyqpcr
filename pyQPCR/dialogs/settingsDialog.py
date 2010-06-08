@@ -99,16 +99,18 @@ class SettingsDialog(QDialog):
         labMachine = QLabel("<b>PCR device :</b>")
         lab5 = QLabel("&Machine type : ")
         self.machBox = QComboBox()
-        self.machBox.addItems(['Eppendorf', 'Applied StepOne', 'Applied 7000',
-                               'Roche LightCycler 480'])
+        self.machBox.addItems(['Eppendorf', 'Applied StepOne', 'Applied 7000', 
+                               'Applied 7500', 'Roche LightCycler 480'])
         if machine == 'Eppendorf':
             self.machBox.setCurrentIndex(0)
         elif machine == 'Applied StepOne':
             self.machBox.setCurrentIndex(1)
         elif machine == 'Applied 7000':
             self.machBox.setCurrentIndex(2)
-        elif machine == 'Roche LightCycler 480':
+        elif machine == 'Applied 7500':
             self.machBox.setCurrentIndex(3)
+        elif machine == 'Roche LightCycler 480':
+            self.machBox.setCurrentIndex(4)
         lab5.setBuddy(self.machBox)
 
         buttonBox = QDialogButtonBox(QDialogButtonBox.Ok|

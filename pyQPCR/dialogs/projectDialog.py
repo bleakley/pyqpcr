@@ -45,6 +45,7 @@ class NewProjectDialog(QDialog):
         self.machBox.addItem("Eppendorf")
         self.machBox.addItem("Applied StepOne")
         self.machBox.addItem("Applied 7000")
+        self.machBox.addItem("Applied 7500")
         self.machBox.addItem("Roche LightCycler 480")
 
         lab3 = QLabel("<b>3. Plates files</b>")
@@ -109,11 +110,14 @@ class NewProjectDialog(QDialog):
             formats =[u"*.txt", u"*.csv"]
             type = 'Eppendorf machines'
         elif self.machBox.currentText() == 'Applied StepOne':
-            formats =[u"*.txt"]
+            formats =[u"*.txt", u"*.csv"]
             type = 'Applied StepOne machines'
         elif self.machBox.currentText() == 'Applied 7000':
             formats =[u"*.csv"]
             type = 'Applied 7000 machines'
+        elif self.machBox.currentText() == 'Applied 7500':
+            formats =[u"*.txt", u"*.csv"]
+            type = 'Applied 7500 machines'
         elif self.machBox.currentText() == 'Roche LightCycler 480':
             formats =[u"*.txt"]
             type = 'Roche LightCycler 480'
