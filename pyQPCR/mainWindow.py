@@ -411,11 +411,14 @@ class Qpcr_qt(QMainWindow):
             formats =[u"*.txt", u"*.csv"]
             type = 'Eppendorf machines'
         elif self.machine == 'Applied StepOne':
-            formats =[u"*.txt"]
+            formats =[u"*.txt", u"*.csv"]
             type = 'Applied StepOne machines'
         elif self.machine == 'Applied 7000':
             formats =[u"*.csv"]
             type = 'Applied 7000 machines'
+        elif self.machine == 'Applied 7500':
+            formats =[u"*.txt", u"*.csv"]
+            type = 'Applied 7500 machines'
         elif self.machine == 'Roche LightCycler 480':
             formats =[u"*.txt"]
             type = 'Roche LightCycler 480'
