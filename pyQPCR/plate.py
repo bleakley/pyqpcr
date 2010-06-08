@@ -258,7 +258,12 @@ class Plaque:
                         ct = champs[self.header['Ct']]
                         x.setCt(ct)
                     if self.header.has_key('Qty'):
-                        amount = champs[self.header['Qty']]
+                        try:
+                            amount = float(champs[self.header['Qty']])
+                            x.setType('standard')
+                            x.setAmount(amount)
+                        except ValueError:
+                            pass
                     if self.header.has_key('Detector'):
                         geneName = champs[self.header['Detector']]
                         x.setGene(Gene(geneName))
@@ -267,13 +272,16 @@ class Plaque:
 
     def parseAppliedUniv(self):
         """
-        This method allows to parse Applied StepOne raw data.
+        This method allows to parse Applied StepOne and AB7500 raw data.
+        It works with *.TXT files and *.CSV files (comma separated, UTF-8
+        encoding).
         """
         file = open(self.filename, 'Ur')
         fileencoding = "utf-8"
         result = re.compile(r'\[Results\]')
         motifSample = re.compile(r'Reference Sample = (.*)')
         motifTarget = re.compile(r'Endogenous Control = (.*)')
+        motifWell = re.compile(r'[A-H][1-9][012]?')
         hasHeader = False
         if self.fileType == 'txt':
             iterator = file.readlines()
@@ -302,7 +310,9 @@ class Plaque:
                     for i, field in enumerate(line):
                         self.header[field] = i
                     ncol = len(self.header.keys())
-                if ind != initTab and len(line) == ncol:
+                if ind != initTab and len(line) >= ncol-1 and \
+                        motifWell.match(line[self.header['Well']]):
+                    # Tricky solution for CSV file with missing final colon
                     champs = []
                     for k, field in enumerate(line):
                         try:
@@ -331,19 +341,18 @@ class Plaque:
                         ctdev = champs[self.header[u'C\u0442 SD']]
                         x.setCtdev(ctdev)
                     if self.header.has_key('Quantity'):
-                        amount = champs[self.header['Quantity']]
+                        try:
+                            amount = float(champs[self.header['Quantity']])
+                            x.setType('standard')
+                            x.setAmount(amount)
+                        except ValueError:
+                            pass
                     if self.header.has_key('Target Name'):
                         geneName = champs[self.header['Target Name']]
                         x.setGene(Gene(geneName))
-                    #if self.header.has_key('Task'):
-                        #type = champs[self.header['Task']]
-                        #x.setType(type)
                     if self.header.has_key(u'\u0394\u0394C\u0442'):
                         nrq = champs[self.header[u'\u0394\u0394C\u0442']]
                         x.setNRQ(nrq)
-                    #if self.header.has_key('NRQerror'):
-                        #nrqerror = champs[self.header['NRQerror']]
-                        #x.setNRQerror(nrqerror)
 
                     setattr(self, x.name, x)
                     self.listePuits.append(x)
@@ -354,50 +363,6 @@ class Plaque:
                 if newGeneRef not in self.geneRef:
                     self.geneRef.append(newGeneRef)
         file.close()
-
-    def write(self, filename):
-        f = open(filename, 'w')
-        self.determineFileType(filename)
-        header=['Pos', 'Name', 'Ct SYBR', 'Ct Mean SYBR', 'Ct Dev. SYBR',
-                'Amount SYBR', 'Target SYBR', 'Type', 'NRQ', 'NRQerror']
-        if hasattr(self, 'stdUnit'):
-            header[5] = 'Amount SYBR [%s]' % self.stdUnit
-# -----------TXT------------- 
-        if self.fileType == "txt":
-# Ecriture du header
-            for field in header:
-                f.write('"%s"'% field)
-                f.write("\t")
-            f.write("\n")
-# Ecriture des puits
-            for well in self.listePuits:
-                st = well.writePuits()
-                f.write(st)
-# Ecriture du `Analysis Parameters`
-            f.write("\n")
-            f.write('"Analysis Parameters"\n')
-            if hasattr(self, 'geneRef'):
-                f.write('"refTarget"\t"%s"\n' % self.geneRef.name)
-            if hasattr(self, 'echRef'):
-                f.write('"refSample"\t"%s"\n' % self.echRef.name)
-# -----------CSV------------- 
-        elif self.fileType == "csv":
-            writer = csv.writer(f, quoting=csv.QUOTE_NONNUMERIC, delimiter=";")
-# Ecriture du header
-            writer.writerow(header)
-# Ecriture des puits
-            for well in self.listePuits:
-                writer.writerow([well.name, well.ech.name, well.ct, well.ctmean,
-                    well.ctdev, well.amount, well.gene.name, well.type, well.NRQ,
-                    well.NRQerror])
-# Ecriture du `Analysis Parameters`
-            writer.writerow("")
-            writer.writerow(['Analysis Parameters'])
-            if hasattr(self, 'geneRef'):
-                writer.writerow(['refTarget', self.geneRef.name])
-            if hasattr(self, 'echRef'):
-                writer.writerow(['refSample', self.echRef.name])
-        f.close()
 
     def writeHtml(self, ctMin=35, ectMax=0.3):
         """
