@@ -14,6 +14,7 @@
 <file alias="addamount.png">icons/amount.png</file>
 <file alias="undo.png">icons/edit-undo.png</file>
 <file alias="redo.png">icons/edit-redo.png</file>
+<file alias="copy.png">icons/edit-copy.png</file>
 <file alias="plotUnknown.png">icons/plot.png</file>
 <file alias="plotStandard.png">icons/plotStd.png</file>
 <file alias="edit.png">icons/edit-bomb.png</file>
