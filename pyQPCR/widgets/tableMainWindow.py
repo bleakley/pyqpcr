@@ -159,9 +159,15 @@ class ResultWidget(QTableWidget):
                                        QSizePolicy.Maximum))
 
         self.copyAction = QAction("Copy",  self)
-        self.copyAction.setStatusTip('Copy data')
+        self.copyAction.setStatusTip('Copy data to the clipboard')
+        self.copyAction.setToolTip('Copy data to the clipboard')
+        self.copyAction.setIcon(QIcon(":/copy.png"))
         self.copyAction.setShortcut(QKeySequence.Copy)
         self.addAction(self.copyAction)
+
+        self.setContextMenuPolicy(Qt.ActionsContextMenu)
+        self.addAction(self.copyAction)
+
         self.connect(self.copyAction, SIGNAL("triggered()"), self.copyCells)
 
     def clear(self):
@@ -233,6 +239,10 @@ class ResultWidget(QTableWidget):
             self.setItem(ind, 9, itNRQ)
 
     def copyCells(self):
+        """
+        A method to copy selected cells to the clipboard. The different
+        columns are separated by tabulations by default.
+        """
         selRange  = self.selectedRanges()[0]#just take the first range
         topRow = selRange.topRow()
         bottomRow = selRange.bottomRow()
