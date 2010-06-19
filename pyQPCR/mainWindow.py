@@ -201,7 +201,7 @@ class Qpcr_qt(QMainWindow):
         self.plotStdAction = self.createAction("Standard curves", 
                               self.computeStd, "Ctrl+Shift+S", 
                               "plotStandard", "Plot standard curves")
-        self.extractAction = self.createAction("Extract sub-plates",
+        self.extractAction = self.createAction("E&xtract sub-plates",
                              self.extractSubplate, "Ctrl+X",
                              "extract", "Extract a sub-plate from an existing plate")
         self.enableAction = self.createAction("Enable wells", self.enable, 
@@ -232,10 +232,12 @@ class Qpcr_qt(QMainWindow):
         editMenu.addSeparator()
         self.addActions(editMenu, (self.addEchAction, self.addGeneAction,
                                    self.addAmAction))
+        editMenu.addSeparator()
+        editMenu.addAction(self.extractAction)
 
         calculMenu = self.menuBar().addMenu("&Computations")
         self.addActions(calculMenu, (self.enableAction, self.disableAction,
-                                  None, self.plotStdAction, self.plotAction, self.extractAction))
+                                  None, self.plotStdAction, self.plotAction))
 
         settingsMenu = self.menuBar().addMenu("&Settings")
         settingsMenu.addAction(settingsAction)
@@ -295,6 +297,7 @@ class Qpcr_qt(QMainWindow):
         editToolbar.addAction(self.addAmAction)
         editToolbar.addSeparator()
         editToolbar.addAction(self.editAction)
+        editToolbar.addAction(self.extractAction)
         editToolbar.setIconSize(QSize(22, 22))
 
         plotToolbar = self.addToolBar("Plot")
