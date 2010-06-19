@@ -48,7 +48,7 @@ class Plaque:
         self.echRef = ''
         self.contUkn = True
  
-        if self.filename is not None:
+        if self.filename is not None and machine is not None:
             self.determineFileType(self.filename)
             if machine == 'Eppendorf':
                 self.parseEppendorf()
@@ -363,6 +363,12 @@ class Plaque:
                 if newGeneRef not in self.geneRef:
                     self.geneRef.append(newGeneRef)
         file.close()
+
+    def subPlate(self, listWells):
+        self.listePuits = listWells
+        for well in self.listePuits:
+            setattr(self, well.name, well)
+
 
     def writeHtml(self, ctMin=35, ectMax=0.3):
         """

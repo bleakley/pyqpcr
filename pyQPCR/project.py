@@ -123,6 +123,8 @@ class Project:
 
         @param plate: the plate we want to add
         @type plate: pyQPCR.Plaque
+        @param key: the key associated with the plate
+        @type key: PyQt4.QtCore.QString
         """
         if not key:
             key = QFileInfo(plate.filename).fileName()
@@ -146,23 +148,49 @@ class Project:
         """
         oldGenes = self.dicoPlates[plateName].dicoGene.keys()
         oldEchs = self.dicoPlates[plateName].dicoEch.keys()
+        oldGenesRef = self.dicoPlates[plateName].geneRef
+        oldEchRef = self.dicoPlates[plateName].echRef
         self.dicoPlates.__delitem__(plateName)
 
+        listGeneRef = []
         for oldg in oldGenes:
             delete = True
             for pl in self.dicoPlates.values():
                 if pl.dicoGene.has_key(oldg) or oldg == '':
                     delete = False
+                    if oldGenesRef.__contains__(oldg):
+                        listGeneRef.append(oldg)
             if delete:
                 self.hashGene.__delitem__(oldg)
 
+        if len(listGeneRef) > 0:
+            uncheck = True
+            for geneName in listGeneRef:
+                for pl in self.dicoPlates.values():
+                    if pl.geneRef.__contains__(geneName):
+                        uncheck = False
+                if uncheck:
+                    self.hashGene[geneName].setRef(Qt.Unchecked)
+
+        listEchRef = []
         for oldech in oldEchs:
             delete = True
             for pl in self.dicoPlates.values():
                 if pl.dicoEch.has_key(oldech) or oldech == '':
                     delete = False
+                    if oldEchRef == oldech:
+                        listEchRef.append(oldech)
             if delete:
                 self.hashEch.__delitem__(oldech)
+
+        if len(listEchRef) > 0:
+            uncheck = True
+            for echName in listEchRef:
+                for pl in self.dicoPlates.values():
+                    if pl.echRef == echName:
+                        uncheck = False
+                if uncheck:
+                    self.hashEch[echName].setRef(Qt.Unchecked)
 
                 
 # A deplacer :
