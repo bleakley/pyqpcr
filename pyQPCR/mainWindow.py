@@ -41,7 +41,7 @@ import time
 __author__ = "$Author$"
 __date__ = "$Date$"
 __version__ = "$Rev$"
-__progversion__ = "0.5.1"
+__progversion__ = "0.6"
 
 class Qpcr_qt(QMainWindow):
 
@@ -55,6 +55,7 @@ class Qpcr_qt(QMainWindow):
         self.filename = None
         self.printer = None
         self.nplotGene = 0
+        self.subIndex = 1
 
         self.tree = QTreeWidget()
         self.tree.setHeaderLabel("Parameters")
@@ -200,6 +201,9 @@ class Qpcr_qt(QMainWindow):
         self.plotStdAction = self.createAction("Standard curves", 
                               self.computeStd, "Ctrl+Shift+S", 
                               "plotStandard", "Plot standard curves")
+        self.extractAction = self.createAction("Extract sub-plates",
+                             self.extractSubplate, "Ctrl+X",
+                             "extract", "Extract a sub-plate from an existing plate")
         self.enableAction = self.createAction("Enable wells", self.enable, 
                      None, "enable", "Enable selected wells")
         self.disableAction = self.createAction("Disable wells", self.disable,
@@ -220,6 +224,7 @@ class Qpcr_qt(QMainWindow):
         self.addActions(fileMenu, (self.filePrintAction, self.exportAction, None, 
                         self.fileSaveAction, self.fileSaveAsAction, 
                         None, fileQuitAction))
+
         editMenu = self.menuBar().addMenu("&Edit")
         editMenu.addAction(self.editAction)
         editMenu.addSeparator()
@@ -227,11 +232,14 @@ class Qpcr_qt(QMainWindow):
         editMenu.addSeparator()
         self.addActions(editMenu, (self.addEchAction, self.addGeneAction,
                                    self.addAmAction))
+
         calculMenu = self.menuBar().addMenu("&Computations")
         self.addActions(calculMenu, (self.enableAction, self.disableAction,
-                                  None, self.plotStdAction, self.plotAction))
+                                  None, self.plotStdAction, self.plotAction, self.extractAction))
+
         settingsMenu = self.menuBar().addMenu("&Settings")
         settingsMenu.addAction(settingsAction)
+
         helpMenu = self.menuBar().addMenu("&Help")
         self.addActions(helpMenu, (helpAboutAction, helpHelpAction))
 
@@ -528,6 +536,7 @@ class Qpcr_qt(QMainWindow):
         self.editAction.setEnabled(bool)
         self.plotAction.setEnabled(bool)
         self.plotStdAction.setEnabled(bool)
+        self.extractAction.setEnabled(bool)
         self.typeComboBox.setEnabled(bool)
         self.geneComboBox.setEnabled(bool)
         self.echComboBox.setEnabled(bool)
@@ -1054,6 +1063,34 @@ class Qpcr_qt(QMainWindow):
                 self.pileTables[key].populateTable(pl)
                 self.pileResults[key].populateResult(pl)
             self.populateTree()
+
+    def extractSubplate(self):
+        """
+        This method is used to extract a sub-plate from an opened plate.
+        """
+        listWell = []
+        for it in self.pileTables[self.currentPlate].selectedItems():
+            nom = it.statusTip()
+            well = getattr(self.project.dicoPlates[self.currentPlate], str(nom))
+            listWell.append(well)
+
+        fname = self.currentPlate + '_sub%i' % self.subIndex
+        plaque = Plaque(fname, machine=None)
+        plaque.subPlate(listWell)
+
+        if not self.project.dicoPlates.has_key(fname):
+            self.project.addPlate(plaque)
+            key = QFileInfo(fname).fileName()
+
+            self.appendPlate(plaque, key)
+            self.appendResult(plaque, key)
+
+            self.updateUi()
+            self.project.unsaved = True
+            self.fileSaveAction.setEnabled(True)
+            self.projectStack.append(copy.deepcopy(self.project))
+
+        self.subIndex += 1
 
     def modifyGene(self):
         """
