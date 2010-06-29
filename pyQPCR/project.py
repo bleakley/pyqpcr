@@ -321,14 +321,33 @@ class Project:
             self.CFerror[pl] = self.CF[pl] * sqrt(self.CFerror[pl].sum())
 
     def calcQabs(self):
-        self.dicoPlotStd[geneName] = StdObject(x, y, yest, slope, orig, R2, eff, stdeff)
+        """
+        This method is used to compute the absolute quantifications Qabs as well as the error on the
+        estimate of Qabs
+        """
+        if not hasattr(self, 'dicoPlotStd'):
+            raise QabsError
+        broken = []
         for pl in self.dicoTriplicat.keys():
             for g in self.dicoTriplicat[pl].keys():
                 for ech in self.dicoTriplicat[pl][g].keys():
 # Qabs = (ctmean -orig)/slope
-                    Qabs = (self.dicoTriplicat[pl][g][ech].ctmean - self.dicoPlotStd[g].orig)/ \
-                            self.dicoPlotStd[g].slope
-                    self.dicoTriplicat[pl][g][ech].setQabs(Qabs)
+                    try:
+                        Qabs = 10**((self.dicoTriplicat[pl][g][ech].ctmean - self.dicoPlotStd[g].orig)/ \
+                                self.dicoPlotStd[g].slope)
+                        Qabserror = Qabs * log(10)/ self.dicoPlotStd[g].slope * sqrt( \
+                                    self.dicoTriplicat[pl][g][ech].ctdevtalpha**2 +\
+                                    self.dicoPlotStd[g].origerr**2 + \
+                                     (self.dicoPlotStd[g].slopeerr/self.dicoPlotStd[g].slope* \
+                                    (self.dicoTriplicat[pl][g][ech].ctmean-self.dicoPlotStd[g].orig))**2)
+                        
+                        self.dicoTriplicat[pl][g][ech].setNRQ(Qabs)
+                        self.dicoTriplicat[pl][g][ech].setNRQerror(Qabserror)
+                    except KeyError, ke:
+                        broken.append((g,ech))
+                        continue
+        if len(broken) != 0:
+            raise NRQError(broken)
 
     def calcNRQ(self):
         broken = []
@@ -438,12 +457,14 @@ class Project:
             elif errtype == "normal":
                 talpha = norm.ppf(1.-(1.-confidence)/2.) # Gaussian
             slopeerr = talpha * stderr
+            origerr = slopeerr* sqrt(sum(x**2)/len(x))
             eff = (10**(-1./slope)-1)*100 # Formule 5 adaptee
             # Erreur(Eff) = (Eff+100) * slopeerr / slope**2
             stdeff = (eff+100)*log(10)*slopeerr/slope**2 # Formule 6 adaptee
             # Coefficient de Pearsson de correlation
             R2 = 1 - sum((y-yest)**2)/sum((y-mean(y))**2)
-            self.dicoPlotStd[geneName] = StdObject(x, y, yest, slope, orig, R2, eff, stdeff)
+            self.dicoPlotStd[geneName] = StdObject(x, y, yest, slope, orig, R2, eff, 
+                                                   stdeff, slopeerr, origerr)
             # output for debugging stuff:
             # print eff, stdeff, R2
             # Mise a jour de l'efficacite des puits
@@ -524,6 +545,13 @@ class NRQError(Exception):
         for line in self.broken:
             st += "<li>(<b>%s, %s</b>)</li>" % (line[0], line[1])
         st += "</ul>"
+        return st
+
+class QabsError(Exception):
+
+    def __str__(self):
+        st = "You are calculating an <b>absolute quantification</b>. You must compute the standard"
+        st +=  " curves before doing the quantifications!"
         return st
 
 
