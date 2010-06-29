@@ -497,6 +497,9 @@ class Replicate:
     def setNRQ(self, NRQ):
         self.NRQ = NRQ
 
+    def setQabs(self, qabs):
+        self.Qabs = qabs
+
     def setNRQerror(self, NRQerr):
         self.NRQerror = NRQerr
 

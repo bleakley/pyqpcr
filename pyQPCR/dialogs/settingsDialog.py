@@ -44,11 +44,24 @@ class SuffixComboBox(QComboBox):
         return cText[:-1]
 
 class SettingsDialog(QDialog):
+    """
+    This dialog is the configuration dialog of pyQPCR. It is open when the Settings is open.
+    """
 
     def __init__(self, parent=None, ect=0.3, ctmin=35, confidence=0.9,
-                 errtype="normal", machine='Eppendorf'):
+                 errtype="normal", machine='Eppendorf', typeCalc='Relative quantification'):
         self.parent = parent
         QDialog.__init__(self, parent)
+
+        labCalc = QLabel("<b>Calculation :</b>")
+        lab0 = QLabel("&Type of calculation :")
+        self.typeCalc = QComboBox()
+        self.typeCalc.addItems(['Relative quantification', 'Absolute quantification'])
+        lab0.setBuddy(self.typeCalc)
+        if typeCalc == 'Relative quantification':
+            self.typeCalc.setCurrentIndex(0)
+        elif typeCalc == 'Absolute quantification':
+            self.typeCalc.setCurrentIndex(1)
 
         labTit = QLabel("<b>Quality Control:</b>")
         lab1 = QLabel("&E(ct) maximum :")
@@ -117,20 +130,23 @@ class SettingsDialog(QDialog):
                                      QDialogButtonBox.Cancel)
 
         gLayout = QGridLayout()
-        gLayout.addWidget(labTit, 0, 0, 1, 2)
-        gLayout.addWidget(lab1, 1, 0)
-        gLayout.addWidget(self.ectLineEdit, 1, 1)
-        gLayout.addWidget(lab2, 2, 0)
-        gLayout.addWidget(self.ctMinLineEdit, 2, 1)
-        gLayout.addWidget(labConf, 3, 0, 1, 2)
-        gLayout.addWidget(lab3, 4, 0)
-        gLayout.addWidget(self.typeCbox, 4, 1)
-        gLayout.addWidget(lab4, 5, 0)
-        gLayout.addWidget(self.confCbox, 5, 1)
-        gLayout.addWidget(labMachine, 6, 0, 1, 2)
-        gLayout.addWidget(lab5, 7, 0)
-        gLayout.addWidget(self.machBox, 7, 1)
-        gLayout.addWidget(buttonBox, 8, 0, 1, 2)
+        gLayout.addWidget(labCalc, 0, 0, 1, 2)
+        gLayout.addWidget(lab0, 1, 0)
+        gLayout.addWidget(self.typeCalc, 1, 1)
+        gLayout.addWidget(labTit, 2, 0, 1, 2)
+        gLayout.addWidget(lab1, 3, 0)
+        gLayout.addWidget(self.ectLineEdit, 3, 1)
+        gLayout.addWidget(lab2, 4, 0)
+        gLayout.addWidget(self.ctMinLineEdit, 4, 1)
+        gLayout.addWidget(labConf, 5, 0, 1, 2)
+        gLayout.addWidget(lab3, 6, 0)
+        gLayout.addWidget(self.typeCbox, 6, 1)
+        gLayout.addWidget(lab4, 7, 0)
+        gLayout.addWidget(self.confCbox, 7, 1)
+        gLayout.addWidget(labMachine, 8, 0, 1, 2)
+        gLayout.addWidget(lab5, 9, 0)
+        gLayout.addWidget(self.machBox, 9, 1)
+        gLayout.addWidget(buttonBox, 10, 0, 1, 2)
 
         self.setLayout(gLayout)
 
@@ -142,7 +158,6 @@ class SettingsDialog(QDialog):
 
 if __name__ == "__main__":
     import sys
-
     app = QApplication(sys.argv)
     form = SettingsDialog()
     form.show()

@@ -320,6 +320,16 @@ class Project:
             self.CF[pl] = pow(self.CF[pl].prod(),1./len(self.CF[pl]))
             self.CFerror[pl] = self.CF[pl] * sqrt(self.CFerror[pl].sum())
 
+    def calcQabs(self):
+        self.dicoPlotStd[geneName] = StdObject(x, y, yest, slope, orig, R2, eff, stdeff)
+        for pl in self.dicoTriplicat.keys():
+            for g in self.dicoTriplicat[pl].keys():
+                for ech in self.dicoTriplicat[pl][g].keys():
+# Qabs = (ctmean -orig)/slope
+                    Qabs = (self.dicoTriplicat[pl][g][ech].ctmean - self.dicoPlotStd[g].orig)/ \
+                            self.dicoPlotStd[g].slope
+                    self.dicoTriplicat[pl][g][ech].setQabs(Qabs)
+
     def calcNRQ(self):
         broken = []
         NF = {} ; NFerror = {}
