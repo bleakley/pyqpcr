@@ -365,6 +365,12 @@ class Plaque:
         file.close()
 
     def subPlate(self, listWells):
+        """
+        This method allows to extract a subplate from a plate.
+
+        @param listWells: the list of the wells we want to extract from the main plate.
+        @type listWells: list
+        """
         self.listePuits = listWells
         for well in self.listePuits:
             setattr(self, well.name, well)
@@ -372,7 +378,15 @@ class Plaque:
 
     def writeHtml(self, ctMin=35, ectMax=0.3, typeCalc='Relative quantification'):
         """
-        This method allows to represent the results of a plate in a HTML table
+        This method allows to represent the results of a plate in a HTML table.
+        It is used for instance during the PDF export of pyQPCR.
+
+        @param ctMin: the minimum ct value allowed
+        @type ctMin: float
+        @param ectMax: the maximum value of E(ct)
+        @type ectMax: float
+        @param typeCalc: the type of calculation
+        @type typeCalc: PyQt4.QtCore.QString
         """
         html = u""
         html += "<table cellpadding=2 cellspacing=0 border=1 width=100%>\n"
