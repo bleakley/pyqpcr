@@ -409,6 +409,7 @@ class Qpcr_qt(QMainWindow):
             self.setWindowTitle("pyQPCR - %s[*]" % QFileInfo(self.filename).fileName())
             for fname in dialog.fileNames.values():
                 self.machine = dialog.machineType
+                self.typeCalc = dialog.calculationType
                 self.addPlate(fname)
 
     def fileImport(self):

@@ -35,11 +35,17 @@ class NewProjectDialog(QDialog):
         self.fileNames = OrderedDict()
         QDialog.__init__(self, parent)
 
-        lab1 = QLabel("<b>1. &Project name</b>")
+        lab0 = QLabel("<b>1. &Calculation type</b>")
+        self.typeCalc = QComboBox()
+        self.typeCalc.addItems(['Relative quantification', 'Absolute quantification'])
+        lab0.setBuddy(self.typeCalc)
+
+
+        lab1 = QLabel("<b>2. &Project name</b>")
         self.edt = QLineEdit()
         lab1.setBuddy(self.edt)
 
-        lab2 = QLabel("<b>2. &Machine type</b>")
+        lab2 = QLabel("<b>3. &Machine type</b>")
         self.machBox = QComboBox()
         lab2.setBuddy(self.machBox)
         self.machBox.addItem("Eppendorf")
@@ -48,12 +54,12 @@ class NewProjectDialog(QDialog):
         self.machBox.addItem("Applied 7500")
         self.machBox.addItem("Roche LightCycler 480")
 
-        lab3 = QLabel("<b>3. Plates files</b>")
+        lab3 = QLabel("<b>4. Plates files</b>")
         self.listFiles = QListWidget()
         self.listFiles.setAlternatingRowColors(True)
         self.listFiles.setSelectionMode(QAbstractItemView.ExtendedSelection)
 
-        lab4 = QLabel("<b>4. Destination directory</b>")
+        lab4 = QLabel("<b>5. Destination directory</b>")
         self.file = QLineEdit()
         lab1.setBuddy(self.file)
         self.file.setReadOnly(True)
@@ -78,6 +84,8 @@ class NewProjectDialog(QDialog):
                                      QDialogButtonBox.Cancel)
 
         finalLayout = QVBoxLayout()
+        finalLayout.addWidget(lab0)
+        finalLayout.addWidget(self.typeCalc)
         finalLayout.addWidget(lab1)
         finalLayout.addWidget(self.edt)
         finalLayout.addWidget(lab2)
@@ -151,6 +159,7 @@ class NewProjectDialog(QDialog):
 # Gestion du / ou du \ selon l'OS utilise avec os.sep
             self.projectName = "%s%s%s" % (self.workDir, os.sep, projectName)
             self.machineType = self.machBox.currentText()
+            self.calculationType = self.typeCalc.currentText()
             if os.path.exists(self.projectName):
                 QMessageBox.warning(self, "This project already exists",
                   """<b>Warning</b>: you must choose a project name that
