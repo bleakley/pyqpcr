@@ -343,6 +343,9 @@ class Project:
                         
                         self.dicoTriplicat[pl][g][ech].setNRQ(Qabs)
                         self.dicoTriplicat[pl][g][ech].setNRQerror(Qabserror)
+                        for well in self.dicoTriplicat[pl][g][ech].listePuits:
+                            well.setNRQ(Qabs)
+                            well.setNRQerror(Qabserror)
                     except KeyError, ke:
                         broken.append((g,ech))
                         continue
@@ -383,7 +386,6 @@ class Project:
                               NF[plate.echRef]/ NF[ech]
                         self.dicoTriplicat[pl][g][ech].setNRQ(NRQ)
                         for well in self.dicoTriplicat[pl][g][ech].listePuits:
-                            #print pl, well.name, NRQ
                             well.setNRQ(NRQ)
                     except KeyError, ke:
                         broken.append((g,ech))
