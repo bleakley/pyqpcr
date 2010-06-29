@@ -190,6 +190,8 @@ class ResultWidget(QTableWidget):
 
         @param plaque: the input plate of the table
         @type plaque: pyQPCR.plate.Plaque
+        @param typeCalc: the type of calculation
+        @type typeCalc: PyQt4.QtCore.QString
         """
         if typeCalc == 'Relative quantification':
             self.resultLabels = ["Well", "Target", "Ct", "<Ct>", "E(Ct)", "Amount",
