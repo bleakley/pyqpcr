@@ -121,6 +121,7 @@ class Qpcr_qt(QMainWindow):
         self.ctMin, status = settings.value("ctMin", QVariant(35.)).toDouble()
         self.confidence, status = settings.value("Error/confidence", QVariant(0.9)).toDouble()
         self.errtype = settings.value("Error/errtype", QVariant('normal')).toString()
+        self.typeCalc = settings.value("Calc/typeCalc", QVariant('Relative quantification')).toString()
         self.machine = settings.value("machine", QVariant('Eppendorf')).toString()
 
         size = settings.value("MainWindow/Size",
@@ -758,13 +759,15 @@ class Qpcr_qt(QMainWindow):
                                 ctmin=self.ctMin,
                                 confidence=self.confidence,
                                 errtype=self.errtype,
-                                machine=self.machine)
+                                machine=self.machine,
+                                typeCalc=self.typeCalc)
         if dialog.exec_():
             self.ectMax, st = dialog.ectLineEdit.text().toFloat()
             self.ctMin, st = dialog.ctMinLineEdit.text().toFloat()
             self.confidence, st = dialog.confCbox.currentText().toFloat()
             errtype = dialog.typeCbox.currentText()
             self.machine = dialog.machBox.currentText()
+            self.typeCalc = dialog.typeCalc.currentText()
             self.errtype = dialog.types[errtype]
             self.confidence /= 100
             self.populateTree()
@@ -838,6 +841,8 @@ class Qpcr_qt(QMainWindow):
                   else QVariant()
             errtype = QVariant(self.errtype) if self.errtype \
                   else QVariant()
+            typeCalc = QVariant(self.typeCalc) if self.typeCalc \
+                  else QVariant()
             machine = QVariant(self.machine) if self.machine \
                   else QVariant()
 
@@ -861,6 +866,7 @@ class Qpcr_qt(QMainWindow):
 
             settings.setValue("Error/confidence", confidence)
             settings.setValue("Error/errtype", errtype)
+            settings.setValue("Calc/typeCalc", typeCalc)
             settings.setValue("machine", machine)
             settings.setValue("MainWindow/Size", QVariant(self.size()))
             settings.setValue("MainWindow/Position",
