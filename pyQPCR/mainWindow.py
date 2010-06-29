@@ -909,7 +909,7 @@ class Qpcr_qt(QMainWindow):
                 self.appendPlate(pl, key)
                 self.appendResult(pl, key)
             self.pileTables[key].populateTable(pl)
-            self.pileResults[key].populateResult(pl)
+            self.pileResults[key].populateResult(pl, self.typeCalc)
 
         for key in self.pileTables.keys():
             if not self.project.dicoPlates.has_key(key):
@@ -941,7 +941,7 @@ class Qpcr_qt(QMainWindow):
                 self.appendPlate(pl, key)
                 self.appendResult(pl, key)
             self.pileTables[key].populateTable(pl)
-            self.pileResults[key].populateResult(pl)
+            self.pileResults[key].populateResult(pl, self.typeCalc)
 
         for key in self.pileTables.keys():
             if not self.project.dicoPlates.has_key(key):
@@ -1011,7 +1011,7 @@ class Qpcr_qt(QMainWindow):
             self.pileTables[self.currentPlate].populateTable( \
                    self.project.dicoPlates[self.currentPlate])
             self.pileResults[self.currentPlate].populateResult( \
-                   self.project.dicoPlates[self.currentPlate])
+                   self.project.dicoPlates[self.currentPlate], self.typeCalc)
 
     def addGene(self):
         """
@@ -1031,7 +1031,7 @@ class Qpcr_qt(QMainWindow):
             for key in self.project.dicoPlates.keys():
                 pl = self.project.dicoPlates[key]
                 self.pileTables[key].populateTable(pl)
-                self.pileResults[key].populateResult(pl)
+                self.pileResults[key].populateResult(pl, self.typeCalc)
             self.populateTree()
 
     def addEch(self):
@@ -1052,7 +1052,7 @@ class Qpcr_qt(QMainWindow):
             for key in self.project.dicoPlates.keys():
                 pl = self.project.dicoPlates[key]
                 self.pileTables[key].populateTable(pl)
-                self.pileResults[key].populateResult(pl)
+                self.pileResults[key].populateResult(pl, self.typeCalc)
             self.populateTree()
 
     def addAmount(self):
@@ -1072,7 +1072,7 @@ class Qpcr_qt(QMainWindow):
             for key in self.project.dicoPlates.keys():
                 pl = self.project.dicoPlates[key]
                 self.pileTables[key].populateTable(pl)
-                self.pileResults[key].populateResult(pl)
+                self.pileResults[key].populateResult(pl, self.typeCalc)
             self.populateTree()
 
     def extractSubplate(self):
@@ -1119,7 +1119,7 @@ class Qpcr_qt(QMainWindow):
         self.pileTables[self.currentPlate].populateTable( \
                       self.project.dicoPlates[self.currentPlate])
         self.pileResults[self.currentPlate].populateResult( \
-                      self.project.dicoPlates[self.currentPlate])
+                      self.project.dicoPlates[self.currentPlate], self.typeCalc)
 
     def modifyEch(self):
         """
@@ -1137,7 +1137,7 @@ class Qpcr_qt(QMainWindow):
         self.pileTables[self.currentPlate].populateTable( \
                      self.project.dicoPlates[self.currentPlate])
         self.pileResults[self.currentPlate].populateResult( \
-                     self.project.dicoPlates[self.currentPlate])
+                     self.project.dicoPlates[self.currentPlate], self.typeCalc)
 
     def modifyAm(self):
         """
@@ -1155,7 +1155,7 @@ class Qpcr_qt(QMainWindow):
         self.pileTables[self.currentPlate].populateTable( \
                     self.project.dicoPlates[self.currentPlate])
         self.pileResults[self.currentPlate].populateResult( \
-                    self.project.dicoPlates[self.currentPlate])
+                    self.project.dicoPlates[self.currentPlate], self.typeCalc)
 
     def setType(self):
         for it in self.pileTables[self.currentPlate].selectedItems():
@@ -1169,7 +1169,7 @@ class Qpcr_qt(QMainWindow):
         self.pileTables[self.currentPlate].populateTable( \
                     self.project.dicoPlates[self.currentPlate])
         self.pileResults[self.currentPlate].populateResult( \
-                    self.project.dicoPlates[self.currentPlate])
+                    self.project.dicoPlates[self.currentPlate], self.typeCalc)
 
     def enable(self):
         """
@@ -1187,7 +1187,7 @@ class Qpcr_qt(QMainWindow):
         self.pileTables[self.currentPlate].populateTable( \
                     self.project.dicoPlates[self.currentPlate])
         self.pileResults[self.currentPlate].populateResult( \
-                    self.project.dicoPlates[self.currentPlate])
+                    self.project.dicoPlates[self.currentPlate], self.typeCalc)
 
     def disable(self):
         """
@@ -1209,13 +1209,13 @@ class Qpcr_qt(QMainWindow):
         self.pileTables[self.currentPlate].populateTable( \
                         self.project.dicoPlates[self.currentPlate])
         self.pileResults[self.currentPlate].populateResult( \
-                        self.project.dicoPlates[self.currentPlate])
+                        self.project.dicoPlates[self.currentPlate], self.typeCalc)
 
     def displayWarnings(self):
         for key in self.project.dicoPlates.keys():
             pl = self.project.dicoPlates[key]
             self.pileTables[key].populateTable(pl)
-            self.pileResults[key].populateResult(pl)
+            self.pileResults[key].populateResult(pl, self.typeCalc)
 
     def checkNegative(self, ctMin):
         """
@@ -1369,7 +1369,7 @@ class Qpcr_qt(QMainWindow):
         # On reremplit la table de resultats
         for key in self.project.dicoPlates.keys():
             pl = self.project.dicoPlates[key]
-            self.pileResults[key].populateResult(pl)
+            self.pileResults[key].populateResult(pl, self.typeCalc)
         # On trace le resultat
         self.mplUknWidget.plotUnknown(self.project)
         self.project.unsaved = True
@@ -1419,7 +1419,7 @@ class Qpcr_qt(QMainWindow):
             self.projectStack.append(copy.deepcopy(self.project))
             for key in self.project.dicoPlates.keys():
                 pl = self.project.dicoPlates[key]
-                self.pileResults[key].populateResult(pl)
+                self.pileResults[key].populateResult(pl, self.typeCalc)
             self.populateTree()
             self.plotStdWidget.plotStd(self.project.dicoPlotStd)
         else:
@@ -1462,8 +1462,8 @@ class Qpcr_qt(QMainWindow):
         @param key: the name of the plate
         @type key: str
         """
-        mytab = ResultWidget()
-        mytab.populateResult(plaque)
+        mytab = ResultWidget(typeCalc=self.typeCalc)
+        mytab.populateResult(plaque, self.typeCalc)
         self.tabulResults.addTab(mytab, key)
         self.pileResults[key] = mytab
 

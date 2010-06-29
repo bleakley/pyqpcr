@@ -138,16 +138,22 @@ class ResultWidget(QTableWidget):
     @type resultLabels: list
     """
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, typeCalc='Relative quantification'):
         """
         Constructor of the Result Widget. 
 
         @param parent: the QWidget parent
         @type parent: PyQt4.QtGui.QWidget
+        @param typeCalc: the type of calculation
+        @type typeCalc: PyQt4.QtCore.QString
         """
         QTableWidget.__init__(self, parent)
-        self.resultLabels = ["Well", "Target", "Ct", "<Ct>", "E(Ct)", "Amount",
-                "Sample", "Eff", "Type", "NRQ"]
+        if typeCalc == 'Relative quantification':
+            self.resultLabels = ["Well", "Target", "Ct", "<Ct>", "E(Ct)", "Amount",
+                    "Sample", "Eff", "Type", "NRQ"]
+        elif typeCalc == 'Absolute quantification':
+            self.resultLabels = ["Well", "Target", "Ct", "<Ct>", "E(Ct)", "Amount",
+                    "Sample", "Eff", "Type", "Qabs"]
         self.setRowCount(96)
         self.setColumnCount(10)
         self.setHorizontalHeaderLabels(self.resultLabels)
@@ -178,13 +184,21 @@ class ResultWidget(QTableWidget):
         QTableWidget.clear(self)
         self.setVerticalHeaderLabels(self.resultLabels)
 
-    def populateResult(self, plaque):
+    def populateResult(self, plaque, typeCalc):
         """
         This method is used to fill the PCR result thanks to the computed data?
 
         @param plaque: the input plate of the table
         @type plaque: pyQPCR.plate.Plaque
         """
+        if typeCalc == 'Relative quantification':
+            self.resultLabels = ["Well", "Target", "Ct", "<Ct>", "E(Ct)", "Amount",
+                    "Sample", "Eff", "Type", "NRQ"]
+        elif typeCalc == 'Absolute quantification':
+            self.resultLabels = ["Well", "Target", "Ct", "<Ct>", "E(Ct)", "Amount",
+                    "Sample", "Eff", "Type", "Qabs"]
+        self.setHorizontalHeaderLabels(self.resultLabels)
+
         for ind, well in enumerate(plaque.listePuits):
             if well.enabled == True:
                 item = QTableWidgetItem("")
