@@ -370,7 +370,7 @@ class Plaque:
             setattr(self, well.name, well)
 
 
-    def writeHtml(self, ctMin=35, ectMax=0.3):
+    def writeHtml(self, ctMin=35, ectMax=0.3, typeCalc='Relative quantification'):
         """
         This method allows to represent the results of a plate in a HTML table
         """
@@ -385,10 +385,15 @@ class Plaque:
                  "<th align=center>Ctmean</th>\n"
                  "<th align=center>Ctdev</th>\n"
                  "<th align=center>Amount</th>\n"
-                 "<th align=center>Efficiency</th>\n"
-                 "<th align=center>NRQ</th>\n"
-                 "<th align=center>NRQerror</th>\n"
-                 "</tr>\n")
+                 "<th align=center>Efficiency</th>\n")
+        if typeCalc == 'Relative quantification':
+            html +=  ("<th align=center>NRQ</th>\n"
+                     "<th align=center>NRQerror</th>\n"
+                     "</tr>\n")
+        elif typeCalc == 'Absolute quantification':
+            html +=  ("<th align=center>Qabs</th>\n"
+                     "<th align=center>QabsError</th>\n"
+                     "</tr>\n")
         for well in self.listePuits:
             html += well.writeHtml(ctMin, ectMax)
         html += "</table>"
@@ -442,7 +447,7 @@ class Plaque:
 
 class StdObject:
 
-    def __init__(self, x, y, yest, slope, orig, R2, eff, stdeff):
+    def __init__(self, x, y, yest, slope, orig, R2, eff, stdeff, slopeerr, origerr):
         self.x = x
         self.y = y
         self.yest = yest
@@ -451,6 +456,8 @@ class StdObject:
         self.R2 = R2
         self.eff = eff
         self.stdeff = stdeff
+        self.slopeerr = slopeerr
+        self.origerr = origerr
 
 
 class Replicate:
@@ -496,9 +503,6 @@ class Replicate:
 
     def setNRQ(self, NRQ):
         self.NRQ = NRQ
-
-    def setQabs(self, qabs):
-        self.Qabs = qabs
 
     def setNRQerror(self, NRQerr):
         self.NRQerror = NRQerr

@@ -29,7 +29,7 @@ from pyQPCR.widgets.tableMainWindow import PlateWidget, ResultWidget
 from pyQPCR.widgets.customCbox import GeneEchComboBox
 from pyQPCR.plate import Plaque, ReplicateError, PlateError
 from pyQPCR.wellGeneSample import WellError
-from pyQPCR.project import Project, NRQError
+from pyQPCR.project import Project, NRQError, QabsError
 import matplotlib
 from numpy import linspace, log10, log, sqrt, sum, mean, polyfit, polyval, \
         asarray, append, array, delete
@@ -641,6 +641,7 @@ class Qpcr_qt(QMainWindow):
         html += "<h1 align=center> qPCR results </h1><br><br>"
         html += "<br><h2>Setup</h2><br>\n"
         html += "<ul>\n"
+        html +=  "<li> <b>Calculation type :</b> %s</li>\n" % self.typeCalc
         if self.errtype == "student":
             html +=  "<li> <b>Error type :</b> Student t-test </li>\n" 
         elif self.errtype == "normal":
@@ -656,7 +657,8 @@ class Qpcr_qt(QMainWindow):
         if isTable:
             for key in self.project.dicoPlates.keys():
                 html += "<br><h2>Results table (%s)</h2><br>" % key
-                html += self.project.dicoPlates[key].writeHtml(self.ctMin, self.ectMax)
+                html += self.project.dicoPlates[key].writeHtml(self.ctMin, self.ectMax,
+                                                               self.typeCalc)
 
         if isStd and self.nplotStd !=0:
             html += "<p style='page-break-before:always;'>"
@@ -1297,10 +1299,11 @@ class Qpcr_qt(QMainWindow):
         # On verifie que chaque plaque contient des unknown
         self.project.findUnknown()
         # On fixe le gene de reference et le triplicat de reference
-        try:
-            self.setRefs()
-        except ValueError:
-            return
+        if self.typeCalc == 'Relative quantification':
+            try:
+                self.setRefs()
+            except ValueError:
+                return
         # On verifie la qualite des negative control
         self.checkNegative(self.ctMin)
         # On construit tous les triplicats
@@ -1324,16 +1327,32 @@ class Qpcr_qt(QMainWindow):
             return
 
         # On calcule NRQ
-        try:
-            self.project.calcNRQ()
-        except NRQError, e:
-            QMessageBox.warning(self, "Problem occurs in calculation !",
-                "<b>Warning</b>: A problem occured in the following replicates : " \
-                "%s It probably comes from the reference target or sample which" \
-                " is undefined for this gene or sample." \
-                "<p> As a consequence these replicates have not been plotted." \
-                % str(e))
-            return
+        if self.typeCalc == 'Relative quantification':
+            try:
+                self.project.calcNRQ()
+            except NRQError, e:
+                QMessageBox.warning(self, "Problem occurs in calculation !",
+                    "<b>Warning</b>: A problem occured in the following replicates : " \
+                    "%s It probably comes from the reference target or sample which" \
+                    " is undefined for this gene or sample." \
+                    "<p> As a consequence these replicates have not been plotted." \
+                    % str(e))
+                return
+
+        elif self.typeCalc == 'Absolute quantification':
+            try:
+                self.project.calcQabs()
+            except NRQError, e:
+                QMessageBox.warning(self, "Problem occurs in calculation !",
+                    "<b>Warning</b>: A problem occured in the following replicates : " \
+                    "%s It probably comes from the reference target or sample which" \
+                    " is undefined for this gene or sample." \
+                    "<p> As a consequence these replicates have not been plotted." \
+                    % str(e))
+                return
+            except QabsError, e:
+                QMessageBox.warning(self, "Problem occurs in calculation !", '%s' % str(e))
+                return
 
         if self.nplotGene == 0:
             self.mplUknWidget = MplUnknownWidget(self, barWth=self.barWth, 
