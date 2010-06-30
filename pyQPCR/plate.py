@@ -36,6 +36,14 @@ __version__ = "$Rev$"
 class Plaque:
     
     def __init__(self, filename=None, machine='Eppendorf'):
+        """
+        Constructor of Plaque object.
+
+        @param filename: the name of the raw data file
+        @type filename: PyQt4.QtCore.QString
+        @param machine: the PCR device used in the experiment
+        @type machine: PyQt4.QtCore.QString
+        """
         self.unsaved = False
         self.filename = filename
 
@@ -61,10 +69,16 @@ class Plaque:
             # Raise exception if no well are detected
             if len(self.listePuits) == 0:
                 raise PlateError(self.filename, machine)
-# Permet eventuellement de connaitre les genes/ech de ref 
+        # Permet eventuellement de connaitre les genes/ech de ref 
         #self.getRefsFromFile()
 
     def determineFileType(self, filename):
+        """
+        A method to determine the extension of the raw data file (txt or csv).
+
+        @param filename: the name of the file
+        @type filename: PyQt4.QtCore.QString
+        """
         extent = filename[-3:]
         if extent in ["txt", "TXT"]:
             self.fileType = "txt"
@@ -135,7 +149,8 @@ class Plaque:
 
     def parseEppendorf(self):
         """
-        This method allows to parse Eppendorf raw data.
+        This method allows to parse Eppendorf raw data. It works with both
+        *.TXT and *.CSV files (separated by a semicolon).
         """
         file = open(self.filename, "r")
         motif = re.compile(r"[\w\s]*")
@@ -423,6 +438,11 @@ class Plaque:
         self.contUkn = cont
 
     def setDicoGene(self):
+        """
+        A method to construct the attribute dicoGene.
+        It is an ordered dictionnary struture of type
+        self.dicoGene[geneName] = list of wells
+        """
         self.dicoGene = OrderedDict()
         for well in self.listePuits:
             nomgene = well.gene.name
@@ -433,6 +453,11 @@ class Plaque:
                     self.dicoGene[nomgene] = [well]
 
     def setDicoEch(self):
+        """
+        A method to construct the attribute dicoEch.
+        It is an ordered dictionnary struture of type
+        self.dicoEch[echName] = list of wells
+        """
         self.dicoEch = OrderedDict()
         for well in self.listePuits:
             nomech = well.ech.name
@@ -460,8 +485,37 @@ class Plaque:
 
 
 class StdObject:
+    """
+    StdObject is a small object used in standard curve calculation. Basically, it is
+    used to store the data associated with the linear regression (abscissa, ordinate,
+    slope, Pearsson's coefficient, ...).
+    """
 
     def __init__(self, x, y, yest, slope, orig, R2, eff, stdeff, slopeerr, origerr):
+        """
+        Constructor of StdObject
+
+        @param x: the abscissa before linear regression
+        @type x: numpy.ndarray
+        @param y: the ordinate before linear regression
+        @type y: numpy.ndarray
+        @param yest: the estimate of ordinate after linear regression
+        @type yest: numpy.ndarray
+        @param slope: the slope of the linear regression
+        @type slope: float
+        @param orig: the ordinate at the origin of the linear regression
+        @type orig: float
+        @param R2: the Pearsson's coefficient
+        @type R2: float
+        @param eff: the efficiency computed thanks to the slope
+        @type eff: float
+        @param stdeff: the standard error associated with the efficiency
+        @type stdeff: float
+        @param slopeerr: the standard error associated with the slope
+        @type slopeerr: float
+        @param origerr: the standard error associated with the origin
+        @type origerr: float
+        """
         self.x = x
         self.y = y
         self.yest = yest
@@ -478,17 +532,32 @@ class Replicate:
 
     def __init__(self, listePuits, type=QString('unknown'), 
                  confidence=0.9, errtype="normal"):
+        """
+        Constructor of Replicate
+
+        @param listePuits: a list containing the wells of a replicate
+        @type listePuits: list
+        @param type: the type of the replicate (unknown, standard or negative)
+        @type type: PyQt4.QtCore.QString
+        @param confidence: the confidence level
+        @type confidence: float
+        @param errtype: the type of calculation for the errors (normal or Student)
+        @type errtype: string
+        """
         self.confidence = confidence
         self.errtype = errtype
         self.type = type
         self.listePuits = listePuits
+
         if len(self.listePuits) != 0:
             self.gene = self.listePuits[0].gene
         else:
             self.gene = Gene('')
+
         self.ctList =array([])
         for well in self.listePuits:
             self.ctList = append(self.ctList, well.ct)
+
         if self.type == QString('unknown'):
             self.ech = self.listePuits[0].ech
         elif self.type == QString('standard'):
@@ -498,6 +567,9 @@ class Replicate:
         self.calcMeanDev()
 
     def __str__(self):
+        """
+        A method to print Replicate object
+        """
         st = '{%s:[' % self.type
         for well in self.listePuits:
             st = st + well.name + ','
@@ -509,6 +581,9 @@ class Replicate:
         return st
 
     def __repr__(self):
+        """
+        A method to print Replicate object
+        """
         st = '['
         for well in self.listePuits:
             st = st + well.name + ','
@@ -516,15 +591,26 @@ class Replicate:
         return st
 
     def setNRQ(self, NRQ):
+        """
+        A method to set the value of NRQ computed with the quantifications.
+
+        @param NRQ: the value of NRQ for the replicate
+        @type NRQ: float
+        """
         self.NRQ = NRQ
 
     def setNRQerror(self, NRQerr):
+        """
+        A method to set the value of standard error of NRQ
+
+        @param NRQerror: the standard error of NRQ for the replicate
+        @type NRQerror: float
+        """
         self.NRQerror = NRQerr
 
     def calcMeanDev(self):
         """
-        Compute the mean ct of a replicate
-        Formule 7
+        Compute the mean ct of a replicate as well as the standard error.
         """
         try:
             self.ctmean = self.ctList.mean()
@@ -557,10 +643,17 @@ class Replicate:
             well.setCtdev(self.ctdev)
 
     def calcDCt(self):
+        """
+        A method to compute the difference between ctref and the mean ct
+        of the replicate and then compute the value of RQ.
+        """
         self.dct = self.gene.ctref - self.ctmean # Formule 10
         self.RQ = (1.+self.gene.eff/100.)**(self.dct) # Formule 11
 
     def calcRQerror(self):
+        """
+        A method to compute the standard error of RQ.
+        """
         # Formule 12
         err = sqrt( self.RQ**2 * ((self.dct*(self.gene.pm/100.) \
                 /(1.+self.gene.eff/100.))**2 \
