@@ -350,7 +350,7 @@ class Qpcr_qt(QMainWindow):
         A simple method to display a message in the status bar
 
         @param message: the message to be displayed
-        @type param: string
+        @type message: PyQt4.QtCore.QString
         @param time: the time the message is displayed (in seconds)
         @type time: int
         """
