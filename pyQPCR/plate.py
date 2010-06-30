@@ -37,7 +37,11 @@ class Plaque:
     
     def __init__(self, filename=None, machine='Eppendorf'):
         """
-        Constructor of Plaque object.
+        Constructor of a Plaque object.
+
+            >>> pl = Plaque('raw_data_AB7500.csv', machine='Applied 7500')
+            >>> print str(pl.A1)
+            >>> print pl.geneRef
 
         @param filename: the name of the raw data file
         @type filename: PyQt4.QtCore.QString
@@ -233,7 +237,8 @@ class Plaque:
 
     def parseApplied7000(self):
         """
-        This method allows to parse Applied 7000 raw data.
+        This method allows to parse Applied 7000 raw data. It supports only
+        *.CSV files.
         """
         file = open(self.filename, 'r')
         iterator = csv.reader(file, delimiter=",")
@@ -390,7 +395,6 @@ class Plaque:
         for well in self.listePuits:
             setattr(self, well.name, well)
 
-
     def writeHtml(self, ctMin=35, ectMax=0.3, typeCalc='Relative quantification'):
         """
         This method allows to represent the results of a plate in a HTML table.
@@ -470,7 +474,9 @@ class Plaque:
     def getRefsFromFile(self):
         """
         This methods allows to determine both the Gene of Interest and
-        the reference-sample thanks to the input data file
+        the reference-sample thanks to the input data file.
+
+        It is not used anymore since the XML suports has been implemented.
         """
         if hasattr(self, 'refTarget'):
             goi = self.refTarget.strip('"')
@@ -603,8 +609,8 @@ class Replicate:
         """
         A method to set the value of standard error of NRQ
 
-        @param NRQerror: the standard error of NRQ for the replicate
-        @type NRQerror: float
+        @param NRQerr: the standard error of NRQ for the replicate
+        @type NRQerr: float
         """
         self.NRQerror = NRQerr
 
