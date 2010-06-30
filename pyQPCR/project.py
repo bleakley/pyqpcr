@@ -485,7 +485,9 @@ class Project:
         Fonction qui determine le nb de barres dans chaque categorie
         (gene, ech) en vue du trace. Le dictionnaire barWidth est d'abord
         rempli du nombre de barre:
-           ex. barWidth[ctrl] = 8
+
+            >>> barWidth[ctrl] = 8
+
         Puis a partir de la, on trouve les abscisses correspondantes.
         """
         leftMargin = 0.1
