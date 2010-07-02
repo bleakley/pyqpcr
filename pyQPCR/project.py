@@ -21,7 +21,7 @@ from pyQPCR.saxProjecthandler import *
 from pyQPCR.utils.odict import OrderedDict
 from pyQPCR.utils.ragged import RaggedArray2D
 from pyQPCR.plate import StdObject
-from PyQt4.QtCore import *
+from PyQt4.QtCore import QFile, Qt, QIODevice, QTextStream, QFileInfo, QString
 from PyQt4.QtXml import QXmlSimpleReader, QXmlInputSource
 from numpy import mean, std, sqrt, log, log10, polyval, polyfit, sum, \
 array, append
@@ -33,14 +33,23 @@ __version__ = "$Rev$"
 class Project:
 
     def __init__(self, fname=None):
+        """
+        Constructor for the project object
+
+            >>> proj = Project('test.xml')
+            >>> print proj.dicoPlates[QString('mh101109-1m.TXT')].echRef
+
+        @param fname: the filename
+        @type fname: PyQt4.QtCore.QString
+        """
         self.dicoPlates = OrderedDict()
-#
+ 
         self.hashGene = OrderedDict()
         self.hashGene[''] = Gene('')
-#
+ 
         self.hashEch = OrderedDict()
         self.hashEch[''] = Ech('')
-#
+ 
         self.hashAmount = OrderedDict()
         self.hashAmount[''] = ''
         self.unsaved = False
