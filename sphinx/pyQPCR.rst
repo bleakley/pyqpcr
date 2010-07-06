@@ -9,3 +9,4 @@
    relative
    modcore
    modproj
+   modmain

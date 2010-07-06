@@ -44,10 +44,15 @@ __version__ = "$Rev$"
 __progversion__ = "0.6"
 
 class Qpcr_qt(QMainWindow):
+    """
+    This class is the build of the main window of pyQPCR. It inheritates
+    from QMainWindow.
+    """
 
     def __init__(self, parent=None):
         """
-        Construction of the main window. QSettings setup and connexions SIGNAL/SLOT.
+        Construction of the main window. QSettings setup and connexions 
+        SIGNAL/SLOT.
         """
         QMainWindow.__init__(self, parent)
  
@@ -349,10 +354,10 @@ class Qpcr_qt(QMainWindow):
         """
         A simple method to display a message in the status bar
 
-        @param message: the message to be displayed
-        @type message: PyQt4.QtCore.QString
-        @param time: the time the message is displayed (in seconds)
-        @type time: int
+        :param message: the message to be displayed
+        :type message: PyQt4.QtCore.QString
+        :param time: the time the message is displayed (in seconds)
+        :type time: int
         """
         self.statusBar().showMessage(message, time)
 
@@ -532,8 +537,8 @@ class Qpcr_qt(QMainWindow):
         """
         This method allows to enable/disable several QAction
 
-        @param bool: the boolean value
-        @type bool: bool
+        :param bool: the boolean value
+        :type bool: bool
         """
         self.addGeneAction.setEnabled(bool)
         self.addEchAction.setEnabled(bool)
@@ -591,12 +596,12 @@ class Qpcr_qt(QMainWindow):
         """
         A simple method to populate a QComboBox object.
 
-        @param cbox: the comboBox we want to populate
-        @type cbox: PyQt4.QtGui.QComboBox
-        @param items: the items we want to add
-        @type items: list
-        @param name: the header of the QComboBox
-        @type name: string
+        :param cbox: the comboBox we want to populate
+        :type cbox: PyQt4.QtGui.QComboBox
+        :param items: the items we want to add
+        :type items: list
+        :param name: the header of the QComboBox
+        :type name: string
         """
         cbox.clear()
         cbox.addItem(name, QVariant("header"))
@@ -799,8 +804,8 @@ class Qpcr_qt(QMainWindow):
         """
         A simple method to add the file name to the 'recent files' menu entry.
 
-        @param fname: the file name
-        @type fname: string
+        :param fname: the file name
+        :type fname: string
         """
         if fname is None:
             return
@@ -1441,10 +1446,10 @@ class Qpcr_qt(QMainWindow):
         A method to add a new tab in the plate view corresponding to
         the new plate we have added.
 
-        @param plaque: the plate we want to append 
-        @type plaque: pyQPCR.plaque
-        @param key: the name of the plate
-        @type key: str
+        :param plaque: the plate we want to append 
+        :type plaque: pyQPCR.plaque
+        :param key: the name of the plate
+        :type key: str
         """
         mytab = PlateWidget()
         mytab.populateTable(plaque)
@@ -1458,10 +1463,10 @@ class Qpcr_qt(QMainWindow):
         A method to add a new tab in the result view corresponding to
         the new plate we have added.
 
-        @param plaque: the plate we want to append 
-        @type plaque: pyQPCR.plaque
-        @param key: the name of the plate
-        @type key: str
+        :param plaque: the plate we want to append 
+        :type plaque: pyQPCR.plaque
+        :param key: the name of the plate
+        :type key: str
         """
         mytab = ResultWidget(typeCalc=self.typeCalc)
         mytab.populateResult(plaque, self.typeCalc)
