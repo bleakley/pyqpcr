@@ -8,7 +8,6 @@ Ech, Gene and Well objects
 .. automodule:: pyQPCR.wellGeneSample
    :members: 
 
-
 Plate
 =====
 .. automodule:: pyQPCR.plate
