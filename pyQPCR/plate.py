@@ -35,11 +35,20 @@ __version__ = "$Rev$"
 
 class Plaque:
     """
-    Plaque object
+    The Plaque object contains the data of a PCR experiment (basically
+    96 wells). It is constructed by parsing a raw data file.
 
-            >>> pl = Plaque('raw_data_AB7500.csv', machine='Applied 7500')
-            >>> print str(pl.A1)
-            >>> print pl.geneRef
+    >>> pl = Plaque('raw_data_AB7500.csv', machine='Applied 7500')
+    >>> print str(pl.A1)
+    >>> print pl.geneRef
+
+    :attribute filename: the file name
+    :attribute listePuits: the list of the wells of the plate
+    :attribute listGene: the list of the targets of the plate
+    :attribute listEch: the list of the samples of the plate
+    :attribute listAmount: the list of the amounts of the plate
+    :attribute echRef: the name of the reference sample
+    :attribute geneRef: the name(s) of the reference target(s)
     """
     
     def __init__(self, filename=None, machine='Eppendorf'):
@@ -392,7 +401,8 @@ class Plaque:
         """
         This method allows to extract a subplate from a plate.
 
-        :param listWells: the list of the wells we want to extract from the main plate.
+        :param listWells: the list of the wells we want to extract 
+                          from the main plate.
         :type listWells: list
         """
         self.listePuits = listWells
@@ -496,8 +506,9 @@ class Plaque:
 
 class StdObject:
     """
-    StdObject is a small object used in standard curve calculation. Basically, it is
-    used to store the data associated with the linear regression (abscissa, ordinate,
+    StdObject is a small object used in standard curve calculation. 
+    Basically, it is used to store the data associated with the linear 
+    regression (abscissa, ordinate,
     slope, Pearsson's coefficient, ...).
     """
 
@@ -539,6 +550,22 @@ class StdObject:
 
 
 class Replicate:
+    """
+    A Replicate object contains several wells. It is constructed from
+    a list of wells and their type.
+
+    >>> A1 = Puits('A1', ct=23.1)
+    >>> A2 = Puits('A2', ct=24.0)
+    >>> A3 = Puits('A2', ct=22.9)
+    >>> wells = [A1, A2, A3]
+    >>> re = Replicate(wells)
+
+    :attribute confidence: the confidence level
+    :attribute errtype: the type of error (Student t test or Gaussian)
+    :attribute type: the type of the wells in the replicate (unknown
+                     or standard)
+    :attribute listePuits: the list of the wells of the replicate
+    """
 
     def __init__(self, listePuits, type=QString('unknown'), 
                  confidence=0.9, errtype="normal"):
@@ -602,7 +629,7 @@ class Replicate:
 
     def setNRQ(self, NRQ):
         """
-        A method to set the value of NRQ computed with the quantifications.
+        Set the value of NRQ computed with the quantifications.
 
         :param NRQ: the value of NRQ for the replicate
         :type NRQ: float
@@ -611,7 +638,7 @@ class Replicate:
 
     def setNRQerror(self, NRQerr):
         """
-        A method to set the value of standard error of NRQ
+        Set the value of standard error of NRQ
 
         :param NRQerr: the standard error of NRQ for the replicate
         :type NRQerr: float
@@ -619,8 +646,15 @@ class Replicate:
         self.NRQerror = NRQerr
 
     def calcMeanDev(self):
-        """
+        r"""
         Compute the mean ct of a replicate as well as the standard error.
+
+        .. note::
+                 .. math:: {c_t}_{\text{mean}} = \dfrac{1}{n}\sum c_t
+
+                 .. math:: {c_t}_{\text{dev}} = \dfrac{t_{\alpha}^{n-2}}
+                           {\sqrt{n}(n-1)}\sqrt{\sum (c_t
+                           -{c_t}_{\text{mean}})^2}
         """
         try:
             self.ctmean = self.ctList.mean()
@@ -653,16 +687,26 @@ class Replicate:
             well.setCtdev(self.ctdev)
 
     def calcDCt(self):
-        """
+        r"""
         A method to compute the difference between ctref and the mean ct
         of the replicate and then compute the value of RQ.
+
+        .. note::
+                 .. math:: \Delta c_t = {c_t}_{\text{ref}} - {c_t}_{\text{mean}}
+
+                 .. math:: RQ = (1+\text{eff}/100)^{\Delta c_t}
         """
         self.dct = self.gene.ctref - self.ctmean # Formule 10
         self.RQ = (1.+self.gene.eff/100.)**(self.dct) # Formule 11
 
     def calcRQerror(self):
-        """
+        r"""
         A method to compute the standard error of RQ.
+
+        .. note::
+                 .. math:: \text{SE}(RQ) = RQ\sqrt{\left(\dfrac{\Delta c_t
+                          \text{SE}(\text{eff})/100}{1+\text{eff}/100}\right)^2+
+                          \left(\ln(1+\text{eff}/100)\text{SE}(c_t)\right)^2}
         """
         # Formule 12
         err = sqrt( self.RQ**2 * ((self.dct*(self.gene.pm/100.) \
@@ -673,11 +717,23 @@ class Replicate:
 
 
 class ReplicateError(Exception):
+    """
+    This exception is raised if an error occur in a replicate
+    """
 
     def __init__(self, listRep):
+        """
+        Constructor of ReplicateError
+
+        :param listRep: a list of Replicates
+        :type listRep: list
+        """
         self.listRep = listRep
 
     def __str__(self):
+        """
+        Print method
+        """
         st = "<ul>"
         for trip in self.listRep:
             st += "<li>(<b>%s, %s</b>) : E(ct)=%.2f </li>" % (trip.gene, trip.ech, trip.ctdev)
@@ -686,12 +742,26 @@ class ReplicateError(Exception):
         return st
 
 class PlateError(Exception):
+    """
+    Exception raised if a problem occured during file parsing.
+    """
 
     def __init__(self, filename, machine):
+        """
+        Constructor of PlateError
+
+        :param filename: the file name
+        :type filename: PyQt4.QtCore.QString
+        :param machine: the PCR device
+        :type machine: PyQt4.QtCore.QString
+        """
         self.filename = filename
         self.machine = machine
 
     def __str__(self):
+        """
+        Print method
+        """
         st = "<b>Warning</b> : The file <b>%s </b> does not contain any well at the right format. " %  \
               QFileInfo(self.filename).fileName()
         st += "It probably comes from your raw data file. Your current PCR device is"
