@@ -31,16 +31,19 @@ __date__ = "$Date$"
 __version__ = "$Rev$"
 
 class Project:
+    """
+    Project object
+
+        >>> proj = Project('test.xml')
+        >>> print proj.dicoPlates[QString('mh101109-1m.TXT')].echRef
+    """
 
     def __init__(self, fname=None):
         """
         Constructor for the project object
 
-            >>> proj = Project('test.xml')
-            >>> print proj.dicoPlates[QString('mh101109-1m.TXT')].echRef
-
-        @param fname: the filename
-        @type fname: PyQt4.QtCore.QString
+        :param fname: the filename
+        :type fname: PyQt4.QtCore.QString
         """
         self.dicoPlates = OrderedDict()
  
@@ -130,10 +133,10 @@ class Project:
         """
         This method allows to add a plate to an existing Project.
 
-        @param plate: the plate we want to add
-        @type plate: pyQPCR.Plaque
-        @param key: the key associated with the plate
-        @type key: PyQt4.QtCore.QString
+        :param plate: the plate we want to add
+        :type plate: pyQPCR.Plaque
+        :param key: the key associated with the plate
+        :type key: PyQt4.QtCore.QString
         """
         if not key:
             key = QFileInfo(plate.filename).fileName()
@@ -152,8 +155,8 @@ class Project:
         This method allows to delete a specific plate of an existing
         project.
 
-        @param plateName: the name of the plate we want to delete
-        @type plateName: string
+        :param plateName: the name of the plate we want to delete
+        :type plateName: string
         """
         oldGenes = self.dicoPlates[plateName].dicoGene.keys()
         oldEchs = self.dicoPlates[plateName].dicoEch.keys()
@@ -206,6 +209,12 @@ class Project:
         self.setDicoAm()
 
     def initLocGene(self, plate=None):
+        """
+        This method is use to initiate the dictionnary of a plate.
+
+        :param plate: the plate
+        :type plate: pyQPCR.plate
+        """
         if plate is None:
             for pl in self.dicoPlates:
                 for well in self.dicoPlates[pl].listePuits:
@@ -549,6 +558,8 @@ class Project:
 
 
 class NRQError(Exception):
+    """
+    """
 
     def __init__(self, broken):
         self.broken = broken
@@ -561,6 +572,8 @@ class NRQError(Exception):
         return st
 
 class QabsError(Exception):
+    """
+    """
 
     def __str__(self):
         st = "You are calculating an <b>absolute quantification</b>. You must compute the standard"

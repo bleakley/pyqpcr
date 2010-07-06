@@ -34,19 +34,23 @@ __version__ = "$Rev$"
 
 
 class Plaque:
+    """
+    Plaque object
+
+            >>> pl = Plaque('raw_data_AB7500.csv', machine='Applied 7500')
+            >>> print str(pl.A1)
+            >>> print pl.geneRef
+    """
     
     def __init__(self, filename=None, machine='Eppendorf'):
         """
         Constructor of a Plaque object.
 
-            >>> pl = Plaque('raw_data_AB7500.csv', machine='Applied 7500')
-            >>> print str(pl.A1)
-            >>> print pl.geneRef
 
-        @param filename: the name of the raw data file
-        @type filename: PyQt4.QtCore.QString
-        @param machine: the PCR device used in the experiment
-        @type machine: PyQt4.QtCore.QString
+        :param filename: the name of the raw data file
+        :type filename: PyQt4.QtCore.QString
+        :param machine: the PCR device used in the experiment
+        :type machine: PyQt4.QtCore.QString
         """
         self.unsaved = False
         self.filename = filename
@@ -80,8 +84,8 @@ class Plaque:
         """
         A method to determine the extension of the raw data file (txt or csv).
 
-        @param filename: the name of the file
-        @type filename: PyQt4.QtCore.QString
+        :param filename: the name of the file
+        :type filename: PyQt4.QtCore.QString
         """
         extent = filename[-3:]
         if extent in ["txt", "TXT"]:
@@ -154,7 +158,7 @@ class Plaque:
     def parseEppendorf(self):
         """
         This method allows to parse Eppendorf raw data. It works with both
-        *.TXT and *.CSV files (separated by a semicolon).
+        TXT and CSV files (separated by a semicolon).
         """
         file = open(self.filename, "r")
         motif = re.compile(r"[\w\s]*")
@@ -238,7 +242,7 @@ class Plaque:
     def parseApplied7000(self):
         """
         This method allows to parse Applied 7000 raw data. It supports only
-        *.CSV files.
+        CSV files.
         """
         file = open(self.filename, 'r')
         iterator = csv.reader(file, delimiter=",")
@@ -293,7 +297,7 @@ class Plaque:
     def parseAppliedUniv(self):
         """
         This method allows to parse Applied StepOne and AB7500 raw data.
-        It works with *.TXT files and *.CSV files (comma separated, UTF-8
+        It works with TXT files and CSV files (comma separated, UTF-8
         encoding).
         """
         file = open(self.filename, 'Ur')
@@ -388,8 +392,8 @@ class Plaque:
         """
         This method allows to extract a subplate from a plate.
 
-        @param listWells: the list of the wells we want to extract from the main plate.
-        @type listWells: list
+        :param listWells: the list of the wells we want to extract from the main plate.
+        :type listWells: list
         """
         self.listePuits = listWells
         for well in self.listePuits:
@@ -400,12 +404,12 @@ class Plaque:
         This method allows to represent the results of a plate in a HTML table.
         It is used for instance during the PDF export of pyQPCR.
 
-        @param ctMin: the minimum ct value allowed
-        @type ctMin: float
-        @param ectMax: the maximum value of E(ct)
-        @type ectMax: float
-        @param typeCalc: the type of calculation
-        @type typeCalc: PyQt4.QtCore.QString
+        :param ctMin: the minimum ct value allowed
+        :type ctMin: float
+        :param ectMax: the maximum value of E(ct)
+        :type ectMax: float
+        :param typeCalc: the type of calculation
+        :type typeCalc: PyQt4.QtCore.QString
         """
         html = u""
         html += "<table cellpadding=2 cellspacing=0 border=1 width=100%>\n"
@@ -436,8 +440,8 @@ class Plaque:
         """
         A method to change the attribute contUkn.
 
-        @param cont: a boolean with the new value o contUkn
-        @type cont: logical
+        :param cont: a boolean with the new value o contUkn
+        :type cont: logical
         """
         self.contUkn = cont
 
@@ -501,26 +505,26 @@ class StdObject:
         """
         Constructor of StdObject
 
-        @param x: the abscissa before linear regression
-        @type x: numpy.ndarray
-        @param y: the ordinate before linear regression
-        @type y: numpy.ndarray
-        @param yest: the estimate of ordinate after linear regression
-        @type yest: numpy.ndarray
-        @param slope: the slope of the linear regression
-        @type slope: float
-        @param orig: the ordinate at the origin of the linear regression
-        @type orig: float
-        @param R2: the Pearsson's coefficient
-        @type R2: float
-        @param eff: the efficiency computed thanks to the slope
-        @type eff: float
-        @param stdeff: the standard error associated with the efficiency
-        @type stdeff: float
-        @param slopeerr: the standard error associated with the slope
-        @type slopeerr: float
-        @param origerr: the standard error associated with the origin
-        @type origerr: float
+        :param x: the abscissa before linear regression
+        :type x: numpy.ndarray
+        :param y: the ordinate before linear regression
+        :type y: numpy.ndarray
+        :param yest: the estimate of ordinate after linear regression
+        :type yest: numpy.ndarray
+        :param slope: the slope of the linear regression
+        :type slope: float
+        :param orig: the ordinate at the origin of the linear regression
+        :type orig: float
+        :param R2: the Pearsson's coefficient
+        :type R2: float
+        :param eff: the efficiency computed thanks to the slope
+        :type eff: float
+        :param stdeff: the standard error associated with the efficiency
+        :type stdeff: float
+        :param slopeerr: the standard error associated with the slope
+        :type slopeerr: float
+        :param origerr: the standard error associated with the origin
+        :type origerr: float
         """
         self.x = x
         self.y = y
@@ -541,14 +545,14 @@ class Replicate:
         """
         Constructor of Replicate
 
-        @param listePuits: a list containing the wells of a replicate
-        @type listePuits: list
-        @param type: the type of the replicate (unknown, standard or negative)
-        @type type: PyQt4.QtCore.QString
-        @param confidence: the confidence level
-        @type confidence: float
-        @param errtype: the type of calculation for the errors (normal or Student)
-        @type errtype: string
+        :param listePuits: a list containing the wells of a replicate
+        :type listePuits: list
+        :param type: the type of the replicate (unknown, standard or negative)
+        :type type: PyQt4.QtCore.QString
+        :param confidence: the confidence level
+        :type confidence: float
+        :param errtype: the type of calculation for the errors (normal or Student)
+        :type errtype: string
         """
         self.confidence = confidence
         self.errtype = errtype
@@ -600,8 +604,8 @@ class Replicate:
         """
         A method to set the value of NRQ computed with the quantifications.
 
-        @param NRQ: the value of NRQ for the replicate
-        @type NRQ: float
+        :param NRQ: the value of NRQ for the replicate
+        :type NRQ: float
         """
         self.NRQ = NRQ
 
@@ -609,8 +613,8 @@ class Replicate:
         """
         A method to set the value of standard error of NRQ
 
-        @param NRQerr: the standard error of NRQ for the replicate
-        @type NRQerr: float
+        :param NRQerr: the standard error of NRQ for the replicate
+        :type NRQerr: float
         """
         self.NRQerror = NRQerr
 

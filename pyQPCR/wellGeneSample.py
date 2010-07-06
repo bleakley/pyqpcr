@@ -29,29 +29,30 @@ class Ech:
     """
     This class defines the sample.
 
-    @ivar name: the sample name
-    @type name: PyQt4.QtCore.QString
-    @ivar isRef: a boolean to determine if the sample is a reference
+        >>> Ech('A1', isRef=Qt.Unchecked)
+
+    :ivar name: the sample name
+    :type name: PyQt4.QtCore.QString
+    :ivar isRef: a boolean to determine if the sample is a reference
                  sample
-    @type isRef: PyQt4.QtCore.CheckState
-    @ivar enabled: a boolean to determine if the sample is enabled or
+    :type isRef: PyQt4.QtCore.CheckState
+    :ivar enabled: a boolean to determine if the sample is enabled or
                    disabled
-    @type enabled: PyQt4.QtCore.CheckState
-    @ivar color: the sample color (for plotting purpose)
-    @type color: PyQt4.QtGui.QColor
+    :type enabled: PyQt4.QtCore.CheckState
+    :ivar color: the sample color (for plotting purpose)
+    :type color: PyQt4.QtGui.QColor
     """
 
     def __init__(self, nom, isRef=Qt.Unchecked):
         """
         Ech constructor:
 
-            >>> Ech('A1', isRef=Qt.Unchecked)
 
-        @param nom: the sample name
-        @type nom: PyQt4.QtCore.QString
-        @param isRef: a boolean to determine if the sample is enabled or
+        :param nom: the sample name
+        :type nom: PyQt4.QtCore.QString
+        :param isRef: a boolean to determine if the sample is enabled or
                       disabled
-        @type isRef: PyQt4.QtCore.CheckState
+        :type isRef: PyQt4.QtCore.CheckState
         """
         self.name = QString(nom)
         self.isRef = isRef
@@ -69,8 +70,8 @@ class Ech:
         """
         Set the sample name
 
-        @param name: the new name of the sample
-        @type name: PyQt4.QtCore.QString
+        :param name: the new name of the sample
+        :type name: PyQt4.QtCore.QString
         """
         self.name = name
 
@@ -78,9 +79,9 @@ class Ech:
         """
         Set if the sample is a reference sample or not.
 
-        @param checkBoxState: a boolean which indicates wheter the sample
+        :param checkBoxState: a boolean which indicates wheter the sample
                               is a reference sample or not.
-        @type checkBoxState: PyQt4.QtCore.CheckState
+        :type checkBoxState: PyQt4.QtCore.CheckState
         """
         self.isRef = checkBoxState
 
@@ -88,8 +89,8 @@ class Ech:
         """
         Set the sample color in the plot
 
-        @param color: the sample color
-        @type color: PyQt4.QtGui.QColor
+        :param color: the sample color
+        :type color: PyQt4.QtGui.QColor
         """
         self.color = color
 
@@ -97,26 +98,28 @@ class Ech:
         """
         enable/disable the current sample
 
-        @param ena: a boolean which indicates whether the sample
+        :param ena: a boolean which indicates whether the sample
                     is enabled or disabled
-        @type ena: PyQt4.QtCore.CheckState
+        :type ena: PyQt4.QtCore.CheckState
         """
         self.enabled = ena
 
 class Gene:
+    """
+    Gene object
+    """
 
     def __init__(self, nom, eff=100., pm=0., isRef=Qt.Unchecked):
         self.name = QString(nom)
         self.eff = eff
         self.pm = pm
-# Pour dire si le gene est un gene de reference
+        # Pour dire si le gene est un gene de reference
         self.isRef = isRef
         self.ctref = nan
-# Pour dire si on veut tracer un gene
+        # Pour dire si on veut tracer un gene
         self.enabled = Qt.Checked
 
     def __str__(self):
-        #st =  "%s (%.2f %% +/- %.2f)" % (self.name, self.eff, self.pm) 
         st =  "%s" % self.name
         return unicode(st)
 
@@ -131,8 +134,8 @@ class Gene:
         """
         Set the target name
 
-        @param name: the new name of the target
-        @type name: PyQt4.QtCore.QString
+        :param name: the new name of the target
+        :type name: PyQt4.QtCore.QString
         """
         self.name = name
 
@@ -140,8 +143,8 @@ class Gene:
         """
         Set the target efficiency relative-error
 
-        @param pm: the target efficiency relative-error
-        @type pm: float
+        :param pm: the target efficiency relative-error
+        :type pm: float
         """
         self.pm = pm
 
@@ -149,8 +152,8 @@ class Gene:
         """
         Set the target efficiency
 
-        @param eff: the target efficiency
-        @type eff: float
+        :param eff: the target efficiency
+        :type eff: float
         """
         self.eff = eff
 
@@ -158,9 +161,9 @@ class Gene:
         """
         Set if the target is a reference sample or not.
 
-        @param checkBoxState: a boolean which indicates wheter the target
+        :param checkBoxState: a boolean which indicates wheter the target
                               is a reference one or not.
-        @type checkBoxState: PyQt4.QtCore.CheckState
+        :type checkBoxState: PyQt4.QtCore.CheckState
         """
         self.isRef = checkBoxState
 
@@ -168,8 +171,8 @@ class Gene:
         """
         set the target color in the plot
 
-        @param color: the target color
-        @type color: PyQt4.QtGui.QColor
+        :param color: the target color
+        :type color: PyQt4.QtGui.QColor
         """
         self.color = color
 
@@ -177,9 +180,9 @@ class Gene:
         """
         enable/disable the current target
 
-        @param ena: a boolean which indicates whether the target
+        :param ena: a boolean which indicates whether the target
                     is enabled or disabled
-        @type ena: PyQt4.QtCore.CheckState
+        :type ena: PyQt4.QtCore.CheckState
         """
         self.enabled = ena
 
@@ -191,8 +194,8 @@ class Gene:
         This methods calculates the mean ct of every wells of a given
         target.
 
-        @param listePuits: the list of wells of the current gene
-        @type listePuits: pyQPCR.wellGeneSample.Puits
+        :param listePuits: the list of wells of the current gene
+        :type listePuits: pyQPCR.wellGeneSample.Puits
         """
         qt = 0
         k = 0
@@ -214,6 +217,9 @@ class Gene:
             self.ctref = float(qt/k)
 
 class Puits:
+    """
+    The Puits object
+    """
 
     def __init__(self, name, ech=QString(''), ct=nan, ctmean=nan, 
             ctdev=nan, gene=QString('')):
@@ -430,6 +436,8 @@ class Puits:
 
 
 class WellError(Exception):
+    """
+    """
 
     def __init__(self, brokenWells):
         self.brokenWells = brokenWells
