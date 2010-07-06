@@ -27,26 +27,22 @@ __version__ = "$Rev$"
 
 class Ech:
     """
-    This class defines the sample.
+    An Ech object is used to define a sample. This object is constructed
+    from the name of the sample.
 
-        >>> Ech('A1', isRef=Qt.Unchecked)
+    >>> Ech('A1', isRef=Qt.Unchecked)
 
-    :ivar name: the sample name
-    :type name: PyQt4.QtCore.QString
-    :ivar isRef: a boolean to determine if the sample is a reference
-                 sample
-    :type isRef: PyQt4.QtCore.CheckState
-    :ivar enabled: a boolean to determine if the sample is enabled or
-                   disabled
-    :type enabled: PyQt4.QtCore.CheckState
-    :ivar color: the sample color (for plotting purpose)
-    :type color: PyQt4.QtGui.QColor
+    :attribute name: the sample name
+    :attribute isRef: a boolean to determine if the sample is a reference
+                      sample
+    :attribute enabled: a boolean to determine if the sample is enabled or
+                        disabled
+    :attribute color: the sample color (for plotting purpose)
     """
 
     def __init__(self, nom, isRef=Qt.Unchecked):
         """
-        Ech constructor:
-
+        Constructor of Ech object
 
         :param nom: the sample name
         :type nom: PyQt4.QtCore.QString
@@ -59,10 +55,16 @@ class Ech:
         self.enabled = Qt.Checked
 
     def __str__(self):
+        """
+        Print function
+        """
         st =  "%s" % self.name
         return unicode(st)
 
     def __repr__(self):
+        """
+        Print function
+        """
         st =  "%s" % self.name
         return st
 
@@ -106,10 +108,33 @@ class Ech:
 
 class Gene:
     """
-    Gene object
+    A Gene object is used to define a target. This object is constructed
+    from the name of the target and its efficiency.
+
+    >>> g = Gene('foo', eff=95, pm=1)
+
+    :attribute name: the name of the current target
+    :attribute eff: the efficiency of the target
+    :attribute pm: the standard error on efficiency
+    :attribute isRef: a boolean to indicate if the target is a reference one
+    :attribute enabled: a boolean to indicate if the current Gene is
+                        enabled or not (useful for plots)
+
     """
 
     def __init__(self, nom, eff=100., pm=0., isRef=Qt.Unchecked):
+        """
+        Constructor of Gene object
+
+        :param nom: the name of the target
+        :type nom: PyQt4.QtCore.QString
+        :param eff: the efficiency of the target
+        :type eff: float
+        :param pm: the standard error on the efficiency
+        :type eff: float
+        :param isRef: a boolean to indicate if the gene is a reference one
+        :type isRef: PyQt4.QtCore.CheckState
+        """
         self.name = QString(nom)
         self.eff = eff
         self.pm = pm
@@ -120,15 +145,18 @@ class Gene:
         self.enabled = Qt.Checked
 
     def __str__(self):
+        """
+        Printing method
+        """
         st =  "%s" % self.name
         return unicode(st)
 
     def __repr__(self):
+        """
+        Printing method
+        """
         st =  "%s (%.2f %% +/- %.2f)" % (self.name, self.eff, self.pm) 
         return st
-
-    def setPos(self, pos):
-        self.pos = pos
 
     def setName(self, name):
         """
@@ -141,9 +169,9 @@ class Gene:
 
     def setPm(self, pm):
         """
-        Set the target efficiency relative-error
+        Set the target efficiency standard error
 
-        :param pm: the target efficiency relative-error
+        :param pm: the standard error of the efficiency
         :type pm: float
         """
         self.pm = pm
@@ -169,7 +197,7 @@ class Gene:
 
     def setColor(self, color):
         """
-        set the target color in the plot
+        Set the color of the target color (for the plot of quantification)
 
         :param color: the target color
         :type color: PyQt4.QtGui.QColor
@@ -178,7 +206,7 @@ class Gene:
 
     def setEnabled(self, ena):
         """
-        enable/disable the current target
+        Enable/disable the current target
 
         :param ena: a boolean which indicates whether the target
                     is enabled or disabled
@@ -187,12 +215,20 @@ class Gene:
         self.enabled = ena
 
     def setR2(self, R):
+        """
+        Set the value of R2 for the current target
+
+        :param R: the value of R2
+        :type R: float
+        """
         self.R2 = R
 
     def calcCtRef(self, listePuits):
         """
         This methods calculates the mean ct of every wells of a given
         target.
+
+        .. math:: {c_t} = \dfrac{1}{n_w}\sum_{w} {c_t}_w
 
         :param listePuits: the list of wells of the current gene
         :type listePuits: pyQPCR.wellGeneSample.Puits
@@ -218,11 +254,43 @@ class Gene:
 
 class Puits:
     """
-    The Puits object
+    The Puits object is used to define a well. It is constructed from the
+    name of the well, its type and the value of the ct.
+
+    >>> a = Puits('A1', ct=23.4, ech='ech', gene='gene', type='unknown')
+
+    :attribute name: the name of the well
+    :attribute ech: the Ech object of the well
+    :attribute gene: the Gene object of the well
+    :attribute ct: the value of the ct
+    :attribute ctmean: the mean value of ct in a replicate
+    :attribute ctdev: the standard deviation of ct in a replicate
+    :attribute amount: the quantity for a standard-type well
+    :attribute NRQ: the value of NRQ after quantification
+    :attribute NRQerror: the standard-error on NRQ
+    :attribute enabled: a boolean to indicate if the well is enabled or not
+    :attribute warning: a boolean to indicate if there is a problem
+                        with this well
     """
 
     def __init__(self, name, ech=QString(''), ct=nan, ctmean=nan, 
             ctdev=nan, gene=QString('')):
+        """
+        Constructor of the Puits object
+
+        :param name: the name of the well
+        :type name: PyQt4.QtCore.QString
+        :param ech: the name of the sample of the well
+        :type ech: PyQt4.QtCore.QString
+        :param ct: the value of ct
+        :type ct: float
+        :param ctmean: the mean value of ct in a replicate
+        :type ctmean: float
+        :param ctdev: the standard deviation of ct in a replicate
+        :type ctdev: float
+        :param gene: the name of the target of the well
+        :type gene: PyQt4.QtCore.QString
+        """
         self.name = name
         self.ech = Ech(ech)
         self.gene = Gene(gene)
@@ -238,6 +306,9 @@ class Puits:
         self.warning = False
 
     def __str__(self):
+        """
+        Print method
+        """
         st = '\nPuit ' + self.name + "\n" + '(' + str(self.ech) + ', ' + \
               str(self.gene) + ')' + "\n" + \
               "ct = %.2f, ctmean = %.2f, ctdev = %.2f"%( \
@@ -245,42 +316,18 @@ class Puits:
         return st
 
     def __repr__(self):
+        """
+        Print method
+        """
         st = "%s: %s, %s, %s" % (self.name, self.gene, self.ech, self.type)
         return st
 
-    def writePuits(self, html=False):
-        if str(self.amount) == '':
-            amount = '"-"'
-        else:
-            amount = str(self.amount)
-        if str(self.ct) == '':
-            ct = '""'
-        else:
-            ct = str(self.ct)
-        if str(self.ctmean) == '':
-            ctmean = '""'
-        else:
-            ctmean = "%.2f" % self.ctmean
-        if str(self.ctdev) == '':
-            ctdev = '""'
-        else:
-            ctdev = "%.2f" % self.ctdev
-        if str(self.NRQ) == '':
-            NRQ = '""'
-        else:
-            NRQ = "%.2f" % self.NRQ
-        if str(self.NRQ) == '':
-            NRQerror = '""'
-        else:
-            NRQerror = "%.2f" % self.NRQerror
-
-        st = '"%s"\t"%s"\t%s\t%s\t%s\t%s\t"%s"\t"%s"\t%s\t%s\n' % \
-            (self.name, str(self.ech), ct, ctmean, 
-             ctdev, amount, self.gene.name, self.type,
-             NRQ, NRQerror)
-        return st
-
     def writeWellXml(self):
+        """
+        This method is used to represent the Well object (with its
+        attribute) in a XML string. This is used to save the project
+        in an XML file.
+        """
         amount = str(self.amount)
         if str(self.ct) != '':
             try:
@@ -316,6 +363,16 @@ class Puits:
         return st
 
     def writeHtml(self, ctMin=35, ectMax=0.3):
+        """
+        This method is used to display a Puits object in an HTML string.
+        It is called when one wants print the result in a PDF file.
+
+        :param ctMin: the minimum value for a ct (negative)
+        :type ctMin: float
+        :param ectMax: the maximum value for the standard deviation of the
+                       ct in a replicate.
+        :type ectMax: float
+        """
         try:
             amount = "%.2f" % self.amount
         except TypeError:
@@ -393,56 +450,131 @@ class Puits:
         self.xpos = dict[self.name[0]]
 
     def setGene(self, gene):
+        """
+        Set the target of the well
+
+        :param gene: the target (object)
+        :type gene: Gene
+        """
         self.gene = gene
 
     def setEch(self, ech):
+        """
+        Set the sample of the well
+
+        :param ech: the sample (object)
+        :type ech: Ech
+        """
         self.ech = ech
 
     def setType(self, name):
+        """
+        Set the type of the well
+
+        :param name: the type of the well (standard, unknown or negative)
+        :type name: PyQt4.QtCore.QString
+        """
         if self.type == 'standard' and name == 'unknown':
             self.amount = ''
         self.type = QString(name)
 
     def setAmount(self, qte):
+        """
+        Set the amount of standard-type well
+
+        :param qte: the value of the amount
+        :type qte: float
+        """
         if self.type != 'unknown':
             self.amount = qte
         else:
             self.amount = ''
 
     def setCt(self, ct):
+        """
+        Set the ct value
+
+        :param ct: the value of ct
+        :type ct: float
+        """
         self.ct = ct
 
     def setCtmean(self, ctmean):
+        """
+        Set the ct mean value (in a replicate)
+
+        :param ctmean: the value of ctmean
+        :type ctmean: float
+        """
         self.ctmean = ctmean
 
     def setCtdev(self, ctdev):
+        """
+        Set the standard deviation of ct (in a replicate)
+
+        :param ctdev: the value of ctdev
+        :type ctdev: float
+        """
         self.ctdev = ctdev
 
     def setEnabled(self, ena):
+        """
+        Enable/disable the current well
+
+        :param ena: a boolean
+        :type ena: PyQt4.QtCore.CheckState
+        """
         self.enabled = ena
 
     def setNRQ(self, nrq):
+        """
+        Set the quantification NRQ of the well
+
+        :param nrq: the quantification value
+        :type nrq: float
+        """
         try:
             self.NRQ = float(nrq)
         except ValueError:
             self.NRQ = nrq
 
     def setNRQerror(self, err):
+        """
+        Set the standard error of the quantification of the well
+
+        :param err: the standard error of the quantification
+        :type err: float
+        """
         self.NRQerror = err
 
     def setWarning(self, warn):
-        """Si un puit est casse, on met un flag warning dessus"""
+        """
+        Put a warning flag on a broken well
+
+        :param warn: a boolean to indicate if a well is broken or not
+        :type warn: PyQt4.QtCore.CheckState
+        """
         self.warning = warn
 
 
 class WellError(Exception):
     """
+    This exception is raised is some wells on a plate have a warning state
     """
 
     def __init__(self, brokenWells):
+        """
+        Constructor of WellError
+
+        :param brokenWells: a list of the brokenWells
+        :type brokenWells: list
+        """
         self.brokenWells = brokenWells
 
     def __str__(self):
+        """
+        Print error
+        """
         return repr(self.brokenWells)
 
 
