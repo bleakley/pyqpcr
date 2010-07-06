@@ -7,4 +7,5 @@
 
    intro
    relative
-   mod1
+   modcore
+   modproj
