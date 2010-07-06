@@ -49,7 +49,7 @@ master_doc = 'pyQPCR'
 
 # General information about the project.
 project = u'pyQPCR'
-copyright = u'2010, Gastine'
+copyright = u'2010, Thomas Gastine & Magali Hennion'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -184,7 +184,7 @@ htmlhelp_basename = 'pyQPCRdoc'
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
   ('pyQPCR', 'pyQPCR.tex', u'pyQPCR Documentation',
-   u'Gastine', 'manual'),
+   u'Thomas Gastine \& Magali Hennion', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of

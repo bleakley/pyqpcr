@@ -1,9 +1,11 @@
-Introduction to pyQPCR
-***********************
-This is the introduction
+Non source
+************************
 
-Indices and tables
-==================
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
+
+Introduction to pyQPCR
+************************
+
+This is the introduction
