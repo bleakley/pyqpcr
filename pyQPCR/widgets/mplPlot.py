@@ -259,6 +259,9 @@ class MplUnknownWidget(QWidget):
             self.mplCanUnknown.axes.set_ylim(ymin=1e-5)
         if self.cboxScale.currentText() == 'Logarithmic'and self.ymax > 0:
             self.mplCanUnknown.axes.set_ylim(ymax=self.ymax*50)
+        # matplotlib 1.0.0 workaround :
+        elif self.cboxScale.currentText() == 'Linear'and self.ymax > 0:
+            self.mplCanUnknown.axes.set_ylim(ymax=self.ymax*1.4)
         self.mplCanUnknown.draw()
 
     def plotUnknown(self, project=None):
@@ -388,10 +391,15 @@ class MplUnknownWidget(QWidget):
         self.changeFontsize(idraw=False)
         self.changeAxesScale()
         self.mplCanUnknown.axes.set_xlim((self.xmin, xmax))
+
         if self.ymin not in (1e10, 0):
             self.mplCanUnknown.axes.set_ylim(ymin=self.ymin/100)
         else:
             self.mplCanUnknown.axes.set_ylim(ymin=1e-5)
         if self.cboxScale.currentText() == 'Logarithmic'and self.ymax > 0:
             self.mplCanUnknown.axes.set_ylim(ymax=self.ymax*50)
+        # matplotlib 1.0.0 workaround :
+        elif self.cboxScale.currentText() == 'Linear'and self.ymax > 0:
+            self.mplCanUnknown.axes.set_ylim(ymax=self.ymax*1.4)
+
         self.mplCanUnknown.draw()
