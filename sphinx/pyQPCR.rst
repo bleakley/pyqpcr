@@ -6,6 +6,7 @@
 .. toctree::
 
    intro
+   install
    relative
    modcore
    modproj
