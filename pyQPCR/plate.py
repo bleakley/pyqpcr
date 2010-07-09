@@ -649,12 +649,11 @@ class Replicate:
         r"""
         Compute the mean ct of a replicate as well as the standard error.
 
-        .. note::
-                 .. math:: {c_t}_{\text{mean}} = \dfrac{1}{n}\sum c_t
+        .. math:: {c_t}_{\text{mean}} = \dfrac{1}{n}\sum c_t
 
-                 .. math:: {c_t}_{\text{dev}} = \dfrac{t_{\alpha}^{n-2}}
-                           {\sqrt{n}(n-1)}\sqrt{\sum (c_t
-                           -{c_t}_{\text{mean}})^2}
+        .. math:: {c_t}_{\text{dev}} = \dfrac{t_{\alpha}^{n-2}}
+                  {\sqrt{n}(n-1)}\sqrt{\sum (c_t
+                  -{c_t}_{\text{mean}})^2}
         """
         try:
             self.ctmean = self.ctList.mean()
@@ -691,10 +690,9 @@ class Replicate:
         A method to compute the difference between ctref and the mean ct
         of the replicate and then compute the value of RQ.
 
-        .. note::
-                 .. math:: \Delta c_t = {c_t}_{\text{ref}} - {c_t}_{\text{mean}}
+        .. math:: \Delta c_t = {c_t}_{\text{ref}} - {c_t}_{\text{mean}}
 
-                 .. math:: RQ = (1+\text{eff}/100)^{\Delta c_t}
+        .. math:: RQ = (1+\text{eff}/100)^{\Delta c_t}
         """
         self.dct = self.gene.ctref - self.ctmean # Formule 10
         self.RQ = (1.+self.gene.eff/100.)**(self.dct) # Formule 11
@@ -703,10 +701,9 @@ class Replicate:
         r"""
         A method to compute the standard error of RQ.
 
-        .. note::
-                 .. math:: \text{SE}(RQ) = RQ\sqrt{\left(\dfrac{\Delta c_t
-                          \text{SE}(\text{eff})/100}{1+\text{eff}/100}\right)^2+
-                          \left(\ln(1+\text{eff}/100)\text{SE}(c_t)\right)^2}
+        .. math:: \text{SE}(RQ) = RQ\sqrt{\left(\dfrac{\Delta c_t
+                  \text{SE}(\text{eff})/100}{1+\text{eff}/100}\right)^2+
+                  \left(\ln(1+\text{eff}/100)\text{SE}(c_t)\right)^2}
         """
         # Formule 12
         err = sqrt( self.RQ**2 * ((self.dct*(self.gene.pm/100.) \
