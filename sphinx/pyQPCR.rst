@@ -6,8 +6,6 @@
 .. toctree::
 
    intro
-   install
-   relative
-   modcore
-   modproj
-   modmain
+   guide
+   calc
+   api
