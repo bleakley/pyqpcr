@@ -1,6 +1,3 @@
-Relative quantification
-***********************
-
 Standard curve calculation
 ==========================
 
