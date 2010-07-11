@@ -559,7 +559,7 @@ class Puits:
 
 class WellError(Exception):
     """
-    This exception is raised is some wells on a plate have a warning state
+    This exception is raised if some wells on a plate have a warning state
     """
 
     def __init__(self, brokenWells):

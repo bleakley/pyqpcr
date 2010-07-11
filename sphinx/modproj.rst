@@ -21,4 +21,9 @@ Project
 .. automodule:: pyQPCR.project
    :members: 
 
+XML parsing
+===========
+.. automodule:: pyQPCR.saxProjecthandler
+   :members: 
+
 

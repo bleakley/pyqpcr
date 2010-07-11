@@ -27,6 +27,14 @@ __date__ = "$Date$"
 __version__ = "$Rev$"
 
 def fltFromQStr(qstr):
+    """
+    A function to change a QString into a float
+
+    :param qstr: a QString
+    :type qstr: PyQt4.QtCore.QString
+    :return: the value of the QString
+    :rtype: float
+    """
     i, ok = qstr.toFloat()
     if ok:
         return i
@@ -34,23 +42,58 @@ def fltFromQStr(qstr):
         return qstr
 
 def logicalFromQStr(qstr):
+    """
+    A function to change a QString into a boolean
+
+    :param qstr: a QString
+    :type qstr: PyQt4.QtCore.QString
+    :return: a boolean (True if qstr == '' else False)
+    :rtype: logical
+    """
     if qstr == '' or int(qstr) == 1:
         return True
     else:
         return False
 
 class SaxProjectHandler(QXmlDefaultHandler):
+    """
+    This method is used to parse XML files used in pyQPCR
+
+    >>> pr = Project(fname='foo.xml')
+    >>> handler = SaxProjectHandler(pr)
+    >>> parser = QXmlSimpleReader()
+    >>> parser.setContentHandler(handler)
+    >>> parser.setErrorHandler(handler)
+    >>> fh = QFile(fname)
+    >>> input = QXmlInputSource(fh)
+    """
 
     def __init__(self, project):
+        """
+        Constructor
+
+        :param project: the project
+        :type project: pyQPCR.Project
+        """
         super(SaxProjectHandler, self).__init__()
         self.text = QString()
         self.error = None
         self.project = project
 
     def clear(self):
+        """
+        Clear method. Overloading of QXmlDefaultHandler's one
+        """
         self.ct =None
 
     def startElement(self, namespaceURI, localName, qName, attributes):
+        """
+        Begin of an XML element
+
+        :param qName: the name of the XML element
+        :type qName: PyQt4.QtCore.QString
+        :param attributes: attributes  associated to qName (if any)
+        """
         if qName == "WELL":
             self.ct = fltFromQStr(attributes.value("CT"))
             self.ctmean = fltFromQStr(attributes.value("CTMEAN"))
@@ -79,10 +122,22 @@ class SaxProjectHandler(QXmlDefaultHandler):
         return True
 
     def characters(self, text):
+        """
+        characters method. Overloading of QXmlDefaultHandler's one
+         
+        :param text: the text
+        :type text: PyQt4.QtCore.QString
+        """
         self.text += text
         return True
 
     def endElement(self, namespaceURI, localName, qName):
+        """
+        End of an XML element
+
+        :param qName: the name of the XML element
+        :type qName: PyQt4.QtCore.QString
+        """
         if qName == "PLATE":
             self.project.dicoPlates[self.platetitle] = self.pl
         elif qName == "NAME":
@@ -112,6 +167,12 @@ class SaxProjectHandler(QXmlDefaultHandler):
         return True
 
     def fatalError(self, exception):
+        """
+        Error in parsing the XML file
+
+        :param exception: the exception raised
+        :type exception: Exception
+        """
         self.error = "parse error at line %d column %d: %s" % (
                 exception.lineNumber(), exception.columnNumber(),
                 exception.message())

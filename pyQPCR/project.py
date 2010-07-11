@@ -32,10 +32,13 @@ __version__ = "$Rev$"
 
 class Project:
     """
-    Project object
+    The Project object defines a QPCR analysis that contains one or several
+    plates. This object contains also the different calculations for relative and absolute
+    quantification.
 
-        >>> proj = Project('test.xml')
-        >>> print proj.dicoPlates[QString('mh101109-1m.TXT')].echRef
+    >>> proj = Project('test.xml')
+    >>> print proj.dicoPlates[QString('mh101109-1m.TXT')].echRef
+    >>> proj.findTrip(0.3, 0.9, 'student')
     """
 
     def __init__(self, fname=None):
@@ -61,6 +64,12 @@ class Project:
             self.openProject(self.filename)
 
     def openProject(self, fname):
+        """
+        Open a project (XML files)
+
+        :param fname: the filename
+        :type fname: PyQt4.QtCore.QString
+        """
         error = None
         fh = None
         try:
@@ -98,6 +107,12 @@ class Project:
                 return False, error
 
     def exportXml(self, fname):
+        """
+        Save a project (XML files)
+
+        :param fname: the filename
+        :type fname: PyQt4.QtCore.QString
+        """
         error = None
         CODEC = "UTF-8"
         try:
@@ -210,7 +225,9 @@ class Project:
 
     def initLocGene(self, plate=None):
         """
-        This method is use to initiate the dictionnary of a plate.
+        It is used to initialize hashGene dictionnary.
+
+        >>> self.hashGene[targetName] = Gene('targetName')
 
         :param plate: the plate
         :type plate: pyQPCR.plate
@@ -232,6 +249,14 @@ class Project:
                                 self.hashGene[nomgene].setRef(Qt.Checked)
 
     def initLocEch(self, plate=None):
+        """
+        It is used to initialize hashEch dictionnary.
+
+        >>> self.hashEch[sampleName] = Ech('sampleName')
+
+        :param plate: the plate
+        :type plate: pyQPCR.plate
+        """
         if plate is None:
             for pl in self.dicoPlates:
                 for well in self.dicoPlates[pl].listePuits:
@@ -248,6 +273,14 @@ class Project:
                             self.hashEch[nomech].setRef(Qt.Checked)
 
     def initLocAm(self, plate=None):
+        """
+        It is used to initialize hashAmount dictionnary.
+
+        >>> self.hashAmount[value] = amount
+
+        :param plate: the plate
+        :type plate: pyQPCR.plate
+        """
         if plate is None:
             for pl in self.dicoPlates:
                 for well in self.dicoPlates[pl].listePuits:
@@ -267,6 +300,9 @@ class Project:
                     self.hashAmount[key] = well.amount
 
     def setDicoAm(self):
+        """
+        It is used to change the hashAmount dictionnary.
+        """
         self.dicoAmount = OrderedDict()
         for pl in self.dicoPlates:
             for well in self.dicoPlates[pl].listePuits:
@@ -280,6 +316,16 @@ class Project:
                     self.dicoAmount[key] = [well]
 
     def findTrip(self, ectMax, confidence, errtype):
+        """
+        A method used to find the replicates in a QPCR experiment.
+
+        :param ectMax: the maximum value of E(ct)
+        :type ectMax: float
+        :param confidence: the confidence interval
+        :type confidence: float
+        :param errtype: the type of error (Student t test or Gaussian)
+        :type errtype: PyQt4.QtCore.QString
+        """
         self.dicoTriplicat = OrderedDict()
         largeCtTrip = []
         for plate in self.dicoPlates.keys():
@@ -318,6 +364,10 @@ class Project:
             raise ReplicateError(largeCtTrip)
 
     def calcCF(self):
+        """
+        .. warning:: useless for now ! But could become useful for some improvements
+                     in multi-plate calculations
+        """
         self.CF = OrderedDict()
         self.CFerror = OrderedDict()
         for pl in self.dicoTriplicat.keys():
@@ -371,6 +421,10 @@ class Project:
             raise NRQError(broken)
 
     def calcNRQ(self):
+        """
+        A method used to compute the values of the relative quantification, as well as
+        the standard error of these quantifications.
+        """
         broken = []
         NF = {} ; NFerror = {}
         for pl in self.dicoTriplicat.keys():
@@ -429,8 +483,16 @@ class Project:
 
     def findStd(self, ectMax, confidence, errtype):
         """
-        This method allows to build a dictionnary for standard
-        wells.
+        This method allows to build a dictionnary for standard wells.
+
+        >>> self.dicoStd['targetName'][amount] = [A1, A2, A3]
+
+        :param ectMax: the maximum value of E(ct)
+        :type ectMax: float
+        :param confidence: the confidence interval
+        :type confidence: float
+        :param errtype: the type of error (Student t test or Gaussian)
+        :type errtype: PyQt4.QtCore.QString
         """
         self.dicoStd = RaggedArray2D()
         largeCtTrip = []
@@ -459,6 +521,15 @@ class Project:
             raise ReplicateError(largeCtTrip)
 
     def calcStd(self, confidence, errtype):
+        """
+        A method to compute the efficiency of standard-type wells (linear regression 
+        and standard-error)
+
+        :param confidence: the confidence interval
+        :type confidence: float
+        :param errtype: the type of error (Student t test or Gaussian)
+        :type errtype: PyQt4.QtCore.QString
+        """
         self.dicoPlotStd = OrderedDict()
         for geneName in self.dicoStd.keys():
             x = array([])
@@ -500,13 +571,21 @@ class Project:
 
     def findBars(self, width, spacing, sens='geneEch', plates=None):
         """
-        Fonction qui determine le nb de barres dans chaque categorie
-        (gene, ech) en vue du trace. Le dictionnaire barWidth est d'abord
-        rempli du nombre de barre:
+        A method that determines the number of bars for the histogram. A 
+        dictionnary is first initialized with the number of bars associated
+        to a given sample:
 
-            >>> barWidth[ctrl] = 8
+        >>> barWidth[ctrl] = 8
 
-        Puis a partir de la, on trouve les abscisses correspondantes.
+        The corresponding abscissae are then computed.
+
+        :param width: the width of the bar
+        :type width: float
+        :param spacing: the spacing between histograms
+        :type spacing: float
+        :param sens: a string to indicate if we plot targets vs samples or
+                     samples vs targets
+        :type sens: string
         """
         leftMargin = 0.1
         if plates is None:
@@ -542,8 +621,8 @@ class Project:
 
     def findUnknown(self):
         """
-        This methods computes a list of length nplate which contains booleans
-        which indicate wheter a plate contains 'unknown' wells or not.
+        This methods computes a list of length nplate that contains booleans
+        which indicate wheter a plate contains 'unknown'-type wells or not.
         """
         for pl in self.dicoPlates:
             liste = []
@@ -559,12 +638,22 @@ class Project:
 
 class NRQError(Exception):
     """
+    Exception raised if a problem occurs in relative quantification calculations.
     """
 
     def __init__(self, broken):
+        """
+        Construcor of NRQError
+
+        :param broken: a list with broken wells
+        :type broken: list
+        """
         self.broken = broken
 
     def __str__(self):
+        """
+        Print method
+        """
         st = "<ul>"
         for line in self.broken:
             st += "<li>(<b>%s, %s</b>)</li>" % (line[0], line[1])
@@ -573,6 +662,7 @@ class NRQError(Exception):
 
 class QabsError(Exception):
     """
+    Exception raised if a problem occurs in absolute quantification calculations.
     """
 
     def __str__(self):
