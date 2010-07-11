@@ -30,18 +30,15 @@ class PlateWidget(QTableWidget):
     """
     This class allows to construct and populate a Q-PCR plate (A-H lines
     and 1-12 lines). The different table elements are filled depending on 
-    their type.
-
-    @ivar tableLabels: the list of wells names (i.e. A-H)
-    @type tableLabels: list
+    their type. It is used in the main window of pyQPCR
     """
 
     def __init__(self, parent=None):
         """
         Constructor of the Plate Widget. 
 
-        @param parent: the QWidget parent
-        @type parent: PyQt4.QtGui.QWidget
+        :param parent: the QWidget parent
+        :type parent: PyQt4.QtGui.QWidget
         """
         QTableWidget.__init__(self, parent)
         self.tableLabels = ["A", "B", "C", "D", "E", "F", "G", "H"]
@@ -66,8 +63,8 @@ class PlateWidget(QTableWidget):
         """
         This method is used to fill the PCR plate thanks to the wells data.
 
-        @param plate: the input plate of the table
-        @type plate: pyQPCR.plate.Plaque
+        :param plate: the input plate of the table
+        :type plate: pyQPCR.plate.Plaque
         """
         for well in plate.listePuits:
             if well.type in (QString('unknown'), QString('negative')):
@@ -91,20 +88,20 @@ class PlateWidget(QTableWidget):
         """
         This method highly simplifies the creation of QTableWidgetItem
 
-        @param text: the texte of the cell
-        @type text: string
-        @param tip: the tool tip of the cell
-        @type tip: string
-        @param status: the status tip of the cell
-        @type status: string
-        @param back: the background color of the cell
-        @type back: PyQt4.QtGui.QColor
-        @param fore: the foreground color of the cell
-        @type fore: PyQt4.QtGui.QColor
-        @param icon: the possible icon of the cell
-        @type icon: string
-        @return: the cell of the table
-        @rtype: PyQt4.QtGui.QTableWidgetItem
+        :param text: the texte of the cell
+        :type text: string
+        :param tip: the tool tip of the cell
+        :type tip: string
+        :param status: the status tip of the cell
+        :type status: string
+        :param back: the background color of the cell
+        :type back: PyQt4.QtGui.QColor
+        :param fore: the foreground color of the cell
+        :type fore: PyQt4.QtGui.QColor
+        :param icon: the possible icon of the cell
+        :type icon: string
+        :return: the cell of the table
+        :rtype: PyQt4.QtGui.QTableWidgetItem
         """
         item = QTableWidgetItem(text)
         item.setForeground(fore)
@@ -131,21 +128,17 @@ class PlateWidget(QTableWidget):
 class ResultWidget(QTableWidget):
     """
     This class allows to construct and populate the result table of a
-    Q-PCR experiment.
-
-    @ivar resultLabels: the list of the names of the different columns used
-                        in the result table
-    @type resultLabels: list
+    Q-PCR experiment. It is used in the main window of pyQPCR
     """
 
     def __init__(self, parent=None, typeCalc='Relative quantification'):
         """
         Constructor of the Result Widget. 
 
-        @param parent: the QWidget parent
-        @type parent: PyQt4.QtGui.QWidget
-        @param typeCalc: the type of calculation
-        @type typeCalc: PyQt4.QtCore.QString
+        :param parent: the QWidget parent
+        :type parent: PyQt4.QtGui.QWidget
+        :param typeCalc: the type of calculation
+        :type typeCalc: PyQt4.QtCore.QString
         """
         QTableWidget.__init__(self, parent)
         if typeCalc == 'Relative quantification':
@@ -188,10 +181,10 @@ class ResultWidget(QTableWidget):
         """
         This method is used to fill the PCR result thanks to the computed data?
 
-        @param plaque: the input plate of the table
-        @type plaque: pyQPCR.plate.Plaque
-        @param typeCalc: the type of calculation
-        @type typeCalc: PyQt4.QtCore.QString
+        :param plaque: the input plate of the table
+        :type plaque: pyQPCR.plate.Plaque
+        :param typeCalc: the type of calculation
+        :type typeCalc: PyQt4.QtCore.QString
         """
         if typeCalc == 'Relative quantification':
             self.resultLabels = ["Well", "Target", "Ct", "<Ct>", "E(Ct)", "Amount",
