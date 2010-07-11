@@ -33,26 +33,21 @@ class MatplotlibWidget(FigureCanvas):
     """
     This class allows to define a MatplotlibWidget as a classical
     PyQt widget and use it in QDialog or QMainWindow (as any other
-    widget).
-
-    @ivar fig: the matplotlib figure
-    @type fig: matplotlib.figure.Figure
-    @ivar axes: the matplotlib axes
-    @type axes: matplotlib.axes.AxesSubplot
+    widget). It is used to embed the plots in pyQPCR
     """
 
     def __init__(self, parent=None, width=5, height=4, dpi=100):
         """
         Constructor of the matplotlib widget
 
-        @param parent: the parent QWidget
-        @type parent: PyQt4.QtGui.QWidget
-        @param width: the width of the widget
-        @type width: float
-        @param height: the height of the widget
-        @type height: float
-        @param dpi: the DPI of the matplotlib widget
-        @type dpi: int
+        :param parent: the parent QWidget
+        :type parent: PyQt4.QtGui.QWidget
+        :param width: the width of the widget
+        :type width: float
+        :param height: the height of the widget
+        :type height: float
+        :param dpi: the DPI of the matplotlib widget
+        :type dpi: int
         """
         self.fig = Figure(figsize=(width, height), dpi=dpi)
         self.axes = self.fig.add_subplot(111)
@@ -67,33 +62,34 @@ class MatplotlibWidget(FigureCanvas):
 
     def sizeHint(self):
         """
-        size hint of the new MatplotlibWidget
+        Size hint of the new MatplotlibWidget. Overload of FigureCanvas's method.
         """
         w, h = self.get_width_height()
         return QSize(w, h)
 
     def minimumSizeHint(self):
         """
-        minimum size hint of the new MatplotlibWidget
+        Minimum size hint of the new MatplotlibWidget. Overload of FigureCanvas's method.
         """
         return QSize(10, 10)
 
 class NavToolBar(NavigationToolbar2QT):
     """
     This class overloads the NavigationToolbar of matplotlib.
-    The original icons are replaced by oxygen ones.
+    The original icons are replaced by oxygen ones. It is used to have
+    a toolbar over the plots in pyQPCR.
     """
 
     def __init__(self, canvas, parent, coordinates=True):
         """
-        Constructor
+        Constructor of NavToolBar
 
-        @param canvas: the matplotlib canvas
-        @type canvas: matplotlib.backends.backend_qt4agg.FigureCanvasQTAgg
-        @param parent: the parent QWidget
-        @type parent: PyQt4.QtGui.QWidget
-        @param coordinates: boolean coordinates
-        @type coordinates: bool
+        :param canvas: the matplotlib canvas
+        :type canvas: matplotlib.backends.backend_qt4agg.FigureCanvasQTAgg
+        :param parent: the parent QWidget
+        :type parent: PyQt4.QtGui.QWidget
+        :param coordinates: boolean coordinates
+        :type coordinates: bool
         """
         NavigationToolbar2QT.__init__(self, canvas, parent, coordinates)
         self.setIconSize(QSize(16, 16))
@@ -137,6 +133,10 @@ class NavToolBar(NavigationToolbar2QT):
 
 
 class DraggableLegend:
+    """
+    A simple class to have a draggable legend in the plots. Just click on the legend,
+    drag it and release the click.
+    """
 
     def __init__(self, legend):
         self.legend = legend

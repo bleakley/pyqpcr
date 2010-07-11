@@ -29,6 +29,12 @@ __version__ = "$Rev$"
 
 
 class MplStdWidget(QWidget):
+    """
+    This class is used to define the Standard plot widget. It contains both the plot
+    and informations concerning the standard curve calculation (linear regression,
+    Pearsson's coefficient and so on). It also contains a QComboBox to change the 
+    displayed target.
+    """
 
     def __init__(self, parent=None):
         QWidget.__init__(self, parent)
@@ -75,17 +81,20 @@ class MplStdWidget(QWidget):
                      self.updatePlot)
                                     
     def updatePlot(self):
+        """
+        Update the plot
+        """
         self.plotStd()
 
     def plotStd(self, data=None, nameGene=None):
         """
         This method allows to plot the standard curves.
 
-        @param data: a dictionnary which contains the different plot
+        :param data: a dictionnary which contains the different plot
                      parameters
-        @type data: pyQPCR.utils.odict.OrderedDict
-        @param nameGene: the name of a gene we want to plot
-        @type nameGene: PyQt4.QtCore.QString
+        :type data: pyQPCR.utils.odict.OrderedDict
+        :param nameGene: the name of a gene we want to plot
+        :type nameGene: PyQt4.QtCore.QString
         """
         if data is not None:
             self.data = data

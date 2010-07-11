@@ -6,3 +6,4 @@ pyQPCR's API
    modcore
    modproj
    modmain
+   modwidgets

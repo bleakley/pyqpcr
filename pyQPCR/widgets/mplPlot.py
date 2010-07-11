@@ -31,8 +31,25 @@ __version__ = "$Rev$"
 
 
 class MplUnknownWidget(QWidget):
+    """
+    This class is used to define the relative quantification plot widget. It contains both 
+    the plot and buttons allowing to customize the appearance of the plot (bars, fontsizes,
+    orientation of labels, legend, ...).
+    """
 
     def __init__(self, parent=None, barWth=0.1, barSpac=0.1, labelFt=10, labelRot=0):
+        """
+        Constructor of MplUnknownWidget.
+
+        :param barWth: the width of the bars
+        :type barWth: float
+        :param barSpac: the spacing between bars
+        :type barSpec: float
+        :param labelFt: the fontsize of the labels
+        :type labelFt: integer
+        :param labelRot: the rotation of the labels
+        :type labelRot: integer
+        """
         self.barWth = barWth
         self.barSpacing = barSpac
         self.labelFontSize = labelFt
@@ -188,6 +205,9 @@ class MplUnknownWidget(QWidget):
                      self.setPlotColor)
 
     def unHide(self):
+        """
+        This method is used to unhide the advanced configurations tools.
+        """
         self.lab2.setVisible(self.ref.isChecked())
         self.lab3.setVisible(self.ref.isChecked())
         self.lab4.setVisible(self.ref.isChecked())
@@ -200,13 +220,20 @@ class MplUnknownWidget(QWidget):
         self.ncolLegend.setVisible(self.ref.isChecked())
 
     def hideLegend(self):
+        """
+        This method is used to hide the legend of the current plot. The x limits of
+        the plot are then modified.
+        """
         self.leg.set_visible(self.hideLeg.isChecked())
         bool = int(self.hideLeg.checkState())/2
-        xmax = 0.3*self.xmax*bool+self.xmax+0.05*self.xmax*(1-bool)
+        xmax = 0.3 * self.xmax*bool+self.xmax + 0.05 * self.xmax*(1-bool)
         self.mplCanUnknown.axes.set_xlim((self.xmin, xmax))
         self.mplCanUnknown.draw()
 
     def updatePlot(self):
+        """
+        Simple method to update the plot.
+        """
         self.plotUnknown()
 
     def setPlotColor(self):
@@ -225,6 +252,9 @@ class MplUnknownWidget(QWidget):
     def changeFontsize(self, idraw=True):
         """
         A method to change the matplotlib axes font sizes.
+
+        :param idraw: a boolean to indicate if the plot should be updated or not
+        :type idraw: logical
         """
         size = int(self.cboxFontsize.value())
         for t in self.leg.get_texts():
@@ -246,6 +276,10 @@ class MplUnknownWidget(QWidget):
         self.mplCanUnknown.draw()
 
     def changeAxesScale(self):
+        """
+        A method to change the type of vertical scaling. It can be either
+        'Linear' or 'Logarithmic'.
+        """
         if self.cboxScale.currentText() == 'Linear':
             self.mplCanUnknown.axes.set_yscale('linear')
         if self.cboxScale.currentText() == 'Logarithmic':
@@ -266,7 +300,12 @@ class MplUnknownWidget(QWidget):
 
     def plotUnknown(self, project=None):
         """
-        A method to plot the unknown histograms
+        A method to plot the histograms that correspond to the relative quantifications.
+        The errorbars displayed correspond to the standard-error of NRQ. You can plot either
+        targets vs samples, or samples vs targets.
+
+        :param project: the project you are working on
+        :type project: pyQPCR.project.Project
         """
         if project is not None:
             self.project = project
