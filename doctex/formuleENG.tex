@@ -1,0 +1,209 @@
+\documentclass[a4paper,10pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[francais]{babel}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{amsmath,amsfonts,amssymb}
+\usepackage{geometry}
+\geometry{left=2cm, right=2cm}
+
+\begin{document}
+
+\section{Standard curves}
+
+\subsection{Linear regression}
+
+Notations :
+
+\begin{equation}
+ y\equiv c_t \quad \text{et} \quad x\equiv\log Q
+\end{equation}
+
+For a straight line $y=ax+b$, variance $\sigma_x^2$ is :
+
+\begin{equation}
+\sigma_x^2=\displaystyle\frac{1}{n-1}\sum_{i=1}^{n}(x_i-\bar{x})^2
+\quad\text{avec}\quad \bar{x}=\frac{1}{n}\sum_{i=1}^{n}x_i
+\end{equation}
+Similarly, covariance $\sigma_{xy}$ is defined by
+
+\begin{equation}
+ \sigma_{xy} =
+\displaystyle\frac{1}{n-1}\sum_{i=1}^{n}(x_i-\bar{x})(y_i-\bar{y})
+\end{equation}
+To obtain the slope $a$ and Y-intercept $b$ of a linear regression :
+
+\begin{equation}
+ \left\lbrace 
+\begin{array}{l}
+ a = \dfrac{\sigma_{xy}}{\sigma_x^2}=\dfrac{\sum(x_i-\bar{x})(y_i-\bar{y})}{\sum(x_i-\bar{x})^2} \\ \\
+ b = \bar{y}-a\bar{x}
+\end{array}
+\right.
+\end{equation}
+
+
+\subsection{Slope error}
+
+For a problem with $n-2$ degrees of freedom, the standard deviation ? of a linear regression can be written: 
+
+\begin{equation}
+ \sigma_{\epsilon}^2 = \displaystyle\frac{1}{n-2}\sum_{i=1}^{n}(y_i-\hat{y}_i)^2
+\end{equation}
+
+Standard error $\text{SE}(a)^2$ on the slope is deducted : 
+
+\begin{equation}
+ \text{SE}(a)^2 = \dfrac{\sigma_{\epsilon}^2}{(n-1)\sigma_x^2} \Longrightarrow
+\boxed{\text{SE}(a) =
+\sqrt{\dfrac{\sum(y_i-\hat{y}_i)^2}{
+(n-2)\sum (x_i-\bar{x})^2}}}
+\end{equation}
+
+\subsection{Pearsson Coefficient}
+
+\begin{equation}
+ R = \dfrac{\sigma_{xy}}{\sigma_x\sigma_y}
+\end{equation}
+$\text{SE}(a)$ can be express as function of $R^2$ :
+
+\begin{equation}
+ \text{SE}(a) = \dfrac{\sigma_y}{\sigma_x}\sqrt{\dfrac{1-R^2}{n-2}}
+\end{equation}
+
+
+\subsection{Confidence Interval}
+For a Student test on the expectation with an unknown standard deviation, for a given confidence level $\alpha$, the error on $a$ is: 
+
+\begin{equation}
+ \Delta a = \text{SE}(a) \cdot t_{(1-\alpha)/2}^{n-2}
+\end{equation}
+where $t_{(1-\alpha)/2}^{n-2}$ is the quantile of order $\alpha/2$ of the Student law with $n-2$ degrees of freedom. In term of probabilities, we have: 
+
+\begin{equation}
+\boxed{%
+ P\left[a- \text{SE}(a) \cdot t_{(1-\alpha)/2}^{n-2}\le \beta\le a +\text{SE}(a)
+\cdot
+t_{(1-\alpha)/2}^{n-2}\right] = \alpha}
+\end{equation}
+
+\subsection{Efficiency}
+
+\begin{equation}
+ \text{eff} = 10^{-1/a}-1\quad \text{or in \%:}\quad \text{eff}
+=100\cdot\left(10^{-1/a}-1\right)
+\end{equation}
+The error on the slope $\Delta a$ can be propagated to the calculation of the error on the efficiency :
+
+\begin{equation}
+ \epsilon(\text{eff}) = \ln 10(\text{eff}+100) \dfrac{\Delta a}{a^2}
+\end{equation}
+{\color{red} ou bien} 
+\begin{equation}
+ \epsilon(\text{eff}) = \ln 10(\text{eff}+100) \dfrac{\text{SE}(a)}{a^2}
+\end{equation}
+
+
+\section{Relative quantification}
+
+For a replicate $(s,\ g)$, we calculate $c_t$ mean of all wells, i.e.
+
+\begin{equation}
+ {\bar{c_t}}_{sg} = \dfrac{1}{n_w}\sum_{w}{c_t}_{wsg},
+\end{equation}
+and the associated standard error
+
+\begin{equation}
+ \text{SE} ({c_t}_{sg}) =
+\sqrt{\dfrac{1}{n_w(n_w-1)}\sum_{\text{w}}
+({c_t}_{wsg}-{\bar{c_t}}_{sg})^2}
+\end{equation}
+The associated confidence interval can be written 
+
+\begin{equation}
+ \left[{\bar{c_t}}_{sg}-t_{(1-\alpha)/2}^{n_w-1}\text{SE}(c_t),\
+{\bar{c_t}}_{sg}+t_{(1-\alpha)/2}^{n_w-1}\text{SE}(c_t)\right]
+\end{equation}
+For each gene, the coefficient ${c_t}_{\text{ref}}$ is calculated
+
+\begin{equation}
+ {c_t}_{\text{ref},s} = \dfrac{1}{n_s}\sum_{s}{c_t}_{sg} 
+\end{equation}
+For each replicate we define ${\Delta c_t}_{sg}$
+
+\begin{equation}
+ {\Delta c_t}_{sg} = {c_t}_{\text{ref},s} - {\bar{c_t}}_{sg},
+\end{equation}
+et $\text{RQ}_{sg}$
+
+\begin{equation}
+ \text{RQ}_{sg} = \text{eff}_g^{{\Delta c_t}_{sg}}
+\end{equation}
+To calculate the error we propagate the errors of a law $z=x^y$. Using logarithm, we obtain
+
+\begin{equation}
+ \ln z = y\ln x
+\end{equation}
+Differentiating this expression, we have
+
+\begin{equation}
+ \dfrac{\delta z}{z} = y\dfrac{\delta x}{x}+\delta y \ln x,
+\end{equation}
+which conduct to the following error
+
+\begin{equation}
+ \dfrac{\text{SE}(z)}{\bar{z}} =\sqrt{%
+\left(\bar{y}\dfrac{\text{SE}(x)}{\bar{x}}\right)^2+\left(\text{SE}(y) \ln
+\bar{x}\right)^2}
+\end{equation}
+When replacing x, y and z with magnitudes of interest
+
+\begin{equation}
+ \text{SE}(\text{RQ}_{sg}) =\text{RQ}_{sg}\sqrt{%
+ \left({\Delta c_t}_{sg}\dfrac{\text{SE}(\text{eff}_g)}{\text{eff}_g}\right)^2+
+ \left(\text{SE}({\Delta c_t}_{sg}) \ln \text{eff}_g\right)^2}
+\end{equation}
+
+\section{Reference genes}
+
+We performe a geometric mean of reference genes RQ. For each sample we define $\text{NF}_{s}$ as
+
+\begin{equation}
+ \text{NF}_s = \left( \prod_{p=1}^{n_{\text{generef}}} \text{RQ}_{ps}
+\right)^{1/n_{\text{generef}}}
+\end{equation}
+With the standard error
+
+\begin{equation} 
+\text{SE}(\text{NF}_s) = \text{NF}_s  \sqrt{\sum_{p=1}^{n_{\text{generef}}}
+\left( \dfrac{\text{SE}(\text{RQ}_{ps})}{n_{\text{generef}}\cdot 
+\text{RQ}_{ps}} \right)^2}
+\end{equation}
+
+\section{RQ normalization}
+
+We normalize in comparison to reference sample:
+
+\begin{equation}
+ \text{NRQ}_{gs} =
+\dfrac{\text{RQ}_{g,s}}{\text{NF}_s}
+\cdot \dfrac{\text{NF}_{\text{echref}}} {\text{RQ}_{g,\text{echref}}}
+\end{equation}
+The standard error is calculated
+
+\begin{equation}
+ \text{SE}(\text{NRQ}_{g,s}) = \sqrt{%
+\left(\dfrac{\text{SE}(\text{RQ}_{g,s})}{\text{RQ}_{g,s}} \right)^2 +
+\left(\dfrac{\text{SE}(\text{NF}_{s})}{\text{NF}_{s}} \right)^2 +
+\left(\dfrac{\text{SE}(\text{NF}_{\text{echref}})}{\text{NF}_{\text{echref}}}
+\right)^2 +
+\left(\dfrac{\text{SE}(\text{RQ}_{g,\text{echref}})}{\text{RQ}_{g,\text{echref}}
+} \right)^2
+}
+\end{equation}
+
+
+
+
+\end{document}
+
