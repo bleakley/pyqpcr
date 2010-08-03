@@ -112,16 +112,20 @@ class Plaque:
         iterator = file.readlines()
         file.close()
         motif = re.compile(r'^(.*) (\d*[\.,]?\d*)?$')
+        ncol = 0
+        indheader = 0
         for ind, line in enumerate(iterator):
+            linetot = line
             line = line.split('\t')
-            if ind == 0:
+            if linetot.__contains__('Name'):
+                indheader = ind
                 self.header = OrderedDict()
                 for i, field in enumerate(line):
                     st = field.strip('"')
                     self.header[st] = i
                 ncol = len(self.header.keys())
 
-            if len(line) == ncol and ind != 0:
+            if len(line) == ncol and ind != indheader:
                 champs = []
                 for field in line:
                     dat = field.strip('"')
@@ -132,6 +136,9 @@ class Plaque:
                     champs.append(dat)
                 if self.header.has_key('Position'):
                     name = champs[self.header['Position']]
+                    x = Puits(name)
+                elif self.header.has_key('Pos'):
+                    name = champs[self.header['Pos']]
                     x = Puits(name)
                 else:
                     raise KeyError
@@ -146,14 +153,28 @@ class Plaque:
                         geneName = dat[1]
                     x.setEch(Ech(dat[0]))
                     x.setGene(Gene(geneName))
+                elif self.header.has_key('Name'):
+                    geneEch = champs[self.header['Name']]
+                    dat = geneEch.split('_')
+                    if len(dat) > 2:
+                        geneName = string.join(dat[1:], '_')
+                    else:
+                        geneName = None
+                    x.setEch(Ech(dat[0]))
+                    if geneName is not None:
+                        x.setGene(Gene(geneName))
                 if self.header.has_key('CrossingPoint'):
                     ct = champs[self.header['CrossingPoint']]
+                    x.setCt(ct)
+                elif self.header.has_key('Cp'):
+                    ct = champs[self.header['Cp']]
                     x.setCt(ct)
                 if self.header.has_key('Standard'):
                     try:
                         am = float(champs[self.header['Standard']])
-                        x.setType('standard')
-                        x.setAmount(am)
+                        if am != 0:
+                            x.setType('standard')
+                            x.setAmount(am)
                     except ValueError:
                         pass
                 if self.header.has_key('Call'):
@@ -770,9 +791,7 @@ class PlateError(Exception):
 
 
 if __name__ == '__main__':
-    pl = Plaque('raw_data_AB7500.csv', machine='Applied 7500')
+    pl = Plaque('abs_quant-fit_points.txt', machine='Roche LightCycler 480')
     print str(pl.A1)
-    print pl.geneRef
-    pl = Plaque('raw_data_applied.txt', machine='Applied StepOne')
+    pl = Plaque('raw_data_lightcycler2.txt', machine='Roche LightCycler 480')
     print str(pl.A1)
-    print pl.geneRef
