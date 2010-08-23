@@ -18,6 +18,10 @@ You can directly open these files (examples are in the source code of pyQPCR).
    :scale: 50 %
    :align: center
 
+.. image:: img/addplate.png
+   :scale: 50 %
+   :align: center
+
 At any time, you can add or remove a plate from your project thanks to the
 corresponding icons. It is also possible to merge two different projects.
 
@@ -55,5 +59,53 @@ reference gene(s) and one reference sample. They can be either shared for all
 plates or specific of each plate.
 
 .. image:: img/refs.png
+   :scale: 50 %
+   :align: center
+
+
+Relative quantification
+=======================
+
+The wells defined as "unknown" are used to calculate relative quantifications.
+An improved :math:`\Delta\Delta Ct` method allows you to obtain reliable
+quantifications and error. The confidence level is modifiable and can be either
+gaussian or calculated using a T-test.
+
+.. image:: img/rel1.png
+   :scale: 50 %
+   :align: center
+
+The program plots results as histograms that are easy to customize (colors, 
+legend, order, ...)
+
+.. image:: img/rel2.png
+   :scale: 50 %
+   :align: center
+
+.. image:: img/rel3.png
+   :scale: 50 %
+   :align: center
+
+Results, export and save
+========================
+
+Results can be printed or exported in a pdf file containing a table with all
+the data and plots for standard curves and/or relatives quantifications.
+
+.. image:: img/res1.png
+   :scale: 50 %
+   :align: center
+
+You can also save your project in the pyQPCR XML file format that allows you to
+keep the entire project with the different plates and settings easily
+recoverable.
+
+Help
+====
+
+A Help menu is available and summarize the different functionalities of the
+software.
+
+.. image:: img/help.png
    :scale: 50 %
    :align: center
