@@ -4,3 +4,4 @@ Calculations
 .. toctree::
 
    relative
+   absolute

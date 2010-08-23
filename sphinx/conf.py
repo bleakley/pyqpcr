@@ -56,7 +56,7 @@ copyright = u'2010, Thomas Gastine & Magali Hennion'
 # built documents.
 #
 # The short X.Y version.
-version = '0.5.1'
+version = '0.6'
 # The full version, including alpha/beta/rc tags.
 release = '0.5.1'
 
