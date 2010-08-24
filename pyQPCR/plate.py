@@ -61,6 +61,7 @@ class Plaque:
         :param machine: the PCR device used in the experiment
         :type machine: PyQt4.QtCore.QString
         """
+        self.type = '96'
         self.unsaved = False
         self.filename = filename
 
@@ -104,6 +105,9 @@ class Plaque:
         else:
             raise IOError
 
+    def setPlateType(self, type):
+        self.type = type
+
     def parseLightCycler480(self):
         """
         This method allows to parse Roche Light Cycler 480 raw data.
@@ -137,9 +141,13 @@ class Plaque:
                 if self.header.has_key('Position'):
                     name = champs[self.header['Position']]
                     x = Puits(name)
+                    if x.xpos > 8 or x.ypos > 12:
+                        self.setPlateType('384')
                 elif self.header.has_key('Pos'):
                     name = champs[self.header['Pos']]
                     x = Puits(name)
+                    if x.xpos > 8 or x.ypos > 12:
+                        self.setPlateType('384')
                 else:
                     raise KeyError
                 if self.header.has_key('SampleName'):
@@ -223,6 +231,8 @@ class Plaque:
                 if self.header.has_key('Pos'):
                     name = champs[self.header['Pos']]
                     x = Puits(name)
+                    if x.xpos > 8 or x.ypos > 12:
+                        self.setPlateType('384')
                 else:
                     raise KeyError
                 if self.header.has_key('Name'):
@@ -303,6 +313,8 @@ class Plaque:
                     if self.header.has_key('Well'):
                         name = champs[self.header['Well']]
                         x = Puits(name)
+                        if x.xpos > 8 or x.ypos > 12:
+                            self.setPlateType('384')
                     else:
                         raise KeyError
                     if self.header.has_key('Sample Name'):
@@ -380,6 +392,8 @@ class Plaque:
                     if self.header.has_key('Well'):
                         name = champs[self.header['Well']]
                         x = Puits(name)
+                        if x.xpos > 8 or x.ypos > 12:
+                            self.setPlateType('384')
                     else:
                         raise KeyError
                     if self.header.has_key('Sample Name'):

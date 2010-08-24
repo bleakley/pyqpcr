@@ -440,10 +440,11 @@ class Puits:
 
         ex. A11 xpos=0 ypos=10
         """
-        motif = re.compile(r"([A-H])(\d+)")
+        motif = re.compile(r"([A-P])(\d+)")
         groups = motif.search(self.name).groups()
         self.ypos = int(groups[1])-1
-        lettres = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
+        lettres = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
+                   'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P']
         dict = {}
         for xpos, l in enumerate(lettres):
             dict[l] = xpos
