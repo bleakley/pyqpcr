@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!DOCTYPE QPCR>
 <QPCR VERSION='1.0'>
-<PLATE NAME='treated_std.txt'>
+<PLATE NAME='treated_std.txt' TYPE='96'>
 <REFSAMPLE NAME=''></REFSAMPLE>
 <WELL CT='20.38' CTMEAN='20.37' CTDEV='0.12' AMOUNT='200.0' NRQ='' NRQERROR='' ENABLED='1' >
 <NAME>A1</NAME>
