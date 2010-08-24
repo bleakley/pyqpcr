@@ -29,7 +29,7 @@ from pyQPCR.widgets.tableMainWindow import PlateWidget, ResultWidget
 from pyQPCR.widgets.customCbox import GeneEchComboBox
 from pyQPCR.plate import Plaque, ReplicateError, PlateError
 from pyQPCR.wellGeneSample import WellError
-from pyQPCR.project import Project, NRQError, QabsError
+from pyQPCR.project import Project, NRQError, QabsError, ProjectError
 import matplotlib
 from numpy import linspace, log10, log, sqrt, sum, mean, polyfit, polyval, \
         asarray, append, array, delete
@@ -400,7 +400,11 @@ class Qpcr_qt(QMainWindow):
 
             self.cleanBeforeOpen()
 
-            self.project = Project(fname)
+            try:
+                self.project = Project(fname)
+            except ProjectError, e:
+                QMessageBox.warning(self, "Problem in import !", "%s" % str(e))
+                return
 
             for key in self.project.dicoPlates.keys():
                 pl = self.project.dicoPlates[key]
@@ -463,7 +467,11 @@ class Qpcr_qt(QMainWindow):
                 if file.endsWith('xml'):
                     st = '<ul>'
                     warn = False
-                    prtmp = Project(file)
+                    try:
+                        prtmp = Project(file)
+                    except ProjectError, e:
+                        QMessageBox.warning(self, "Problem in import !", "%s" % str(e))
+                        return
                     for plate in prtmp.dicoPlates.keys():
                         if not self.project.dicoPlates.has_key(plate):
                             self.project.addPlate(prtmp.dicoPlates[plate], key=plate)
@@ -1463,7 +1471,6 @@ class Qpcr_qt(QMainWindow):
         :param key: the name of the plate
         :type key: str
         """
-        print plaque.type
         mytab = PlateWidget(plateType=plaque.type)
         mytab.populateTable(plaque)
         self.tabulPlates.addTab(mytab, key)
