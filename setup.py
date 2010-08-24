@@ -30,15 +30,15 @@ elif sys.platform == 'win32':
     extra_options = dict(
                          setup_requires=['py2exe'],
                          data_files = [(r'mpl-data', 
-    glob.glob(r'C:\Python25\Lib\site-packages\matplotlib\mpl-data\*.*')),
+    glob.glob(r'C:\Python26\Lib\site-packages\matplotlib\mpl-data\*.*')),
                                       (r'mpl-data', 
-    [r'C:\Python25\Lib\site-packages\matplotlib\mpl-data\matplotlibrc']),
+    [r'C:\Python26\Lib\site-packages\matplotlib\mpl-data\matplotlibrc']),
                                       (r'mpl-data\images',
-    glob.glob(r'C:\Python25\Lib\site-packages\matplotlib\mpl-data\images\*.*')),
+    glob.glob(r'C:\Python26\Lib\site-packages\matplotlib\mpl-data\images\*.*')),
                                       (r'mpl-data\fonts',
-    glob.glob(r'C:\Python25\Lib\site-packages\matplotlib\mpl-data\fonts\*.*')),
-                                      ( \
-              r'C:\Python25\Lib\site-packages\matplotlib\MSVCP71.dll')]
+    glob.glob(r'C:\Python26\Lib\site-packages\matplotlib\mpl-data\fonts\*.*')),
+    (r'C:\Python26\Microsoft.VC90.CRT.manifest'),
+    (r'C:\Python26\DLLs\msvcp90.dll'), (r'C:\Python26\msvcr90.dll')]
                         )
     extra_options['options'] = \
            {
@@ -51,8 +51,10 @@ elif sys.platform == 'win32':
                                "matplotlib.backends.backend_tkagg"],
                 'excludes': ['_gtkagg', '_tkagg', '_agg2', '_cairo', '_cocoaagg',
                              '_fltkagg', '_gtk', '_gtkcairo', ],
-                'dll_excludes': ['libgdk-win32-2.0-0.dll',
-                                 'libgobject-2.0-0.dll']
+                'dll_excludes': ['libgdk-win32-2.0-0.dll', 'MSVCP90.dll',
+                                 'libgobject-2.0-0.dll', 'mswsock.dll',
+                                 'powrprof.dll', 'uxTheme.dll',
+                                 'tcl84.dll', 'tk84.dll'],
               }
           }
     extra_options['windows'] = [{'script' : 'scripts\qpcr',
