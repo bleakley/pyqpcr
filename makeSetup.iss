@@ -14,7 +14,7 @@ AppSupportURL=http://pyqpcr.sourceforge.net
 AppUpdatesURL=http://pyqpcr.sourceforge.net
 DefaultDirName={pf}\pyQPCR
 DefaultGroupName=pyQPCR
-LicenseFile=C:\Documents and Settings\tgastine\Bureau\pyqpcr\COPYING.txt
+LicenseFile=C:\Documents and Settings\Thomas\Bureau\pyqpcr\COPYING.txt
 OutputBaseFilename=setup
 Compression=lzma
 SolidCompression=yes
@@ -27,8 +27,8 @@ Name: "french"; MessagesFile: "compiler:Languages\French.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "C:\Documents and Settings\tgastine\Bureau\pyqpcr\dist\qpcr.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Documents and Settings\tgastine\Bureau\pyqpcr\dist\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "C:\Documents and Settings\Thomas\Bureau\pyqpcr\dist\qpcr.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Documents and Settings\Thomas\Bureau\pyqpcr\dist\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
