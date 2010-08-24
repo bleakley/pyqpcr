@@ -112,7 +112,7 @@ class Plaque:
         """
         This method allows to parse Roche Light Cycler 480 raw data.
         """
-        file = open(self.filename, "r")
+        file = open(unicode(self.filename), "r")
         iterator = file.readlines()
         file.close()
         motif = re.compile(r'^(.*) (\d*[\.,]?\d*)?$')
@@ -201,7 +201,7 @@ class Plaque:
         This method allows to parse Eppendorf raw data. It works with both
         TXT and CSV files (separated by a semicolon).
         """
-        file = open(self.filename, "r")
+        file = open(unicode(self.filename), "r")
         motif = re.compile(r"[\w\s]*")
         amountMotif = re.compile(r"Amount SYBR ?\[(.*)\]")
         if self.fileType == "txt":
@@ -287,7 +287,7 @@ class Plaque:
         This method allows to parse Applied 7000 raw data. It supports only
         CSV files.
         """
-        file = open(self.filename, 'r')
+        file = open(unicode(self.filename), 'r')
         iterator = csv.reader(file, delimiter=",")
         hasHeader = False
         for ind, line in enumerate(iterator):
@@ -345,7 +345,7 @@ class Plaque:
         It works with TXT files and CSV files (comma separated, UTF-8
         encoding).
         """
-        file = open(self.filename, 'Ur')
+        file = open(unicode(self.filename), 'Ur')
         fileencoding = "utf-8"
         result = re.compile(r'\[Results\]')
         motifSample = re.compile(r'Reference Sample = (.*)')
