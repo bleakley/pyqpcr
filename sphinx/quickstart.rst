@@ -6,13 +6,8 @@ Import QPCR raw data / open existing file
 
 During this first step, you can:
 
-* **Create a new project**: you give a project name, choose the PCR device 
-(for now Eppendorf, Roche LightCycler, AB 7000 and AB StepOne ones are
-supported, but others can be easily added) and import your raw data (TXT or CSV
-files) of one or several plates. Some examples of these files are given with
-the source of pyQPCR.
-* **Open an existing one**: pyQPCR has its own file format which is XML based. 
-You can directly open these files (examples are in the source code of pyQPCR).
+* **Create a new project**: you give a project name, choose the PCR device (for now Eppendorf, Roche LightCycler, AB 7000 and AB StepOne ones are supported, but others can be easily added) and import your raw data (TXT or CSV files) of one or several plates. Some examples of these files are given with the source of pyQPCR.
+* **Open an existing one**: pyQPCR has its own file format which is XML based. You can directly open these files (examples are in the source code of pyQPCR).
 
 .. image:: img/newproj.png
    :scale: 50 %
