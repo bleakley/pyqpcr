@@ -26,29 +26,52 @@ __date__ = "$Date$"
 __version__ = "$Rev$"
 
 
-class PlateWidget(QTableWidget):
+class MyQTableWidget(QTableWidget):
+    """
+    This class is used to reimplement the resizeEvent function
+    of classical QTableWidget. It allows to have always a 12x8 table
+    (even for 384-wells plate)
+    """
+
+    def resizeEvent(self, event):
+        width = event.size().width()/12.
+        height = event.size().height()/8.
+        for i in range(self.columnCount()):
+            self.setColumnWidth(i, width)
+        for j in range(self.rowCount()):
+            self.setRowHeight(j, height)
+
+
+
+class PlateWidget(MyQTableWidget):
     """
     This class allows to construct and populate a Q-PCR plate (A-H lines
     and 1-12 lines). The different table elements are filled depending on 
     their type. It is used in the main window of pyQPCR
     """
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, plateType='96'):
         """
         Constructor of the Plate Widget. 
 
         :param parent: the QWidget parent
         :type parent: PyQt4.QtGui.QWidget
+        :param plateType: the type of plates (96 wells or 384 wells)
+        :type plateType: PyQt4.QtCore.QString
         """
         QTableWidget.__init__(self, parent)
-        self.tableLabels = ["A", "B", "C", "D", "E", "F", "G", "H"]
-        self.setRowCount(8)
-        self.setColumnCount(12)
+
+        if plateType == '96':
+            self.tableLabels = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
+            self.setRowCount(8)
+            self.setColumnCount(12)
+        elif plateType == '384':
+            self.tableLabels = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
+                                'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P']
+            self.setRowCount(16)
+            self.setColumnCount(24)
+
         self.setVerticalHeaderLabels(self.tableLabels)
-        for i in range(12):
-            self.horizontalHeader().setResizeMode(i, QHeaderView.Stretch)
-        for j in range(8):
-            self.verticalHeader().setResizeMode(j, QHeaderView.Stretch)
         self.setEditTriggers(QTableWidget.NoEditTriggers)
 
     def clear(self):

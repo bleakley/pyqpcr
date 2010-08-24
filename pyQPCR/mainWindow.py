@@ -72,16 +72,23 @@ class Qpcr_qt(QMainWindow):
         self.onglet.addTab(self.projWidget, "Plates")
  
         settings = QSettings()
-        self.labelRotation, status  = settings.value("Mpl/labelRotation", QVariant(0)).toInt()
+        self.labelRotation, status  = settings.value("Mpl/labelRotation", 
+                                                     QVariant(0)).toInt()
         self.labelFontSize, status  = settings.value("Mpl/labelFontSize", 
                                                      QVariant(10)).toInt()
-        self.barWth, status  = settings.value("Mpl/barWidth", QVariant(0.1)).toDouble()
-        self.barSpacing, status = settings.value("Mpl/barSpacing", QVariant(0.3)).toDouble()
+        self.barWth, status  = settings.value("Mpl/barWidth", 
+                                              QVariant(0.1)).toDouble()
+        self.barSpacing, status = settings.value("Mpl/barSpacing", 
+                                                 QVariant(0.3)).toDouble()
 
-        self.topMplCan, status = settings.value("MplCan/top", QVariant(0.95)).toDouble()
-        self.botMplCan, status = settings.value("MplCan/bottom", QVariant(0.10)).toDouble()
-        self.rightMplCan, status = settings.value("MplCan/right", QVariant(0.98)).toDouble()
-        self.leftMplCan, status = settings.value("MplCan/left", QVariant(0.09)).toDouble()
+        self.topMplCan, status = settings.value("MplCan/top", 
+                                                QVariant(0.95)).toDouble()
+        self.botMplCan, status = settings.value("MplCan/bottom", 
+                                                QVariant(0.10)).toDouble()
+        self.rightMplCan, status = settings.value("MplCan/right", 
+                                                 QVariant(0.98)).toDouble()
+        self.leftMplCan, status = settings.value("MplCan/left", 
+                                                 QVariant(0.09)).toDouble()
  
         self.createResultWidget()
         self.pileResults = OrderedDict()
@@ -124,10 +131,14 @@ class Qpcr_qt(QMainWindow):
         self.recentFiles = settings.value("RecentFiles").toStringList()
         self.ectMax, status = settings.value("EctMax", QVariant(0.3)).toDouble()
         self.ctMin, status = settings.value("ctMin", QVariant(35.)).toDouble()
-        self.confidence, status = settings.value("Error/confidence", QVariant(0.9)).toDouble()
-        self.errtype = settings.value("Error/errtype", QVariant('normal')).toString()
-        self.typeCalc = settings.value("Calc/typeCalc", QVariant('Relative quantification')).toString()
-        self.machine = settings.value("machine", QVariant('Eppendorf')).toString()
+        self.confidence, status = settings.value("Error/confidence", 
+                                                 QVariant(0.9)).toDouble()
+        self.errtype = settings.value("Error/errtype", 
+                                      QVariant('normal')).toString()
+        self.typeCalc = settings.value("Calc/typeCalc", 
+                             QVariant('Relative quantification')).toString()
+        self.machine = settings.value("machine",
+                                      QVariant('Eppendorf')).toString()
 
         size = settings.value("MainWindow/Size",
                               QVariant(QSize(1024, 768))).toSize()
@@ -1451,7 +1462,8 @@ class Qpcr_qt(QMainWindow):
         :param key: the name of the plate
         :type key: str
         """
-        mytab = PlateWidget()
+        print plaque.type
+        mytab = PlateWidget(plateType=plaque.type)
         mytab.populateTable(plaque)
         self.tabulPlates.addTab(mytab, key)
         self.pileTables[key] = mytab

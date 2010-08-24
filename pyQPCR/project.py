@@ -125,7 +125,8 @@ class Project:
                        "<!DOCTYPE QPCR>\n"
                        "<QPCR VERSION='1.0'>\n" % CODEC)
             for key in self.dicoPlates.keys():
-                stream << ("<PLATE NAME='%s'>\n" % key)
+                stream << ("<PLATE NAME='%s' TYPE='%s'>\n" % \
+                           (key, self.dicoPlates[key].type))
                 for geneName in self.dicoPlates[key].geneRef:
                     if geneName != '':
                         stream << ("<REFTARGET NAME='%s'></REFTARGET>\n") % \

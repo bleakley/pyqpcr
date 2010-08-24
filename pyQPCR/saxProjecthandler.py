@@ -113,6 +113,7 @@ class SaxProjectHandler(QXmlDefaultHandler):
         elif qName == "PLATE":
             self.pl = Plaque()
             self.platetitle = attributes.value("NAME")
+            self.plateType = attributes.value("TYPE")
         elif qName == "REFSAMPLE":
             self.refSample = attributes.value("NAME")
         elif qName == "REFTARGET":
@@ -140,6 +141,8 @@ class SaxProjectHandler(QXmlDefaultHandler):
         """
         if qName == "PLATE":
             self.project.dicoPlates[self.platetitle] = self.pl
+            if self.plateType == '384':
+                self.project.dicoPlates[self.platetitle].setPlateType('384')
         elif qName == "NAME":
             self.well = Puits(str(self.text))
         elif qName == "WELL":
