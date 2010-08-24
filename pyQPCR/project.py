@@ -99,12 +99,14 @@ class Project:
                     self.hashEch[pl.echRef].setRef(Qt.Checked)
             self.setDicoAm()
         except (IOError, OSError, ValueError), e:
-            error = "Failed to import: %s" % e
+            error = "Failed to import: <b>%s</b>. " % fname
+            error += "It probably comes from your XML file."
+            error += "<p><b>Log:</b> %s" % e
         finally:
             if fh is not None:
                 fh.close()
             if error is not None:
-                return False, error
+                raise ProjectError(error)
 
     def exportXml(self, fname):
         """
@@ -644,7 +646,7 @@ class NRQError(Exception):
 
     def __init__(self, broken):
         """
-        Construcor of NRQError
+        Constructor of NRQError
 
         :param broken: a list with broken wells
         :type broken: list
@@ -667,8 +669,33 @@ class QabsError(Exception):
     """
 
     def __str__(self):
+        """
+        Print method
+        """
         st = "You are calculating an <b>absolute quantification</b>. You must compute the standard"
         st +=  " curves before doing the quantifications!"
+        return st
+
+
+class ProjectError(Exception):
+    """
+    Exception raised if a problem occurs in parsing the XML file.
+    """
+ 
+    def __init__(self, error):
+        """
+        Constructor of ProjectError
+
+        :param error: the error log
+        :type error: PyQt4.QtCore.QString
+        """
+        self.error = error
+
+    def __str__(self):
+        """
+        Print method
+        """
+        st = self.error
         return st
 
 
