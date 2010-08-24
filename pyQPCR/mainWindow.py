@@ -1104,6 +1104,7 @@ class Qpcr_qt(QMainWindow):
 
         fname = self.currentPlate + '_sub%i' % self.subIndex
         plaque = Plaque(fname, machine=None)
+        plaque.setPlateType(self.project.dicoPlates[self.currentPlate].type)
         plaque.subPlate(listWell)
 
         if not self.project.dicoPlates.has_key(fname):

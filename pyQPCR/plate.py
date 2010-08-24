@@ -171,6 +171,9 @@ class Plaque:
                     x.setEch(Ech(dat[0]))
                     if geneName is not None:
                         x.setGene(Gene(geneName))
+                elif self.header.has_key('Sample Name'):
+                    ech = champs[self.header['Sample Name']]
+                    x.setEch(Ech(ech))
                 if self.header.has_key('CrossingPoint'):
                     ct = champs[self.header['CrossingPoint']]
                     x.setCt(ct)
