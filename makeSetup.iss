@@ -8,10 +8,13 @@
 AppId={{AB0FCAB4-3161-4336-99F1-77E465DE2A79}
 AppName=pyQPCR
 AppVersion=0.6
-AppPublisher=qpcr
+AppVerName=pyQPCR - 0.6
+AppContact=Thomas[at]users.sourceforge.net
+AppPublisher=pyqpcr.sourceforge.net
 AppPublisherURL=http://pyqpcr.sourceforge.net
-AppSupportURL=http://pyqpcr.sourceforge.net
+AppSupportURL=https://sourceforge.net/projects/pyqpcr/forums
 AppUpdatesURL=http://pyqpcr.sourceforge.net
+AppComments=pyQPCR is an open-source software. It can be used to perform qPCR analysis.
 DefaultDirName={pf}\pyQPCR
 DefaultGroupName=pyQPCR
 LicenseFile=C:\Documents and Settings\Thomas\Bureau\pyqpcr\COPYING.txt
