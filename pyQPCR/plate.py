@@ -491,17 +491,27 @@ class Plaque:
                             self.setPlateType('384')
                     else:
                         raise KeyError
+
                     if self.header.has_key('Identifier'):
-                        geneName = champs[self.header['Identifier']]
-                        x.setGene(Gene(geneName))
-                    if self.header.has_key('Replicate #'):
-                        echName = champs[self.header['Replicate #']]
-                        x.setEch(Gene(echName))
+                        name = champs[self.header['Identifier']]
+                        if name.__contains__('_'):
+                            dat = name.split('_')
+                        elif name.__contains__('-'):
+                            dat = name.split('-')
+                        else:
+                            dat = name
+                        if len(dat) == 2:
+                            x.setGene(Gene(dat[0]))
+                            x.setEch(Ech(dat[1]))
+                        else:
+                            x.setGene(Gene(name))
                     if self.header.has_key('Threshold Cycle (Ct)'):
                         ct = champs[self.header['Threshold Cycle (Ct)']]
                         x.setCt(ct)
                     if self.header.has_key('Threshold Cycle (Ct)'):
                         ct = champs[self.header['Threshold Cycle (Ct)']]
+                        if ct == 'N/A':
+                            x.setEnabled(Qt.Unchecked)
                         x.setCt(ct)
                     if self.header.has_key('Ct Mean'):
                         ctmean = champs[self.header['Ct Mean']]
