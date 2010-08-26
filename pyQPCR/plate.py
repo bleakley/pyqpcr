@@ -33,6 +33,14 @@ __date__ = "$Date$"
 __version__ = "$Rev$"
 
 
+def returnDelimiter(fileObj):
+    text = fileObj.read(1024) # you can change this to whatever is appropriate for your data
+    fileObj.seek(0) # get back to beginning of file for csv reader
+    if text.count(',') > text.count(';'):
+        return ','
+    else:
+        return ';'
+
 class Plaque:
     """
     The Plaque object contains the data of a PCR experiment (basically
@@ -208,7 +216,7 @@ class Plaque:
             splitter = re.compile(r'("[\w\s.,\-\(\)\[\]\+\\/]*"|\d+[.,]?\d*)')
             iterator = file.readlines()
         if self.fileType == "csv":
-            iterator = csv.reader(file, delimiter=";")
+            iterator = csv.reader(file, delimiter=returnDelimiter(file))
         for ind, line in enumerate(iterator):
             if self.fileType == "txt": line = splitter.findall(line)
 
@@ -288,7 +296,7 @@ class Plaque:
         CSV files.
         """
         file = open(unicode(self.filename), 'r')
-        iterator = csv.reader(file, delimiter=",")
+        iterator = csv.reader(file, delimiter=returnDelimiter(file))
         hasHeader = False
         for ind, line in enumerate(iterator):
             if len(line) != 0:
@@ -356,7 +364,7 @@ class Plaque:
             iterator = file.readlines()
             splitter = re.compile(r'([\w .,\-\(\)\[\]\+\\/]*|\d+[.,]?\d*)\t', re.UNICODE)
         if self.fileType == 'csv':
-            iterator = csv.reader(file, delimiter=",")
+            iterator = csv.reader(file, delimiter=returnDelimiter(file))
 
         for ind, line in enumerate(iterator):
             if self.fileType == 'txt': 
