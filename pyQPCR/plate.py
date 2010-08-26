@@ -34,6 +34,12 @@ __version__ = "$Rev$"
 
 
 def returnDelimiter(fileObj):
+    """
+    A routine to determine the separator of a CSV file.
+
+    :param fileObj: the file object we want to test
+    :type fileObj: file
+    """
     text = fileObj.read(1024) # you can change this to whatever is appropriate for your data
     fileObj.seek(0) # get back to beginning of file for csv reader
     if text.count(',') > text.count(';'):
@@ -90,6 +96,8 @@ class Plaque:
                 self.parseAppliedUniv()
             elif machine == 'Applied 7000':
                 self.parseApplied7000()
+            elif machine == 'Biorad MyIQ':
+                self.parseBioradMyIQ()
             elif machine == 'Roche LightCycler 480':
                 self.parseLightCycler480()
             # Raise exception if no well are detected
@@ -442,6 +450,80 @@ class Plaque:
                 if newGeneRef not in self.geneRef:
                     self.geneRef.append(newGeneRef)
         file.close()
+
+    def parseBioradMyIQ(self):
+        """
+        This method allows to parse Biorad MyIQ raw data. It supports only
+        CSV files. In fact Biorad export MyIQ only in XLS format, so one has
+        to export in CSV form Excel or OpenOffice.
+        """
+        file = open(unicode(self.filename), 'r')
+        iterator = csv.reader(file, delimiter=returnDelimiter(file))
+        hasHeader = False
+        for ind, line in enumerate(iterator):
+            if len(line) != 0:
+                if string.join(line).__contains__('Well'):
+                    hasHeader = True
+                    initTab = ind
+            if hasHeader:
+                if ind == initTab:
+                    self.header = OrderedDict()
+                    for i, field in enumerate(line):
+                        self.header[field] = i
+                    ncol = len(self.header.keys())
+
+                if ind != initTab and len(line) == ncol:
+                    champs = []
+                    for k, field in enumerate(line):
+                        try:
+                            if self.header.keys()[k] in ('Threshold Cycle (Ct)', 
+                                'Ct Mean', 'Ct Std. Dev'):
+                                dat = float(field.replace(',', '.'))
+                            else:
+                                dat = field
+                        except ValueError:
+                            dat = field
+                        champs.append(dat)
+                    if self.header.has_key('Well'):
+                        name = champs[self.header['Well']]
+                        x = Puits(name)
+                        if x.xpos > 8 or x.ypos > 12:
+                            self.setPlateType('384')
+                    else:
+                        raise KeyError
+                    if self.header.has_key('Identifier'):
+                        geneName = champs[self.header['Identifier']]
+                        x.setGene(Gene(geneName))
+                    if self.header.has_key('Replicate #'):
+                        echName = champs[self.header['Replicate #']]
+                        x.setEch(Gene(echName))
+                    if self.header.has_key('Threshold Cycle (Ct)'):
+                        ct = champs[self.header['Threshold Cycle (Ct)']]
+                        x.setCt(ct)
+                    if self.header.has_key('Threshold Cycle (Ct)'):
+                        ct = champs[self.header['Threshold Cycle (Ct)']]
+                        x.setCt(ct)
+                    if self.header.has_key('Ct Mean'):
+                        ctmean = champs[self.header['Ct Mean']]
+                        x.setCtmean(ctmean)
+                    if self.header.has_key('Ct Std. Dev'):
+                        ctdev = champs[self.header['Ct Std. Dev']]
+                        x.setCtdev(ctdev)
+                    if self.header.has_key('Starting Quantity (SQ)'):
+                        try:
+                            amount = float(champs[self.header['Starting Quantity (SQ)']])
+                            x.setType('standard')
+                            x.setAmount(amount)
+                        except ValueError:
+                            pass
+                    if self.header.has_key('Type'):
+                        type = champs[self.header['Type']]
+                        if type == 'Unkn':
+                            x.setType('unknown')
+                        elif type == 'Std':
+                            x.setType('standard')
+                    setattr(self, x.name, x)
+                    self.listePuits.append(x)
 
     def subPlate(self, listWells):
         """
@@ -816,7 +898,5 @@ class PlateError(Exception):
 
 
 if __name__ == '__main__':
-    pl = Plaque('abs_quant-fit_points.txt', machine='Roche LightCycler 480')
-    print str(pl.A1)
-    pl = Plaque('raw_data_lightcycler2.txt', machine='Roche LightCycler 480')
-    print str(pl.A1)
+    pl = Plaque('raw_data_biorad_MyIq.csv', machine='Biorad MyIQ')
+    print str(pl.A01)
