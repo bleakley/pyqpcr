@@ -47,6 +47,8 @@ class Project:
 
         :param fname: the filename
         :type fname: PyQt4.QtCore.QString
+        :param open: a boolean to indicate if we create a new project or open a file
+        :type open: logical
         """
         self.dicoPlates = OrderedDict()
  
