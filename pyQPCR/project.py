@@ -41,7 +41,7 @@ class Project:
     >>> proj.findTrip(0.3, 0.9, 'student')
     """
 
-    def __init__(self, fname=None):
+    def __init__(self, fname=None, open=True):
         """
         Constructor for the project object
 
@@ -60,7 +60,7 @@ class Project:
         self.hashAmount[''] = ''
         self.unsaved = False
         self.filename = fname
-        if self.filename is not None:
+        if self.filename is not None and open is True:
             self.openProject(self.filename)
 
     def openProject(self, fname):

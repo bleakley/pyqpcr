@@ -423,7 +423,7 @@ class Qpcr_qt(QMainWindow):
         dialog = NewProjectDialog(self, pwd=dir)
         if dialog.exec_():
             self.cleanBeforeOpen()
-            self.project = Project(dialog.projectName)
+            self.project = Project(dialog.projectName, open=False)
             self.projectStack.append(copy.deepcopy(self.project))
             self.filename = dialog.projectName
             self.setWindowTitle("pyQPCR - %s[*]" % QFileInfo(self.filename).fileName())
@@ -452,6 +452,9 @@ class Qpcr_qt(QMainWindow):
         elif self.machine == 'Applied 7500':
             formats =[u"*.txt", u"*.csv"]
             type = 'Applied 7500 machines'
+        elif self.machine == 'Biorad MyIQ':
+            formats =[u"*.csv"]
+            type = 'Biorad MyIQ machines'
         elif self.machine == 'Roche LightCycler 480':
             formats =[u"*.txt"]
             type = 'Roche LightCycler 480'
