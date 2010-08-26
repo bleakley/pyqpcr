@@ -632,7 +632,7 @@ class Project:
         for pl in self.dicoPlates:
             liste = []
             for well in self.dicoPlates[pl].listePuits:
-                if well.type == QString('unknown'):
+                if well.type == QString('unknown') and well.enabled is True:
                     liste.append(well)
 
             if len(liste) == 0:
