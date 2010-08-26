@@ -337,11 +337,17 @@ class Puits:
         else:
             ct = ''
         if str(self.ctmean) != '':
-            ctmean = "%.2f" % self.ctmean
+            try:
+                ctmean = "%.2f" % self.ctmean
+            except TypeError:
+                ctmean = str(self.ctmean)
         else:
             ctmean = ''
         if str(self.ctdev) != '':
-            ctdev = "%.2f" % self.ctdev
+            try:
+                ctdev = "%.2f" % self.ctdev
+            except TypeError:
+                ctdev = str(self.ctdev)
         else:
             ctdev = ''
         if str(self.NRQ) != '':
