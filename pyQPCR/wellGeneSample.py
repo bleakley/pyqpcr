@@ -380,7 +380,10 @@ class Puits:
         :type ectMax: float
         """
         try:
-            amount = "%.2f" % self.amount
+            if self.amount >= 1e-2:
+                amount = "%.2f" % self.amount
+            else:
+                amount = "%.2e" % self.amount
         except TypeError:
             amount =  str(self.amount)
         try:

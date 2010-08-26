@@ -477,7 +477,7 @@ class Plaque:
                     for k, field in enumerate(line):
                         try:
                             if self.header.keys()[k] in ('Threshold Cycle (Ct)', 
-                                'Ct Mean', 'Ct Std. Dev'):
+                                'Ct Mean', 'Ct Std. Dev', 'Starting Quantity (SQ)'):
                                 dat = float(field.replace(',', '.'))
                             else:
                                 dat = field
@@ -522,8 +522,9 @@ class Plaque:
                     if self.header.has_key('Starting Quantity (SQ)'):
                         try:
                             amount = float(champs[self.header['Starting Quantity (SQ)']])
-                            x.setType('standard')
-                            x.setAmount(amount)
+                            if amount != 0:
+                                x.setType('standard')
+                                x.setAmount(amount)
                         except ValueError:
                             pass
                     if self.header.has_key('Type'):
