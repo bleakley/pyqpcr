@@ -71,7 +71,10 @@ class GeneEchComboBox(QComboBox):
             item = obj.name
         else:
             try:
-                item =  QString("%.2f" % obj)
+                if obj >= 1e-2 and obj <= 1e3:
+                    item =  QString("%.2f" % obj)
+                else:
+                    item =  QString("%.1e" % obj)
             except TypeError:
                 item = QString(obj)
         QComboBox.addItem(self, item, *args)

@@ -290,7 +290,10 @@ class Project:
             for pl in self.dicoPlates:
                 for well in self.dicoPlates[pl].listePuits:
                     try:
-                        key = QString("%.2f" % well.amount)
+                        if well.amount >= 1e-2 and well.amount <= 1e3:
+                            key = QString("%.2f" % well.amount)
+                        else:
+                            key = QString("%.2e" % well.amount)
                     except TypeError:
                         key = QString(well.amount)
                     if not self.hashAmount.has_key(key):
@@ -298,7 +301,10 @@ class Project:
         else:
             for well in plate.listePuits:
                 try:
-                    key = QString("%.2f" % well.amount)
+                    if well.amount >= 1e-2 and well.amount <= 1e3:
+                        key = QString("%.2f" % well.amount)
+                    else:
+                        key = QString("%.2e" % well.amount)
                 except TypeError:
                     key = QString(well.amount)
                 if not self.hashAmount.has_key(key):
@@ -312,7 +318,10 @@ class Project:
         for pl in self.dicoPlates:
             for well in self.dicoPlates[pl].listePuits:
                 try:
-                    key = QString("%.2f" % well.amount)
+                    if well.amount >= 1e-2 and well.amount <= 1e3:
+                        key = QString("%.2f" % well.amount)
+                    else:
+                        key = QString("%.2e" % well.amount)
                 except TypeError:
                     key = QString(well.amount)
                 if self.dicoAmount.has_key(key):

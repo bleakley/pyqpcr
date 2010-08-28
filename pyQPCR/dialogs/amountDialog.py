@@ -29,8 +29,26 @@ __date__ = "$Date$"
 __version__ = "$Rev$"
 
 class AmountDialog(QDialog):
+    """
+    This object is a dialog that allows to Add/Edit/Remove the different amounts
+    of your plates.
+
+    :attribute listWidget: the main displayed list of items that contains the 
+                           different amounts.
+    :type listWidget: PyQt4.QtCore.QListWidget
+    :attribute project: a copy (copy.deepcopy) of the project
+    :type project: pyQPCR.project.Project
+    """
     
     def __init__(self, parent=None, project=None):
+        """
+        Constructor of AmountDialog
+
+        :param parent: the QWidget parent
+        :type parent: PyQt4.QtGui.QWidget
+        :param project: the current project
+        :type project: pyQPCR.project.Project
+        """
         self.parent = parent
         QDialog.__init__(self, parent)
 
@@ -70,10 +88,22 @@ class AmountDialog(QDialog):
         self.setWindowTitle("New amount")
 
     def reformatFloat(self, input):
-        output = QString("%.2f" % float(input))
+        """
+        A method to reformat a float into a string with the correct format.
+
+        :param input: the input string (representing a float or an integer)
+        :type input: PyQt4.QtCore.QString
+        """
+        if float(input) >= 1e-2 and float(input) <= 1e3:
+            output = QString("%.2f" % float(input))
+        else:
+            output = QString("%.2e" % float(input))
         return output
 
     def populateList(self):
+        """
+        A method to fill up the QListWidget that contains the different amounts.
+        """
         self.listWidget.clear()
         for it in self.project.hashAmount.keys():
             if it != '':
@@ -82,6 +112,10 @@ class AmountDialog(QDialog):
                 self.listWidget.addItem(item)
 
     def add(self):
+        """
+        This method call the AddAmDialog wizard that allows to add a new amount.
+        A warning is displayed if the amount already exists.
+        """
         dialog = AddAmDialog(self)
         if dialog.exec_():
             am = dialog.am.text()
@@ -95,6 +129,9 @@ class AmountDialog(QDialog):
                             "The amount %s is already defined !" % amname)
 
     def edit(self):
+        """
+        This method call the AddAmDialog wizard that allows to edit the existing amounts.
+        """
         if len(self.listWidget.selectedItems()) == 0:
             return
         am_before = self.listWidget.currentItem().statusTip()
@@ -119,17 +156,23 @@ class AmountDialog(QDialog):
             self.populateList()
 
     def remove(self):
+        """
+        This is used to remove an existing amount.
+        """
         ams = [] ; sts = []
         if len(self.listWidget.selectedItems()) == 0:
             return
         for it in self.listWidget.selectedItems():
             am = it.statusTip()
-            st = "%.2f" % self.project.hashAmount[am]
+            if self.project.hashAmount[am] >= 1e-2 and self.project.hashAmount[am] <= 1e3:
+                st = "%.2f" % self.project.hashAmount[am]
+            else:
+                st = "%.2e" % self.project.hashAmount[am]
             sts.append(st)
             ams.append(am)
 
         reply = QMessageBox.question(self, "Remove",
-                        "Remove <b>%s</b> ?" % sts,
+                "Remove the following amounts: <b>%s</b> ?" % sts,
                         QMessageBox.Yes|QMessageBox.No)
         if reply == QMessageBox.Yes:
             for am in ams:
@@ -143,9 +186,23 @@ class AmountDialog(QDialog):
 
 
 class AddAmDialog(QDialog):
+    """
+    This object is a small dialog used to Add/Edit a new amount in 
+    your experiment.
+
+    :attribute am: the amount edited
+    :type am: float
+    """
     
     def __init__(self, parent=None, am=None):
-        self.parent = parent
+        """
+        Constructor of AddAmDialog
+
+        :param parent: the QWidget parent
+        :type parent: PyQt4.QtGui.QWidget
+        :param am: the current amount we want to Edit (or Add)
+        :type project: pyQPCR.project.Project
+        """
         QDialog.__init__(self, parent)
         lab = QLabel("Amount:")
         if am is not None:
