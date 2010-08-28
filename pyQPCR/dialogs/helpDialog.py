@@ -27,9 +27,24 @@ __version__ = "$Revision$"
 
 
 class HelpDialog(QDialog):
+    """
+    HelpDialog is opened if one clicks on Help in pyQPCR.
+
+    :attribute pageLabel: the name of the current page
+    :type pageLabel: PyQt4.QtGui.QLabel
+    :attribute textBrowser: the HTML browser to navigate in the help
+    :type textBrowser: PyQt4.QtGui.QTextBrowser
+    """
 
     def __init__(self, page, parent=None):
-        self.parent = parent
+        """
+        Constructor of HelpDialog
+
+        :param page: the source
+        :type page: PyQt4.QtCore.QString
+        :param parent: the QWidget parent
+        :type parent: PyQt4.QtGui.QWidget
+        """
         QDialog.__init__(self, parent)
 
         backAction = QAction(QIcon(":/back.png"), "&Back", self)
@@ -67,6 +82,9 @@ class HelpDialog(QDialog):
         self.setWindowTitle("%s Help" % QApplication.applicationName())
 
     def updatePageTitle(self):
+        """
+        This method allows to update the title of the current page.
+        """
         self.pageLabel.setText(self.textBrowser.documentTitle())
 
 if __name__ == "__main__":
