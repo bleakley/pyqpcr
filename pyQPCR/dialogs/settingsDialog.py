@@ -50,7 +50,6 @@ class SettingsDialog(QDialog):
 
     def __init__(self, parent=None, ect=0.3, ctmin=35, confidence=0.9,
                  errtype="normal", machine='Eppendorf', typeCalc='Relative quantification'):
-        self.parent = parent
         QDialog.__init__(self, parent)
 
         labCalc = QLabel("<b>Calculation :</b>")
