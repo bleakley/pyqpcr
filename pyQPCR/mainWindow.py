@@ -53,6 +53,9 @@ class Qpcr_qt(QMainWindow):
         """
         Construction of the main window. QSettings setup and connexions 
         SIGNAL/SLOT.
+
+        :param parent: the parent QWidget
+        :type parent: PyQt4.QtGui.QWidget
         """
         QMainWindow.__init__(self, parent)
  
@@ -231,7 +234,8 @@ class Qpcr_qt(QMainWindow):
                 icon="about")
         helpHelpAction = self.createAction("&Help", self.helpHelp,
                 QKeySequence.HelpContents, icon="help")
-# Menus
+        
+        # Menus
         fileMenu = self.menuBar().addMenu("&File")
         self.addActions(fileMenu, (fileOpenAction, fileNewAction, 
                                    self.fileImportAction, self.closeTabAction))
@@ -262,10 +266,11 @@ class Qpcr_qt(QMainWindow):
         helpMenu = self.menuBar().addMenu("&Help")
         self.addActions(helpMenu, (helpAboutAction, helpHelpAction))
 
-# Le menu doit afficher les fichiers recemment ouverts
+        # Le menu doit afficher les fichiers recemment ouverts
         self.connect(self.recentFileMenu, SIGNAL("aboutToShow()"),
                 self.updateFileMenu)
-# Toolbars
+        
+        # Toolbars
         fileToolbar = self.addToolBar("File")
         fileToolbar.setObjectName("FileToolBar")
         self.addActions(fileToolbar, (fileOpenAction, fileNewAction,
@@ -321,7 +326,8 @@ class Qpcr_qt(QMainWindow):
         plotToolbar.setObjectName("PlotToolBar")
         self.addActions(plotToolbar, (self.plotStdAction, self.plotAction))
         plotToolbar.setIconSize(QSize(22, 22))
-# ContextMenu
+        
+        # ContextMenu
         self.projWidget.setContextMenuPolicy(Qt.ActionsContextMenu)
         self.resulWidget.setContextMenuPolicy(Qt.ActionsContextMenu)
         self.addActions(self.projWidget, (fileOpenAction, fileNewAction, 
@@ -332,7 +338,8 @@ class Qpcr_qt(QMainWindow):
         self.addActions(self.resulWidget, (self.filePrintAction, self.exportAction,
                                       self.fileSaveAction, self.fileSaveAsAction,
                                       self.plotStdAction, self.plotAction))
-# Desactivation par defaut
+        
+        # Desactivation par defaut
         self.activateDesactivate(False)
 
     def createAction(self, text, slot=None, shortcut=None, icon=None,
@@ -411,11 +418,16 @@ class Qpcr_qt(QMainWindow):
                 self.appendPlate(pl, key)
                 self.appendResult(pl, key)
 
-# Pile de plaques pour le Undo/Redo
+            # Pile de plaques pour le Undo/Redo
             self.projectStack.append(copy.deepcopy(self.project))
             self.updateUi()
 
     def fileNew(self):
+        """
+        This method is used when one wants to create a new project.
+        It opens the NewProjectDialog, a wizard that helps to define your
+        new project.
+        """
         if not self.okToContinue():
             return
         dir = os.path.dirname(self.filename) if self.filename is not None \
@@ -505,6 +517,12 @@ class Qpcr_qt(QMainWindow):
                                         % (name, QFileInfo(self.filename).fileName()))
 
     def addPlate(self, fname=None):
+        """
+        This method is used to add a plate to the project.
+
+        :param fname: the name of the plate
+        :type fname: PyQt4.QtCore.QString
+        """
         if fname is None:
             action = self.sender()
             if isinstance(action, QAction):
@@ -536,6 +554,10 @@ class Qpcr_qt(QMainWindow):
                 QMessageBox.warning(self, "Warning file import", str(e))
 
     def closePlate(self):
+        """
+        This method is used to close a plate from your project. A dialog
+        will warn you that you are going to close a plate.
+        """
         reply = QMessageBox.question(self, "Remove a plate",
                             "Are you sure to remove %s ?" % self.currentPlate,
                             QMessageBox.Yes|QMessageBox.No)
@@ -544,12 +566,12 @@ class Qpcr_qt(QMainWindow):
             message = "Closed %s" % plToDestroy
             index = self.project.dicoPlates.index(plToDestroy)
             self.project.removePlate(plToDestroy)
-# Nettoyage des onglets et des tableaux
+            # Nettoyage des onglets et des tableaux
             self.tabulPlates.removeTab(index)
             self.pileTables.__delitem__(plToDestroy)
             self.tabulResults.removeTab(index)
             self.pileResults.__delitem__(plToDestroy)
-# Maj des cbox et Remplissage du tree
+            # Maj des cbox et Remplissage du tree
             self.updateUi()
             self.project.unsaved = True
             self.fileSaveAction.setEnabled(True)
@@ -630,12 +652,18 @@ class Qpcr_qt(QMainWindow):
         cbox.addItems(items)
 
     def fileSave(self):
+        """
+        Save the project in a XML format.
+        """
         self.project.exportXml(self.filename)
         self.updateStatus("Saved %s" % self.filename)
         self.project.unsaved = False
         self.fileSaveAction.setEnabled(False)
 
     def fileSaveAs(self):
+        """
+        Save as wizard.
+        """
         formats =[u"*.xml"]
         fname = self.filename if self.filename is not None else "."
         fname = unicode(QFileDialog.getSaveFileName(self, 
@@ -647,6 +675,10 @@ class Qpcr_qt(QMainWindow):
             self.fileSave()
 
     def generateHTML(self):
+        """
+        This method is used to generate an HTML output that corresponds to the
+        result table. It is used to generate the PDF output of the result table.
+        """
         dialog = PrintingDialog(self)
         if dialog.exec_():
             isTable = dialog.btnRes.isChecked()
@@ -803,6 +835,10 @@ class Qpcr_qt(QMainWindow):
             self.populateTree()
 
     def helpAbout(self):
+        """
+        This method is called when the user clicks on "About pyQPCR" in the 
+        Help menu. 
+        """
         import platform
         QMessageBox.about(self, "About pyQPCR",
         """<b>pyQPCR</b> v %s
@@ -1241,6 +1277,9 @@ class Qpcr_qt(QMainWindow):
                         self.project.dicoPlates[self.currentPlate], self.typeCalc)
 
     def displayWarnings(self):
+        """
+        This method is called to display warnings.
+        """
         for key in self.project.dicoPlates.keys():
             pl = self.project.dicoPlates[key]
             self.pileTables[key].populateTable(pl)
@@ -1530,6 +1569,9 @@ class Qpcr_qt(QMainWindow):
         self.undoInd = -1
  
 def run():
+    """
+    Main function to run pyQPCR.
+    """
     import sys
     app = QApplication(sys.argv)
     app.setApplicationName("pyQPCR")
