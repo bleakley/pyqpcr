@@ -28,9 +28,43 @@ __date__ = "$Date$"
 __version__ = "$Rev$"
 
 class NewProjectDialog(QDialog):
+    """
+    This object is used to display a wizard that helps to create
+    a new project. It allows to enter the name of the project, the
+    type of calculation, the type of PCR device and the plates 
+    you want to import.
+
+    :attribute pwd: the path of the project
+    :type pwd: PyQt4.QtCore.QString
+    :attribute fileNames: a list that contains the name of the plates
+                          that will be imported
+    :type fileNames: list
+    :attribute typeCalc: the type of calculation (absolute or relative
+                         quantification
+    :type typeCalc: PyQt4.QtGui.QComboBox
+    :attribute edt: the name of the project
+    :type edt: PyQt4.QtGui.QLineEdit
+    :attribute machbox: the type of PCR device used in the experiment
+    :type machbox: PyQt4.QtGui.QComboBox
+    :attribute listFiles: a list that contains the name of the plates
+    :type listFiles: PyQt4.QtGui.QListWidget
+    :attribute file: the path where the project is going to be saved
+    :type file: PyQt4.QtGui.QLineEdit
+    :attribute workdir: the directory where the project will be saved
+    :type workdir: PyQt4.QtCore.QString
+    """
     
-    def __init__(self, parent=None, pwd=None):
-        self.parent = parent
+    def __init__(self, parent=None, pwd=None, machine='Eppendorf'):
+        """
+        Constructor of NewProjectDialog
+
+        :param parent: the QWidget parent
+        :type parent: PyQt4.QtGui.QWidget
+        :param pwd: the path of the new project
+        :type pwd: PyQt4.QtCore.QString
+        :param machine: the type of PCR device used in the experiment
+        :type machine: PyQt4.QtCore.QString
+        """
         self.pwd = pwd
         self.fileNames = OrderedDict()
         QDialog.__init__(self, parent)
@@ -48,12 +82,20 @@ class NewProjectDialog(QDialog):
         lab2 = QLabel("<b>3. &Machine type</b>")
         self.machBox = QComboBox()
         lab2.setBuddy(self.machBox)
-        self.machBox.addItem("Eppendorf")
-        self.machBox.addItem("Applied StepOne")
-        self.machBox.addItem("Applied 7000")
-        self.machBox.addItem("Applied 7500")
-        self.machBox.addItem("Biorad MyIQ")
-        self.machBox.addItem("Roche LightCycler 480")
+        self.machBox.addItems(['Eppendorf', 'Applied StepOne', 'Applied 7000',
+                               'Applied 7500', 'Biorad MyIQ', 'Roche LightCycler 480'])
+        if machine == 'Eppendorf':
+            self.machBox.setCurrentIndex(0)
+        elif machine == 'Applied StepOne':
+            self.machBox.setCurrentIndex(1)
+        elif machine == 'Applied 7000':
+            self.machBox.setCurrentIndex(2)
+        elif machine == 'Applied 7500':
+            self.machBox.setCurrentIndex(3)
+        elif machine == 'Biorad MyIQ':
+            self.machBox.setCurrentIndex(4)
+        elif machine == 'Roche LightCycler 480':
+            self.machBox.setCurrentIndex(5)
 
         lab3 = QLabel("<b>4. Plates files</b>")
         self.listFiles = QListWidget()
@@ -64,6 +106,7 @@ class NewProjectDialog(QDialog):
         self.file = QLineEdit()
         lab1.setBuddy(self.file)
         self.file.setReadOnly(True)
+
         btn = QToolButton()
         ic = QIcon(":/fileopen")
         btn.setIcon(ic)
@@ -108,12 +151,18 @@ class NewProjectDialog(QDialog):
         self.setWindowTitle("New project")
 
     def populateList(self):
+        """
+        A method to populate the list of files displayed in the QDialog.
+        """
         self.listFiles.clear()
         for fname in self.fileNames.keys():
             item = QListWidgetItem(fname)
             self.listFiles.addItem(item)
 
     def addPlate(self):
+        """
+        A method to add a plate to the project.
+        """
         dir = self.pwd if self.pwd is not None else "."
         if self.machBox.currentText() == 'Eppendorf':
             formats =[u"*.txt", u"*.csv"]
@@ -142,6 +191,9 @@ class NewProjectDialog(QDialog):
             self.populateList()
 
     def removePlate(self):
+        """
+        A method to remove a plate from the project.
+        """
         if len(self.listFiles.selectedItems()) == 0:
             return
         for it in self.listFiles.selectedItems():
@@ -149,18 +201,21 @@ class NewProjectDialog(QDialog):
         self.populateList()
 
     def accept(self):
+        """
+        Overload of the 'accept' method.
+        """
         if self.edt.text() == '':
             QMessageBox.warning(self, "No project name",
                "<b>Warning</b>: you must give a project name ! " )
         elif self.file.text() == '':
             QMessageBox.warning(self, "No project directory",
-               "<b>Warning</b>: you must choose a directory for the project ! " )
+               "<b>Warning</b>: you must choose a directory to save the project! " )
         else:
             if self.edt.text().endsWith('xml') or self.edt.text().endsWith('XML'):
                 projectName = self.edt.text()
             else:
                 projectName = QString("%s.xml" % self.edt.text())
-# Gestion du / ou du \ selon l'OS utilise avec os.sep
+            # Gestion du / ou du \ selon l'OS utilise avec os.sep
             self.projectName = "%s%s%s" % (self.workDir, os.sep, projectName)
             self.machineType = self.machBox.currentText()
             self.calculationType = self.typeCalc.currentText()
@@ -172,6 +227,9 @@ class NewProjectDialog(QDialog):
                 QDialog.accept(self)
 
     def setFilePath(self):
+        """
+        A method to set where the project is going to be saved.
+        """
         dir = QFileDialog.getExistingDirectory(self, 'Choose the directory')
         if dir:
             self.workDir = dir

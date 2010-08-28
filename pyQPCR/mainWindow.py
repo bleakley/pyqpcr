@@ -420,7 +420,7 @@ class Qpcr_qt(QMainWindow):
             return
         dir = os.path.dirname(self.filename) if self.filename is not None \
                 else "."
-        dialog = NewProjectDialog(self, pwd=dir)
+        dialog = NewProjectDialog(self, pwd=dir, machine=self.machine)
         if dialog.exec_():
             self.cleanBeforeOpen()
             self.project = Project(dialog.projectName, open=False)
