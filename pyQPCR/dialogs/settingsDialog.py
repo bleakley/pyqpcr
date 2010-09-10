@@ -26,36 +26,60 @@ __date__ = "$Date$"
 __version__ = "$Revision$"
 
 class SuffixComboBox(QComboBox):
+    """
+    This class is an overloading of QComboBox. It define a comboBox
+    with a suffix (that is '%' in our case)
+    """
 
     def __init__(self, parent=None):
+        """
+        Constructor of SuffixComboBox
+
+        :param parent: the QWidget parent
+        :type parent: PtQt4.QtCore.QWidget
+        """
         QComboBox.__init__(self, parent)
 
     def addItem(self, item, *args):
+        """
+        Overload of addItem: add a suffix to the item
+        """
         suffix = QString("%")
         item += suffix
         QComboBox.addItem(self, item, *args)
 
     def addItems(self, items):
+        """
+        Overload of addItems: add a suffix to the item
+        """
         for item in items:
             self.addItem(item)
 
     def currentText(self):
+        """
+        Overload of currentText: return the string without
+        the suffix.
+        """
         cText = QComboBox.currentText(self)
         return cText[:-1]
 
 class SettingsDialog(QDialog):
     """
-    This dialog is the configuration dialog of pyQPCR. It is open when the Settings is open.
+    This dialog is the configuration dialog of pyQPCR. It is open when 
+    the Settings is open. It allows to set the different settings of
+    pyQPCR (type of machine and calculations, ...)
     """
 
     def __init__(self, parent=None, ect=0.3, ctmin=35, confidence=0.9,
-                 errtype="normal", machine='Eppendorf', typeCalc='Relative quantification'):
+                 errtype="normal", machine='Eppendorf', 
+                 typeCalc='Relative quantification'):
         QDialog.__init__(self, parent)
 
         labCalc = QLabel("<b>Calculation :</b>")
         lab0 = QLabel("&Type of calculation :")
         self.typeCalc = QComboBox()
-        self.typeCalc.addItems(['Relative quantification', 'Absolute quantification'])
+        self.typeCalc.addItems(['Relative quantification', 
+                                'Absolute quantification'])
         lab0.setBuddy(self.typeCalc)
         if typeCalc == 'Relative quantification':
             self.typeCalc.setCurrentIndex(0)
@@ -112,7 +136,8 @@ class SettingsDialog(QDialog):
         lab5 = QLabel("&Machine type : ")
         self.machBox = QComboBox()
         self.machBox.addItems(['Eppendorf', 'Applied StepOne', 'Applied 7000', 
-                               'Applied 7500', 'Biorad MyIQ', 'Roche LightCycler 480'])
+                               'Applied 7500', 'Biorad MyIQ', 
+                               'Roche LightCycler 480'])
         if machine == 'Eppendorf':
             self.machBox.setCurrentIndex(0)
         elif machine == 'Applied StepOne':
