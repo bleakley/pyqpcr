@@ -479,7 +479,7 @@ class Qpcr_qt(QMainWindow):
                                 " ".join(formats)))
         if fileNames:
             for file in fileNames:
-                if file.endsWith('xml'):
+                if file.endsWith('xml') or file.endsWith('XML'):
                     st = '<ul>'
                     warn = False
                     try:
