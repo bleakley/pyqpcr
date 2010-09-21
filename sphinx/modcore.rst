@@ -1,7 +1,8 @@
 Core modules
 ************
 
-This is something I want to say that is not in the docstring.
+These modules are the basis of pyQPCR.
+They define the well object that relies on the sample and target objects.
 
 The sample object
 =================

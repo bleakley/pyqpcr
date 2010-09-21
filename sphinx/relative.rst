@@ -94,10 +94,6 @@ calculation of the error on the efficiency :
 .. math::
    \epsilon(\text{eff}) = \ln 10(\text{eff}+100) \dfrac{\Delta a}{a^2}
 
-ou bien ???
-
-.. math::
-   \epsilon(\text{eff}) = \ln 10(\text{eff}+100) \dfrac{\text{SE}(a)}{a^2}
 
 Relative quantification
 =======================
