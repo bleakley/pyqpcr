@@ -34,8 +34,18 @@ class MyQTableWidget(QTableWidget):
     """
 
     def resizeEvent(self, event):
-        width = event.size().width()/12.
-        height = event.size().height()/8.
+        """
+        This method allows to resize the plate in a 12x8 wells shape.
+        """
+        if self.columnCount() == 8 and self.rowCount() == 9:
+            width = event.size().width()/8.
+            height = event.size().height()/9.
+        elif self.columnCount() == 10 and self.rowCount() == 10:
+            width = event.size().width()/10.
+            height = event.size().height()/10.
+        else:
+            width = event.size().width()/12.
+            height = event.size().height()/8.
         for i in range(self.columnCount()):
             self.setColumnWidth(i, width)
         for j in range(self.rowCount()):
@@ -56,7 +66,7 @@ class PlateWidget(MyQTableWidget):
 
         :param parent: the QWidget parent
         :type parent: PyQt4.QtGui.QWidget
-        :param plateType: the type of plates (96 wells or 384 wells)
+        :param plateType: the type of plates (96 wells, 384 wells, 72 or 100)
         :type plateType: PyQt4.QtCore.QString
         """
         QTableWidget.__init__(self, parent)
@@ -70,6 +80,16 @@ class PlateWidget(MyQTableWidget):
                                 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P']
             self.setRowCount(16)
             self.setColumnCount(24)
+        elif plateType == '72':
+            self.tableLabels = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
+                                'I']
+            self.setRowCount(9)
+            self.setColumnCount(8)
+        elif plateType == '100':
+            self.tableLabels = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
+                                'I', 'J']
+            self.setRowCount(10)
+            self.setColumnCount(10)
 
         self.setVerticalHeaderLabels(self.tableLabels)
         self.setEditTriggers(QTableWidget.NoEditTriggers)

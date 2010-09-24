@@ -143,6 +143,10 @@ class SaxProjectHandler(QXmlDefaultHandler):
             self.project.dicoPlates[self.platetitle] = self.pl
             if self.plateType == '384':
                 self.project.dicoPlates[self.platetitle].setPlateType('384')
+            elif self.plateType == '72':
+                self.project.dicoPlates[self.platetitle].setPlateType('72')
+            elif self.plateType == '100':
+                self.project.dicoPlates[self.platetitle].setPlateType('100')
         elif qName == "NAME":
             self.well = Puits(str(self.text))
         elif qName == "WELL":

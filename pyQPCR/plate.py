@@ -98,6 +98,8 @@ class Plaque:
                 self.parseApplied7000()
             elif machine == 'Biorad MyIQ':
                 self.parseBioradMyIQ()
+            elif machine == 'Qiagen Corbett':
+                self.parseCorbett()
             elif machine == 'Roche LightCycler 480':
                 self.parseLightCycler480()
             # Raise exception if no well are detected
@@ -536,6 +538,81 @@ class Plaque:
                     setattr(self, x.name, x)
                     self.listePuits.append(x)
 
+    def parseCorbett(self):
+        """
+        This method allows to parse the Qiagen Corbett files (CSV only).
+        This machine uses only rotors of 72 or 100 wells, so it behaves
+        a bit differantly than usual plates of 96/384 wells.
+        """
+        self.setPlateType('72')
+        file = open(unicode(self.filename), 'r')
+        iterator = csv.reader(file, delimiter=returnDelimiter(file))
+        hasHeader = False
+        for ind, line in enumerate(iterator):
+            if len(line) != 0:
+                if string.join(line).__contains__('No.'):
+                    hasHeader = True
+                    initTab = ind
+            if hasHeader:
+                if ind == initTab:
+                    self.header = OrderedDict()
+                    for i, field in enumerate(line):
+                        self.header[field] = i
+                    ncol = len(self.header.keys())
+
+                if ind != initTab and len(line) == ncol:
+                    champs = []
+                    for k, field in enumerate(line):
+                        try:
+                            if self.header.keys()[k] in ('Ct', 
+                                'Given Conc (ng/ul)'):
+                                dat = float(field.replace(',', '.'))
+                            else:
+                                dat = field
+                        except ValueError:
+                            dat = field
+                        champs.append(dat)
+                    if self.header.has_key('No.'):
+                        name = champs[self.header['No.']]
+                        x = Puits(name)
+                        if x.xpos > 9 or x.ypos > 8:
+                            self.setPlateType('100')
+                    else:
+                        raise KeyError
+
+                    if self.header.has_key('Name'):
+                        name = champs[self.header['Name']]
+                        if name.__contains__(' '):
+                            dat = name.split(' ')
+                        else:
+                            dat = name
+                        if len(dat) == 2:
+                            x.setGene(Gene(dat[0]))
+                            x.setEch(Ech(dat[1]))
+                        if len(dat) > 2:
+                            x.setGene(Gene(dat[0]))
+                        else:
+                            x.setGene(Gene(name))
+                    if self.header.has_key('Ct'):
+                        ct = champs[self.header['Ct']]
+                        x.setCt(ct)
+                    if self.header.has_key('Given Conc (ng/ul)'):
+                        try:
+                            amount = float(champs[self.header['Given Conc (ng/ul)']])
+                            if amount != 0:
+                                x.setType('standard')
+                                x.setAmount(amount)
+                        except ValueError:
+                            pass
+                    if self.header.has_key('Type'):
+                        type = champs[self.header['Type']]
+                        if type == 'Unknown':
+                            x.setType('unknown')
+                        elif type == 'Standard':
+                            x.setType('standard')
+                    setattr(self, x.name, x)
+                    self.listePuits.append(x)
+
     def subPlate(self, listWells):
         """
         This method allows to extract a subplate from a plate.
@@ -909,5 +986,6 @@ class PlateError(Exception):
 
 
 if __name__ == '__main__':
-    pl = Plaque('raw_data_biorad_MyIq.csv', machine='Biorad MyIQ')
-    print str(pl.A01)
+    pl = Plaque('raw_corbett1.csv', machine='Qiagen Corbett')
+    print pl.A1
+    print pl.B2.amount

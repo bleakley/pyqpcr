@@ -83,7 +83,8 @@ class NewProjectDialog(QDialog):
         self.machBox = QComboBox()
         lab2.setBuddy(self.machBox)
         self.machBox.addItems(['Eppendorf', 'Applied StepOne', 'Applied 7000',
-                               'Applied 7500', 'Biorad MyIQ', 'Roche LightCycler 480'])
+                               'Applied 7500', 'Biorad MyIQ', 'Qiagen Corbett',
+                               'Roche LightCycler 480'])
         if machine == 'Eppendorf':
             self.machBox.setCurrentIndex(0)
         elif machine == 'Applied StepOne':
@@ -94,8 +95,10 @@ class NewProjectDialog(QDialog):
             self.machBox.setCurrentIndex(3)
         elif machine == 'Biorad MyIQ':
             self.machBox.setCurrentIndex(4)
-        elif machine == 'Roche LightCycler 480':
+        elif machine == 'Qiagen Corbett':
             self.machBox.setCurrentIndex(5)
+        elif machine == 'Roche LightCycler 480':
+            self.machBox.setCurrentIndex(6)
 
         lab3 = QLabel("<b>4. Plates files</b>")
         self.listFiles = QListWidget()
@@ -179,6 +182,9 @@ class NewProjectDialog(QDialog):
         elif self.machBox.currentText() == 'Biorad MyIQ':
             formats =[u"*.csv"]
             type = 'Biorad MyIQ machines'
+        elif self.machBox.currentText() == 'Qiagen Corbett':
+            formats =[u"*.csv"]
+            type = 'Qiagen Corbett machines'
         elif self.machBox.currentText() == 'Roche LightCycler 480':
             formats =[u"*.txt"]
             type = 'Roche LightCycler 480'
