@@ -136,7 +136,7 @@ class SettingsDialog(QDialog):
         lab5 = QLabel("&Machine type : ")
         self.machBox = QComboBox()
         self.machBox.addItems(['Eppendorf', 'Applied StepOne', 'Applied 7000', 
-                               'Applied 7500', 'Biorad MyIQ', 
+                               'Applied 7500', 'Biorad MyIQ', 'Qiagen Corbett',
                                'Roche LightCycler 480'])
         if machine == 'Eppendorf':
             self.machBox.setCurrentIndex(0)
@@ -148,8 +148,10 @@ class SettingsDialog(QDialog):
             self.machBox.setCurrentIndex(3)
         elif machine == 'Biorad MyIQ':
             self.machBox.setCurrentIndex(4)
-        elif machine == 'Roche LightCycler 480':
+        elif machine == 'Qiagen Corbett':
             self.machBox.setCurrentIndex(5)
+        elif machine == 'Roche LightCycler 480':
+            self.machBox.setCurrentIndex(6)
         lab5.setBuddy(self.machBox)
 
         buttonBox = QDialogButtonBox(QDialogButtonBox.Ok|
