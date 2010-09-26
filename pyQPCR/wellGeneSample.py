@@ -448,16 +448,28 @@ class Puits:
         according to its name.
 
         ex. A11 xpos=0 ypos=10
+
+        This method has been extended to work also with Corbett's devices, i.e.
+        with names that contain only a number.
         """
-        motif = re.compile(r"([A-P])(\d+)")
-        groups = motif.search(self.name).groups()
-        self.ypos = int(groups[1])-1
-        lettres = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
-                   'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P']
-        dict = {}
-        for xpos, l in enumerate(lettres):
-            dict[l] = xpos
-        self.xpos = dict[self.name[0]]
+        numbersOnly = re.compile(r"(\d+)")
+        letters = re.compile(r"([A-P])(\d+)")
+        if letters.match(self.name):
+            groups = letters.search(self.name).groups()
+            self.ypos = int(groups[1])-1
+            lettres = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
+                       'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P']
+            dict = {}
+            for xpos, l in enumerate(lettres):
+                dict[l] = xpos
+            self.xpos = dict[self.name[0]]
+        elif numbersOnly.match(self.name):
+            group = numbersOnly.search(self.name).groups()
+            val = int(group[0])
+            # Warning: works only with 72-tubes!
+            # Needs to be polished to work with 100-tubes !
+            self.xpos = (val-1)/8
+            self.ypos = val - self.xpos * 8 - 1
 
     def setGene(self, gene):
         """

@@ -194,9 +194,13 @@ class Plaque:
                     x.setEch(Ech(ech))
                 if self.header.has_key('CrossingPoint'):
                     ct = champs[self.header['CrossingPoint']]
+                    if ct == '':
+                        x.setEnabled(Qt.Unchecked)
                     x.setCt(ct)
                 elif self.header.has_key('Cp'):
                     ct = champs[self.header['Cp']]
+                    if ct == '':
+                        x.setEnabled(Qt.Unchecked)
                     x.setCt(ct)
                 if self.header.has_key('Standard'):
                     try:
@@ -261,6 +265,8 @@ class Plaque:
                     x.setEch(Ech(echName))
                 if self.header.has_key('Ct SYBR'):
                     ct = champs[self.header['Ct SYBR']]
+                    if ct == '':
+                        x.setEnabled(Qt.Unchecked)
                     x.setCt(ct)
                 if self.header.has_key('Ct Mean SYBR'):
                     ctmean = champs[self.header['Ct Mean SYBR']]
@@ -422,6 +428,8 @@ class Plaque:
                         x.setEch(Ech(echName))
                     if self.header.has_key(u'C\u0442'):
                         ct = champs[self.header[u'C\u0442']]
+                        if ct == 'Undetermined':
+                            x.setEnabled(Qt.Unchecked)
                         x.setCt(ct)
                     if self.header.has_key(u'C\u0442 Mean'):
                         ctmean = champs[self.header[u'C\u0442 Mean']]
@@ -595,6 +603,8 @@ class Plaque:
                             x.setGene(Gene(name))
                     if self.header.has_key('Ct'):
                         ct = champs[self.header['Ct']]
+                        if ct == '':
+                            x.setEnabled(Qt.Unchecked)
                         x.setCt(ct)
                     if self.header.has_key('Given Conc (ng/ul)'):
                         try:
