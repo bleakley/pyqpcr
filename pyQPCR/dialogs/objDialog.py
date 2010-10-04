@@ -94,16 +94,25 @@ class PropDialog(QDialog):
 
     def accept(self):
         for ind, it in enumerate(self.hashGene.values()[1:]):
-            it.setEnabled(self.geneListWidget.item(ind).checkState())
+            if self.geneListWidget.item(ind).checkState() == Qt.Unchecked:
+                it.setEnabled(False)
+            else:
+                it.setEnabled(True)
         for ind, it in enumerate(self.hashEch.values()[1:]):
-            it.setEnabled(self.echListWidget.item(ind).checkState())
+            if self.echListWidget.item(ind).checkState() == Qt.Unchecked:
+                it.setEnabled(False)
+            else:
+                it.setEnabled(True)
         QDialog.accept(self)
 
     def populateListGene(self):
         pix = QPixmap(32, 32)
         for it in self.hashGene.values()[1:]:
             item = QListWidgetItem(it.name)
-            item.setCheckState(it.enabled)
+            if it.enabled:
+                item.setCheckState(Qt.Checked)
+            else:
+                item.setCheckState(Qt.Unchecked)
             pix.fill(it.color)
             item.setIcon(QIcon(pix))
             self.geneListWidget.addItem(item)
@@ -112,7 +121,10 @@ class PropDialog(QDialog):
         pix = QPixmap(32, 32)
         for it in self.hashEch.values()[1:]:
             item = QListWidgetItem(it.name)
-            item.setCheckState(it.enabled)
+            if it.enabled:
+                item.setCheckState(Qt.Checked)
+            else:
+                item.setCheckState(Qt.Unchecked)
             pix.fill(it.color)
             item.setIcon(QIcon(pix))
             self.echListWidget.addItem(item)
@@ -195,7 +207,7 @@ if __name__=="__main__":
     pl = Plaque("../../treated_data.txt")
     for g in pl.listGene:
         setattr(g, 'color', QColor('#000000'))
-    pl.listGene[2].setEnabled(Qt.Unchecked)
+    pl.listGene[2].setEnabled(False)
     app = QApplication(sys.argv)
     f = PropDialog(listGene=pl.listGene[1:])
     f.show()

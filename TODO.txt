@@ -68,3 +68,14 @@ Fait
 18°) plot unknown: si il manque un échantillon, tracer tous les autres, pas de
 barre pour celui qui est faux.
 Fait
+
+19°) probleme de sauvegarde des couleurs, i.e. l'objet project est partage
+entre mainwindow et mplPlot, avec PropDialog on ajuste la couleur et on
+modifie en consequence project. Pourtant il faut recliquer sur computeUnknown
+pour voir effectivement le copie memoire se faire: widget amodal ?
+Fait
+
+20°) add/edit target: si on edite un gene en changeant simplement eff ou pm,
+pas de maj de hashGene. (hashGene[gene] ne serait-il pas mieux d'ailleurs
+plutot que de recopier l'ancien truc ???). Maintenant avec la comparaison
+d'objet, on devrait pouvoir simplifier pas mal normalement.

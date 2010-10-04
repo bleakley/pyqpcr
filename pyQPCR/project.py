@@ -23,6 +23,7 @@ from pyQPCR.utils.ragged import RaggedArray2D
 from pyQPCR.plate import StdObject
 from PyQt4.QtCore import QFile, Qt, QIODevice, QTextStream, QFileInfo, QString
 from PyQt4.QtXml import QXmlSimpleReader, QXmlInputSource
+from PyQt4.QtGui import QColor
 from numpy import mean, std, sqrt, log, log10, polyval, polyfit, sum, \
 array, append
 
@@ -33,8 +34,8 @@ __version__ = "$Rev$"
 class Project:
     """
     The Project object defines a QPCR analysis that contains one or several
-    plates. This object contains also the different calculations for relative and absolute
-    quantification.
+    plates. This object contains also the different calculations for relative 
+    and absolute quantification.
 
     >>> proj = Project('test.xml')
     >>> print proj.dicoPlates[QString('mh101109-1m.TXT')].echRef
@@ -47,9 +48,19 @@ class Project:
 
         :param fname: the filename
         :type fname: PyQt4.QtCore.QString
-        :param open: a boolean to indicate if we create a new project or open a file
+        :param open: a boolean to indicate if we create a new project or 
+                     open a file
         :type open: logical
         """
+        self.colors = [QColor(Qt.blue), QColor(Qt.red), QColor(Qt.green), 
+                  QColor(Qt.yellow), QColor(Qt.magenta),
+                  QColor(Qt.cyan), QColor(Qt.gray),
+                  QColor(Qt.darkBlue), QColor(Qt.darkRed),
+                  QColor(Qt.darkGreen), QColor(Qt.darkYellow),
+                  QColor(Qt.darkMagenta), QColor(Qt.darkCyan),
+                  QColor(Qt.darkGray), QColor(Qt.lightGray), 
+                  QColor(Qt.black)]
+
         self.dicoPlates = OrderedDict()
  
         self.hashGene = OrderedDict()
@@ -64,6 +75,21 @@ class Project:
         self.filename = fname
         if self.filename is not None and open is True:
             self.openProject(self.filename)
+
+    def __cmp__(self, other):
+        """
+        This method is used to compare two projects.
+
+        :param other: another project
+        :type other: pyQPCR.project.Project
+        """
+        if self.dicoPlates != other.dicoPlates:
+            return cmp(self.dicoPlates, other.dicoPlates)
+        if self.hashEch != other.hashEch:
+            return cmp(self.hashEch, other.hashEch)
+        if self.hashAmount != other.hashAmount:
+            return cmp(self.hashAmount, other.hashAmount)
+        return cmp(self.hashGene, other.hashGene)
 
     def openProject(self, fname):
         """
@@ -237,16 +263,31 @@ class Project:
         :param plate: the plate
         :type plate: pyQPCR.plate
         """
+        indexColor = 0
         if plate is None:
             for pl in self.dicoPlates:
                 for well in self.dicoPlates[pl].listePuits:
                     nomgene = well.gene.name
                     if not self.hashGene.has_key(nomgene):
+                        # color attributions
+                        if not hasattr(well.gene, 'color'):
+                            well.gene.setColor(self.colors[indexColor])
+                        if indexColor < len(self.colors)-1:
+                            indexColor += 1
+                        else:
+                            indexColor = 0
                         self.hashGene[nomgene] = well.gene
         else:
             for well in plate.listePuits:
                 nomgene = well.gene.name
                 if not self.hashGene.has_key(nomgene):
+                    # color attributions
+                    if not hasattr(well.gene, 'color'):
+                        well.gene.setColor(self.colors[indexColor])
+                    if indexColor < len(self.colors)-1:
+                        indexColor += 1
+                    else:
+                        indexColor = 0
                     self.hashGene[nomgene] = well.gene
                     if hasattr(plate, 'geneRef'):
                         for geneName in plate.geneRef:
@@ -262,16 +303,31 @@ class Project:
         :param plate: the plate
         :type plate: pyQPCR.plate
         """
+        indexColor = 0
         if plate is None:
             for pl in self.dicoPlates:
                 for well in self.dicoPlates[pl].listePuits:
                     nomech = well.ech.name
                     if not self.hashEch.has_key(nomech):
+                        # color attributions
+                        if not hasattr(well.ech, 'color'):
+                            well.ech.setColor(self.colors[indexColor])
+                        if indexColor < len(self.colors)-1:
+                            indexColor += 1
+                        else:
+                            indexColor = 0
                         self.hashEch[nomech] = well.ech
         else:
             for well in plate.listePuits:
                 nomech = well.ech.name
                 if not self.hashEch.has_key(nomech):
+                    # color attributions
+                    if not hasattr(well.ech, 'color'):
+                        well.ech.setColor(self.colors[indexColor])
+                    if indexColor < len(self.colors)-1:
+                        indexColor += 1
+                    else:
+                        indexColor = 0
                     self.hashEch[nomech] = well.ech
                     if hasattr(plate, 'echRef'):
                         if plate.echRef == nomech:
@@ -610,9 +666,9 @@ class Project:
             for ech in self.hashEch.keys()[1:]:
                 for pl in plates:
                     if self.dicoTriplicat[pl].has_key(g) and \
-                            self.hashGene[g].enabled == Qt.Checked and \
+                            self.hashGene[g].enabled and \
                             self.dicoTriplicat[pl][g].has_key(ech) and \
-                            self.hashEch[ech].enabled == Qt.Checked:
+                            self.hashEch[ech].enabled:
                         if sens == 'geneEch':
                             if self.barWidth.has_key(ech):
                                 self.barWidth[ech] += 1

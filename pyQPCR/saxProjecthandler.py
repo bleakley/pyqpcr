@@ -19,6 +19,7 @@
 #
 from PyQt4.QtXml import QXmlDefaultHandler
 from PyQt4.QtCore import QString, QFile
+from PyQt4.QtGui import QColor
 from pyQPCR.plate import *
 from pyQPCR.project import *
 
@@ -105,10 +106,14 @@ class SaxProjectHandler(QXmlDefaultHandler):
         elif qName == "TARGET":
             self.eff = fltFromQStr(attributes.value("EFF"))
             self.pm = fltFromQStr(attributes.value("PM"))
+            self.targetColor = attributes.value("COLOR")
+            self.targetEnabled = logicalFromQStr(attributes.value("ENABLED"))
             self.text = QString()
         elif qName == "NAME":
             self.text = QString()
         elif qName == "SAMPLE":
+            self.sampleColor = attributes.value("COLOR")
+            self.sampleEnabled = logicalFromQStr(attributes.value("ENABLED"))
             self.text = QString()
         elif qName == "PLATE":
             self.pl = Plaque()
@@ -167,9 +172,15 @@ class SaxProjectHandler(QXmlDefaultHandler):
             self.pl.echRef = self.refSample
         elif qName == "SAMPLE":
             ech = Ech(self.text)
+            if self.sampleColor != '':
+                ech.setColor(QColor(self.sampleColor))
+            ech.setEnabled(self.sampleEnabled)
             self.well.setEch(ech)
         elif qName == "TARGET":
             g = Gene(self.text, self.eff, self.pm)
+            if self.targetColor != '':
+                g.setColor(QColor(self.targetColor))
+            g.setEnabled(self.targetEnabled)
             self.well.setGene(g)
         return True
 

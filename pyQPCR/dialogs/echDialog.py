@@ -42,6 +42,16 @@ class EchDialog(QDialog):
             self.project = copy.deepcopy(project)
             self.populateList()
 
+        self.colors = [QColor(Qt.blue), QColor(Qt.red), QColor(Qt.green), 
+                  QColor(Qt.yellow), QColor(Qt.magenta),
+                  QColor(Qt.cyan), QColor(Qt.gray),
+                  QColor(Qt.darkBlue), QColor(Qt.darkRed),
+                  QColor(Qt.darkGreen), QColor(Qt.darkYellow),
+                  QColor(Qt.darkMagenta), QColor(Qt.darkCyan),
+                  QColor(Qt.darkGray), QColor(Qt.lightGray), 
+                  QColor(Qt.black)]
+        self.indexColor = 0
+
         self.listWidget.setCurrentRow(-1)
         buttonAdd = QPushButton("&Add")
         buttonEdit = QPushButton("&Edit")
@@ -84,6 +94,12 @@ class EchDialog(QDialog):
             nomech = dialog.ech.text()
             state = dialog.ref.checkState()
             e = Ech(nomech, state)
+            # color attributions
+            e.setColor(self.colors[self.indexColor])
+            if self.indexColor < len(self.colors)-1:
+                self.indexColor += 1
+            else:
+                self.indexColor = 0
 
             if not self.project.hashEch.has_key(nomech):
                 self.project.hashEch[nomech] = e

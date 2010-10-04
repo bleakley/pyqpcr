@@ -126,7 +126,7 @@ class PlateWidget(MyQTableWidget):
             if well.warning == True and well.enabled == True:
                 # if there is a warning and the well is enabled, then
                 # we put the warning icon
-                it.setIcon(QIcon(":/warning"))
+                it.setIcon(QIcon(":/warning.png"))
             self.setItem(well.xpos, well.ypos, it)
 
     def createItem(self, text, tip=None, status=None, back=Qt.white,
@@ -157,7 +157,7 @@ class PlateWidget(MyQTableWidget):
             item.setStatusTip(status)
         if icon is not None:
             if icon == False:
-                item.setIcon(QIcon(":/disable"))
+                item.setIcon(QIcon(":/disable.png"))
         if back == QString('unknown'):
             item.setBackground(QColor(116, 167, 227))
         elif back == QString('standard'):
@@ -246,15 +246,15 @@ class ResultWidget(QTableWidget):
             if well.enabled == True:
                 item = QTableWidgetItem("")
                 #item.setFont(QFont("Sans Serif", 16))
-                item.setIcon(QIcon(":/enable"))
+                item.setIcon(QIcon(":/enable.png"))
                 self.setVerticalHeaderItem(ind, item)
             else:
                 item = QTableWidgetItem("")
                 #item.setFont(QFont("Sans Serif", 16))
-                item.setIcon(QIcon(":/disable"))
+                item.setIcon(QIcon(":/disable.png"))
                 self.setVerticalHeaderItem(ind, item)
             if well.warning == True and well.enabled == True:
-                item.setIcon(QIcon(":/warning"))
+                item.setIcon(QIcon(":/warning.png"))
             itWell = QTableWidgetItem(well.name)
             itWell.setFont(QFont("Sans Serif", 16))
             itGene = QTableWidgetItem(well.gene.name)

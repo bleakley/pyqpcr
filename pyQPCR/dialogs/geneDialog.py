@@ -43,6 +43,16 @@ class GeneDialog(QDialog):
             self.project = copy.deepcopy(project)
             self.populateList()
 
+        self.colors = [QColor(Qt.blue), QColor(Qt.red), QColor(Qt.green), 
+                  QColor(Qt.yellow), QColor(Qt.magenta),
+                  QColor(Qt.cyan), QColor(Qt.gray),
+                  QColor(Qt.darkBlue), QColor(Qt.darkRed),
+                  QColor(Qt.darkGreen), QColor(Qt.darkYellow),
+                  QColor(Qt.darkMagenta), QColor(Qt.darkCyan),
+                  QColor(Qt.darkGray), QColor(Qt.lightGray), 
+                  QColor(Qt.black)]
+        self.indexColor = 0
+
         self.listWidget.setCurrentRow(-1)
         buttonAdd = QPushButton("&Add")
         buttonEdit = QPushButton("&Edit")
@@ -97,6 +107,12 @@ class GeneDialog(QDialog):
             state = dialog.ref.checkState()
             g = Gene(nomgene, eff, pm)
             g.setRef(state)
+            # color attributions
+            g.setColor(self.colors[self.indexColor])
+            if self.indexColor < len(self.colors)-1:
+                self.indexColor += 1
+            else:
+                self.indexColor = 0
 
             if not self.project.hashGene.has_key(nomgene):
                 self.project.hashGene[nomgene] = g
@@ -117,13 +133,13 @@ class GeneDialog(QDialog):
 
     def edit(self):
         """
-        This method allows to change the properties of a gene. You cannot change its
-        name in an existing one.
+        This method allows to change the properties of a gene. You cannot change 
+        its name in an existing one.
         """
         if len(self.listWidget.selectedItems()) == 0:
             return
         gene_before = self.listWidget.currentItem().statusTip()
-        gene = self.project.hashGene[gene_before]
+        gene = copy.deepcopy(self.project.hashGene[gene_before])
         dialog = AddGeneDialog(self, ge=gene, listPlates=self.project.dicoPlates)
         if dialog.exec_():
             name = dialog.gene.text()
@@ -164,26 +180,28 @@ class GeneDialog(QDialog):
                         if gg == name or gg == gene_before:
                             pl.geneRef.remove(gg)
 
-                if pl.dicoGene.has_key(gene_before) and gene_before != name:
+                if pl.dicoGene.has_key(gene_before) and \
+                               gene != self.project.hashGene[gene_before]:
                     ind = pl.dicoGene.index(gene_before)
                     pl.dicoGene.insert(ind, name, pl.dicoGene[gene_before])
                     ind = self.project.hashGene.index(gene_before)
 
                     for well in pl.dicoGene[name]:
                         well.setGene(gene)
-                    pl.dicoGene.__delitem__(gene_before)
+                    if gene_before != gene.name:
+                        pl.dicoGene.__delitem__(gene_before)
 
             if ind is not None:
-                self.project.hashGene.insert(ind, name,
-                                            self.project.hashGene[gene_before])
-                self.project.hashGene.__delitem__(gene_before)
+                self.project.hashGene.insert(ind, name, gene)
+                if gene_before != gene.name:
+                    self.project.hashGene.__delitem__(gene_before)
                 self.project.unsaved = True
             self.populateList()
 
     def remove(self):
         """
-        This method deletes an existing gene from your experiment. Every well containing
-        this gene are now on the empty '' gene.
+        This method deletes an existing gene from your experiment. 
+        Every well containing this gene are now on the empty '' gene.
         """
         genes = []
         if len(self.listWidget.selectedItems()) == 0:

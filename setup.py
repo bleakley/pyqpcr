@@ -87,9 +87,9 @@ else:
                 } 
 
 setup(name='pyQPCR',
-      version='0.6',
-      description='a free software to deal qPCR',
-      long_description='a qt4 based interface to deal qPCR',
+      version='0.7',
+      description='a free software to compute qPCR',
+      long_description='a qt4 based interface to compute qPCR',
       author='Thomas Gastine',
       author_email='thomas.gastine@wanadoo.fr',
       url='http://pyqpcr.sourceforge.net',
@@ -103,5 +103,3 @@ if sys.platform == 'darwin':
     import os
     print "cp qt.conf dist/pyQPCR.app/Contents/Resources"
     os.system("cp qt.conf dist/pyQPCR.app/Contents/Resources")
-
-
