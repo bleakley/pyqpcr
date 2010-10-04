@@ -111,7 +111,7 @@ class NewProjectDialog(QDialog):
         self.file.setReadOnly(True)
 
         btn = QToolButton()
-        ic = QIcon(":/fileopen")
+        ic = QIcon(":/fileopen.png")
         btn.setIcon(ic)
         hLay2 = QHBoxLayout()
         hLay2.addWidget(self.file)

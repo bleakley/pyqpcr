@@ -7,14 +7,14 @@
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
 AppId={{AB0FCAB4-3161-4336-99F1-77E465DE2A79}
 AppName=pyQPCR
-AppVersion=0.6
-AppVerName=pyQPCR - 0.6
+AppVersion=0.7
+AppVerName=pyQPCR - 0.7
 AppContact=Thomas[at]users.sourceforge.net
 AppPublisher=pyqpcr.sourceforge.net
 AppPublisherURL=http://pyqpcr.sourceforge.net
 AppSupportURL=https://sourceforge.net/projects/pyqpcr/forums
 AppUpdatesURL=http://pyqpcr.sourceforge.net
-AppComments=pyQPCR is an open-source software. It can be used to perform qPCR analysis.
+AppComments=pyQPCR is an open-source software. It can be used to compute qPCR analysis.
 DefaultDirName={pf}\pyQPCR
 DefaultGroupName=pyQPCR
 LicenseFile=C:\Documents and Settings\Thomas\Bureau\pyqpcr\COPYING.txt

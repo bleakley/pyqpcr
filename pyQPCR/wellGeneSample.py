@@ -18,6 +18,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 from PyQt4.QtCore import Qt, QString
+from PyQt4.QtGui import QColor
 from numpy import nan
 import re
 
@@ -52,7 +53,7 @@ class Ech:
         """
         self.name = QString(nom)
         self.isRef = isRef
-        self.enabled = Qt.Checked
+        self.enabled = True
 
     def __str__(self):
         """
@@ -67,6 +68,19 @@ class Ech:
         """
         st =  "%s" % self.name
         return st
+
+    def __cmp__(self, other):
+        """
+        A method to compare 2 samples.
+        """
+        if hasattr(self, 'color') and hasattr(other, 'color'):
+            if self.color.name() != other.color.name():
+                return cmp(self.color.name(), other.color.name())
+        #if self.isRef != other.isRef:
+            #return cmp(self.isRef, other.isRef)
+        if self.enabled != other.enabled:
+            return cmp(self.enabled, other.enabled)
+        return cmp(self.name, other.name)
 
     def setName(self, name):
         """
@@ -142,7 +156,7 @@ class Gene:
         self.isRef = isRef
         self.ctref = nan
         # Pour dire si on veut tracer un gene
-        self.enabled = Qt.Checked
+        self.enabled = True
 
     def __str__(self):
         """
@@ -157,6 +171,24 @@ class Gene:
         """
         st =  "%s (%.2f %% +/- %.2f)" % (self.name, self.eff, self.pm) 
         return st
+
+    def __cmp__(self, other):
+        """
+        A method to compare 2 targets.
+        """
+        if hasattr(self, 'color') and hasattr(other, 'color'):
+            if self.color.name() != other.color.name():
+                return cmp(self.color.name(), other.color.name())
+        #if self.isRef != other.isRef:
+            #return cmp(self.isRef, other.isRef)
+        if self.enabled != other.enabled:
+            return cmp(self.enabled, other.enabled)
+        if self.eff != other.eff:
+            return cmp(self.eff, other.eff)
+        if self.pm != other.pm:
+            return cmp(self.pm, other.pm)
+
+        return cmp(self.name, other.name)
 
     def setName(self, name):
         """
@@ -322,6 +354,22 @@ class Puits:
         st = "%s: %s, %s, %s" % (self.name, self.gene, self.ech, self.type)
         return st
 
+    def __cmp__(self, other):
+        """
+        A method to compare 2 different wells.
+        """
+        if self.ct != other.ct:
+            return cmp(self.ct, other.ct)
+        if self.gene != other.gene:
+            return cmp(self.gene, other.gene)
+        if self.ech != other.ech:
+            return cmp(self.ech, other.ech)
+        if self.enabled != other.enabled:
+            return cmp(self.enabled, other.enabled)
+        if self.type != other.type:
+            return cmp(self.type, other.type)
+        return cmp(self.name, other.name)
+
     def writeWellXml(self):
         """
         This method is used to represent the Well object (with its
@@ -362,9 +410,20 @@ class Puits:
         st += "ENABLED='%i' >\n" % int(self.enabled)
         st += "<NAME>%s</NAME>\n" % self.name
         st += "<TYPE>%s</TYPE>\n" % self.type
-        st += "<TARGET EFF='%.2f' PM='%.2f'>%s</TARGET>\n" % \
-            (self.gene.eff, self.gene.pm, self.gene.name)
-        st += "<SAMPLE>%s</SAMPLE>\n" % self.ech.name
+        if hasattr(self.gene, 'color'):
+            st += "<TARGET EFF='%.2f' PM='%.2f' COLOR='%s' ENABLED='%i'>%s</TARGET>\n" % \
+                (self.gene.eff, self.gene.pm, self.gene.color.name(), 
+                 int(self.gene.enabled), self.gene.name)
+        else: # Every target has a color except Negative Control that has ''
+            st += "<TARGET EFF='%.2f' PM='%.2f' ENABLED='%i'>%s</TARGET>\n" % \
+                (self.gene.eff, self.gene.pm, int(self.gene.enabled),
+                 self.gene.name)
+        if hasattr(self.ech, 'color'):
+            st += "<SAMPLE COLOR='%s' ENABLED='%i'>%s</SAMPLE>\n" % \
+                (self.ech.color.name(), int(self.ech.enabled), self.ech.name)
+        else: # Every target has a color except Negative Control that has ''
+            st += "<SAMPLE ENABLED='%i'>%s</SAMPLE>\n" % \
+                (int(self.ech.enabled), self.ech.name)
         st += "</WELL>\n"
         return st
 
@@ -605,6 +664,12 @@ if __name__=="__main__":
     a = 'toto'
     eff = 90
     pm = 0.1
-    g = Gene(a, eff, pm)
+    g1 = Gene(a, eff, pm)
     ech = Ech('si')
+    A1 = Puits('A1', ct=23, ech='ech', gene='g1')
+    A2 = Puits('A1', ct=23., ech='ech', gene='g11')
+    if A1 == A2:
+        print 'similar'
+    else:
+        print 'different'
 

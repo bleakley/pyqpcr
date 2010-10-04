@@ -41,7 +41,7 @@ import time
 __author__ = "$Author$"
 __date__ = "$Date$"
 __version__ = "$Rev$"
-__progversion__ = "0.6"
+__progversion__ = "0.7"
 
 class Qpcr_qt(QMainWindow):
     """
@@ -223,7 +223,7 @@ class Qpcr_qt(QMainWindow):
                               "plotStandard", "Plot standard curves")
         self.extractAction = self.createAction("E&xtract sub-plates",
                              self.extractSubplate, "Ctrl+X",
-                             "extract", "Extract a sub-plate from an existing plate")
+                           "extract", "Extract a sub-plate from an existing plate")
         self.enableAction = self.createAction("Enable wells", self.enable, 
                      None, "enable", "Enable selected wells")
         self.disableAction = self.createAction("Disable wells", self.disable,
@@ -1036,6 +1036,7 @@ class Qpcr_qt(QMainWindow):
         setEch = set()
         setAm = set()
         selected = [setType, setGene, setEch, setAm]
+        selectedWells = []
         for it in self.pileTables[self.currentPlate].selectedItems():
             nom = it.statusTip()
             well = getattr(self.project.dicoPlates[self.currentPlate], str(nom))
@@ -1043,42 +1044,48 @@ class Qpcr_qt(QMainWindow):
             setEch.add(well.ech.name)
             setGene.add(well.gene.name)
             setAm.add(well.amount)
-        dialog = EditDialog(self, project=self.project, selected=selected)
-        #
-        if dialog.exec_():
-            ge = dialog.cboxGene.currentObj()
-            if dialog.cboxType.currentText() == QString('unknown'):
-                ech = dialog.cboxSample.currentObj()
-                for it in self.pileTables[self.currentPlate].selectedItems():
-                    nom = it.statusTip()
-                    well = getattr(self.project.dicoPlates[self.currentPlate],
-                                   str(nom))
-                    well.setType(QString('unknown'))
-                    if ge.name != "": well.setGene(ge)
-                    if ech.name != "": well.setEch(ech)
+            selectedWells.append(well)
+        if len(selectedWells) > 0:
+            dialog = EditDialog(self, project=self.project, selected=selected)
+            #
+            if dialog.exec_():
+                ge = dialog.cboxGene.currentObj()
+                if dialog.cboxType.currentText() == QString('unknown'):
+                    ech = dialog.cboxSample.currentObj()
+                    for it in self.pileTables[self.currentPlate].selectedItems():
+                        nom = it.statusTip()
+                        well = getattr(self.project.dicoPlates[self.currentPlate],
+                                       str(nom))
+                        well.setType(QString('unknown'))
+                        if ge.name != "": well.setGene(ge)
+                        if ech.name != "": well.setEch(ech)
+                    for pl in self.project.dicoPlates.values():
+                        pl.setDicoEch()
+                if dialog.cboxType.currentText() == QString('standard'):
+                    am = dialog.cboxAm.currentText()
+                    for it in self.pileTables[self.currentPlate].selectedItems():
+                        nom = it.statusTip()
+                        well = getattr(self.project.dicoPlates[self.currentPlate],
+                                       str(nom))
+                        well.setType(QString('standard'))
+                        if ge.name != '':
+                            well.setGene(ge)
+                        if am != '':
+                            well.setAmount(float(am))
+                    self.project.setDicoAm()
+                self.project.unsaved = True
+                self.fileSaveAction.setEnabled(True)
                 for pl in self.project.dicoPlates.values():
-                    pl.setDicoEch()
-            if dialog.cboxType.currentText() == QString('standard'):
-                am = dialog.cboxAm.currentText()
-                for it in self.pileTables[self.currentPlate].selectedItems():
-                    nom = it.statusTip()
-                    well = getattr(self.project.dicoPlates[self.currentPlate],
-                                   str(nom))
-                    well.setType(QString('standard'))
-                    if ge.name != '':
-                        well.setGene(ge)
-                    if am != '':
-                        well.setAmount(float(am))
-                self.project.setDicoAm()
-            self.project.unsaved = True
-            self.fileSaveAction.setEnabled(True)
-            for pl in self.project.dicoPlates.values():
-                pl.setDicoGene()
-            self.projectStack.append(copy.deepcopy(self.project))
-            self.pileTables[self.currentPlate].populateTable( \
-                   self.project.dicoPlates[self.currentPlate])
-            self.pileResults[self.currentPlate].populateResult( \
-                   self.project.dicoPlates[self.currentPlate], self.typeCalc)
+                    pl.setDicoGene()
+                self.projectStack.append(copy.deepcopy(self.project))
+                self.pileTables[self.currentPlate].populateTable( \
+                       self.project.dicoPlates[self.currentPlate])
+                self.pileResults[self.currentPlate].populateResult( \
+                       self.project.dicoPlates[self.currentPlate], self.typeCalc)
+
+        else: #Please select something !!
+            QMessageBox.information(self, "Please select some wells",
+                "You must select at least one well to edit something.")
 
     def addGene(self):
         """
@@ -1152,64 +1159,79 @@ class Qpcr_qt(QMainWindow):
             well = getattr(self.project.dicoPlates[self.currentPlate], str(nom))
             listWell.append(well)
 
-        fname = self.currentPlate + '_sub%i' % self.subIndex
-        plaque = Plaque(fname, machine=None)
-        plaque.setPlateType(self.project.dicoPlates[self.currentPlate].type)
-        plaque.subPlate(listWell)
+        if len(listWell) > 0:
+            fname = self.currentPlate + '_sub%i' % self.subIndex
+            plaque = Plaque(fname, machine=None)
+            plaque.setPlateType(self.project.dicoPlates[self.currentPlate].type)
+            plaque.subPlate(listWell)
 
-        if not self.project.dicoPlates.has_key(fname):
-            self.project.addPlate(plaque)
-            key = QFileInfo(fname).fileName()
+            if not self.project.dicoPlates.has_key(fname):
+                self.project.addPlate(plaque)
+                key = QFileInfo(fname).fileName()
 
-            self.appendPlate(plaque, key)
-            self.appendResult(plaque, key)
+                self.appendPlate(plaque, key)
+                self.appendResult(plaque, key)
 
-            self.updateUi()
-            self.project.unsaved = True
-            self.fileSaveAction.setEnabled(True)
-            self.projectStack.append(copy.deepcopy(self.project))
+                self.updateUi()
+                self.project.unsaved = True
+                self.fileSaveAction.setEnabled(True)
+                self.projectStack.append(copy.deepcopy(self.project))
 
-        self.subIndex += 1
+            self.subIndex += 1
+        else: #Please select something !!
+            QMessageBox.information(self, "Please select some wells",
+                "You must select at least one well to create a new subplate.")
 
     def modifyGene(self):
         """
         This method is called when the user changes the gene of the selected wells.
         """
+        hasChanged = False
         for it in self.pileTables[self.currentPlate].selectedItems():
             gene = self.geneComboBox.currentObj()
             nom = it.statusTip()
             well = getattr(self.project.dicoPlates[self.currentPlate], str(nom))
-            well.setGene(gene)
-        self.project.unsaved = True
-        self.fileSaveAction.setEnabled(True)
-        self.project.dicoPlates[self.currentPlate].setDicoGene()
-        self.projectStack.append(copy.deepcopy(self.project))
-        self.pileTables[self.currentPlate].populateTable( \
-                      self.project.dicoPlates[self.currentPlate])
-        self.pileResults[self.currentPlate].populateResult( \
-                      self.project.dicoPlates[self.currentPlate], self.typeCalc)
+            if well.gene != gene:
+                well.setGene(gene)
+                hasChanged = True
+        if hasChanged:
+            self.project.unsaved = True
+            self.fileSaveAction.setEnabled(True)
+            self.project.dicoPlates[self.currentPlate].setDicoGene()
+            self.projectStack.append(copy.deepcopy(self.project))
+            self.pileTables[self.currentPlate].populateTable( \
+                          self.project.dicoPlates[self.currentPlate])
+            self.pileResults[self.currentPlate].populateResult( \
+                          self.project.dicoPlates[self.currentPlate], 
+                          self.typeCalc)
 
     def modifyEch(self):
         """
-        This method is called when the user changes the sample of the selected wells.
+        This method is called when the user changes the sample of the selected 
+        wells.
         """
+        hasChanged = False
         for it in self.pileTables[self.currentPlate].selectedItems():
             ech = self.echComboBox.currentObj()
             nom = it.statusTip()
             well = getattr(self.project.dicoPlates[self.currentPlate], str(nom))
-            well.setEch(ech)
-        self.project.unsaved = True
-        self.fileSaveAction.setEnabled(True)
-        self.project.dicoPlates[self.currentPlate].setDicoEch()
-        self.projectStack.append(copy.deepcopy(self.project))
-        self.pileTables[self.currentPlate].populateTable( \
-                     self.project.dicoPlates[self.currentPlate])
-        self.pileResults[self.currentPlate].populateResult( \
-                     self.project.dicoPlates[self.currentPlate], self.typeCalc)
+            if well.ech != ech:
+                well.setEch(ech)
+                hasChanged = True
+        if hasChanged:
+            self.project.unsaved = True
+            self.fileSaveAction.setEnabled(True)
+            self.project.dicoPlates[self.currentPlate].setDicoEch()
+            self.projectStack.append(copy.deepcopy(self.project))
+            self.pileTables[self.currentPlate].populateTable( \
+                         self.project.dicoPlates[self.currentPlate])
+            self.pileResults[self.currentPlate].populateResult( \
+                         self.project.dicoPlates[self.currentPlate], self.typeCalc)
 
     def modifyAm(self):
         """
-        This method is called when the user changes the amount of the selected wells.
+        This method is called when the user changes the amount of the selected 
+        wells.
         """
         for it in self.pileTables[self.currentPlate].selectedItems():
             am = self.amComboBox.currentText()
@@ -1226,18 +1248,26 @@ class Qpcr_qt(QMainWindow):
                     self.project.dicoPlates[self.currentPlate], self.typeCalc)
 
     def setType(self):
+        """
+        This method is called when the user changes the type of the selected 
+        wells.
+        """
+        hasChanged = False
         for it in self.pileTables[self.currentPlate].selectedItems():
             type = self.typeComboBox.currentText()
             nom = it.statusTip()
             well = getattr(self.project.dicoPlates[self.currentPlate], str(nom))
-            well.setType(type)
-        self.project.unsaved = True
-        self.fileSaveAction.setEnabled(True)
-        self.projectStack.append(copy.deepcopy(self.project))
-        self.pileTables[self.currentPlate].populateTable( \
-                    self.project.dicoPlates[self.currentPlate])
-        self.pileResults[self.currentPlate].populateResult( \
-                    self.project.dicoPlates[self.currentPlate], self.typeCalc)
+            if well.type != type:
+                well.setType(type)
+                hasChanged = True
+        if hasChanged:
+            self.project.unsaved = True
+            self.fileSaveAction.setEnabled(True)
+            self.projectStack.append(copy.deepcopy(self.project))
+            self.pileTables[self.currentPlate].populateTable( \
+                        self.project.dicoPlates[self.currentPlate])
+            self.pileResults[self.currentPlate].populateResult( \
+                        self.project.dicoPlates[self.currentPlate], self.typeCalc)
 
     def enable(self):
         """

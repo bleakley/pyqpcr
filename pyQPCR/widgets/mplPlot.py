@@ -245,8 +245,23 @@ class MplUnknownWidget(QWidget):
         dialog = PropDialog(self, hashGene=self.project.hashGene,
                             hashEch=self.project.hashEch)
         if dialog.exec_():
-            self.project.hashGene = dialog.hashGene
-            self.project.hashEch = dialog.hashEch
+            # If the color or activation has changed then update
+            if self.project.hashGene != dialog.hashGene:
+                self.project.hashGene = dialog.hashGene
+                for pl in self.project.dicoPlates.values():
+                    for g in self.project.hashGene.values()[1:]:
+                        if pl.dicoGene.has_key(g.name):
+                            for well in pl.dicoGene[g.name]:
+                                well.setGene(g)
+
+            # If the color or activation has changed then update
+            if self.project.hashEch != dialog.hashEch:
+                self.project.hashEch = dialog.hashEch
+                for pl in self.project.dicoPlates.values():
+                    for e in self.project.hashEch.values()[1:]:
+                        if pl.dicoEch.has_key(e.name):
+                            for well in pl.dicoEch[e.name]:
+                                well.setEch(e)
             self.plotUnknown()
 
     def changeFontsize(self, idraw=True):
@@ -300,9 +315,10 @@ class MplUnknownWidget(QWidget):
 
     def plotUnknown(self, project=None):
         """
-        A method to plot the histograms that correspond to the relative quantifications.
-        The errorbars displayed correspond to the standard-error of NRQ. You can plot either
-        targets vs samples, or samples vs targets.
+        A method to plot the histograms that correspond to the relative 
+        quantifications.  The errorbars displayed correspond to the 
+        standard-error of NRQ. You can plot either targets vs samples, 
+        or samples vs targets.
 
         :param project: the project you are working on
         :type project: pyQPCR.project.Project
@@ -318,34 +334,6 @@ class MplUnknownWidget(QWidget):
         self.mplCanUnknown.axes.cla()
         width = self.spinWidth.value()
         spacing = self.spinSpacing.value()
-        colors = [QColor(Qt.blue), QColor(Qt.red), QColor(Qt.green), 
-                  QColor(Qt.yellow), QColor(Qt.magenta),
-                  QColor(Qt.cyan), QColor(Qt.gray),
-                  QColor(Qt.darkBlue), QColor(Qt.darkRed), 
-                  QColor(Qt.darkGreen), QColor(Qt.darkYellow),
-                  QColor(Qt.darkMagenta), QColor(Qt.darkCyan),
-                  QColor(Qt.darkGray), QColor(Qt.lightGray), 
-                  QColor(Qt.black)]
-
-        # color attributions
-        ind = 0
-        for gene in self.project.hashGene.values()[1:]:
-            if not hasattr(gene, 'color'):
-                gene.setColor(colors[ind])
-            if ind < len(colors)-1:
-                ind += 1
-            else:
-                ind = 0
-
-        ind = 0
-        for ech in self.project.hashEch.values()[1:]:
-            if not hasattr(ech, 'color'):
-                ech.setColor(colors[ind])
-            if ind < len(colors)-1:
-                ind += 1
-            else:
-                ind = 0
-
         legPos = [] ; legName = [] ; xlabel = []
         dicoAbs = OrderedDict()
 
@@ -359,9 +347,9 @@ class MplUnknownWidget(QWidget):
                 for ech in self.project.hashEch.keys()[1:]:
                     for pl in platesToPlot:
                         if self.project.dicoTriplicat[pl].has_key(g) and \
-                          self.project.hashGene[g].enabled == Qt.Checked and \
+                          self.project.hashGene[g].enabled and \
                           self.project.dicoTriplicat[pl][g].has_key(ech) and \
-                          self.project.hashEch[ech].enabled == Qt.Checked and \
+                          self.project.hashEch[ech].enabled and \
                           hasattr(self.project.dicoTriplicat[pl][g][ech], 'NRQ'):
                             NRQ.append(\
                                   self.project.dicoTriplicat[pl][g][ech].NRQ)
@@ -388,9 +376,9 @@ class MplUnknownWidget(QWidget):
                 for g in self.project.hashGene.keys()[1:]:
                     for pl in platesToPlot:
                         if self.project.dicoTriplicat[pl].has_key(g) and \
-                          self.project.hashGene[g].enabled == Qt.Checked and \
+                          self.project.hashGene[g].enabled and \
                           self.project.dicoTriplicat[pl][g].has_key(ech) and \
-                          self.project.hashEch[ech].enabled == Qt.Checked and \
+                          self.project.hashEch[ech].enabled and \
                           hasattr(self.project.dicoTriplicat[pl][g][ech], 'NRQ'):
                             NRQ.append(\
                                   self.project.dicoTriplicat[pl][g][ech].NRQ)

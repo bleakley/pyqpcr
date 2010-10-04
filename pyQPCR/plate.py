@@ -58,11 +58,11 @@ class Plaque:
 
     :attribute filename: the file name
     :attribute listePuits: the list of the wells of the plate
-    :attribute listGene: the list of the targets of the plate
-    :attribute listEch: the list of the samples of the plate
-    :attribute listAmount: the list of the amounts of the plate
     :attribute echRef: the name of the reference sample
     :attribute geneRef: the name(s) of the reference target(s)
+    :attribute contUkn: a boolean that indicates if the plate contains
+                        'unknown'-type wells
+    :type contUkn: logical
     """
     
     def __init__(self, filename=None, machine='Eppendorf'):
@@ -80,9 +80,6 @@ class Plaque:
         self.filename = filename
 
         self.listePuits = []
-        self.listGene = [Gene('')]
-        self.listEch = [Ech('')]
-        self.listAmount = ['']
 
         self.geneRef = []
         self.echRef = ''
@@ -105,8 +102,16 @@ class Plaque:
             # Raise exception if no well are detected
             if len(self.listePuits) == 0:
                 raise PlateError(self.filename, machine)
-        # Permet eventuellement de connaitre les genes/ech de ref 
-        #self.getRefsFromFile()
+
+    def __cmp__(self, other):
+        """
+        This method is used to compare two plates.
+        """
+        if self.type != other.type:
+            return cmp(self.type, other.type)
+        if self.filename != other.filename:
+            return cmp(self.filename, other.filename)
+        return cmp(self.listePuits, other.listePuits)
 
     def determineFileType(self, filename):
         """
@@ -195,12 +200,12 @@ class Plaque:
                 if self.header.has_key('CrossingPoint'):
                     ct = champs[self.header['CrossingPoint']]
                     if ct == '':
-                        x.setEnabled(Qt.Unchecked)
+                        x.setEnabled(False)
                     x.setCt(ct)
                 elif self.header.has_key('Cp'):
                     ct = champs[self.header['Cp']]
                     if ct == '':
-                        x.setEnabled(Qt.Unchecked)
+                        x.setEnabled(False)
                     x.setCt(ct)
                 if self.header.has_key('Standard'):
                     try:
@@ -266,7 +271,7 @@ class Plaque:
                 if self.header.has_key('Ct SYBR'):
                     ct = champs[self.header['Ct SYBR']]
                     if ct == '':
-                        x.setEnabled(Qt.Unchecked)
+                        x.setEnabled(False)
                     x.setCt(ct)
                 if self.header.has_key('Ct Mean SYBR'):
                     ctmean = champs[self.header['Ct Mean SYBR']]
@@ -330,7 +335,8 @@ class Plaque:
                     champs = []
                     for k, field in enumerate(line):
                         try:
-                            if self.header.keys()[k] not in ('Sample Name', 'Detector'):
+                            if self.header.keys()[k] not in ('Sample Name',
+                                                             'Detector'):
                                 dat = float(field.replace(',', '.'))
                             else:
                                 dat = field
@@ -378,7 +384,8 @@ class Plaque:
         hasHeader = False
         if self.fileType == 'txt':
             iterator = file.readlines()
-            splitter = re.compile(r'([\w .,\-\(\)\[\]\+\\/]*|\d+[.,]?\d*)\t', re.UNICODE)
+            splitter = re.compile(r'([\w .,\-\(\)\[\]\+\\/]*|\d+[.,]?\d*)\t',
+                                  re.UNICODE)
         if self.fileType == 'csv':
             iterator = csv.reader(file, delimiter=returnDelimiter(file))
 
@@ -409,7 +416,8 @@ class Plaque:
                     champs = []
                     for k, field in enumerate(line):
                         try:
-                            if self.header.keys()[k] not in ('Sample Name', 'Target Name'):
+                            if self.header.keys()[k] not in ('Sample Name',
+                                                             'Target Name'):
                                 dat = float(field.replace(',', '.'))
                             else:
                                 dat = field
@@ -429,7 +437,7 @@ class Plaque:
                     if self.header.has_key(u'C\u0442'):
                         ct = champs[self.header[u'C\u0442']]
                         if ct == 'Undetermined':
-                            x.setEnabled(Qt.Unchecked)
+                            x.setEnabled(False)
                         x.setCt(ct)
                     if self.header.has_key(u'C\u0442 Mean'):
                         ctmean = champs[self.header[u'C\u0442 Mean']]
@@ -521,7 +529,7 @@ class Plaque:
                     if self.header.has_key('Threshold Cycle (Ct)'):
                         ct = champs[self.header['Threshold Cycle (Ct)']]
                         if ct == 'N/A':
-                            x.setEnabled(Qt.Unchecked)
+                            x.setEnabled(False)
                         x.setCt(ct)
                     if self.header.has_key('Ct Mean'):
                         ctmean = champs[self.header['Ct Mean']]
@@ -531,7 +539,8 @@ class Plaque:
                         x.setCtdev(ctdev)
                     if self.header.has_key('Starting Quantity (SQ)'):
                         try:
-                            amount = float(champs[self.header['Starting Quantity (SQ)']])
+                            amount = float(champs[ \
+                                           self.header['Starting Quantity (SQ)']])
                             if amount != 0:
                                 x.setType('standard')
                                 x.setAmount(amount)
@@ -604,7 +613,7 @@ class Plaque:
                     if self.header.has_key('Ct'):
                         ct = champs[self.header['Ct']]
                         if ct == '':
-                            x.setEnabled(Qt.Unchecked)
+                            x.setEnabled(False)
                         x.setCt(ct)
                     if self.header.has_key('Given Conc (ng/ul)'):
                         try:
@@ -674,9 +683,10 @@ class Plaque:
 
     def setUkn(self, cont):
         """
-        A method to change the attribute contUkn.
+        A method to change the attribute contUkn. This attribute is set to
+        True if the plate contains one (or more) 'unknown'-type wells.
 
-        :param cont: a boolean with the new value o contUkn
+        :param cont: a boolean with the new value of contUkn
         :type cont: logical
         """
         self.contUkn = cont
@@ -685,7 +695,8 @@ class Plaque:
         """
         A method to construct the attribute dicoGene.
         It is an ordered dictionnary struture of type
-        self.dicoGene[geneName] = list of wells
+
+            >>> self.dicoGene[geneName] = list of wells
         """
         self.dicoGene = OrderedDict()
         for well in self.listePuits:
@@ -700,7 +711,8 @@ class Plaque:
         """
         A method to construct the attribute dicoEch.
         It is an ordered dictionnary struture of type
-        self.dicoEch[echName] = list of wells
+
+            >>> self.dicoEch[echName] = list of wells
         """
         self.dicoEch = OrderedDict()
         for well in self.listePuits:
@@ -710,24 +722,6 @@ class Plaque:
                     self.dicoEch[nomech].append(well)
                 else:
                     self.dicoEch[nomech] = [well]
-
-    def getRefsFromFile(self):
-        """
-        This methods allows to determine both the Gene of Interest and
-        the reference-sample thanks to the input data file.
-
-        It is not used anymore since the XML suports has been implemented.
-        """
-        if hasattr(self, 'refTarget'):
-            goi = self.refTarget.strip('"')
-            ind = self.adresseGene[QString(goi)]
-            self.geneRef = self.listGene[ind]
-            self.listGene[ind].setRef(Qt.Checked)
-        if hasattr(self, 'refSample'):
-            soi = self.refSample.strip('"')
-            ind = self.adresseEch[QString(soi)]
-            self.echRef = self.listEch[ind]
-            self.listEch[ind].setRef(Qt.Checked)
 
 
 class StdObject:
@@ -828,6 +822,23 @@ class Replicate:
             for well in self.listePuits:
                 self.amList = append(self.amList, well.amount)
         self.calcMeanDev()
+
+    def __cmp__(self, other):
+        """
+        This method allows to compare two replicates:
+
+        :param other: a replicate
+        :type other: pyQPCR.plate.Replicate
+        """
+        if self.confidence != other.confidence:
+            return cmp(self.confidence, other.confidence)
+        if self.type != other.type:
+            return cmp(self.type, other.type)
+        if self.errtype != other.errtype:
+            return cmp(self.errtype, other.errtype)
+        if self.ctList != other.ctList:
+            return cmp(self.ctList, other.ctList)
+        return cmp(self.listePuits, other.listePuits)
 
     def __str__(self):
         """
@@ -959,7 +970,8 @@ class ReplicateError(Exception):
         """
         st = "<ul>"
         for trip in self.listRep:
-            st += "<li>(<b>%s, %s</b>) : E(ct)=%.2f </li>" % (trip.gene, trip.ech, trip.ctdev)
+            st += "<li>(<b>%s, %s</b>) : E(ct)=%.2f </li>" % (trip.gene, 
+                                                    trip.ech, trip.ctdev)
         st += "</ul>"
 
         return st
@@ -996,6 +1008,11 @@ class PlateError(Exception):
 
 
 if __name__ == '__main__':
-    pl = Plaque('raw_corbett1.csv', machine='Qiagen Corbett')
+    pl = Plaque('../samples/raw_data_corbett1.csv', machine='Qiagen Corbett')
+    pl2 = Plaque('../samples/raw_data_corbett3.csv', machine='Qiagen Corbett')
     print pl.A1
-    print pl.B2.amount
+
+    if pl == pl2:
+        print 'similar'
+    else:
+        print 'different'
