@@ -574,6 +574,8 @@ class Plaque:
                 if ind == initTab:
                     self.header = OrderedDict()
                     for i, field in enumerate(line):
+                        if field.startswith('Given Conc'):
+                            field = 'Given Conc'
                         self.header[field] = i
                     ncol = len(self.header.keys())
 
@@ -581,8 +583,7 @@ class Plaque:
                     champs = []
                     for k, field in enumerate(line):
                         try:
-                            if self.header.keys()[k] in ('Ct', 
-                                'Given Conc (ng/ul)'):
+                            if self.header.keys()[k] in ('Ct', 'Given Conc'):
                                 dat = float(field.replace(',', '.'))
                             else:
                                 dat = field
@@ -615,9 +616,9 @@ class Plaque:
                         if ct == '':
                             x.setEnabled(False)
                         x.setCt(ct)
-                    if self.header.has_key('Given Conc (ng/ul)'):
+                    if self.header.has_key('Given Conc'):
                         try:
-                            amount = float(champs[self.header['Given Conc (ng/ul)']])
+                            amount = float(champs[self.header['Given Conc']])
                             if amount != 0:
                                 x.setType('standard')
                                 x.setAmount(amount)
@@ -830,6 +831,8 @@ class Replicate:
         :param other: a replicate
         :type other: pyQPCR.plate.Replicate
         """
+        if self.echRef != other.echRef:
+            return cmp(self.echRef, other.echRef)
         if self.confidence != other.confidence:
             return cmp(self.confidence, other.confidence)
         if self.type != other.type:

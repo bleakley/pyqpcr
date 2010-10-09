@@ -852,7 +852,7 @@ class Qpcr_qt(QMainWindow):
         <p> It may be used, copied and modified with no restriction
         <p>Python %s - PyQt %s - Matplotlib %s
         on %s""" % (__progversion__, platform.python_version(),
-        PYQT_VERSION_STR, matplotlib.__version__, platform.system()))
+                    PYQT_VERSION_STR, matplotlib.__version__, platform.system()))
 
     def helpHelp(self):
         """
@@ -891,7 +891,11 @@ class Qpcr_qt(QMainWindow):
                 self.recentFileMenu.addAction(action)
 
     def closeEvent(self, event):
-# Widget de confirmation
+        """
+        This action is called when one wants to close pyQPCR.
+        It ensures that all the preferences of the software are saved
+        (QSettings and QVariant stuff).
+        """
         if self.okToContinue():
             settings = QSettings()
             filename = QVariant(QString(self.filename)) \
@@ -949,6 +953,11 @@ class Qpcr_qt(QMainWindow):
             event.ignore()
 
     def okToContinue(self):
+        """
+        This small dialog is called when the user wants to exit but has
+        unsaved stuff. So it asks to confirm that the user really wants
+        to exit without saving.
+        """
         if hasattr(self, "project"):
             if self.project.unsaved:
                 reponse = QMessageBox.question(self,
@@ -1098,7 +1107,7 @@ class Qpcr_qt(QMainWindow):
             project = dialog.project
             self.populateCbox(self.geneComboBox, project.hashGene, "Target")
             self.project = project
-            self.fileSaveAction.setEnabled(self.project.unsaved)
+            self.fileSaveAction.setEnabled(True)
             for pl in self.project.dicoPlates.values():
                 pl.setDicoGene()
             self.projectStack.append(copy.deepcopy(self.project))
@@ -1119,7 +1128,7 @@ class Qpcr_qt(QMainWindow):
             project = dialog.project
             self.populateCbox(self.echComboBox, project.hashEch, "Sample")
             self.project = project
-            self.fileSaveAction.setEnabled(self.project.unsaved)
+            self.fileSaveAction.setEnabled(True)
             for pl in self.project.dicoPlates.values():
                 pl.setDicoEch()
             self.projectStack.append(copy.deepcopy(self.project))
@@ -1274,40 +1283,48 @@ class Qpcr_qt(QMainWindow):
         This method is called when the user want to enable the selected wells
         from the computation.
         """
+        hasChanged = False
         for it in self.pileTables[self.currentPlate].selectedItems():
             ech = self.echComboBox.currentText()
             nom = it.statusTip()
             well = getattr(self.project.dicoPlates[self.currentPlate], str(nom))
-            well.setEnabled(True)
-        self.project.unsaved = True
-        self.fileSaveAction.setEnabled(True)
-        self.projectStack.append(copy.deepcopy(self.project))
-        self.pileTables[self.currentPlate].populateTable( \
-                    self.project.dicoPlates[self.currentPlate])
-        self.pileResults[self.currentPlate].populateResult( \
-                    self.project.dicoPlates[self.currentPlate], self.typeCalc)
+            if well.enabled is False:
+                well.setEnabled(True)
+                hasChanged = True
+        if hasChanged:
+            self.project.unsaved = True
+            self.fileSaveAction.setEnabled(True)
+            self.projectStack.append(copy.deepcopy(self.project))
+            self.pileTables[self.currentPlate].populateTable( \
+                        self.project.dicoPlates[self.currentPlate])
+            self.pileResults[self.currentPlate].populateResult( \
+                        self.project.dicoPlates[self.currentPlate], self.typeCalc)
 
     def disable(self):
         """
         This method is called when the user want to disable the selected wells
         from the computation.
         """
+        hasChanged = False
         for it in self.pileTables[self.currentPlate].selectedItems():
             ech = self.echComboBox.currentText()
             nom = it.statusTip()
             well = getattr(self.project.dicoPlates[self.currentPlate], str(nom))
-            well.setEnabled(False)
-            well.setCtmean('')
-            well.setCtdev('')
-            well.setNRQ('')
-            well.setNRQerror('')
-        self.project.unsaved = True
-        self.fileSaveAction.setEnabled(True)
-        self.projectStack.append(copy.deepcopy(self.project))
-        self.pileTables[self.currentPlate].populateTable( \
-                        self.project.dicoPlates[self.currentPlate])
-        self.pileResults[self.currentPlate].populateResult( \
-                        self.project.dicoPlates[self.currentPlate], self.typeCalc)
+            if well.enabled is True:
+                well.setEnabled(False)
+                well.setCtmean('')
+                well.setCtdev('')
+                well.setNRQ('')
+                well.setNRQerror('')
+                hasChanged = True
+        if hasChanged:
+            self.project.unsaved = True
+            self.fileSaveAction.setEnabled(True)
+            self.projectStack.append(copy.deepcopy(self.project))
+            self.pileTables[self.currentPlate].populateTable( \
+                            self.project.dicoPlates[self.currentPlate])
+            self.pileResults[self.currentPlate].populateResult( \
+                            self.project.dicoPlates[self.currentPlate], self.typeCalc)
 
     def displayWarnings(self):
         """

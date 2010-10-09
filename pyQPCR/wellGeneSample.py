@@ -179,8 +179,8 @@ class Gene:
         if hasattr(self, 'color') and hasattr(other, 'color'):
             if self.color.name() != other.color.name():
                 return cmp(self.color.name(), other.color.name())
-        #if self.isRef != other.isRef:
-            #return cmp(self.isRef, other.isRef)
+        if self.isRef != other.isRef:
+            return cmp(self.isRef, other.isRef)
         if self.enabled != other.enabled:
             return cmp(self.enabled, other.enabled)
         if self.eff != other.eff:
