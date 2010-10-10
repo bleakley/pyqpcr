@@ -1149,20 +1149,23 @@ class Qpcr_qt(QMainWindow):
         This method is called when the user want to add/edit the amounts of
         the project. It opens a dialog which let the user add/remove/edit the
         values of the amounts.
+
+        >>> dialog = AmountDialog(self, project=self.project)
         """
         dialog = AmountDialog(self, project=self.project)
         if dialog.exec_():
             project = dialog.project
-            self.populateCbox(self.amComboBox, project.hashAmount, "Amount")
-            self.project = project
-            self.fileSaveAction.setEnabled(self.project.unsaved)
-            self.project.setDicoAm()
-            self.projectStack.append(copy.deepcopy(self.project))
-            for key in self.project.dicoPlates.keys():
-                pl = self.project.dicoPlates[key]
-                self.pileTables[key].populateTable(pl)
-                self.pileResults[key].populateResult(pl, self.typeCalc)
-            self.populateTree()
+            if project != self.project:
+                self.populateCbox(self.amComboBox, project.hashAmount, "Amount")
+                self.project = project
+                self.fileSaveAction.setEnabled(self.project.unsaved)
+                self.project.setDicoAm()
+                self.projectStack.append(copy.deepcopy(self.project))
+                for key in self.project.dicoPlates.keys():
+                    pl = self.project.dicoPlates[key]
+                    self.pileTables[key].populateTable(pl)
+                    self.pileResults[key].populateResult(pl, self.typeCalc)
+                self.populateTree()
 
     def extractSubplate(self):
         """
@@ -1248,19 +1251,23 @@ class Qpcr_qt(QMainWindow):
         This method is called when the user changes the amount of the selected 
         wells.
         """
+        hasChanged = False
         for it in self.pileTables[self.currentPlate].selectedItems():
             am = self.amComboBox.currentText()
             nom = it.statusTip()
             well = getattr(self.project.dicoPlates[self.currentPlate], str(nom))
-            well.setAmount(float(am))
-        self.project.unsaved = True
-        self.fileSaveAction.setEnabled(True)
-        self.project.setDicoAm()
-        self.projectStack.append(copy.deepcopy(self.project))
-        self.pileTables[self.currentPlate].populateTable( \
-                    self.project.dicoPlates[self.currentPlate])
-        self.pileResults[self.currentPlate].populateResult( \
-                    self.project.dicoPlates[self.currentPlate], self.typeCalc)
+            if well.amount != float(am):
+                well.setAmount(float(am))
+                hasChanged = True
+        if hasChanged:
+            self.project.unsaved = True
+            self.fileSaveAction.setEnabled(True)
+            self.project.setDicoAm()
+            self.projectStack.append(copy.deepcopy(self.project))
+            self.pileTables[self.currentPlate].populateTable( \
+                        self.project.dicoPlates[self.currentPlate])
+            self.pileResults[self.currentPlate].populateResult( \
+                        self.project.dicoPlates[self.currentPlate], self.typeCalc)
 
     def setType(self):
         """

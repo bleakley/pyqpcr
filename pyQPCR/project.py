@@ -49,7 +49,7 @@ class Project:
         :param fname: the filename
         :type fname: PyQt4.QtCore.QString
         :param open: a boolean to indicate if we create a new project or 
-                     open a file
+                     open an existing file
         :type open: logical
         """
         self.colors = [QColor(Qt.blue), QColor(Qt.red), QColor(Qt.green), 
@@ -654,7 +654,7 @@ class Project:
         :param spacing: the spacing between histograms
         :type spacing: float
         :param sens: a string to indicate if we plot targets vs samples or
-                     samples vs targets
+                     samples vs targets ('geneEch' or 'echGene')
         :type sens: string
         """
         leftMargin = 0.1
@@ -709,6 +709,9 @@ class Project:
 class NRQError(Exception):
     """
     Exception raised if a problem occurs in relative quantification calculations.
+
+    :attribute broken: a list that contains the broken wells
+    :type broken: list
     """
 
     def __init__(self, broken):
@@ -747,6 +750,9 @@ class QabsError(Exception):
 class ProjectError(Exception):
     """
     Exception raised if a problem occurs in parsing the XML file.
+
+    :attribute error: the error log
+    :type error: PyQt4.QtCore.QString
     """
  
     def __init__(self, error):
