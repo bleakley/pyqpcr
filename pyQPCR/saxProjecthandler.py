@@ -18,7 +18,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 #
 from PyQt4.QtXml import QXmlDefaultHandler
-from PyQt4.QtCore import QString, QFile
+from PyQt4.QtCore import QString, QFile, Qt
 from PyQt4.QtGui import QColor
 from pyQPCR.plate import *
 from pyQPCR.project import *
@@ -178,6 +178,9 @@ class SaxProjectHandler(QXmlDefaultHandler):
             self.well.setEch(ech)
         elif qName == "TARGET":
             g = Gene(self.text, self.eff, self.pm)
+            if hasattr(self, 'refTarget'):
+                if self.text == self.refTarget:
+                    g.setRef(Qt.Checked)
             if self.targetColor != '':
                 g.setColor(QColor(self.targetColor))
             g.setEnabled(self.targetEnabled)
