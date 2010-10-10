@@ -72,12 +72,15 @@ class Ech:
     def __cmp__(self, other):
         """
         A method to compare 2 samples.
+
+        :param other: another sample to compare with
+        :type other: pyQPCR.wellGeneSample.Ech
         """
         if hasattr(self, 'color') and hasattr(other, 'color'):
             if self.color.name() != other.color.name():
                 return cmp(self.color.name(), other.color.name())
-        #if self.isRef != other.isRef:
-            #return cmp(self.isRef, other.isRef)
+        if self.isRef != other.isRef:
+            return cmp(self.isRef, other.isRef)
         if self.enabled != other.enabled:
             return cmp(self.enabled, other.enabled)
         return cmp(self.name, other.name)
@@ -133,7 +136,6 @@ class Gene:
     :attribute isRef: a boolean to indicate if the target is a reference one
     :attribute enabled: a boolean to indicate if the current Gene is
                         enabled or not (useful for plots)
-
     """
 
     def __init__(self, nom, eff=100., pm=0., isRef=Qt.Unchecked):
@@ -175,6 +177,9 @@ class Gene:
     def __cmp__(self, other):
         """
         A method to compare 2 targets.
+
+        :param other: another target to compare with
+        :type other: pyQPCR.wellGeneSample.Gene
         """
         if hasattr(self, 'color') and hasattr(other, 'color'):
             if self.color.name() != other.color.name():
@@ -187,7 +192,6 @@ class Gene:
             return cmp(self.eff, other.eff)
         if self.pm != other.pm:
             return cmp(self.pm, other.pm)
-
         return cmp(self.name, other.name)
 
     def setName(self, name):
@@ -357,6 +361,9 @@ class Puits:
     def __cmp__(self, other):
         """
         A method to compare 2 different wells.
+
+        :param other: another well to compare with
+        :type other: pyQPCR.wellGeneSample.Puits
         """
         if self.ct != other.ct:
             return cmp(self.ct, other.ct)
