@@ -172,6 +172,9 @@ class SaxProjectHandler(QXmlDefaultHandler):
             self.pl.echRef = self.refSample
         elif qName == "SAMPLE":
             ech = Ech(self.text)
+            if hasattr(self, 'refSample'):
+                if self.text == self.refSample:
+                    ech.setRef(Qt.Checked)
             if self.sampleColor != '':
                 ech.setColor(QColor(self.sampleColor))
             ech.setEnabled(self.sampleEnabled)

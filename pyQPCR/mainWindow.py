@@ -1101,6 +1101,8 @@ class Qpcr_qt(QMainWindow):
         This method is called when the user want to add/edit the targets of
         the project. It opens a dialog which let the user add/remove/edit the
         properties of the targets.
+
+        >>> dialog = GeneDialog(self, project=self.project)
         """
         dialog = GeneDialog(self, project=self.project)
         if dialog.exec_():
@@ -1123,21 +1125,24 @@ class Qpcr_qt(QMainWindow):
         This method is called when the user want to add/edit the samples of
         the project. It opens a dialog which let the user add/remove/edit the
         properties of the samples.
+
+        >>> dialog = EchDialog(self, project=self.project)
         """
         dialog = EchDialog(self, project=self.project)
         if dialog.exec_():
             project = dialog.project
-            self.populateCbox(self.echComboBox, project.hashEch, "Sample")
-            self.project = project
-            self.fileSaveAction.setEnabled(True)
-            for pl in self.project.dicoPlates.values():
-                pl.setDicoEch()
-            self.projectStack.append(copy.deepcopy(self.project))
-            for key in self.project.dicoPlates.keys():
-                pl = self.project.dicoPlates[key]
-                self.pileTables[key].populateTable(pl)
-                self.pileResults[key].populateResult(pl, self.typeCalc)
-            self.populateTree()
+            if project != self.project:
+                self.populateCbox(self.echComboBox, project.hashEch, "Sample")
+                self.project = project
+                self.fileSaveAction.setEnabled(True)
+                for pl in self.project.dicoPlates.values():
+                    pl.setDicoEch()
+                self.projectStack.append(copy.deepcopy(self.project))
+                for key in self.project.dicoPlates.keys():
+                    pl = self.project.dicoPlates[key]
+                    self.pileTables[key].populateTable(pl)
+                    self.pileResults[key].populateResult(pl, self.typeCalc)
+                self.populateTree()
 
     def addAmount(self):
         """
