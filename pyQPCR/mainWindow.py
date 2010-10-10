@@ -1105,17 +1105,18 @@ class Qpcr_qt(QMainWindow):
         dialog = GeneDialog(self, project=self.project)
         if dialog.exec_():
             project = dialog.project
-            self.populateCbox(self.geneComboBox, project.hashGene, "Target")
-            self.project = project
-            self.fileSaveAction.setEnabled(True)
-            for pl in self.project.dicoPlates.values():
-                pl.setDicoGene()
-            self.projectStack.append(copy.deepcopy(self.project))
-            for key in self.project.dicoPlates.keys():
-                pl = self.project.dicoPlates[key]
-                self.pileTables[key].populateTable(pl)
-                self.pileResults[key].populateResult(pl, self.typeCalc)
-            self.populateTree()
+            if project != self.project:
+                self.populateCbox(self.geneComboBox, project.hashGene, "Target")
+                self.project = project
+                self.fileSaveAction.setEnabled(True)
+                for pl in self.project.dicoPlates.values():
+                    pl.setDicoGene()
+                self.projectStack.append(copy.deepcopy(self.project))
+                for key in self.project.dicoPlates.keys():
+                    pl = self.project.dicoPlates[key]
+                    self.pileTables[key].populateTable(pl)
+                    self.pileResults[key].populateResult(pl, self.typeCalc)
+                self.populateTree()
 
     def addEch(self):
         """

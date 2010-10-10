@@ -107,6 +107,10 @@ class Plaque:
         """
         This method is used to compare two plates.
         """
+        if self.echRef != other.echRef:
+            return cmp(self.echRef, other.echRef)
+        if self.geneRef != other.geneRef:
+            return cmp(self.geneRef, other.geneRef)
         if self.type != other.type:
             return cmp(self.type, other.type)
         if self.filename != other.filename:
@@ -831,8 +835,6 @@ class Replicate:
         :param other: a replicate
         :type other: pyQPCR.plate.Replicate
         """
-        if self.echRef != other.echRef:
-            return cmp(self.echRef, other.echRef)
         if self.confidence != other.confidence:
             return cmp(self.confidence, other.confidence)
         if self.type != other.type:
