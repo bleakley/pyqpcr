@@ -1080,42 +1080,63 @@ class Qpcr_qt(QMainWindow):
         if len(selectedWells) > 0:
             dialog = EditDialog(self, project=self.project, selected=selected)
             #
+            needUp = False
+            hasChanged = False
             if dialog.exec_():
                 ge = dialog.cboxGene.currentObj()
+                if dialog.project != self.project:
+                    self.project = dialog.project
+                    needUp = True
                 if dialog.cboxType.currentText() == QString('unknown'):
                     ech = dialog.cboxSample.currentObj()
                     for it in self.pileTables[self.currentPlate].selectedItems():
                         nom = it.statusTip()
                         well = getattr(self.project.dicoPlates[self.currentPlate],
                                        str(nom))
-                        well.setType(QString('unknown'))
-                        if ge.name != "": well.setGene(ge)
-                        if ech.name != "": well.setEch(ech)
-                    for pl in self.project.dicoPlates.values():
-                        pl.setDicoEch()
+                        if well.type != 'unknown':
+                            well.setType(QString('unknown'))
+                            hasChanged = True
+                        if ge.name != '' and well.gene != ge:
+                            well.setGene(ge)
+                            hasChanged = True
+                        if ech.name != '' and well.ech != ech:
+                            well.setEch(ech)
+                            hasChanged = True
+                    if hasChanged:
+                        for pl in self.project.dicoPlates.values():
+                            pl.setDicoEch()
                 if dialog.cboxType.currentText() == QString('standard'):
                     am = dialog.cboxAm.currentText()
                     for it in self.pileTables[self.currentPlate].selectedItems():
                         nom = it.statusTip()
                         well = getattr(self.project.dicoPlates[self.currentPlate],
                                        str(nom))
-                        well.setType(QString('standard'))
-                        if ge.name != '':
+                        if well.type != 'standard':
+                            well.setType(QString('standard'))
+                            hasChanged = True
+                        if ge.name != '' and well.gene != ge:
                             well.setGene(ge)
-                        if am != '':
+                            hasChanged = True
+                        if am != '' and well.amount != float(am):
                             well.setAmount(float(am))
-                    self.project.setDicoAm()
-                self.project.unsaved = True
-                self.fileSaveAction.setEnabled(True)
-                self.undoAction.setEnabled(True)
-                for pl in self.project.dicoPlates.values():
-                    pl.setDicoGene()
-                self.projectStack.insert(len(self.projectStack) + self.undoInd + 1,
-                                         copy.deepcopy(self.project))
-                self.pileTables[self.currentPlate].populateTable( \
-                       self.project.dicoPlates[self.currentPlate])
-                self.pileResults[self.currentPlate].populateResult( \
-                       self.project.dicoPlates[self.currentPlate], self.typeCalc)
+                            hasChanged = True
+                    if hasChanged:
+                        self.project.setDicoAm()
+                if hasChanged:
+                    self.project.unsaved = True
+                    self.fileSaveAction.setEnabled(True)
+                    self.undoAction.setEnabled(True)
+                    for pl in self.project.dicoPlates.values():
+                        pl.setDicoGene()
+                    self.projectStack.insert(len(self.projectStack) + self.undoInd + 1,
+                                             copy.deepcopy(self.project))
+                    self.pileTables[self.currentPlate].populateTable( \
+                           self.project.dicoPlates[self.currentPlate])
+                    self.pileResults[self.currentPlate].populateResult( \
+                           self.project.dicoPlates[self.currentPlate], self.typeCalc)
+
+            if needUp:
+                self.updateUi()
 
         else: #Please select something !!
             QMessageBox.information(self, "Please select some wells",
