@@ -427,7 +427,8 @@ class Qpcr_qt(QMainWindow):
                 self.appendResult(pl, key)
 
             # Pile de plaques pour le Undo/Redo
-            self.projectStack.insert(len(self.projectStack)+self.undoInd+1,copy.deepcopy(self.project))
+            self.projectStack.insert(len(self.projectStack) + self.undoInd + 1, 
+                                     copy.deepcopy(self.project))
             self.updateUi()
 
     def fileNew(self):
@@ -444,13 +445,15 @@ class Qpcr_qt(QMainWindow):
         if dialog.exec_():
             self.cleanBeforeOpen()
             self.project = Project(dialog.projectName, open=False)
-            self.projectStack.insert(len(self.projectStack)+self.undoInd+1,copy.deepcopy(self.project))
             self.filename = dialog.projectName
             self.setWindowTitle("pyQPCR - %s[*]" % QFileInfo(self.filename).fileName())
             for fname in dialog.fileNames.values():
                 self.machine = dialog.machineType
                 self.typeCalc = dialog.calculationType
                 self.addPlate(fname, fileNew=True)
+
+            self.projectStack.insert(len(self.projectStack) + self.undoInd + 1,
+                                     copy.deepcopy(self.project))
 
     def fileImport(self):
         """
@@ -1107,7 +1110,8 @@ class Qpcr_qt(QMainWindow):
                 self.undoAction.setEnabled(True)
                 for pl in self.project.dicoPlates.values():
                     pl.setDicoGene()
-                self.projectStack.insert(len(self.projectStack)+self.undoInd+1,copy.deepcopy(self.project))
+                self.projectStack.insert(len(self.projectStack) + self.undoInd + 1,
+                                         copy.deepcopy(self.project))
                 self.pileTables[self.currentPlate].populateTable( \
                        self.project.dicoPlates[self.currentPlate])
                 self.pileResults[self.currentPlate].populateResult( \
@@ -1135,7 +1139,8 @@ class Qpcr_qt(QMainWindow):
                 self.undoAction.setEnabled(True)
                 for pl in self.project.dicoPlates.values():
                     pl.setDicoGene()
-                self.projectStack.insert(len(self.projectStack)+self.undoInd+1,copy.deepcopy(self.project))
+                self.projectStack.insert(len(self.projectStack) + self.undoInd + 1,
+                                         copy.deepcopy(self.project))
                 for key in self.project.dicoPlates.keys():
                     pl = self.project.dicoPlates[key]
                     self.pileTables[key].populateTable(pl)
@@ -1160,7 +1165,8 @@ class Qpcr_qt(QMainWindow):
                 self.undoAction.setEnabled(True)
                 for pl in self.project.dicoPlates.values():
                     pl.setDicoEch()
-                self.projectStack.insert(len(self.projectStack)+self.undoInd+1,copy.deepcopy(self.project))
+                self.projectStack.insert(len(self.projectStack) + self.undoInd + 1,
+                                         copy.deepcopy(self.project))
                 for key in self.project.dicoPlates.keys():
                     pl = self.project.dicoPlates[key]
                     self.pileTables[key].populateTable(pl)
@@ -1184,7 +1190,8 @@ class Qpcr_qt(QMainWindow):
                 self.fileSaveAction.setEnabled(True)
                 self.undoAction.setEnabled(True)
                 self.project.setDicoAm()
-                self.projectStack.insert(len(self.projectStack)+self.undoInd+1,copy.deepcopy(self.project))
+                self.projectStack.insert(len(self.projectStack) + self.undoInd + 1,
+                                         copy.deepcopy(self.project))
                 for key in self.project.dicoPlates.keys():
                     pl = self.project.dicoPlates[key]
                     self.pileTables[key].populateTable(pl)
@@ -1218,7 +1225,8 @@ class Qpcr_qt(QMainWindow):
                 self.project.unsaved = True
                 self.fileSaveAction.setEnabled(True)
                 self.undoAction.setEnabled(True)
-                self.projectStack.insert(len(self.projectStack)+self.undoInd+1,copy.deepcopy(self.project))
+                self.projectStack.insert(len(self.projectStack) + self.undoInd + 1,
+                                         copy.deepcopy(self.project))
 
             self.subIndex += 1
         else: #Please select something !!
@@ -1242,7 +1250,8 @@ class Qpcr_qt(QMainWindow):
             self.fileSaveAction.setEnabled(True)
             self.undoAction.setEnabled(True)
             self.project.dicoPlates[self.currentPlate].setDicoGene()
-            self.projectStack.insert(len(self.projectStack)+self.undoInd+1,copy.deepcopy(self.project))
+            self.projectStack.insert(len(self.projectStack) + self.undoInd + 1,
+                                     copy.deepcopy(self.project))
             self.pileTables[self.currentPlate].populateTable( \
                           self.project.dicoPlates[self.currentPlate])
             self.pileResults[self.currentPlate].populateResult( \
@@ -1267,7 +1276,8 @@ class Qpcr_qt(QMainWindow):
             self.fileSaveAction.setEnabled(True)
             self.undoAction.setEnabled(True)
             self.project.dicoPlates[self.currentPlate].setDicoEch()
-            self.projectStack.insert(len(self.projectStack)+self.undoInd+1,copy.deepcopy(self.project))
+            self.projectStack.insert(len(self.projectStack) + self.undoInd + 1,
+                                     copy.deepcopy(self.project))
             self.pileTables[self.currentPlate].populateTable( \
                          self.project.dicoPlates[self.currentPlate])
             self.pileResults[self.currentPlate].populateResult( \
@@ -1291,7 +1301,8 @@ class Qpcr_qt(QMainWindow):
             self.fileSaveAction.setEnabled(True)
             self.undoAction.setEnabled(True)
             self.project.setDicoAm()
-            self.projectStack.insert(len(self.projectStack)+self.undoInd+1,copy.deepcopy(self.project))
+            self.projectStack.insert(len(self.projectStack) + self.undoInd + 1,
+                                     copy.deepcopy(self.project))
             self.pileTables[self.currentPlate].populateTable( \
                         self.project.dicoPlates[self.currentPlate])
             self.pileResults[self.currentPlate].populateResult( \
@@ -1338,7 +1349,8 @@ class Qpcr_qt(QMainWindow):
             self.project.unsaved = True
             self.fileSaveAction.setEnabled(True)
             self.undoAction.setEnabled(True)
-            self.projectStack.insert(len(self.projectStack)+self.undoInd+1,copy.deepcopy(self.project))
+            self.projectStack.insert(len(self.projectStack) + self.undoInd + 1,
+                                     copy.deepcopy(self.project))
             self.pileTables[self.currentPlate].populateTable( \
                         self.project.dicoPlates[self.currentPlate])
             self.pileResults[self.currentPlate].populateResult( \
@@ -1365,7 +1377,8 @@ class Qpcr_qt(QMainWindow):
             self.project.unsaved = True
             self.fileSaveAction.setEnabled(True)
             self.undoAction.setEnabled(True)
-            self.projectStack.insert(len(self.projectStack)+self.undoInd+1,copy.deepcopy(self.project))
+            self.projectStack.insert(len(self.projectStack) + self.undoInd + 1,
+                                     copy.deepcopy(self.project))
             self.pileTables[self.currentPlate].populateTable( \
                             self.project.dicoPlates[self.currentPlate])
             self.pileResults[self.currentPlate].populateResult( \
@@ -1538,7 +1551,8 @@ class Qpcr_qt(QMainWindow):
         self.project.unsaved = True
         self.fileSaveAction.setEnabled(True)
         self.undoAction.setEnabled(True)
-        self.projectStack.insert(len(self.projectStack)+self.undoInd+1,copy.deepcopy(self.project))
+        self.projectStack.insert(len(self.projectStack) + self.undoInd + 1,
+                                 copy.deepcopy(self.project))
 
     def computeStd(self):
         """
