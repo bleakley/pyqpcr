@@ -519,6 +519,7 @@ class Qpcr_qt(QMainWindow):
                     self.updateUi()
                     self.project.unsaved = True
                     self.fileSaveAction.setEnabled(True)
+                    self.undoAction.setEnabled(True)
                     self.projectStack.insert(len(self.projectStack)+self.undoInd+1,
                                              copy.deepcopy(self.project))
                 else:
