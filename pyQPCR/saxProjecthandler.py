@@ -182,7 +182,7 @@ class SaxProjectHandler(QXmlDefaultHandler):
         elif qName == "TARGET":
             g = Gene(self.text, self.eff, self.pm)
             if hasattr(self, 'refTarget'):
-                if self.text == self.refTarget:
+                if self.text in self.pl.geneRef:
                     g.setRef(Qt.Checked)
             if self.targetColor != '':
                 g.setColor(QColor(self.targetColor))
