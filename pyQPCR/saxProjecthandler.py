@@ -148,6 +148,8 @@ class SaxProjectHandler(QXmlDefaultHandler):
             self.project.dicoPlates[self.platetitle] = self.pl
             if self.plateType == '384':
                 self.project.dicoPlates[self.platetitle].setPlateType('384')
+            elif self.plateType == '16':
+                self.project.dicoPlates[self.platetitle].setPlateType('16')
             elif self.plateType == '72':
                 self.project.dicoPlates[self.platetitle].setPlateType('72')
             elif self.plateType == '100':
