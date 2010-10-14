@@ -710,6 +710,7 @@ class Plaque:
                             x.setType('standard')
                     setattr(self, x.name, x)
                     self.listePuits.append(x)
+
     def subPlate(self, listWells):
         """
         This method allows to extract a subplate from a plate.
