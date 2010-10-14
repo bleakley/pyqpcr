@@ -1572,7 +1572,14 @@ class Qpcr_qt(QMainWindow):
             pl = self.project.dicoPlates[key]
             self.pileResults[key].populateResult(pl, self.typeCalc)
         # On trace le resultat
-        self.mplUknWidget.plotUnknown(self.project)
+        try:
+            self.mplUknWidget.plotUnknown(self.project)
+        except AttributeError:
+                QMessageBox.warning(self, "Problem occurs in plotting !",
+                    "<b>Warning</b>: no defined samples." \
+                    "Results cannot be displayed. Please define some samples."
+                    )
+                return
         self.project.unsaved = True
         self.fileSaveAction.setEnabled(True)
         self.undoAction.setEnabled(True)
