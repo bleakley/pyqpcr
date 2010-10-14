@@ -429,6 +429,10 @@ class Qpcr_qt(QMainWindow):
             # Pile de plaques pour le Undo/Redo
             self.projectStack.insert(len(self.projectStack) + self.undoInd + 1, 
                                      copy.deepcopy(self.project))
+            if self.undoInd != -1:
+                del self.projectStack[self.undoInd+1:]
+                self.undoInd = -1
+                self.redoAction.setEnabled(False)
             self.updateUi()
 
     def fileNew(self):
@@ -454,6 +458,10 @@ class Qpcr_qt(QMainWindow):
 
             self.projectStack.insert(len(self.projectStack) + self.undoInd + 1,
                                      copy.deepcopy(self.project))
+            if self.undoInd != -1:
+                del self.projectStack[self.undoInd+1:]
+                self.undoInd = -1
+                self.redoAction.setEnabled(False)
 
     def fileImport(self):
         """
@@ -525,6 +533,10 @@ class Qpcr_qt(QMainWindow):
                     self.undoAction.setEnabled(True)
                     self.projectStack.insert(len(self.projectStack)+self.undoInd+1,
                                              copy.deepcopy(self.project))
+                    if self.undoInd != -1:
+                        del self.projectStack[self.undoInd+1:]
+                        self.undoInd = -1
+                        self.redoAction.setEnabled(False)
                 else:
                     if not self.project.dicoPlates.has_key(QFileInfo(file).fileName()):
                         self.addPlate(file)
@@ -568,7 +580,12 @@ class Qpcr_qt(QMainWindow):
                 self.fileSaveAction.setEnabled(True)
                 if not fileNew:
                     self.undoAction.setEnabled(True)
-                    self.projectStack.insert(len(self.projectStack)+self.undoInd+1,copy.deepcopy(self.project))
+                    self.projectStack.insert(len(self.projectStack) + self.undoInd + 1,
+                                             copy.deepcopy(self.project))
+                    if self.undoInd != -1:
+                        del self.projectStack[self.undoInd+1:]
+                        self.undoInd = -1
+                        self.redoAction.setEnabled(False)
             except KeyError:
                 st = "<b>Warning:</b>: an error occurs during import ! "
                 st += "It probably comes from your file which has not been correctly parsed. "
@@ -600,7 +617,12 @@ class Qpcr_qt(QMainWindow):
             self.project.unsaved = True
             self.fileSaveAction.setEnabled(True)
             self.undoAction.setEnabled(True)
-            self.projectStack.insert(len(self.projectStack)+self.undoInd+1,copy.deepcopy(self.project))
+            self.projectStack.insert(len(self.projectStack) + self.undoInd + 1,
+                                     copy.deepcopy(self.project))
+            if self.undoInd != -1:
+                del self.projectStack[self.undoInd+1:]
+                self.undoInd = -1
+                self.redoAction.setEnabled(False)
 
     def activateDesactivate(self, bool):
         """
@@ -1134,6 +1156,10 @@ class Qpcr_qt(QMainWindow):
                         pl.setDicoGene()
                     self.projectStack.insert(len(self.projectStack) + self.undoInd + 1,
                                              copy.deepcopy(self.project))
+                    if self.undoInd != -1:
+                        del self.projectStack[self.undoInd+1:]
+                        self.undoInd = -1
+                        self.redoAction.setEnabled(False)
                     self.pileTables[self.currentPlate].populateTable( \
                            self.project.dicoPlates[self.currentPlate])
                     self.pileResults[self.currentPlate].populateResult( \
@@ -1166,6 +1192,10 @@ class Qpcr_qt(QMainWindow):
                     pl.setDicoGene()
                 self.projectStack.insert(len(self.projectStack) + self.undoInd + 1,
                                          copy.deepcopy(self.project))
+                if self.undoInd != -1:
+                    del self.projectStack[self.undoInd+1:]
+                    self.undoInd = -1
+                    self.redoAction.setEnabled(False)
                 for key in self.project.dicoPlates.keys():
                     pl = self.project.dicoPlates[key]
                     self.pileTables[key].populateTable(pl)
@@ -1192,6 +1222,10 @@ class Qpcr_qt(QMainWindow):
                     pl.setDicoEch()
                 self.projectStack.insert(len(self.projectStack) + self.undoInd + 1,
                                          copy.deepcopy(self.project))
+                if self.undoInd != -1:
+                    del self.projectStack[self.undoInd+1:]
+                    self.undoInd = -1
+                    self.redoAction.setEnabled(False)
                 for key in self.project.dicoPlates.keys():
                     pl = self.project.dicoPlates[key]
                     self.pileTables[key].populateTable(pl)
@@ -1217,6 +1251,10 @@ class Qpcr_qt(QMainWindow):
                 self.project.setDicoAm()
                 self.projectStack.insert(len(self.projectStack) + self.undoInd + 1,
                                          copy.deepcopy(self.project))
+                if self.undoInd != -1:
+                    del self.projectStack[self.undoInd+1:]
+                    self.undoInd = -1
+                    self.redoAction.setEnabled(False)
                 for key in self.project.dicoPlates.keys():
                     pl = self.project.dicoPlates[key]
                     self.pileTables[key].populateTable(pl)
@@ -1252,6 +1290,10 @@ class Qpcr_qt(QMainWindow):
                 self.undoAction.setEnabled(True)
                 self.projectStack.insert(len(self.projectStack) + self.undoInd + 1,
                                          copy.deepcopy(self.project))
+                if self.undoInd != -1:
+                    del self.projectStack[self.undoInd+1:]
+                    self.undoInd = -1
+                    self.redoAction.setEnabled(False)
 
             self.subIndex += 1
         else: #Please select something !!
@@ -1277,6 +1319,10 @@ class Qpcr_qt(QMainWindow):
             self.project.dicoPlates[self.currentPlate].setDicoGene()
             self.projectStack.insert(len(self.projectStack) + self.undoInd + 1,
                                      copy.deepcopy(self.project))
+            if self.undoInd != -1:
+                del self.projectStack[self.undoInd+1:]
+                self.undoInd = -1
+                self.redoAction.setEnabled(False)
             self.pileTables[self.currentPlate].populateTable( \
                           self.project.dicoPlates[self.currentPlate])
             self.pileResults[self.currentPlate].populateResult( \
@@ -1303,6 +1349,10 @@ class Qpcr_qt(QMainWindow):
             self.project.dicoPlates[self.currentPlate].setDicoEch()
             self.projectStack.insert(len(self.projectStack) + self.undoInd + 1,
                                      copy.deepcopy(self.project))
+            if self.undoInd != -1:
+                del self.projectStack[self.undoInd+1:]
+                self.undoInd = -1
+                self.redoAction.setEnabled(False)
             self.pileTables[self.currentPlate].populateTable( \
                          self.project.dicoPlates[self.currentPlate])
             self.pileResults[self.currentPlate].populateResult( \
@@ -1328,6 +1378,10 @@ class Qpcr_qt(QMainWindow):
             self.project.setDicoAm()
             self.projectStack.insert(len(self.projectStack) + self.undoInd + 1,
                                      copy.deepcopy(self.project))
+            if self.undoInd != -1:
+                del self.projectStack[self.undoInd+1:]
+                self.undoInd = -1
+                self.redoAction.setEnabled(False)
             self.pileTables[self.currentPlate].populateTable( \
                         self.project.dicoPlates[self.currentPlate])
             self.pileResults[self.currentPlate].populateResult( \
@@ -1352,6 +1406,10 @@ class Qpcr_qt(QMainWindow):
             self.undoAction.setEnabled(True)
             self.projectStack.insert(len(self.projectStack)+self.undoInd+1,
                                      copy.deepcopy(self.project))
+            if self.undoInd != -1:
+                del self.projectStack[self.undoInd+1:]
+                self.undoInd = -1
+                self.redoAction.setEnabled(False)
             self.pileTables[self.currentPlate].populateTable( \
                         self.project.dicoPlates[self.currentPlate])
             self.pileResults[self.currentPlate].populateResult( \
@@ -1376,6 +1434,10 @@ class Qpcr_qt(QMainWindow):
             self.undoAction.setEnabled(True)
             self.projectStack.insert(len(self.projectStack) + self.undoInd + 1,
                                      copy.deepcopy(self.project))
+            if self.undoInd != -1:
+                del self.projectStack[self.undoInd+1:]
+                self.undoInd = -1
+                self.redoAction.setEnabled(False)
             self.pileTables[self.currentPlate].populateTable( \
                         self.project.dicoPlates[self.currentPlate])
             self.pileResults[self.currentPlate].populateResult( \
@@ -1404,6 +1466,10 @@ class Qpcr_qt(QMainWindow):
             self.undoAction.setEnabled(True)
             self.projectStack.insert(len(self.projectStack) + self.undoInd + 1,
                                      copy.deepcopy(self.project))
+            if self.undoInd != -1:
+                del self.projectStack[self.undoInd+1:]
+                self.undoInd = -1
+                self.redoAction.setEnabled(False)
             self.pileTables[self.currentPlate].populateTable( \
                             self.project.dicoPlates[self.currentPlate])
             self.pileResults[self.currentPlate].populateResult( \
@@ -1585,6 +1651,10 @@ class Qpcr_qt(QMainWindow):
         self.undoAction.setEnabled(True)
         self.projectStack.insert(len(self.projectStack) + self.undoInd + 1,
                                  copy.deepcopy(self.project))
+        if self.undoInd != -1:
+            del self.projectStack[self.undoInd+1:]
+            self.undoInd = -1
+            self.redoAction.setEnabled(False)
 
     def computeStd(self):
         """
@@ -1627,7 +1697,12 @@ class Qpcr_qt(QMainWindow):
             self.project.unsaved = True
             self.fileSaveAction.setEnabled(True)
             self.undoAction.setEnabled(True)
-            self.projectStack.insert(len(self.projectStack)+self.undoInd+1,copy.deepcopy(self.project))
+            self.projectStack.insert(len(self.projectStack)+self.undoInd+1,
+                                     copy.deepcopy(self.project))
+            if self.undoInd != -1:
+                del self.projectStack[self.undoInd+1:]
+                self.undoInd = -1
+                self.redoAction.setEnabled(False)
             for key in self.project.dicoPlates.keys():
                 pl = self.project.dicoPlates[key]
                 self.pileResults[key].populateResult(pl, self.typeCalc)
