@@ -95,6 +95,8 @@ class Plaque:
                 self.parseApplied7000()
             elif machine == 'Biorad MyIQ':
                 self.parseBioradMyIQ()
+            elif machine == 'Cepheid SmartCycler':
+                self.parseCepheid()
             elif machine == 'Qiagen Corbett':
                 self.parseCorbett()
             elif machine == 'Roche LightCycler 480':
@@ -637,6 +639,77 @@ class Plaque:
                     setattr(self, x.name, x)
                     self.listePuits.append(x)
 
+    def parseCepheid(self):
+        """
+        This method allows to parse the Cepheid SmartCycler files (CSV only).
+        """
+        self.setPlateType('16')
+        file = open(unicode(self.filename), 'r')
+        iterator = csv.reader(file, delimiter=returnDelimiter(file))
+        hasHeader = False
+        for ind, line in enumerate(iterator):
+            if len(line) != 0:
+                if string.join(line).__contains__('Site ID'):
+                    hasHeader = True
+                    initTab = ind
+            if hasHeader:
+                if ind == initTab:
+                    self.header = OrderedDict()
+                    for i, field in enumerate(line):
+                        self.header[field] = i
+                    ncol = len(self.header.keys())
+
+                if ind != initTab and len(line) == ncol:
+                    champs = []
+                    for k, field in enumerate(line):
+                        try:
+                            if self.header.keys()[k] in ('FAM Ct', 'FAM Std/Res'):
+                                dat = float(field.replace(',', '.'))
+                            else:
+                                dat = field
+                        except ValueError:
+                            dat = field
+                        champs.append(dat)
+                    if self.header.has_key('Site ID'):
+                        name = champs[self.header['Site ID']]
+                        x = Puits(name)
+                    else:
+                        raise KeyError
+
+                    #if self.header.has_key('Name'):
+                        #name = champs[self.header['Name']]
+                        #if name.__contains__(' '):
+                            #dat = name.split(' ')
+                        #else:
+                            #dat = name
+                        #if len(dat) == 2:
+                            #x.setGene(Gene(dat[0]))
+                            #x.setEch(Ech(dat[1]))
+                        #if len(dat) > 2:
+                            #x.setGene(Gene(dat[0]))
+                        #else:
+                            #x.setGene(Gene(name))
+                    if self.header.has_key('FAM Ct'):
+                        ct = champs[self.header['FAM Ct']]
+                        if ct == 0.:
+                            x.setEnabled(False)
+                        x.setCt(ct)
+                    if self.header.has_key('FAM Std/Res'):
+                        try:
+                            amount = float(champs[self.header['FAM Std/Res']])
+                            if amount != 0:
+                                x.setType('standard')
+                                x.setAmount(amount)
+                        except ValueError:
+                            pass
+                    if self.header.has_key('Sample Type'):
+                        type = champs[self.header['Sample Type']]
+                        if type == 'UNKN':
+                            x.setType('unknown')
+                        elif type == 'STD':
+                            x.setType('standard')
+                    setattr(self, x.name, x)
+                    self.listePuits.append(x)
     def subPlate(self, listWells):
         """
         This method allows to extract a subplate from a plate.
@@ -1013,11 +1086,6 @@ class PlateError(Exception):
 
 
 if __name__ == '__main__':
-    pl = Plaque('../samples/raw_data_corbett1.csv', machine='Qiagen Corbett')
-    pl2 = Plaque('../samples/raw_data_corbett3.csv', machine='Qiagen Corbett')
-    print pl.A1
-
-    if pl == pl2:
-        print 'similar'
-    else:
-        print 'different'
+    pl = Plaque('raw_data_cepheid2.csv', machine='Cepheid SmartCycler')
+    print pl.A1.amount
+    print pl.A14

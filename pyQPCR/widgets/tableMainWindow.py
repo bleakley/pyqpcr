@@ -80,6 +80,10 @@ class PlateWidget(MyQTableWidget):
                                 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P']
             self.setRowCount(16)
             self.setColumnCount(24)
+        elif plateType == '16':
+            self.tableLabels = ['A']
+            self.setRowCount(1)
+            self.setColumnCount(16)
         elif plateType == '72':
             self.tableLabels = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
                                 'I']
