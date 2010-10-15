@@ -1112,6 +1112,7 @@ class Qpcr_qt(QMainWindow):
                 ge = dialog.cboxGene.currentObj()
                 if dialog.project != self.project:
                     self.project = dialog.project
+                    hasChanged = True
                     needUp = True
                 if dialog.cboxType.currentText() == QString('unknown'):
                     ech = dialog.cboxSample.currentObj()
@@ -1160,10 +1161,11 @@ class Qpcr_qt(QMainWindow):
                         del self.projectStack[self.undoInd+1:]
                         self.undoInd = -1
                         self.redoAction.setEnabled(False)
-                    self.pileTables[self.currentPlate].populateTable( \
-                           self.project.dicoPlates[self.currentPlate])
-                    self.pileResults[self.currentPlate].populateResult( \
-                           self.project.dicoPlates[self.currentPlate], self.typeCalc)
+                    for key in self.project.dicoPlates.keys():
+                        pl = self.project.dicoPlates[key]
+                        self.pileTables[key].populateTable(pl)
+                        self.pileResults[key].populateResult(pl, self.typeCalc)
+                    self.populateTree()
 
             if needUp:
                 self.updateUi()
