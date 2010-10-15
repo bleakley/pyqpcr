@@ -1105,15 +1105,13 @@ class Qpcr_qt(QMainWindow):
             selectedWells.append(well)
         if len(selectedWells) > 0:
             dialog = EditDialog(self, project=self.project, selected=selected)
-            #
-            needUp = False
+             
             hasChanged = False
             if dialog.exec_():
                 ge = dialog.cboxGene.currentObj()
                 if dialog.project != self.project:
                     self.project = dialog.project
                     hasChanged = True
-                    needUp = True
                 if dialog.cboxType.currentText() == QString('unknown'):
                     ech = dialog.cboxSample.currentObj()
                     for it in self.pileTables[self.currentPlate].selectedItems():
@@ -1166,9 +1164,7 @@ class Qpcr_qt(QMainWindow):
                         self.pileTables[key].populateTable(pl)
                         self.pileResults[key].populateResult(pl, self.typeCalc)
                     self.populateTree()
-
-            if needUp:
-                self.updateUi()
+                    self.updateUi()
 
         else: #Please select something !!
             QMessageBox.information(self, "Please select some wells",
