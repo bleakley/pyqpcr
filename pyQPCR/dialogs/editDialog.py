@@ -149,6 +149,10 @@ class EditDialog(QDialog):
             self.stackedWidget.setCurrentIndex(1)
 
     def populateAm(self):
+        """
+        A method that fills the QComboBox and set the correct
+        current item for amounts.
+        """
         self.cboxAm.clear()
         self.cboxAm.addItems(self.project.hashAmount.keys())
         nAm = list(self.selected[3])
@@ -164,10 +168,16 @@ class EditDialog(QDialog):
                 self.curAmIndex = ind
             except KeyError:
                 self.cboxAm.setCurrentIndex(self.curAmIndex)
+            except ValueError:
+                self.cboxAm.setCurrentIndex(self.curAmIndex)
         else:
             self.cboxAm.setCurrentIndex(0)
 
     def populateEch(self):
+        """
+        A method that fills the QComboBox and set the correct
+        current item for samples.
+        """
         self.cboxSample.clear()
         self.cboxSample.addItems(self.project.hashEch, editDialog=True)
         nEch = list(self.selected[2])
@@ -179,10 +189,16 @@ class EditDialog(QDialog):
                 self.curEchIndex = ind
             except KeyError:
                 self.cboxSample.setCurrentIndex(self.curEchIndex)
+            except ValueError:
+                self.cboxSample.setCurrentIndex(self.curEchIndex)
         else:
             self.cboxSample.setCurrentIndex(0)
 
     def populateGene(self):
+        """
+        A method that fills the QComboBox and set the correct
+        current item for targets.
+        """
         self.cboxGene.clear()
         self.cboxGene.addItems(self.project.hashGene, editDialog=True)
         nGene = list(self.selected[1])
@@ -193,6 +209,8 @@ class EditDialog(QDialog):
                 self.cboxGene.setCurrentIndex(ind)
                 self.curGeneIndex = ind
             except KeyError:
+                self.cboxGene.setCurrentIndex(self.curGeneIndex)
+            except ValueError:
                 self.cboxGene.setCurrentIndex(self.curGeneIndex)
         else:
             self.cboxGene.setCurrentIndex(0)
