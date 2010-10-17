@@ -417,7 +417,7 @@ class Plaque:
                     if self.header.has_key('Well'):
                         name = champs[self.header['Well']]
                         if numbersOnly.match(name) and len(name) <= 3:
-                            x = Puits(name, plateType=96)
+                            x = Puits(name, plateType='96')
                             if int(name) > 96:
                                 self.setPlateType('384')
                         else:
