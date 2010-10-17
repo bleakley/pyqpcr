@@ -310,7 +310,7 @@ class Puits:
     """
 
     def __init__(self, name, ech=QString(''), ct=nan, ctmean=nan, 
-            ctdev=nan, gene=QString('')):
+            ctdev=nan, gene=QString(''), machine=None):
         """
         Constructor of the Puits object
 
@@ -326,6 +326,9 @@ class Puits:
         :type ctdev: float
         :param gene: the name of the target of the well
         :type gene: PyQt4.QtCore.QString
+        :param machine: a parameter for special device naming
+                        (AB7700, or Qiagen Corbett)
+        :type machine: string
         """
         self.name = name
         self.ech = Ech(ech)
@@ -337,7 +340,7 @@ class Puits:
         self.type = QString("unknown")
         self.NRQ = ''
         self.NRQerror = ''
-        self.getPosition()
+        self.getPosition(machine)
         self.enabled = True
         self.warning = False
 
@@ -508,7 +511,7 @@ class Puits:
                     ctmean, ctdev, amount, eff, NRQ, NRQerror)
         return st
 
-    def getPosition(self):
+    def getPosition(self, machine=None):
         """
         This method gives the well position (x,y) of a given well
         according to its name.
@@ -517,25 +520,35 @@ class Puits:
 
         This method has been extended to work also with Corbett's devices, i.e.
         with names that contain only a number.
+
+        :param machine: a parameter for special PCR devices
+        :type machine: string
         """
         numbersOnly = re.compile(r"(\d+)")
         letters = re.compile(r"([A-P])(\d+)")
+        lettres = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
+                   'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P']
         if letters.match(self.name):
             groups = letters.search(self.name).groups()
             self.ypos = int(groups[1])-1
-            lettres = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
-                       'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P']
             dict = {}
             for xpos, l in enumerate(lettres):
                 dict[l] = xpos
             self.xpos = dict[self.name[0]]
         elif numbersOnly.match(self.name):
-            group = numbersOnly.search(self.name).groups()
-            val = int(group[0])
-            # Warning: works only with 72-tubes!
-            # Needs to be polished to work with 100-tubes !
-            self.xpos = (val-1)/8
-            self.ypos = val - self.xpos * 8 - 1
+            if machine == 'Applied 7700':
+                group = numbersOnly.search(self.name).groups()
+                val = int(group[0])
+                self.xpos = (val-1)/12
+                self.ypos = val - self.xpos * 12 - 1
+                self.name = lettres[self.xpos] + '%i' % (self.ypos+1)
+            else:
+                group = numbersOnly.search(self.name).groups()
+                val = int(group[0])
+                # Warning: works only with 72-tubes!
+                # Needs to be polished to work with 100-tubes !
+                self.xpos = (val-1)/8
+                self.ypos = val - self.xpos * 8 - 1
 
     def setGene(self, gene):
         """

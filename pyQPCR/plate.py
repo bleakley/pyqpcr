@@ -35,13 +35,16 @@ __version__ = "$Rev$"
 
 def returnDelimiter(fileObj):
     """
-    A routine to determine the separator of a CSV file.
+    A routine to determine the separator of a CSV file. Works with
+    comma, semicolon or tabulation for now.
 
     :param fileObj: the file object we want to test
     :type fileObj: file
     """
     text = fileObj.read(1024) # you can change this to whatever is appropriate for your data
     fileObj.seek(0) # get back to beginning of file for csv reader
+    if text.count('\t') > text.count(',') and text.count('\t') > text.count(';'):
+        return '\t'
     if text.count(',') > text.count(';'):
         return ','
     else:
@@ -93,6 +96,8 @@ class Plaque:
                 self.parseAppliedUniv()
             elif machine == 'Applied 7000':
                 self.parseApplied7000()
+            elif machine == 'Applied 7700':
+                self.parseApplied7700()
             elif machine == 'Biorad MyIQ':
                 self.parseBioradMyIQ()
             elif machine == 'Cepheid SmartCycler':
@@ -372,6 +377,66 @@ class Plaque:
                     if self.header.has_key('Detector'):
                         geneName = champs[self.header['Detector']]
                         x.setGene(Gene(geneName))
+                    setattr(self, x.name, x)
+                    self.listePuits.append(x)
+
+    def parseApplied7700(self):
+        """
+        This method allows to parse Applied 7700 raw data. It supports only
+        CSV files.
+        """
+        file = open(unicode(self.filename), 'r')
+        iterator = csv.reader(file, delimiter=returnDelimiter(file))
+        hasHeader = False
+        numbersOnly = re.compile(r"([0-9]+)")
+        for ind, line in enumerate(iterator):
+            if len(line) != 0:
+                if line[0] == 'Well':
+                    hasHeader = True
+                    initTab = ind
+            if hasHeader:
+                if ind == initTab:
+                    self.header = OrderedDict()
+                    for i, field in enumerate(line):
+                        self.header[field] = i
+                    ncol = len(self.header.keys())
+
+                if ind != initTab and len(line) == ncol:
+                    champs = []
+                    for k, field in enumerate(line):
+                        try:
+                            if self.header.keys()[k] in ('Ct', 'Quantity'):
+                                dat = float(field.replace(',', '.'))
+                            else:
+                                dat = field
+                        except ValueError:
+                            dat = field
+                        champs.append(dat)
+                    if self.header.has_key('Well'):
+                        name = champs[self.header['Well']]
+                        if numbersOnly.match(name) and len(name) <= 3:
+                            x = Puits(name, machine='Applied 7700')
+                            if x.xpos > 8 or x.ypos > 12:
+                                self.setPlateType('384')
+                        else:
+                            continue
+                    else:
+                        raise KeyError
+                    if self.header.has_key('Ct'):
+                        ct = champs[self.header['Ct']]
+                        if ct == '':
+                            x.setEnabled(False)
+                        x.setCt(ct)
+                    #if self.header.has_key('Qty'):
+                        #try:
+                            #amount = float(champs[self.header['Qty']])
+                            #x.setType('standard')
+                            #x.setAmount(amount)
+                        #except ValueError:
+                            #pass
+                    #if self.header.has_key('Detector'):
+                        #geneName = champs[self.header['Detector']]
+                        #x.setGene(Gene(geneName))
                     setattr(self, x.name, x)
                     self.listePuits.append(x)
 
@@ -710,7 +775,6 @@ class Plaque:
                             x.setType('standard')
                     setattr(self, x.name, x)
                     self.listePuits.append(x)
-
     def subPlate(self, listWells):
         """
         This method allows to extract a subplate from a plate.
@@ -1087,6 +1151,5 @@ class PlateError(Exception):
 
 
 if __name__ == '__main__':
-    pl = Plaque('raw_data_cepheid2.csv', machine='Cepheid SmartCycler')
-    print pl.A1.amount
-    print pl.A14
+    pl = Plaque('raw_data_AB7700.csv', machine='Applied 7700')
+    print pl.G6
