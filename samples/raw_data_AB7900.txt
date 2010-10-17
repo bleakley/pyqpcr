@@ -1,0 +1,223 @@
+SDS 2.3	AQ Results	1.0
+Filename	Ligom 10.6.2010
+PlateID	
+Assay Type	Absolute Quantification
+Run DateTime	10/6/10 7:56:11 PM
+Operator	
+ThermalCycleParams	
+
+Sample Information
+
+Well	Sample Name	Detector Name	Reporter	Task	Ct	Quantity	Qty Mean	Qty StdDev	Ct Median	Ct Mean	Ct StdDev	Baseline Type	Baseline Start	Baseline Stop	Threshold Type	Threshold	FOS	HMD	LME	EW	BPR	NAW	HNS	HRN	EAF	BAF	TAF	CAF	
+25	B1	Sybr1	SYBR	Unknown	21.589584							Automatic			Manual	0.199274													
+34	B10	Sybr1	SYBR	Unknown	25.381903							Automatic			Manual	0.199274													
+35	B11	Sybr1	SYBR	Unknown	25.449598							Automatic			Manual	0.199274													
+36	B12	Sybr1	SYBR	Unknown	26.797342							Automatic			Manual	0.199274													
+37	B13	Sybr1	SYBR	Unknown	26.894205							Automatic			Manual	0.199274													
+38	B14	Sybr1	SYBR	Unknown	26.216574							Automatic			Manual	0.199274													
+39	B15	Sybr1	SYBR	Unknown	28.788591							Automatic			Manual	0.199274													
+40	B16	Sybr1	SYBR	Unknown	20.975216							Automatic			Manual	0.199274					true		true	true					
+41	B17	Sybr1	SYBR	Unknown	21.17877							Automatic			Manual	0.199274					true								
+42	B18	Sybr1	SYBR	Unknown	21.590748							Automatic			Manual	0.199274					true								
+43	B19	Sybr1	SYBR	Unknown	21.549534							Automatic			Manual	0.199274													
+26	B2	Sybr1	SYBR	Unknown	20.972141							Automatic			Manual	0.199274													
+44	B20	Sybr1	SYBR	Unknown	20.291187							Automatic			Manual	0.199274													
+45	B21	Sybr1	SYBR	Unknown	21.797518							Automatic			Manual	0.199274													
+46	B22	Sybr1	SYBR	Unknown	22.482487							Automatic			Manual	0.199274													
+47	B23	Sybr1	SYBR	Unknown	21.834038							Automatic			Manual	0.199274					true								
+48	B24	Sybr1	SYBR	Unknown	22.3417							Automatic			Manual	0.199274													
+27	B3	Sybr1	SYBR	Unknown	22.32867							Automatic			Manual	0.199274													
+28	B4	Sybr1	SYBR	Unknown	21.472612							Automatic			Manual	0.199274													
+29	B5	Sybr1	SYBR	Unknown	21.825077							Automatic			Manual	0.199274													
+30	B6	Sybr1	SYBR	Unknown	24.645115							Automatic			Manual	0.199274													
+31	B7	Sybr1	SYBR	Unknown	25.835003							Automatic			Manual	0.199274													
+32	B8	Sybr1	SYBR	Unknown	25.348612							Automatic			Manual	0.199274													
+33	B9	Sybr1	SYBR	Unknown	29.3224							Automatic			Manual	0.199274													
+49	C1	Sybr1	SYBR	Unknown	22.206762							Automatic			Manual	0.199274													
+58	C10	Sybr1	SYBR	Unknown	27.081774							Automatic			Manual	0.199274													
+59	C11	Sybr1	SYBR	Unknown	27.300001							Automatic			Manual	0.199274													
+60	C12	Sybr1	SYBR	Unknown	23.059557							Automatic			Manual	0.199274													
+61	C13	Sybr1	SYBR	Unknown	28.319155							Automatic			Manual	0.199274													
+62	C14	Sybr1	SYBR	Unknown	28.570866							Automatic			Manual	0.199274													
+63	C15	Sybr1	SYBR	Unknown	28.321287							Automatic			Manual	0.199274													
+64	C16	Sybr1	SYBR	Unknown	22.521633							Automatic			Manual	0.199274					true								
+65	C17	Sybr1	SYBR	Unknown	22.5521							Automatic			Manual	0.199274					true								
+66	C18	Sybr1	SYBR	Unknown	22.502546							Automatic			Manual	0.199274													
+67	C19	Sybr1	SYBR	Unknown	22.852766							Automatic			Manual	0.199274													
+50	C2	Sybr1	SYBR	Unknown	21.470572							Automatic			Manual	0.199274													
+68	C20	Sybr1	SYBR	Unknown	22.539968							Automatic			Manual	0.199274													
+69	C21	Sybr1	SYBR	Unknown	21.776913							Automatic			Manual	0.199274					true								
+70	C22	Sybr1	SYBR	Unknown	22.884136							Automatic			Manual	0.199274													
+71	C23	Sybr1	SYBR	Unknown	22.912254							Automatic			Manual	0.199274													
+72	C24	Sybr1	SYBR	Unknown	23.171799							Automatic			Manual	0.199274													
+51	C3	Sybr1	SYBR	Unknown	22.596796							Automatic			Manual	0.199274													
+52	C4	Sybr1	SYBR	Unknown	25.214323							Automatic			Manual	0.199274													
+53	C5	Sybr1	SYBR	Unknown	25.214996							Automatic			Manual	0.199274													
+54	C6	Sybr1	SYBR	Unknown	24.636164							Automatic			Manual	0.199274							true						
+55	C7	Sybr1	SYBR	Unknown	29.029419							Automatic			Manual	0.199274													
+56	C8	Sybr1	SYBR	Unknown	29.15299							Automatic			Manual	0.199274													
+57	C9	Sybr1	SYBR	Unknown	29.18142							Automatic			Manual	0.199274													
+73	D1	Sybr1	SYBR	Unknown	21.51547							Automatic			Manual	0.199274													
+82	D10	Sybr1	SYBR	Unknown	25.792513							Automatic			Manual	0.199274													
+83	D11	Sybr1	SYBR	Unknown	25.719007							Automatic			Manual	0.199274													
+84	D12	Sybr1	SYBR	Unknown	26.790747							Automatic			Manual	0.199274													
+85	D13	Sybr1	SYBR	Unknown	27.233456							Automatic			Manual	0.199274													
+86	D14	Sybr1	SYBR	Unknown	26.752228							Automatic			Manual	0.199274													
+87	D15	Sybr1	SYBR	Unknown	29.347855							Automatic			Manual	0.199274													
+88	D16	Sybr1	SYBR	Unknown	21.864374							Automatic			Manual	0.199274													
+89	D17	Sybr1	SYBR	Unknown	21.88565							Automatic			Manual	0.199274													
+90	D18	Sybr1	SYBR	Unknown	22.398867							Automatic			Manual	0.199274													
+91	D19	Sybr1	SYBR	Unknown	20.80955							Automatic			Manual	0.199274													
+74	D2	Sybr1	SYBR	Unknown	21.64581							Automatic			Manual	0.199274													
+92	D20	Sybr1	SYBR	Unknown	21.280373							Automatic			Manual	0.199274													
+93	D21	Sybr1	SYBR	Unknown	21.587246							Automatic			Manual	0.199274													
+94	D22	Sybr1	SYBR	Unknown	20.74704							Automatic			Manual	0.199274													
+95	D23	Sybr1	SYBR	Unknown	20.73416							Automatic			Manual	0.199274													
+96	D24	Sybr1	SYBR	Unknown	22.693913							Automatic			Manual	0.199274													
+75	D3	Sybr1	SYBR	Unknown	22.727362							Automatic			Manual	0.199274													
+76	D4	Sybr1	SYBR	Unknown	21.863222							Automatic			Manual	0.199274													
+77	D5	Sybr1	SYBR	Unknown	22.65877							Automatic			Manual	0.199274													
+78	D6	Sybr1	SYBR	Unknown	24.704002							Automatic			Manual	0.199274													
+79	D7	Sybr1	SYBR	Unknown	28.070087							Automatic			Manual	0.199274													
+80	D8	Sybr1	SYBR	Unknown	27.489614							Automatic			Manual	0.199274													
+81	D9	Sybr1	SYBR	Unknown	29.39569							Automatic			Manual	0.199274													
+97	E1	Sybr1	SYBR	Unknown	23.796473							Automatic			Manual	0.199274													
+106	E10	Sybr1	SYBR	Unknown	27.267502							Automatic			Manual	0.199274													
+107	E11	Sybr1	SYBR	Unknown	26.66595							Automatic			Manual	0.199274													
+108	E12	Sybr1	SYBR	Unknown	26.321035							Automatic			Manual	0.199274													
+109	E13	Sybr1	SYBR	Unknown	29.136873							Automatic			Manual	0.199274													
+110	E14	Sybr1	SYBR	Unknown	29.260216							Automatic			Manual	0.199274													
+111	E15	Sybr1	SYBR	Unknown	28.880102							Automatic			Manual	0.199274													
+112	E16	Sybr1	SYBR	Unknown	22.460552							Automatic			Manual	0.199274													
+113	E17	Sybr1	SYBR	Unknown	22.509598							Automatic			Manual	0.199274								true					
+114	E18	Sybr1	SYBR	Unknown	22.575176							Automatic			Manual	0.199274					true								
+115	E19	Sybr1	SYBR	Unknown	22.363523							Automatic			Manual	0.199274													
+98	E2	Sybr1	SYBR	Unknown	23.948166							Automatic			Manual	0.199274													
+116	E20	Sybr1	SYBR	Unknown	21.913532							Automatic			Manual	0.199274					true								
+117	E21	Sybr1	SYBR	Unknown	22.271881							Automatic			Manual	0.199274													
+118	E22	Sybr1	SYBR	Unknown	22.419895							Automatic			Manual	0.199274													
+119	E23	Sybr1	SYBR	Unknown	22.169834							Automatic			Manual	0.199274													
+120	E24	Sybr1	SYBR	Unknown	22.521976							Automatic			Manual	0.199274													
+99	E3	Sybr1	SYBR	Unknown	23.863453							Automatic			Manual	0.199274													
+100	E4	Sybr1	SYBR	Unknown	25.875957							Automatic			Manual	0.199274													
+101	E5	Sybr1	SYBR	Unknown	25.51214							Automatic			Manual	0.199274													
+102	E6	Sybr1	SYBR	Unknown	26.11397							Automatic			Manual	0.199274													
+103	E7	Sybr1	SYBR	Unknown	31.229185							Automatic			Manual	0.199274													
+104	E8	Sybr1	SYBR	Unknown	29.232912							Automatic			Manual	0.199274													
+105	E9	Sybr1	SYBR	Unknown	30.189964							Automatic			Manual	0.199274													
+121	F1	Sybr1	SYBR	Unknown	22.647913							Automatic			Manual	0.199274													
+130	F10	Sybr1	SYBR	Unknown	25.464222							Automatic			Manual	0.199274													
+131	F11	Sybr1	SYBR	Unknown	Undetermined							Automatic			Manual	0.199274						true							
+132	F12	Sybr1	SYBR	Unknown	26.519125							Automatic			Manual	0.199274													
+133	F13	Sybr1	SYBR	Unknown	27.408888							Automatic			Manual	0.199274													
+134	F14	Sybr1	SYBR	Unknown	27.41005							Automatic			Manual	0.199274													
+135	F15	Sybr1	SYBR	Unknown	28.775593							Automatic			Manual	0.199274													
+136	F16	Sybr1	SYBR	Unknown	21.683352							Automatic			Manual	0.199274													
+137	F17	Sybr1	SYBR	Unknown	22.108458							Automatic			Manual	0.199274													
+138	F18	Sybr1	SYBR	Unknown	22.513128							Automatic			Manual	0.199274													
+139	F19	Sybr1	SYBR	Unknown	21.20738							Automatic			Manual	0.199274													
+122	F2	Sybr1	SYBR	Unknown	22.692808							Automatic			Manual	0.199274													
+140	F20	Sybr1	SYBR	Unknown	20.57324							Automatic			Manual	0.199274													
+141	F21	Sybr1	SYBR	Unknown	21.661545							Automatic			Manual	0.199274													
+142	F22	Sybr1	SYBR	Unknown	19.981958							Automatic			Manual	0.199274													
+143	F23	Sybr1	SYBR	Unknown	20.02609							Automatic			Manual	0.199274													
+144	F24	Sybr1	SYBR	Unknown	21.542942							Automatic			Manual	0.199274													
+123	F3	Sybr1	SYBR	Unknown	23.54208							Automatic			Manual	0.199274													
+124	F4	Sybr1	SYBR	Unknown	22.931408							Automatic			Manual	0.199274													
+125	F5	Sybr1	SYBR	Unknown	22.687332							Automatic			Manual	0.199274													
+126	F6	Sybr1	SYBR	Unknown	25.032598							Automatic			Manual	0.199274													
+127	F7	Sybr1	SYBR	Unknown	30.361576							Automatic			Manual	0.199274													
+128	F8	Sybr1	SYBR	Unknown	26.03043							Automatic			Manual	0.199274													
+129	F9	Sybr1	SYBR	Unknown	29.880375							Automatic			Manual	0.199274													
+145	G1	Sybr1	SYBR	Unknown	24.435356							Automatic			Manual	0.199274													
+154	G10	Sybr1	SYBR	Unknown	26.855703							Automatic			Manual	0.199274													
+155	G11	Sybr1	SYBR	Unknown	27.395275							Automatic			Manual	0.199274													
+156	G12	Sybr1	SYBR	Unknown	26.376608							Automatic			Manual	0.199274													
+157	G13	Sybr1	SYBR	Unknown	29.407858							Automatic			Manual	0.199274													
+158	G14	Sybr1	SYBR	Unknown	29.125063							Automatic			Manual	0.199274													
+159	G15	Sybr1	SYBR	Unknown	29.749342							Automatic			Manual	0.199274													
+160	G16	Sybr1	SYBR	Unknown	22.617353							Automatic			Manual	0.199274													
+161	G17	Sybr1	SYBR	Unknown	22.802721							Automatic			Manual	0.199274													
+162	G18	Sybr1	SYBR	Unknown	21.002882							Automatic			Manual	0.199274													
+163	G19	Sybr1	SYBR	Unknown	22.18954							Automatic			Manual	0.199274													
+146	G2	Sybr1	SYBR	Unknown	24.575136							Automatic			Manual	0.199274													
+164	G20	Sybr1	SYBR	Unknown	22.153639							Automatic			Manual	0.199274													
+165	G21	Sybr1	SYBR	Unknown	22.59961							Automatic			Manual	0.199274													
+166	G22	Sybr1	SYBR	Unknown	21.639658							Automatic			Manual	0.199274													
+167	G23	Sybr1	SYBR	Unknown	21.939913							Automatic			Manual	0.199274													
+168	G24	Sybr1	SYBR	Unknown	22.49546							Automatic			Manual	0.199274													
+147	G3	Sybr1	SYBR	Unknown	23.76236							Automatic			Manual	0.199274													
+148	G4	Sybr1	SYBR	Unknown	25.868595							Automatic			Manual	0.199274													
+149	G5	Sybr1	SYBR	Unknown	26.323122							Automatic			Manual	0.199274													
+150	G6	Sybr1	SYBR	Unknown	26.31873							Automatic			Manual	0.199274													
+151	G7	Sybr1	SYBR	Unknown	26.705727							Automatic			Manual	0.199274													
+152	G8	Sybr1	SYBR	Unknown	29.50205							Automatic			Manual	0.199274													
+153	G9	Sybr1	SYBR	Unknown	29.90947							Automatic			Manual	0.199274													
+169	H1	Sybr1	SYBR	Unknown	23.70483							Automatic			Manual	0.199274													
+178	H10	Sybr1	SYBR	Unknown	26.879665							Automatic			Manual	0.199274													
+179	H11	Sybr1	SYBR	Unknown	26.39471							Automatic			Manual	0.199274													
+180	H12	Sybr1	SYBR	Unknown	26.759588							Automatic			Manual	0.199274													
+181	H13	Sybr1	SYBR	Unknown	29.124008							Automatic			Manual	0.199274													
+182	H14	Sybr1	SYBR	Unknown	29.23587							Automatic			Manual	0.199274													
+183	H15	Sybr1	SYBR	Unknown	28.275118							Automatic			Manual	0.199274													
+184	H16	Sybr1	SYBR	Unknown	22.104548							Automatic			Manual	0.199274													
+185	H17	Sybr1	SYBR	Unknown	22.424213							Automatic			Manual	0.199274													
+186	H18	Sybr1	SYBR	Unknown	22.457066							Automatic			Manual	0.199274													
+187	H19	Sybr1	SYBR	Unknown	21.976566							Automatic			Manual	0.199274													
+170	H2	Sybr1	SYBR	Unknown	24.2019							Automatic			Manual	0.199274													
+188	H20	Sybr1	SYBR	Unknown	21.999573							Automatic			Manual	0.199274													
+189	H21	Sybr1	SYBR	Unknown	22.172985							Automatic			Manual	0.199274													
+190	H22	Sybr1	SYBR	Unknown	22.100403							Automatic			Manual	0.199274													
+191	H23	Sybr1	SYBR	Unknown	21.781385							Automatic			Manual	0.199274													
+192	H24	Sybr1	SYBR	Unknown	22.243458							Automatic			Manual	0.199274													
+171	H3	Sybr1	SYBR	Unknown	24.329268							Automatic			Manual	0.199274													
+172	H4	Sybr1	SYBR	Unknown	25.690702							Automatic			Manual	0.199274													
+173	H5	Sybr1	SYBR	Unknown	25.52118							Automatic			Manual	0.199274													
+174	H6	Sybr1	SYBR	Unknown	26.327208							Automatic			Manual	0.199274													
+175	H7	Sybr1	SYBR	Unknown	30.432798							Automatic			Manual	0.199274													
+176	H8	Sybr1	SYBR	Unknown	30.744307							Automatic			Manual	0.199274													
+177	H9	Sybr1	SYBR	Unknown	30.760351							Automatic			Manual	0.199274													
+193	I1	Sybr1	SYBR	Unknown	23.256384							Automatic			Manual	0.199274													
+202	I10	Sybr1	SYBR	Unknown	25.712603							Automatic			Manual	0.199274													
+203	I11	Sybr1	SYBR	Unknown	25.358675							Automatic			Manual	0.199274													
+204	I12	Sybr1	SYBR	Unknown	26.658512							Automatic			Manual	0.199274													
+205	I13	Sybr1	SYBR	Unknown	27.514698							Automatic			Manual	0.199274													
+206	I14	Sybr1	SYBR	Unknown	27.147125							Automatic			Manual	0.199274													
+207	I15	Sybr1	SYBR	Unknown	29.337236							Automatic			Manual	0.199274													
+208	I16	Sybr1	SYBR	Unknown	21.745731							Automatic			Manual	0.199274													
+209	I17	Sybr1	SYBR	Unknown	21.668684							Automatic			Manual	0.199274													
+210	I18	Sybr1	SYBR	Unknown	21.863705							Automatic			Manual	0.199274													
+211	I19	Sybr1	SYBR	Unknown	20.897509							Automatic			Manual	0.199274													
+194	I2	Sybr1	SYBR	Unknown	15.698764							Automatic			Manual	0.199274													
+212	I20	Sybr1	SYBR	Unknown	20.605835							Automatic			Manual	0.199274													
+213	I21	Sybr1	SYBR	Unknown	22.803772							Automatic			Manual	0.199274													
+214	I22	Sybr1	SYBR	Unknown	20.431686							Automatic			Manual	0.199274													
+215	I23	Sybr1	SYBR	Unknown	19.688198							Automatic			Manual	0.199274													
+216	I24	Sybr1	SYBR	Unknown	21.73748							Automatic			Manual	0.199274													
+195	I3	Sybr1	SYBR	Unknown	24.783718							Automatic			Manual	0.199274													
+196	I4	Sybr1	SYBR	Unknown	23.605133							Automatic			Manual	0.199274													
+197	I5	Sybr1	SYBR	Unknown	23.23075							Automatic			Manual	0.199274													
+198	I6	Sybr1	SYBR	Unknown	25.475258							Automatic			Manual	0.199274													
+199	I7	Sybr1	SYBR	Unknown	30.131372							Automatic			Manual	0.199274													
+200	I8	Sybr1	SYBR	Unknown	29.47323							Automatic			Manual	0.199274													
+201	I9	Sybr1	SYBR	Unknown	30.201143							Automatic			Manual	0.199274													
+244	K4	Sybr1	SYBR	Unknown	22.16705							Automatic			Manual	0.199274													
+245	K5	Sybr1	SYBR	Unknown	21.67145							Automatic			Manual	0.199274													
+246	K6	Sybr1	SYBR	Unknown	21.867239							Automatic			Manual	0.199274													
+247	K7	Sybr1	SYBR	Unknown	22.56882							Automatic			Manual	0.199274													
+248	K8	Sybr1	SYBR	Unknown	22.819918							Automatic			Manual	0.199274													
+249	K9	Sybr1	SYBR	Unknown	22.632708							Automatic			Manual	0.199274													
+268	L4	Sybr1	SYBR	Unknown	18.186108							Automatic			Manual	0.199274													
+269	L5	Sybr1	SYBR	Unknown	22.520073							Automatic			Manual	0.199274													
+270	L6	Sybr1	SYBR	Unknown	22.8034							Automatic			Manual	0.199274													
+271	L7	Sybr1	SYBR	Unknown	22.837378							Automatic			Manual	0.199274													
+272	L8	Sybr1	SYBR	Unknown	22.61564							Automatic			Manual	0.199274													
+273	L9	Sybr1	SYBR	Unknown	23.097107							Automatic			Manual	0.199274													
+Slope		cycles/log decade
+Y-Intercept		
+R^2		
+
+
+
+NAP	LPL
+	
