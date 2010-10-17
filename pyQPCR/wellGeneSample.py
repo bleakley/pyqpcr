@@ -310,7 +310,7 @@ class Puits:
     """
 
     def __init__(self, name, ech=QString(''), ct=nan, ctmean=nan, 
-            ctdev=nan, gene=QString(''), machine=None):
+                 ctdev=nan, gene=QString(''), plateType=None):
         """
         Constructor of the Puits object
 
@@ -326,9 +326,9 @@ class Puits:
         :type ctdev: float
         :param gene: the name of the target of the well
         :type gene: PyQt4.QtCore.QString
-        :param machine: a parameter for special device naming
+        :param plateType: a parameter for special device naming
                         (AB7700, or Qiagen Corbett)
-        :type machine: string
+        :type plateType: string
         """
         self.name = name
         self.ech = Ech(ech)
@@ -340,7 +340,7 @@ class Puits:
         self.type = QString("unknown")
         self.NRQ = ''
         self.NRQerror = ''
-        self.getPosition(machine)
+        self.getPosition(plateType)
         self.enabled = True
         self.warning = False
 
@@ -379,6 +379,15 @@ class Puits:
         if self.type != other.type:
             return cmp(self.type, other.type)
         return cmp(self.name, other.name)
+
+    def setName(self, name):
+        """
+        A method to change the name of a well
+
+        :param name: the new name of the well
+        :type name: PyQt4.QtCore.QString
+        """
+        self.name = name
 
     def writeWellXml(self):
         """
@@ -511,7 +520,7 @@ class Puits:
                     ctmean, ctdev, amount, eff, NRQ, NRQerror)
         return st
 
-    def getPosition(self, machine=None):
+    def getPosition(self, plateType=None):
         """
         This method gives the well position (x,y) of a given well
         according to its name.
@@ -521,8 +530,9 @@ class Puits:
         This method has been extended to work also with Corbett's devices, i.e.
         with names that contain only a number.
 
-        :param machine: a parameter for special PCR devices
-        :type machine: string
+        :param plateType: a parameter for special PCR devices that provides only
+                        a number for locating wells.
+        :type plateType: string
         """
         numbersOnly = re.compile(r"(\d+)")
         letters = re.compile(r"([A-P])(\d+)")
@@ -535,20 +545,31 @@ class Puits:
             for xpos, l in enumerate(lettres):
                 dict[l] = xpos
             self.xpos = dict[self.name[0]]
-        elif numbersOnly.match(self.name):
-            if machine == 'Applied 7700':
+        elif numbersOnly.match(self.name): # if only a number is given
+            if plateType == '96': # AB7700 or AB7900
                 group = numbersOnly.search(self.name).groups()
                 val = int(group[0])
                 self.xpos = (val-1)/12
                 self.ypos = val - self.xpos * 12 - 1
-                self.name = lettres[self.xpos] + '%i' % (self.ypos+1)
-            else:
+                self.setName(lettres[self.xpos] + '%i' % (self.ypos+1))
+            elif plateType == '384': # AB7900
                 group = numbersOnly.search(self.name).groups()
                 val = int(group[0])
-                # Warning: works only with 72-tubes!
-                # Needs to be polished to work with 100-tubes !
+                self.xpos = (val-1)/24
+                self.ypos = val - self.xpos * 24 - 1
+                self.setName(lettres[self.xpos] + '%i' % (self.ypos+1))
+            elif plateType == '72': # Corbett
+                group = numbersOnly.search(self.name).groups()
+                val = int(group[0])
                 self.xpos = (val-1)/8
                 self.ypos = val - self.xpos * 8 - 1
+                self.setName(lettres[self.xpos] + '%i' % (self.ypos+1))
+            elif plateType == '100': # Corbett
+                group = numbersOnly.search(self.name).groups()
+                val = int(group[0])
+                self.xpos = (val-1)/10
+                self.ypos = val - self.xpos * 10 - 1
+                self.setName(lettres[self.xpos] + '%i' % (self.ypos+1))
 
     def setGene(self, gene):
         """

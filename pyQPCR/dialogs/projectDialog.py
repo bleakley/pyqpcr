@@ -83,9 +83,9 @@ class NewProjectDialog(QDialog):
         self.machBox = QComboBox()
         lab2.setBuddy(self.machBox)
         self.machBox.addItems(['Eppendorf', 'Applied StepOne', 'Applied 7000',
-                               'Applied 7500', 'Applied 7700', 'Biorad MyIQ', 
-                               'Cepheid SmartCycler', 'Qiagen Corbett', 
-                               'Roche LightCycler 480'])
+                               'Applied 7500', 'Applied 7700', 'Applied 7900',
+                               'Biorad MyIQ', 'Cepheid SmartCycler', 
+                               'Qiagen Corbett', 'Roche LightCycler 480'])
         if machine == 'Eppendorf':
             self.machBox.setCurrentIndex(0)
         elif machine == 'Applied StepOne':
@@ -96,14 +96,16 @@ class NewProjectDialog(QDialog):
             self.machBox.setCurrentIndex(3)
         elif machine == 'Applied 7700':
             self.machBox.setCurrentIndex(4)
-        elif machine == 'Biorad MyIQ':
+        elif machine == 'Applied 7900':
             self.machBox.setCurrentIndex(5)
-        elif machine == 'Cepheid SmartCycler':
+        elif machine == 'Biorad MyIQ':
             self.machBox.setCurrentIndex(6)
-        elif machine == 'Qiagen Corbett':
+        elif machine == 'Cepheid SmartCycler':
             self.machBox.setCurrentIndex(7)
-        elif machine == 'Roche LightCycler 480':
+        elif machine == 'Qiagen Corbett':
             self.machBox.setCurrentIndex(8)
+        elif machine == 'Roche LightCycler 480':
+            self.machBox.setCurrentIndex(9)
 
         lab3 = QLabel("<b>4. Plates files</b>")
         self.listFiles = QListWidget()
@@ -187,6 +189,9 @@ class NewProjectDialog(QDialog):
         elif self.machBox.currentText() == 'Applied 7700':
             formats =[u"*.csv"]
             type = 'Applied 7700 machines'
+        elif self.machBox.currentText() == 'Applied 7900':
+            formats =[u"*.txt"]
+            type = 'Applied 7900 machines'
         elif self.machBox.currentText() == 'Biorad MyIQ':
             formats =[u"*.csv"]
             type = 'Biorad MyIQ machines'
