@@ -22,9 +22,9 @@ from PyQt4.QtCore import *
 from pyQPCR.widgets.matplotlibWidget import MatplotlibWidget, NavToolBar
 import pyQPCR.qrc_resources
 
-__author__ = "$Author$"
-__date__ = "$Date$"
-__version__ = "$Rev$"
+__author__ = "$Author: tgastine $"
+__date__ = "$Date: 2010-07-11 20:00:00 +0200 (dim. 11 juil. 2010) $"
+__version__ = "$Rev: 282 $"
 
 
 
