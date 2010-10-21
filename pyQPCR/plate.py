@@ -592,9 +592,9 @@ class Plaque:
                     if self.header.has_key('Target Name'):
                         geneName = champs[self.header['Target Name']]
                         x.setGene(Gene(geneName))
-                    if self.header.has_key(u'\u0394\u0394C\u0442'):
-                        nrq = champs[self.header[u'\u0394\u0394C\u0442']]
-                        x.setNRQ(nrq)
+                    #if self.header.has_key(u'\u0394\u0394C\u0442'):
+                        #nrq = champs[self.header[u'\u0394\u0394C\u0442']]
+                        #x.setNRQ(nrq)
 
                     setattr(self, x.name, x)
                     self.listePuits.append(x)
