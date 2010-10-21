@@ -138,7 +138,9 @@ class SettingsDialog(QDialog):
         self.machBox.addItems(['Eppendorf', 'Applied StepOne', 'Applied 7000', 
                                'Applied 7500', 'Applied 7700', 'Applied 7900',
                                'Biorad MyIQ', 'Cepheid SmartCycler', 
-                               'Qiagen Corbett', 'Roche LightCycler 480'])
+                               'Qiagen Corbett', 'Roche LightCycler 480',
+                               'Stratagene Mx3000'])
+
         if machine == 'Eppendorf':
             self.machBox.setCurrentIndex(0)
         elif machine == 'Applied StepOne':
@@ -159,6 +161,9 @@ class SettingsDialog(QDialog):
             self.machBox.setCurrentIndex(8)
         elif machine == 'Roche LightCycler 480':
             self.machBox.setCurrentIndex(9)
+        elif machine == 'Stratagene Mx3000':
+            self.machBox.setCurrentIndex(10)
+
         lab5.setBuddy(self.machBox)
 
         buttonBox = QDialogButtonBox(QDialogButtonBox.Ok|

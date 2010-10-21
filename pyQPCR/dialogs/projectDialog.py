@@ -85,7 +85,8 @@ class NewProjectDialog(QDialog):
         self.machBox.addItems(['Eppendorf', 'Applied StepOne', 'Applied 7000',
                                'Applied 7500', 'Applied 7700', 'Applied 7900',
                                'Biorad MyIQ', 'Cepheid SmartCycler', 
-                               'Qiagen Corbett', 'Roche LightCycler 480'])
+                               'Qiagen Corbett', 'Roche LightCycler 480',
+                               'Stratagene Mx3000'])
         if machine == 'Eppendorf':
             self.machBox.setCurrentIndex(0)
         elif machine == 'Applied StepOne':
@@ -106,6 +107,8 @@ class NewProjectDialog(QDialog):
             self.machBox.setCurrentIndex(8)
         elif machine == 'Roche LightCycler 480':
             self.machBox.setCurrentIndex(9)
+        elif machine == 'Stratagene Mx3000':
+            self.machBox.setCurrentIndex(10)
 
         lab3 = QLabel("<b>4. Plates files</b>")
         self.listFiles = QListWidget()
@@ -204,6 +207,9 @@ class NewProjectDialog(QDialog):
         elif self.machBox.currentText() == 'Roche LightCycler 480':
             formats =[u"*.txt"]
             type = 'Roche LightCycler 480'
+        elif self.machBox.currentText() == 'Stratagene Mx3000':
+            formats =[u"*.txt"]
+            type = 'Stratagene Mx3000'
         fileNames = QFileDialog.getOpenFileNames(self,
                        "pyQPCR - Choose plates", dir,
                        "Input files [%s] (%s)" % (type, " ".join(formats)))
