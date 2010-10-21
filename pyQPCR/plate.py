@@ -431,16 +431,14 @@ class Plaque:
                         if ct == '':
                             x.setEnabled(False)
                         x.setCt(ct)
-                    #if self.header.has_key('Qty'):
-                        #try:
-                            #amount = float(champs[self.header['Qty']])
-                            #x.setType('standard')
-                            #x.setAmount(amount)
-                        #except ValueError:
-                            #pass
-                    #if self.header.has_key('Detector'):
-                        #geneName = champs[self.header['Detector']]
-                        #x.setGene(Gene(geneName))
+                    if self.header.has_key('Quantity'):
+                        try:
+                            amount = float(champs[self.header['Quantity']])
+                            if amount > 0:
+                                x.setType('standard')
+                                x.setAmount(amount)
+                        except ValueError:
+                            pass
                     setattr(self, x.name, x)
                     self.listePuits.append(x)
 
