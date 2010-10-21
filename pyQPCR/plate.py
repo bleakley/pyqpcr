@@ -108,6 +108,8 @@ class Plaque:
                 self.parseCorbett()
             elif machine == 'Roche LightCycler 480':
                 self.parseLightCycler480()
+            elif machine == 'Stratagene Mx3000':
+                self.parseStratagene()
             # Raise exception if no well are detected
             if len(self.listePuits) == 0:
                 raise PlateError(self.filename, machine)
@@ -815,19 +817,6 @@ class Plaque:
                     else:
                         raise KeyError
 
-                    #if self.header.has_key('Name'):
-                        #name = champs[self.header['Name']]
-                        #if name.__contains__(' '):
-                            #dat = name.split(' ')
-                        #else:
-                            #dat = name
-                        #if len(dat) == 2:
-                            #x.setGene(Gene(dat[0]))
-                            #x.setEch(Ech(dat[1]))
-                        #if len(dat) > 2:
-                            #x.setGene(Gene(dat[0]))
-                        #else:
-                            #x.setGene(Gene(name))
                     if self.header.has_key('FAM Ct'):
                         ct = champs[self.header['FAM Ct']]
                         if ct == 0.:
@@ -849,6 +838,70 @@ class Plaque:
                             x.setType('standard')
                     setattr(self, x.name, x)
                     self.listePuits.append(x)
+
+    def parseStratagene(self):
+        """
+        This method allows to parse Stratagene Mx3000 raw data. It supports only
+        TXT files.
+        """
+        file = open(unicode(self.filename), 'r')
+        iterator = file.readlines()
+        file.close()
+        ncol = 0
+        indheader = 0
+        for ind, line in enumerate(iterator):
+            linetot = line
+            line = line.split('\t')
+            if linetot.__contains__('Well'):
+                indheader = ind
+                self.header = OrderedDict()
+                for i, field in enumerate(line):
+                    if field.startswith('Ct'):
+                        field = 'Ct'
+                    elif field.startswith('Quantity'):
+                        field = 'Quantity'
+                    st = field.strip('"')
+                    st = field.strip()
+                    self.header[st] = i
+                ncol = len(self.header.keys())
+
+            if len(line) == ncol and ind != indheader:
+                champs = []
+                for k, field in enumerate(line):
+                    dat = field.strip('"')
+                    dat = dat.strip()
+                    try:
+                        if self.header.keys()[k] in ('Ct', 'Quantity'):
+                            dat = float(field.replace(',', '.'))
+                    except ValueError:
+                        pass
+                    champs.append(dat)
+                if self.header.has_key('Well'):
+                    name = champs[self.header['Well']]
+                    x = Puits(name)
+                else:
+                    raise KeyError
+                if self.header.has_key('Ct'):
+                    ct = champs[self.header['Ct']]
+                    if ct == 'No Ct':
+                        x.setEnabled(False)
+                    x.setCt(ct)
+                if self.header.has_key('Well Type'):
+                    type = champs[self.header['Well Type']]
+                    if type == 'Standard':
+                        x.setType('standard')
+                    elif type == 'NTC':
+                        x.setType('negative')
+
+                if self.header.has_key('Quantity'):
+                    try:
+                        am = float(champs[self.header['Quantity']])
+                        if am > 0 and x.type == 'standard':
+                            x.setAmount(am)
+                    except ValueError:
+                        pass
+                setattr(self, x.name, x)
+                self.listePuits.append(x)
 
     def subPlate(self, listWells):
         """
@@ -1226,9 +1279,4 @@ class PlateError(Exception):
 
 
 if __name__ == '__main__':
-    pl = Plaque('raw_data_corbett2.csv', machine='Qiagen Corbett')
-    print pl.type
-    print pl.B1
-    pl = Plaque('raw_data_corbett3.csv', machine='Qiagen Corbett')
-    print pl.type
-    print pl.A9
+    pl = Plaque('raw_data_stratagene.txt', machine='Stratagene Mx3000')

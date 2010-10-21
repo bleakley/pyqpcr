@@ -501,6 +501,9 @@ class Qpcr_qt(QMainWindow):
         elif self.machine == 'Roche LightCycler 480':
             formats =[u"*.txt"]
             type = 'Roche LightCycler 480'
+        elif self.machine == 'Stratagene Mx3000':
+            formats =[u"*.txt"]
+            type = 'Stratagene Mx3000'
         else:
             formats =[u"*.txt", u"*.csv"]
             type = 'Eppendorf machines'
@@ -1792,8 +1795,8 @@ class Qpcr_qt(QMainWindow):
         self.undoAction.setEnabled(False)
         self.redoAction.setEnabled(False)
         # undo/redo buffer
-        del self.project
-        del self.projectStack
+        if hasattr(self, 'project'):
+            del self.project
         self.projectStack = []
         self.undoInd = -1
  
