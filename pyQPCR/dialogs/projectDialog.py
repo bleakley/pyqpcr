@@ -35,23 +35,15 @@ class NewProjectDialog(QDialog):
     you want to import.
 
     :attribute pwd: the path of the project
-    :type pwd: PyQt4.QtCore.QString
     :attribute fileNames: a list that contains the name of the plates
                           that will be imported
-    :type fileNames: list
     :attribute typeCalc: the type of calculation (absolute or relative
                          quantification
-    :type typeCalc: PyQt4.QtGui.QComboBox
     :attribute edt: the name of the project
-    :type edt: PyQt4.QtGui.QLineEdit
     :attribute machbox: the type of PCR device used in the experiment
-    :type machbox: PyQt4.QtGui.QComboBox
     :attribute listFiles: a list that contains the name of the plates
-    :type listFiles: PyQt4.QtGui.QListWidget
     :attribute file: the path where the project is going to be saved
-    :type file: PyQt4.QtGui.QLineEdit
     :attribute workdir: the directory where the project will be saved
-    :type workdir: PyQt4.QtCore.QString
     """
     
     def __init__(self, parent=None, pwd=None, machine='Eppendorf'):

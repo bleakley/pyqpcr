@@ -35,9 +35,7 @@ class AmountDialog(QDialog):
 
     :attribute listWidget: the main displayed list of items that contains the 
                            different amounts.
-    :type listWidget: PyQt4.QtCore.QListWidget
     :attribute project: a copy (copy.deepcopy) of the project
-    :type project: pyQPCR.project.Project
     """
     
     def __init__(self, parent=None, project=None):
@@ -191,7 +189,6 @@ class AddAmDialog(QDialog):
     your experiment.
 
     :attribute am: the amount edited
-    :type am: float
     """
     
     def __init__(self, parent=None, am=None):

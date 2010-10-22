@@ -33,13 +33,10 @@ class PrintingDialog(QDialog):
 
     :attribute btnRes: a check-box that allows to select (unselect)
                        the export of the result table
-    :type btnRes: PyQt4.QtGui.QCheckBox
     :attribute btnStd: a check-box that allows to select (unselect)
                        the export of standard curves
-    :type btnStd: PyQt4.QtGui.QCheckBox
     :attribute btnQuant: a check-box that allows to select (unselect)
                          the export of quantification histograms
-    :type btnQuant: PyQt4.QtGui.QCheckBox
     """
     
     def __init__(self, parent=None):

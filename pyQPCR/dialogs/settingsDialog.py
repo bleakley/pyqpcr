@@ -79,25 +79,18 @@ class SettingsDialog(QDialog):
     :attribute typeCalc: a combo-box that allows to choose the type
                          of calculation you want to do (relative or
                          absolute quantification)
-    :type typeCalc: PyQt4.QtGui.QComboBox
     :attribute ectLineEdit: a line-edit that allows to determine the 
                             value of E(ct) max
-    :type ectLineEdit: PyQt4.QtGui.QLineEdit
     :attribute ctMinLineEdit: a line-edit that allows to determine the
                               minimum value of ct for negative controls.
-    :type ctMinLineEdit: PyQt4.QtGui.QLineEdit
     :attribute typeCbox: a combo-box that allows to change
                          the type of error
-    :type typeCbox: PyQt4.QtGui.QComboBox
     :attribute types: a dictionnary that contains the type
                       of error as keys
-    :type types: dict
     :attribute confCbox: a combo-box that allows to change
                          the confidence interval
-    :type confCbox: PyQt4.QtGui.QComboBox
     :attribute machBox: a combo-box that allows to change the PCR
                         device you are using
-    :type machBox: PyQt4.QtGui.QComboBox
     """
 
     def __init__(self, parent=None, ect=0.3, ctmin=35, confidence=0.9,
