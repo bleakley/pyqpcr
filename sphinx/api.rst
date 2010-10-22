@@ -7,3 +7,4 @@ pyQPCR's API
    modproj
    modmain
    modwidgets
+   moddialogs

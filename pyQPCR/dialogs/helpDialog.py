@@ -31,9 +31,7 @@ class HelpDialog(QDialog):
     HelpDialog is opened if one clicks on Help in pyQPCR.
 
     :attribute pageLabel: the name of the current page
-    :type pageLabel: PyQt4.QtGui.QLabel
     :attribute textBrowser: the HTML browser to navigate in the help
-    :type textBrowser: PyQt4.QtGui.QTextBrowser
     """
 
     def __init__(self, page, parent=None):
