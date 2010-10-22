@@ -43,6 +43,9 @@ class SuffixComboBox(QComboBox):
     def addItem(self, item, *args):
         """
         Overload of addItem: add a suffix to the item
+
+        :param item: the item you want to add
+        :type item: PyQt4.QtCore.QString
         """
         suffix = QString("%")
         item += suffix
@@ -51,6 +54,9 @@ class SuffixComboBox(QComboBox):
     def addItems(self, items):
         """
         Overload of addItems: add a suffix to the item
+
+        :param items: the list of items you want to add
+        :type items: list
         """
         for item in items:
             self.addItem(item)
@@ -63,16 +69,58 @@ class SuffixComboBox(QComboBox):
         cText = QComboBox.currentText(self)
         return cText[:-1]
 
+
 class SettingsDialog(QDialog):
     """
     This dialog is the configuration dialog of pyQPCR. It is open when 
     the Settings is open. It allows to set the different settings of
     pyQPCR (type of machine and calculations, ...)
+
+    :attribute typeCalc: a combo-box that allows to choose the type
+                         of calculation you want to do (relative or
+                         absolute quantification)
+    :type typeCalc: PyQt4.QtGui.QComboBox
+    :attribute ectLineEdit: a line-edit that allows to determine the 
+                            value of E(ct) max
+    :type ectLineEdit: PyQt4.QtGui.QLineEdit
+    :attribute ctMinLineEdit: a line-edit that allows to determine the
+                              minimum value of ct for negative controls.
+    :type ctMinLineEdit: PyQt4.QtGui.QLineEdit
+    :attribute typeCbox: a combo-box that allows to change
+                         the type of error
+    :type typeCbox: PyQt4.QtGui.QComboBox
+    :attribute types: a dictionnary that contains the type
+                      of error as keys
+    :type types: dict
+    :attribute confCbox: a combo-box that allows to change
+                         the confidence interval
+    :type confCbox: PyQt4.QtGui.QComboBox
+    :attribute machBox: a combo-box that allows to change the PCR
+                        device you are using
+    :type machBox: PyQt4.QtGui.QComboBox
     """
 
     def __init__(self, parent=None, ect=0.3, ctmin=35, confidence=0.9,
                  errtype="normal", machine='Eppendorf', 
                  typeCalc='Relative quantification'):
+        """
+        Constructor of SettingsDialog
+
+        :param parent: the QWidget parent
+        :type parent: PyQt4.QtGui.QWidget
+        :param ect: the maximum standard deviation for a replicate
+        :type ect: float
+        :param ctmin: the minimum value of ct for a negative control
+        :type ctmin: float
+        :param confidence: confidence level
+        :type confidence: float
+        :param errtype: the type of error (normal or student)
+        :type errtype: PyQt4.QtCore.QString
+        :param machine: the name of the PCR device
+        :type machine: PyQt4.QtCore.QString
+        :param typeCalc: the type of calculation
+        :type typeCalc: PyQt4.QtCore.QString
+        """
         QDialog.__init__(self, parent)
 
         labCalc = QLabel("<b>Calculation :</b>")

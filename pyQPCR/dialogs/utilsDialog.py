@@ -25,9 +25,30 @@ __date__ = "$Date$"
 __version__ = "$Rev$"
 
 class PrintingDialog(QDialog):
+    """
+    PrintingDialog is displayed when the user want to print
+    the results in a PDF file (or send to a printer). It allows
+    to choose which kind of results you want to export (table
+    of results or plots)
+
+    :attribute btnRes: a check-box that allows to select (unselect)
+                       the export of the result table
+    :type btnRes: PyQt4.QtGui.QCheckBox
+    :attribute btnStd: a check-box that allows to select (unselect)
+                       the export of standard curves
+    :type btnStd: PyQt4.QtGui.QCheckBox
+    :attribute btnQuant: a check-box that allows to select (unselect)
+                         the export of quantification histograms
+    :type btnQuant: PyQt4.QtGui.QCheckBox
+    """
     
-    def __init__(self, parent=None, plaque=None):
-        self.parent = parent
+    def __init__(self, parent=None):
+        """
+        Constructor of PrintingDialog
+
+        :param parent: the QWidget parent
+        :type parent: PyQt4.QtGui.QWidget
+        """
         QDialog.__init__(self, parent)
 
         lab1 = QLabel("&Results table:")
