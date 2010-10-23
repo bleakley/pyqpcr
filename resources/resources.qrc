@@ -36,16 +36,12 @@
 <file alias="flag.png">icons/flag-red.png</file>
 
 <file>help/index.html</file>
-<file>help/filemenu.html</file>
 <file>help/quality.html</file>
 <file>help/import.html</file>
+<file>help/filemenu.html</file>
 <file>help/editmenu.html</file>
 <file>help/computationsmenu.html</file>
 <file>help/settingsmenu.html</file>
 <file>help/calculation.html</file>
-<file>help/refsample.html</file>
-<file>help/reftarget.html</file>
-<file>help/replicates.html</file>
-<file>help/negatives.html</file>
 </qresource>
 </RCC>
