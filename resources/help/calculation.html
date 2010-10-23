@@ -1,14 +1,49 @@
 <html>
 <head><title>pyQPCR - warning - calculations</title></head>
 <body>
+<p>
+<p><img src=":/warning.png">
+<b>Reference target undefined!</b> 
+<p>
+The reference target(s) is (are) not defined for at least one plate. To solve the trouble, select <img
+src=":/addgene.png"> Add target in the <a href="editmenu.html">Edit menu</a>. 
+This opens a window that shows the list of the targets. Select the target you want as the reference and click on Edit. Then check the reference box. If there are several plates in the project, a list will appear where you should select the plates that use this target as one of the references. The target of reference is now marked with
+<img src=":/reference.png">. Validate and run the calculation again. 
+
+</p>
+<p><img src=":/warning.png">
+<b>Reference sample undefined!</b> 
+<p>
+The reference sample is not defined for at least one plate (needed for relative quantification). To solve the trouble, select <img src=":/addech.png"> Add sample in the <a href="editmenu.html">Edit menu</a>. 
+This opens a window that shows the list of the samples. There is no sample
+marked with <img src=":/reference.png">, which means that there is no reference
+sample. Select the sample you want as the reference and click on Edit. Then check the
+reference box. If there are several plates in the project, a list will appear where you should select the plates that use this sample as the reference. The sample of reference is now marked with <img src=":/reference.png">. Validate and run the calculation again. 
+
+</p>
+<p><img src=":/warning.png">
+<b>Warning</b> 
+<p>
+- The plates do not contain 'unknown'-type wells. The quantification can't be proceeded. You should define 'unknown'-type wells in order to calculate quantifications. In order to do so, select the appropriate wells and change their type using the rolling menu or the Edit function in the <a href="editmenu.html">Edit menu</a>. 
+</p>
+<p>
+- The plates do not contain 'standard'-type wells. The standard curves can't be proceeded. You should define standard-type wells in order to calculate standard curves. In order to do so, select the appropriate wells and change their type using the rolling menu or the Edit function in the <a href="editmenu.html">Edit menu</a>. You should also define DNA amount in each 'standard'-type well. 
+</p>
 <p><img src=":/warning.png">
 <b>Problem in calculation !</b> 
 <p>
-A problem occured in the calculations. It seems to come from the well ['A1']. Check if ct is correctly defined. 
+- A problem occured in the calculations. It seems to come from the well ['A1']. Check if ct is correctly defined. 
 All the well with a target and a sample (or an amount for standard samples) defined are taking into account for calculation. 
 If one of these well miss the ct value, the calculation is aborted. 
-To solve the trouble, disable the well in the <a href="computationsmenu.html">Computations menu</a> | <img src=":/disable.png"> Disable wells, 
-or right click on the well and select Disable wells. After that, run the calculation again. 
+To solve the trouble, disable the well in the <a href="computationsmenu.html">Computations menu</a> | <img src=":/disable.png"> Disable wells, or right click on the well and select Disable wells. After that, run the calculation again. 
+</p>
+- A problem occured in the following replicates (target, sample). It probably comes from the reference target (or sample) which is undefined for this sample (or target). As a consequence these replicates have not been plotted. In relative quantification mode, each sample should have wells with the reference target, and each target should have wells with the reference sample. 
+           
+<p> 
+<p><img src=":/warning.png">
+<b>Problem occurs in plotting !</b> 
+<p>
+Warning: no defined samples. Results cannot be displayed. Please define some samples. There is no unknown-type wells with defined sample and target. For absolute quantification, standard curve of each target should be calculated before running quantifications of unknown samples. 
 
 </p>
 

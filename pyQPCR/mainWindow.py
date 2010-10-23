@@ -1562,7 +1562,7 @@ class Qpcr_qt(QMainWindow):
                 raise ValueError
         if bad:
             QMessageBox.warning(self, "Warning",
-                "The plates does not contain 'unknown'-type wells."
+                "The plates do not contain 'unknown'-type wells."
                 "The quantification can't be proceeded.")
             raise ValueError
 
@@ -1717,7 +1717,7 @@ class Qpcr_qt(QMainWindow):
             self.plotStdWidget.plotStd(self.project.dicoPlotStd)
         else:
             QMessageBox.warning(self, "Warning",
-                "The plates does not contain 'standard'-type wells."
+                "The plates do not contain 'standard'-type wells."
                 "The standard curves can't be proceeded.")
 
     def changeCurrentIndex(self):
