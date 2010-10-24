@@ -1,120 +1,26 @@
 Relative quantification
 ***********************
 
-Standard curve calculation
-==========================
-
-Linear regression
------------------
-
-
-.. math::
-   y\equiv c_t \quad \text{et} \quad x\equiv\log Q
-
-For a straight line :math:`y=ax+b`, variance :math:`\sigma_x^2` is
-
-.. math::
-   \sigma_x^2=\displaystyle\frac{1}{n-1}\sum_{i=1}^{n}(x_i-\bar{x})^2
-   \quad\text{avec}\quad \bar{x}=\frac{1}{n}\sum_{i=1}^{n}x_i
-
-Similarly, covariance :math:`\sigma_{xy}` is defined by
-
-
-.. math::
-   \sigma_{xy} =
-   \displaystyle\frac{1}{n-1}\sum_{i=1}^{n}(x_i-\bar{x})(y_i-\bar{y})
-
-To obtain the slope :math:`a` and Y-intercept :math:`b` of a linear regression
-
-.. math::
-   \left\lbrace
-   \begin{array}{l}
-    a = \dfrac{\sigma_{xy}}{\sigma_x^2}=\dfrac{\sum(x_i-\bar{x})
-        (y_i-\bar{y})}{\sum(x_i-\bar{x})^2} \\ \\
-    b = \bar{y}-a\bar{x}
-    \end{array}
-    \right.
-
-Slope error
------------
-
-For a problem with :math:`n-2` degrees of freedom, the standard deviation ? of a linear regression can be written:
-
-.. math::
-   \sigma_{\epsilon}^2 = \displaystyle\frac{1}{n-2}\sum_{i=1}^{n}(y_i-\hat{y}_i)^2
-
-Standard error :math:`\text{SE}(a)^2` on the slope is deducted :
-
-.. math::
-   \text{SE}(a)^2 = \dfrac{\sigma_{\epsilon}^2}{(n-1)\sigma_x^2} \Longrightarrow
-   \boxed{\text{SE}(a) =
-   \sqrt{\dfrac{\sum(y_i-\hat{y}_i)^2}{
-   (n-2)\sum (x_i-\bar{x})^2}}}
-
-Pearsson Coefficient
---------------------
-
-.. math::
-   R = \dfrac{\sigma_{xy}}{\sigma_x\sigma_y}
-
-:math:`\text{SE}(a)` can be express as function of :math:`R^2` :
-
-.. math::
-   \text{SE}(a) = \dfrac{\sigma_y}{\sigma_x}\sqrt{\dfrac{1-R^2}{n-2}}
-
-Confidence Interval
--------------------
-
-For a Student t-test on the expectation with an unknown standard deviation, 
-for a given confidence level :math:`\alpha`, the error on :math:`a` is:
-
-.. math::
-   \Delta a = \text{SE}(a) \cdot t_{(1-\alpha)/2}^{n-2}
-
-where :math:`t_{(1-\alpha)/2}^{n-2}` is the quantile of order 
-:math:`\alpha/2` of the Student law with :math:`n-2` degrees of freedom. 
-In term of probabilities, we have:
-
-.. math::
-   \boxed{%
-   P\left[a- \text{SE}(a) \cdot t_{(1-\alpha)/2}^{n-2}\le \beta\le a +\text{SE}(a)
-   \cdot
-   t_{(1-\alpha)/2}^{n-2}\right] = \alpha}
-
-Efficiency
-----------
-
-.. math::
-   \text{eff} = 10^{-1/a}-1\quad \text{or in \%:}\quad \text{eff}
-   =100\cdot\left(10^{-1/a}-1\right)
-
-The error on the slope :math:`\Delta a` can be propagated to the 
-calculation of the error on the efficiency :
-
-.. math::
-   \epsilon(\text{eff}) = \ln 10(\text{eff}+100) \dfrac{\Delta a}{a^2}
-
-
-Relative quantification
-=======================
+RQ calculation
+===============
 
 For a replicate :math:`(s,\ g)`, we calculate :math:`c_t` mean of all wells, i.e.
 
 .. math::
-   {\bar{c_t}}_{sg} = \dfrac{1}{n_w}\sum_{w}{c_t}_{wsg},
+   {\overline{c_t}}_{sg} = \dfrac{1}{n_w}\sum_{w}{c_t}_{wsg},
 
 and the associated standard error
 
 .. math::
    \text{SE} ({c_t}_{sg}) =
-   \sqrt{\dfrac{1}{n_w(n_w-1)}\sum_{\text{w}}
-   ({c_t}_{wsg}-{\bar{c_t}}_{sg})^2}
+   \sqrt{\dfrac{1}{n_w(n_w-1)}\sum_{w}
+   ({c_t}_{wsg}-{\overline{c_t}}_{sg})^2}
 
 The associated confidence interval can be written
 
 .. math::
-   \left[{\bar{c_t}}_{sg}-t_{(1-\alpha)/2}^{n_w-1}\text{SE}(c_t),\
-   {\bar{c_t}}_{sg}+t_{(1-\alpha)/2}^{n_w-1}\text{SE}(c_t)\right]
+   \left[{\overline{c_t}}_{sg}-t_{(1-\alpha)/2}^{n_w-1}\text{SE}(c_t),\
+   {\overline{c_t}}_{sg}+t_{(1-\alpha)/2}^{n_w-1}\text{SE}(c_t)\right]
 
 For each gene, the coefficient :math:`{c_t}_{\text{ref}}` is calculated
 
@@ -125,7 +31,7 @@ For each replicate we define :math:`{\Delta c_t}_{sg}`
 
 
 .. math::
-   {\Delta c_t}_{sg} = {c_t}_{\text{ref},s} - {\bar{c_t}}_{sg},
+   {\Delta c_t}_{sg} = {c_t}_{\text{ref},s} - {\overline{c_t}}_{sg},
 
 and :math:`\text{RQ}_{sg}`
 
@@ -146,9 +52,9 @@ Differentiating this expression, we have
 which conduct to the following error
 
 .. math::
-   \dfrac{\text{SE}(z)}{\bar{z}} =\sqrt{%
-   \left(\bar{y}\dfrac{\text{SE}(x)}{\bar{x}}\right)^2+\left(\text{SE}(y) \ln
-   \bar{x}\right)^2}
+   \dfrac{\text{SE}(z)}{\overline{z}} =\sqrt{%
+   \left(\overline{y}\dfrac{\text{SE}(x)}{\overline{x}}\right)^2+\left(\text{SE}(y) \ln
+   \overline{x}\right)^2}
 
 When replacing x, y and z with magnitudes of interest
 
