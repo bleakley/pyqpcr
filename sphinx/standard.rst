@@ -51,7 +51,7 @@ Standard error :math:`\text{SE}(a)^2` on the slope is deducted :
 Y-intercept error
 -----------------
 .. math::
-   \text{SE}(b) = \text{SE}(a)\sqrt{\sum_{i=1}^{n}\dfrac{(x_i)^2}{n}}
+   \text{SE}(b) = \text{SE}(a)\sqrt{\dfrac{1}{n}\sum_{i=1}^{n}x_{i}^2}
 
 
 Pearsson Coefficient
