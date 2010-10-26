@@ -6,7 +6,7 @@ the main window of pyQPCR.
 
 
 Add/Edit
-======
+========
 
 TODO
 
