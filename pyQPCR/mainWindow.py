@@ -812,7 +812,7 @@ class Qpcr_qt(QMainWindow):
                 html += "</p>"
             html += "</p>"
 
-        if isQuant:
+        if isQuant and self.nplotGene != 0:
             html += "<br><h2>Quantification curves</h2>"
             fig = self.mplUknWidget.mplCanUnknown.figure.savefig("output.png", dpi=500)
             html += "<p align=center><img src='output.png' width=500></p>"
