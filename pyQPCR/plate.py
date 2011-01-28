@@ -102,6 +102,8 @@ class Plaque:
                 self.parseApplied7900()
             elif machine == 'Biorad MyIQ':
                 self.parseBioradMyIQ()
+            elif machine == 'Biorad C1000':
+                self.parseBioradC1000()
             elif machine == 'Cepheid SmartCycler':
                 self.parseCepheid()
             elif machine == 'Qiagen Corbett':
@@ -901,6 +903,79 @@ class Plaque:
                 setattr(self, x.name, x)
                 self.listePuits.append(x)
 
+    def parseBioradC1000(self):
+        """
+        This method allows to parse Biorad C1000 txt files.
+        """
+        file = open(unicode(self.filename), 'r')
+        iterator = file.readlines()
+        file.close()
+        ncol = 0
+        indheader = 0
+        for ind, line in enumerate(iterator):
+            linetot = line
+            line = line.split('\t')
+            if linetot.__contains__('Well'):
+                indheader = ind
+                self.header = OrderedDict()
+                for i, field in enumerate(line):
+                    st = field.strip('"')
+                    st = field.strip()
+                    if st == 'C(t)' or st == 'Threshold Cycle ( C(t) )':
+                        st = 'Ct'
+                    self.header[st] = i
+                ncol = len(self.header.keys())
+
+            if len(line) == ncol and ind != indheader:
+                champs = []
+                for k, field in enumerate(line):
+                    dat = field.strip('"')
+                    dat = dat.strip()
+                    try:
+                        if self.header.keys()[k] in ('Ct', 'Starting Quantity (SQ)'):
+                            dat = float(field.replace(',', '.'))
+                    except ValueError:
+                        pass
+                    champs.append(dat)
+                if self.header.has_key('Well'):
+                    name = champs[self.header['Well']]
+                    x = Puits(name)
+                else:
+                    raise KeyError
+                if self.header.has_key('Ct'):
+                    ct = champs[self.header['Ct']]
+                    if ct == 'N/A':
+                        x.setEnabled(False)
+                    x.setCt(ct)
+                if self.header.has_key('Content'):
+                    type = champs[self.header['Content']]
+                    if type.startswith('Std'):
+                        x.setType('standard')
+                    elif type.startswith('NTC'):
+                        x.setType('negative')
+                    elif type.startswith('Unkn'):
+                        x.setType('unknown')
+
+                if self.header.has_key('Target'):
+                    geneName = champs[self.header['Target']]
+                    if geneName != '':
+                        x.setGene(Gene(geneName))
+
+                if self.header.has_key('Sample'):
+                    sampleName = champs[self.header['Sample']]
+                    if sampleName != '':
+                        x.setEch(Ech(sampleName))
+
+                if self.header.has_key('Starting Quantity (SQ)'):
+                    try:
+                        am = float(champs[self.header['Starting Quantity (SQ)']])
+                        if am > 0 and x.type == 'standard':
+                            x.setAmount(am)
+                    except ValueError:
+                        pass
+                setattr(self, x.name, x)
+                self.listePuits.append(x)
+
     def subPlate(self, listWells):
         """
         This method allows to extract a subplate from a plate.
@@ -1277,4 +1352,9 @@ class PlateError(Exception):
 
 
 if __name__ == '__main__':
-    pl = Plaque('raw_data_stratagene.txt', machine='Stratagene Mx3000')
+    pl = Plaque('2701-2.txt', machine='Biorad C1000')
+    print pl.A01
+    pl = Plaque('2701QdataComplet.txt', machine='Biorad C1000')
+    print pl.A09
+    print pl.A09.gene
+    print pl.A02.type

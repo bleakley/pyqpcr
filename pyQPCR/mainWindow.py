@@ -489,6 +489,9 @@ class Qpcr_qt(QMainWindow):
         elif self.machine == 'Applied 7900':
             formats =[u"*.txt"]
             type = 'Applied 7900 machines'
+        elif self.machine == 'Biorad C1000':
+            formats =[u"*.txt"]
+            type = 'Biorad C1000 machines'
         elif self.machine == 'Biorad MyIQ':
             formats =[u"*.csv"]
             type = 'Biorad MyIQ machines'
