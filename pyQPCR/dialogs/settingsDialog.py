@@ -178,7 +178,7 @@ class SettingsDialog(QDialog):
         self.machBox = QComboBox()
         self.machBox.addItems(['Eppendorf', 'Applied StepOne', 'Applied 7000', 
                                'Applied 7500', 'Applied 7700', 'Applied 7900',
-                               'Biorad MyIQ', 'Cepheid SmartCycler', 
+                               'Biorad C1000', 'Biorad MyIQ', 'Cepheid SmartCycler', 
                                'Qiagen Corbett', 'Roche LightCycler 480',
                                'Stratagene Mx3000'])
 
@@ -194,16 +194,18 @@ class SettingsDialog(QDialog):
             self.machBox.setCurrentIndex(4)
         elif machine == 'Applied 7900':
             self.machBox.setCurrentIndex(5)
-        elif machine == 'Biorad MyIQ':
+        elif machine == 'Biorad C1000':
             self.machBox.setCurrentIndex(6)
-        elif machine == 'Cepheid SmartCycler':
+        elif machine == 'Biorad MyIQ':
             self.machBox.setCurrentIndex(7)
-        elif machine == 'Qiagen Corbett':
+        elif machine == 'Cepheid SmartCycler':
             self.machBox.setCurrentIndex(8)
-        elif machine == 'Roche LightCycler 480':
+        elif machine == 'Qiagen Corbett':
             self.machBox.setCurrentIndex(9)
-        elif machine == 'Stratagene Mx3000':
+        elif machine == 'Roche LightCycler 480':
             self.machBox.setCurrentIndex(10)
+        elif machine == 'Stratagene Mx3000':
+            self.machBox.setCurrentIndex(11)
 
         lab5.setBuddy(self.machBox)
 
