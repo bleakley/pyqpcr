@@ -69,9 +69,9 @@ class AmountDialog(QDialog):
 
         vlayout = QVBoxLayout()
         vlayout.addWidget(buttonAdd)
+        vlayout.addWidget(buttonWizard)
         vlayout.addWidget(buttonEdit)
         vlayout.addWidget(buttonRemove)
-        vlayout.addWidget(buttonWizard)
         vlayout.addStretch()
         hlayout = QHBoxLayout()
         hlayout.addWidget(self.listWidget)
@@ -129,7 +129,6 @@ class AmountDialog(QDialog):
             else:
                 QMessageBox.warning(self, "Already exist",
                             "The amount <b>%s</b> has been already defined !" % amname)
-
 
     def automatic(self):
         """
