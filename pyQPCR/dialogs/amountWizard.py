@@ -85,8 +85,11 @@ class AmountWizard(QDialog):
         number, success = self.editNumber.text().toInt()
 
         self.amounts = [start]
+        previous = start
         for i in range(number):
-            self.amounts.append(start/(dilution*(i+1.)))
+            new = previous/dilution
+            self.amounts.append(new)
+            previous = new
         QDialog.accept(self)
 
 if __name__=="__main__":
