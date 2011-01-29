@@ -22,6 +22,7 @@ import copy
 from pyQPCR.wellGeneSample import *
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
+from amountWizard import *
 import pyQPCR.qrc_resources
 
 __author__ = "$Author$"
@@ -62,6 +63,7 @@ class AmountDialog(QDialog):
         buttonAdd = QPushButton("&Add")
         buttonEdit = QPushButton("&Edit")
         buttonRemove = QPushButton("&Remove")
+        buttonWizard = QPushButton("&Automatic dilutions...")
         buttonBox = QDialogButtonBox(QDialogButtonBox.Ok|
                                      QDialogButtonBox.Cancel)
 
@@ -69,6 +71,7 @@ class AmountDialog(QDialog):
         vlayout.addWidget(buttonAdd)
         vlayout.addWidget(buttonEdit)
         vlayout.addWidget(buttonRemove)
+        vlayout.addWidget(buttonWizard)
         vlayout.addStretch()
         hlayout = QHBoxLayout()
         hlayout.addWidget(self.listWidget)
@@ -83,6 +86,7 @@ class AmountDialog(QDialog):
         self.connect(buttonAdd, SIGNAL("clicked()"), self.add)
         self.connect(buttonEdit, SIGNAL("clicked()"), self.edit)
         self.connect(buttonRemove, SIGNAL("clicked()"), self.remove)
+        self.connect(buttonWizard, SIGNAL("clicked()"), self.automatic)
         self.setWindowTitle("New amount")
 
     def reformatFloat(self, input):
@@ -111,7 +115,7 @@ class AmountDialog(QDialog):
 
     def add(self):
         """
-        This method call the AddAmDialog wizard that allows to add a new amount.
+        This method calls the AddAmDialog wizard that allows to add a new amount.
         A warning is displayed if the amount already exists.
         """
         dialog = AddAmDialog(self)
@@ -124,7 +128,29 @@ class AmountDialog(QDialog):
                 self.populateList()
             else:
                 QMessageBox.warning(self, "Already exist",
-                            "The amount %s is already defined !" % amname)
+                            "The amount <b>%s</b> has been already defined !" % amname)
+
+
+    def automatic(self):
+        """
+        This method calls the AmountWizard dialog that helps to generate quantities
+        automatically.
+        """
+        dialog = AmountWizard(self)
+        if dialog.exec_():
+            alreadyDefined = []
+            for am in dialog.amounts:
+                amname = self.reformatFloat(am)
+                if not self.project.hashAmount.has_key(amname):
+                    self.project.hashAmount[amname] = am
+                    self.project.dicoAmount[amname] = []
+                    self.populateList()
+                else:
+                    alreadyDefined.append(str(amname))
+
+            if len(alreadyDefined) > 0:
+                QMessageBox.warning(self, "Already exist",
+                    "The amount <b>%s</b> have been already defined !" % alreadyDefined)
 
     def edit(self):
         """
@@ -174,11 +200,17 @@ class AmountDialog(QDialog):
                         QMessageBox.Yes|QMessageBox.No)
         if reply == QMessageBox.Yes:
             for am in ams:
-                if self.project.dicoAmount.has_key(am):
-                    for well in self.project.dicoAmount[am]:
-                        well.setAmount('')
-                    self.project.setDicoAm()
+                delete = False
+                if self.project.hashAmount.has_key(am):
                     self.project.hashAmount.__delitem__(am)
+                    delete = True
+            if delete:
+                for am in ams:
+                    if self.project.dicoAmount.has_key(am):
+                        for well in self.project.dicoAmount[am]:
+                            well.setAmount('')
+                self.project.setDicoAm()
+
             self.project.unsaved = True
             self.populateList()
 
