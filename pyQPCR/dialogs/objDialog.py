@@ -72,16 +72,20 @@ class PropDialog(QDialog):
         self.connect(buttonUp, SIGNAL("clicked()"), self.up)
         self.connect(buttonDown, SIGNAL("clicked()"), self.down)
         self.connect(buttonColor, SIGNAL("clicked()"), self.color)
+        self.connect(self.geneListWidget, 
+                     SIGNAL("itemChanged(QListWidgetItem *)"),
+                     self.unselectGene)
         self.connect(self.geneListWidget, SIGNAL("itemSelectionChanged()"),
                      self.unselectEch)
         self.connect(self.geneListWidget, 
-                     #SIGNAL("itemActivated(QListWidgetItem *)"),
                      SIGNAL("itemClicked(QListWidgetItem *)"),
                      self.chooseGeneList)
+        self.connect(self.echListWidget, 
+                     SIGNAL("itemChanged(QListWidgetItem *)"),
+                     self.unselectEch)
         self.connect(self.echListWidget, SIGNAL("itemSelectionChanged()"),
                      self.unselectGene)
         self.connect(self.echListWidget, 
-                     #SIGNAL("itemActivated(QListWidgetItem *)"),
                      SIGNAL("itemClicked(QListWidgetItem *)"),
                      self.chooseEchList)
         self.setWindowTitle("Plot properties")
@@ -132,10 +136,18 @@ class PropDialog(QDialog):
     def unselectEch(self):
         for item in self.echListWidget.selectedItems():
             self.echListWidget.setItemSelected(item, False)
+            if item.checkState() == Qt.Unchecked:
+                self.hashEch[item.text()].setEnabled(False)
+            if item.checkState() == Qt.Checked:
+                self.hashEch[item.text()].setEnabled(True)
 
     def unselectGene(self):
         for item in self.geneListWidget.selectedItems():
             self.geneListWidget.setItemSelected(item, False)
+            if item.checkState() == Qt.Unchecked:
+                self.hashGene[item.text()].setEnabled(False)
+            if item.checkState() == Qt.Checked:
+                self.hashGene[item.text()].setEnabled(True)
 
     def up(self):
         activeGenes = self.geneListWidget.selectedItems()
