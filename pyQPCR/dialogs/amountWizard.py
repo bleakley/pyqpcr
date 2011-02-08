@@ -86,7 +86,7 @@ class AmountWizard(QDialog):
 
         self.amounts = [start]
         previous = start
-        for i in range(number):
+        for i in range(number-1):
             new = previous/dilution
             self.amounts.append(new)
             previous = new
