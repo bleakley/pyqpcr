@@ -272,8 +272,9 @@ class MplUnknownWidget(QWidget):
         :type idraw: logical
         """
         size = int(self.cboxFontsize.value())
-        for t in self.leg.get_texts():
-            t.set_fontsize(size)
+        if self.leg is not None:
+            for t in self.leg.get_texts():
+                t.set_fontsize(size)
         for ytick in self.mplCanUnknown.axes.get_yticklabels():
             ytick.set_fontsize(size)
         for xtick in self.mplCanUnknown.axes.get_xticklabels():
@@ -407,11 +408,11 @@ class MplUnknownWidget(QWidget):
         self.leg = self.mplCanUnknown.axes.legend(loc='upper right', 
                               shadow=True, labelspacing=0.005,
                               fancybox=True, ncol=ncol)
-        legend = DraggableLegend(self.leg)
-        # matplotlib 0.99.1 workaround :
-        self.leg.set_axes(self.mplCanUnknown.axes)
-        #
-        self.leg.get_frame().set_alpha(0.2)
+        if self.leg is not None:
+            legend = DraggableLegend(self.leg)
+            # matplotlib 0.99.1 workaround :
+            self.leg.set_axes(self.mplCanUnknown.axes)
+            self.leg.get_frame().set_alpha(0.2)
         self.xmin = 0
         bool = int(self.hideLeg.checkState())/2
         xmax = 0.3*self.xmax*bool+self.xmax+0.05*self.xmax*(1-bool)
@@ -430,3 +431,8 @@ class MplUnknownWidget(QWidget):
             self.mplCanUnknown.axes.set_ylim(ymax=self.ymax*1.4)
 
         self.mplCanUnknown.draw()
+        if self.leg is None:
+            msg = "nothing is selected ! You should select at least \n"
+            msg += "one target or one sample to display something !"
+            QMessageBox.warning(self, "Problem occurs in plotting !",
+                    "<b>Warning</b>: %s" % msg )

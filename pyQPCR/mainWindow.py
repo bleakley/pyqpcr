@@ -41,7 +41,7 @@ import time
 __author__ = "$Author$"
 __date__ = "$Date$"
 __version__ = "$Rev$"
-__progversion__ = "0.7"
+__progversion__ = "0.8dev"
 
 class Qpcr_qt(QMainWindow):
     """
@@ -899,7 +899,7 @@ class Qpcr_qt(QMainWindow):
         import platform
         QMessageBox.about(self, "About pyQPCR",
         """<b>pyQPCR</b> v %s
-        <p>Copyright &copy; 2008-2010 Thomas Gastine - Magali Hennion - 
+        <p>Copyright &copy; 2008-2011 Thomas Gastine - Magali Hennion - 
         All rights reserved.
         <p>This application can be used to perform
         simple qPCR analysis.
@@ -1651,11 +1651,11 @@ class Qpcr_qt(QMainWindow):
         try:
             self.mplUknWidget.plotUnknown(self.project)
         except AttributeError:
-                QMessageBox.warning(self, "Problem occurs in plotting !",
+            QMessageBox.warning(self, "Problem occurs in plotting !",
                     "<b>Warning</b>: no defined samples." \
                     "Results cannot be displayed. Please define some samples."
                     )
-                return
+            return
         self.project.unsaved = True
         self.fileSaveAction.setEnabled(True)
         self.undoAction.setEnabled(True)
