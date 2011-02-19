@@ -129,6 +129,10 @@ class SaxProjectHandler(QXmlDefaultHandler):
             self.targetsOrder = []
         elif qName == "TG":
             self.tg = attributes.value("NAME")
+        elif qName == "SAMPLESORDER":
+            self.samplesOrder = []
+        elif qName == "SP":
+            self.sp = attributes.value("NAME")
         return True
 
     def characters(self, text):
@@ -198,6 +202,10 @@ class SaxProjectHandler(QXmlDefaultHandler):
             self.targetsOrder.append(self.tg)
         elif qName == "TARGETSORDER":
             self.project.targetsOrder = self.targetsOrder
+        elif qName == "SP":
+            self.samplesOrder.append(self.sp)
+        elif qName == "SAMPLESORDER":
+            self.project.samplesOrder = self.samplesOrder
         return True
 
     def fatalError(self, exception):
