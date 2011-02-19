@@ -125,6 +125,10 @@ class SaxProjectHandler(QXmlDefaultHandler):
             self.refTarget = attributes.value("NAME")
         elif qName == "TYPE":
             self.text = QString()
+        elif qName == "TARGETSORDER":
+            self.targetsOrder = []
+        elif qName == "TG":
+            self.tg = attributes.value("NAME")
         return True
 
     def characters(self, text):
@@ -190,6 +194,10 @@ class SaxProjectHandler(QXmlDefaultHandler):
                 g.setColor(QColor(self.targetColor))
             g.setEnabled(self.targetEnabled)
             self.well.setGene(g)
+        elif qName == "TG":
+            self.targetsOrder.append(self.tg)
+        elif qName == "TARGETSORDER":
+            self.project.targetsOrder = self.targetsOrder
         return True
 
     def fatalError(self, exception):

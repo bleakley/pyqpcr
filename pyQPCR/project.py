@@ -109,8 +109,12 @@ class Project:
             input = QXmlInputSource(fh)
             if not parser.parse(input):
                 raise ValueError, handler.error
-# For each plate, adress the Gene location
+
             self.initLocGene()
+            if hasattr(self, 'targetsOrder'):
+                for k, gene in  enumerate(self.targetsOrder):
+                    if self.hashGene.has_key(gene):
+                        self.hashGene.insert(k+1, gene, self.hashGene[gene])
             self.initLocEch()
             self.initLocAm()
 # A deplacer :
@@ -166,6 +170,10 @@ class Project:
                 for well in self.dicoPlates[key].listePuits:
                     stream << well.writeWellXml()
                 stream << "</PLATE>\n"
+            stream << " <TARGETSORDER>\n"
+            for gene in self.hashGene.keys()[1:]:
+                stream << "  <TG NAME='%s'></TG>\n" % gene
+            stream << " </TARGETSORDER>\n"
             stream << "</QPCR>\n"
         except (IOError, OSError), e:
             error = "Failed to export: %s" % e
