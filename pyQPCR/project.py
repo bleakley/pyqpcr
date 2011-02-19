@@ -116,6 +116,10 @@ class Project:
                     if self.hashGene.has_key(gene):
                         self.hashGene.insert(k+1, gene, self.hashGene[gene])
             self.initLocEch()
+            if hasattr(self, 'samplesOrder'):
+                for k, ech in  enumerate(self.samplesOrder):
+                    if self.hashEch.has_key(ech):
+                        self.hashEch.insert(k+1, ech, self.hashEch[ech])
             self.initLocAm()
 # A deplacer :
             for pl in self.dicoPlates.values():
@@ -174,6 +178,10 @@ class Project:
             for gene in self.hashGene.keys()[1:]:
                 stream << "  <TG NAME='%s'></TG>\n" % gene
             stream << " </TARGETSORDER>\n"
+            stream << " <SAMPLESORDER>\n"
+            for ech in self.hashEch.keys()[1:]:
+                stream << "  <SP NAME='%s'></SP>\n" % ech
+            stream << " </SAMPLESORDER>\n"
             stream << "</QPCR>\n"
         except (IOError, OSError), e:
             error = "Failed to export: %s" % e
