@@ -92,10 +92,8 @@ class Plaque:
             self.determineFileType(self.filename)
             if machine == 'Eppendorf':
                 self.parseEppendorf()
-            elif machine in ['Applied StepOne', 'Applied 7500']:
+            elif machine in ['Applied StepOne', 'Applied 7000', 'Applied 7500']:
                 self.parseAppliedUniv()
-            elif machine == 'Applied 7000':
-                self.parseApplied7000()
             elif machine == 'Applied 7700':
                 self.parseApplied7700()
             elif machine == 'Applied 7900':
@@ -328,64 +326,6 @@ class Plaque:
                 setattr(self, name, value)
         file.close()
 
-    def parseApplied7000(self):
-        """
-        This method allows to parse Applied 7000 raw data. It supports only
-        CSV files.
-        """
-        file = open(unicode(self.filename), 'r')
-        iterator = csv.reader(file, delimiter=returnDelimiter(file))
-        hasHeader = False
-        for ind, line in enumerate(iterator):
-            if len(line) != 0:
-                if line[0] == 'Well':
-                    hasHeader = True
-                    initTab = ind
-            if hasHeader:
-                if ind == initTab:
-                    self.header = OrderedDict()
-                    for i, field in enumerate(line):
-                        self.header[field] = i
-                    ncol = len(self.header.keys())
-
-                if ind != initTab and len(line) == ncol:
-                    champs = []
-                    for k, field in enumerate(line):
-                        try:
-                            if self.header.keys()[k] not in ('Sample Name',
-                                                             'Detector'):
-                                dat = float(field.replace(',', '.'))
-                            else:
-                                dat = field
-                        except ValueError:
-                            dat = field
-                        champs.append(dat)
-                    if self.header.has_key('Well'):
-                        name = champs[self.header['Well']]
-                        x = Puits(name)
-                        if x.xpos > 8 or x.ypos > 12:
-                            self.setPlateType('384')
-                    else:
-                        raise KeyError
-                    if self.header.has_key('Sample Name'):
-                        echName = champs[self.header['Sample Name']]
-                        x.setEch(Ech(echName))
-                    if self.header.has_key('Ct'):
-                        ct = champs[self.header['Ct']]
-                        x.setCt(ct)
-                    if self.header.has_key('Qty'):
-                        try:
-                            amount = float(champs[self.header['Qty']])
-                            x.setType('standard')
-                            x.setAmount(amount)
-                        except ValueError:
-                            pass
-                    if self.header.has_key('Detector'):
-                        geneName = champs[self.header['Detector']]
-                        x.setGene(Gene(geneName))
-                    setattr(self, x.name, x)
-                    self.listePuits.append(x)
-
     def parseApplied7700(self):
         """
         This method allows to parse Applied 7700 raw data. It supports only
@@ -510,13 +450,13 @@ class Plaque:
 
     def parseAppliedUniv(self):
         """
-        This method allows to parse Applied StepOne and AB7500 raw data.
+        This method allows to parse Applied StepOne, AB7000 and AB7500 raw data.
         It works with TXT files and CSV files (comma separated, UTF-8
         encoding).
         """
         file = open(unicode(self.filename), 'Ur')
         fileencoding = "utf-8"
-        result = re.compile(r'\[Results\]')
+        result = re.compile(u'Well.*(Ct|C\u0442)')
         motifSample = re.compile(r'Reference Sample = (.*)')
         motifTarget = re.compile(r'Endogenous Control = (.*)')
         motifWell = re.compile(r'[A-H][1-9][012]?')
@@ -540,8 +480,7 @@ class Plaque:
 
             if len(result.findall(rawline)) != 0:
                 hasHeader = True
-                initTab = ind + 1
-                continue
+                initTab = ind
 
             if hasHeader:
                 if ind == initTab:
@@ -555,7 +494,7 @@ class Plaque:
                     champs = []
                     for k, field in enumerate(line):
                         try:
-                            if self.header.keys()[k] not in ('Sample Name',
+                            if self.header.keys()[k] not in ('Sample Name', 'Detector',
                                                              'Target Name'):
                                 dat = float(field.replace(',', '.'))
                             else:
@@ -578,6 +517,9 @@ class Plaque:
                         if ct == 'Undetermined':
                             x.setEnabled(False)
                         x.setCt(ct)
+                    elif self.header.has_key('Ct'):
+                        ct = champs[self.header['Ct']]
+                        x.setCt(ct)
                     if self.header.has_key(u'C\u0442 Mean'):
                         ctmean = champs[self.header[u'C\u0442 Mean']]
                         x.setCtmean(ctmean)
@@ -591,13 +533,19 @@ class Plaque:
                             x.setAmount(amount)
                         except ValueError:
                             pass
+                    elif self.header.has_key('Qty'):
+                        try:
+                            amount = float(champs[self.header['Qty']])
+                            x.setType('standard')
+                            x.setAmount(amount)
+                        except ValueError:
+                            pass
                     if self.header.has_key('Target Name'):
                         geneName = champs[self.header['Target Name']]
                         x.setGene(Gene(geneName))
-                    #if self.header.has_key(u'\u0394\u0394C\u0442'):
-                        #nrq = champs[self.header[u'\u0394\u0394C\u0442']]
-                        #x.setNRQ(nrq)
-
+                    elif self.header.has_key('Detector'):
+                        geneName = champs[self.header['Detector']]
+                        x.setGene(Gene(geneName))
                     setattr(self, x.name, x)
                     self.listePuits.append(x)
             if motifSample.match(rawline):
@@ -1352,9 +1300,17 @@ class PlateError(Exception):
 
 
 if __name__ == '__main__':
-    pl = Plaque('2701-2.txt', machine='Biorad C1000')
-    print pl.A01
-    pl = Plaque('2701QdataComplet.txt', machine='Biorad C1000')
-    print pl.A09
-    print pl.A09.gene
-    print pl.A02.type
+    pl = Plaque('raw_data_applied.txt', machine='Applied StepOne')
+    print pl.A1
+    pl = Plaque('raw_data_applied2.txt', machine='Applied StepOne')
+    print pl.A1
+    pl = Plaque('raw_applied7000.csv', machine='Applied 7000')
+    print pl.A1
+    pl = Plaque('raw_data_AB7500_2.csv', machine='Applied 7500')
+    print pl.A1
+    pl = Plaque('raw_data_AB7500.csv', machine='Applied 7500')
+    print pl.A1
+    pl = Plaque('raw_data_AB7500_3.csv', machine='Applied 7500')
+    print pl.A1
+    pl = Plaque('raw_data_AB7500_4.csv', machine='Applied 7500')
+    print pl.A1

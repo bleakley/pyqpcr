@@ -1,0 +1,96 @@
+Document Name: Wnt7A-Bactin-Lambda-Feb27-2011-Ex-1 
+Plate Type: Absolute Quantification
+User: manisas
+
+Document Information
+
+Operator: Shyam-Ramamurthy
+Run Date: Sunday, February 27, 2011 17:29:36
+Last Modified: Sunday, February 27, 2011 19:59:12
+Instrument Type: Applied Biosystems 7500 Real-Time PCR System
+
+Comments:
+SDS v1.3
+
+Well,Sample Name,Detector,Task,Ct,StdDev Ct,Qty,Mean Qty,StdDev Qty,Filtered,Tm
+A1,Con-1,Wnt7ASYBR,Unknown,28.87,0.158,,,,,83.80
+A2,Con-2,Wnt7ASYBR,Unknown,23.97,1.653,,,,,83.80
+A3,Wnt-con-1,Wnt7ASYBR,Unknown,27.66,0.017,,,,,83.80
+A4,Wnt-con-2,Wnt7ASYBR,Unknown,26.85,0.035,,,,,83.80
+A5,Wnt5a treated,Wnt7ASYBR,Unknown,28.11,0.298,,,,,83.80
+A6,Wnt5a treated-2,Wnt7ASYBR,Unknown,28.34,0.113,,,,,84.10
+A7,Wnt 3a treated-1,Wnt7ASYBR,Unknown,26.80,0.134,,,,,83.80
+A8,Wnt 3a-treated-2,Wnt7ASYBR,Unknown,27.64,0.292,,,,,83.80
+A9,Il-1b-75ng treated-1,Wnt7ASYBR,Unknown,27.43,0.195,,,,,83.40
+A10,IL-1b-75ng treated-2,Wnt7ASYBR,Unknown,28.48,0.184,,,,,83.40
+A11,TNFalpha-100ng treated-1,Wnt7ASYBR,Unknown,27.57,0.096,,,,,83.40
+A12,TNF-a-100ng treat-2,Wnt7ASYBR,Unknown,28.06,0.314,,,,,83.10
+B1,Con-1,Wnt7ASYBR,Unknown,28.60,0.158,,,,,83.80
+B2,Con-2,Wnt7ASYBR,Unknown,26.42,1.653,,,,,84.10
+B3,Wnt-con-1,Wnt7ASYBR,Unknown,27.64,0.017,,,,,84.10
+B4,Wnt-con-2,Wnt7ASYBR,Unknown,26.83,0.035,,,,,84.10
+B5,Wnt5a treated,Wnt7ASYBR,Unknown,27.59,0.298,,,,,84.10
+B6,Wnt5a treated-2,Wnt7ASYBR,Unknown,28.13,0.113,,,,,84.10
+B7,Wnt 3a treated-1,Wnt7ASYBR,Unknown,26.54,0.134,,,,,83.80
+B8,Wnt 3a-treated-2,Wnt7ASYBR,Unknown,28.02,0.292,,,,,84.10
+B9,Il-1b-75ng treated-1,Wnt7ASYBR,Unknown,27.30,0.195,,,,,83.80
+B10,IL-1b-75ng treated-2,Wnt7ASYBR,Unknown,28.38,0.184,,,,,83.80
+B11,TNFalpha-100ng treated-1,Wnt7ASYBR,Unknown,27.64,0.096,,,,,83.40
+B12,TNF-a-100ng treat-2,Wnt7ASYBR,Unknown,27.50,0.314,,,,,83.40
+C1,Con-1,Wnt7ASYBR,Unknown,28.59,0.158,,,,,84.10
+C2,Con-2,Wnt7ASYBR,Unknown,27.12,1.653,,,,,84.10
+C3,Wnt-con-1,Wnt7ASYBR,Unknown,27.63,0.017,,,,,84.10
+C4,Wnt-con-2,Wnt7ASYBR,Unknown,26.90,0.035,,,,,84.10
+C5,Wnt5a treated,Wnt7ASYBR,Unknown,27.60,0.298,,,,,84.10
+C6,Wnt5a treated-2,Wnt7ASYBR,Unknown,28.17,0.113,,,,,84.10
+C7,Wnt 3a treated-1,Wnt7ASYBR,Unknown,26.74,0.134,,,,,84.10
+C8,Wnt 3a-treated-2,Wnt7ASYBR,Unknown,27.45,0.292,,,,,84.10
+C9,Il-1b-75ng treated-1,Wnt7ASYBR,Unknown,27.05,0.195,,,,,84.10
+C10,IL-1b-75ng treated-2,Wnt7ASYBR,Unknown,28.12,0.184,,,,,83.80
+C11,TNFalpha-100ng treated-1,Wnt7ASYBR,Unknown,27.45,0.096,,,,,83.40
+C12,TNF-a-100ng treat-2,Wnt7ASYBR,Unknown,27.53,0.314,,,,,83.40
+D1,Con-1,ActB,Unknown,13.23,0.037,,,,,78.20
+D2,Con-2,ActB,Unknown,27.12,0.442,,,,,77.50
+D3,Wnt-con-1,ActB,Unknown,12.69,0.078,,,,,78.50
+D4,Wnt-con-2,ActB,Unknown,24.59,0.390,,,,,77.90
+D5,Wnt5a treated,ActB,Unknown,12.87,0.171,,,,,78.50
+D6,Wnt5a treated-2,ActB,Unknown,12.52,0.038,,,,,78.50
+D7,Wnt 3a treated-1,ActB,Unknown,12.24,0.004,,,,,78.50
+D8,Wnt 3a-treated-2,ActB,Unknown,12.49,0.328,,,,,78.20
+D9,Il-1b-75ng treated-1,ActB,Unknown,24.29,0.128,,,,,77.90
+D10,IL-1b-75ng treated-2,ActB,Unknown,13.42,0.032,,,,,77.90
+D11,TNFalpha-100ng treated-1,ActB,Unknown,12.86,0.098,,,,,77.90
+D12,TNF-a-100ng treat-2,ActB,Unknown,24.75,0.199,,,,,76.90
+E1,Con-1,ActB,Unknown,13.24,0.037,,,,,78.20
+E2,Con-2,ActB,Unknown,26.51,0.442,,,,,77.20
+E3,Wnt-con-1,ActB,Unknown,12.69,0.078,,,,,78.50
+E4,Wnt-con-2,ActB,Unknown,25.08,0.390,,,,,77.90
+E5,Wnt5a treated,ActB,Unknown,12.65,0.171,,,,,78.50
+E6,Wnt5a treated-2,ActB,Unknown,12.46,0.038,,,,,78.50
+E7,Wnt 3a treated-1,ActB,Unknown,12.23,0.004,,,,,78.50
+E8,Wnt 3a-treated-2,ActB,Unknown,12.45,0.328,,,,,78.20
+E9,Il-1b-75ng treated-1,ActB,Unknown,24.12,0.128,,,,,77.50
+E10,IL-1b-75ng treated-2,ActB,Unknown,13.36,0.032,,,,,77.90
+E11,TNFalpha-100ng treated-1,ActB,Unknown,12.90,0.098,,,,,77.50
+E12,TNF-a-100ng treat-2,ActB,Unknown,24.50,0.199,,,,,76.90
+F1,Con-1,ActB,Unknown,13.17,0.037,,,,,78.20
+F2,Con-2,ActB,Unknown,26.25,0.442,,,,,77.20
+F3,Wnt-con-1,ActB,Unknown,12.82,0.078,,,,,78.20
+F4,Wnt-con-2,ActB,Unknown,24.31,0.390,,,,,77.90
+F5,Wnt5a treated,ActB,Unknown,12.54,0.171,,,,,78.20
+F6,Wnt5a treated-2,ActB,Unknown,12.45,0.038,,,,,78.20
+F7,Wnt 3a treated-1,ActB,Unknown,12.24,0.004,,,,,78.20
+F8,Wnt 3a-treated-2,ActB,Unknown,13.04,0.328,,,,,78.20
+F9,Il-1b-75ng treated-1,ActB,Unknown,24.03,0.128,,,,,77.50
+F10,IL-1b-75ng treated-2,ActB,Unknown,13.40,0.032,,,,,77.90
+F11,TNFalpha-100ng treated-1,ActB,Unknown,13.04,0.098,,,,,77.50
+F12,TNF-a-100ng treat-2,ActB,Unknown,24.89,0.199,,,,,76.90
+H1,Lambda DNA 100ng,K7BK12 lambda,Unknown,11.23,5.912,,,,,86.10
+H2,Lambda DNA 100ng,K7BK12 lambda,Unknown,20.13,5.912,,,,,86.40
+H3,Lambda DNA 100ng,K7BK12 lambda,Unknown,22.43,5.912,,,,,86.40
+H4,Lambda No DNA control,K7BK12 lambda,Unknown,28.43,,,,,,80.50
+H7,Beta actin-no template control,ActB,Unknown,24.30,1.281,,,,,76.60
+H8,Beta actin-no template control,ActB,Unknown,26.30,1.281,,,,,76.30
+H9,Beta actin-no template control,ActB,Unknown,26.69,1.281,,,,,75.90
+H11,Wnt-7a-no template control,Wnt7ASYBR,Unknown,31.70,2.289,,,,,82.50
+H12,Wnt-7a-no template control,Wnt7ASYBR,Unknown,34.93,2.289,,,,,82.10
