@@ -87,7 +87,7 @@ else:
                 } 
 
 setup(name='pyQPCR',
-      version='0.7',
+      version='0.8',
       description='a free software to compute qPCR',
       long_description='a qt4 based interface to compute qPCR',
       author='Thomas Gastine',
