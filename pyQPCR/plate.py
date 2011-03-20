@@ -554,7 +554,6 @@ class Plaque:
         self.setPlateType('72')
         file = open(unicode(self.filename), 'r')
         iterator = csv.reader(file, delimiter=returnDelimiter(file))
-        file.close()
         hasHeader = False
         for ind, line in enumerate(iterator):
             if len(line) != 0:
@@ -623,6 +622,7 @@ class Plaque:
                             x.setType('standard')
                     setattr(self, x.name, x)
                     self.listePuits.append(x)
+        file.close()
 
         if self.type == '100': # Recompute coordinate if there are 100-wells
             for well in self.listePuits:
@@ -639,7 +639,6 @@ class Plaque:
         self.setPlateType('16')
         file = open(unicode(self.filename), 'r')
         iterator = csv.reader(file, delimiter=returnDelimiter(file))
-        file.close()
         hasHeader = False
         for ind, line in enumerate(iterator):
             if len(line) != 0:
@@ -691,6 +690,7 @@ class Plaque:
                             x.setType('standard')
                     setattr(self, x.name, x)
                     self.listePuits.append(x)
+        file.close()
 
     def parseStratagene(self):
         """
