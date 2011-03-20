@@ -178,7 +178,7 @@ class NewProjectDialog(QDialog):
             formats =[u"*.txt", u"*.csv"]
             type = 'Applied StepOne machines'
         elif self.machBox.currentText() == 'Applied 7000':
-            formats =[u"*.csv"]
+            formats =[u"*.txt", u"*.csv"]
             type = 'Applied 7000 machines'
         elif self.machBox.currentText() == 'Applied 7500':
             formats =[u"*.txt", u"*.csv"]
