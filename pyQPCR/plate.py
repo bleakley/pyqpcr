@@ -97,8 +97,8 @@ class Plaque:
                 self.parseAppliedUniv()
             elif machine == 'Biorad MyIQ':
                 self.parseBioradMyIQ()
-            elif machine == 'Biorad C1000':
-                self.parseBioradC1000()
+            elif machine in ['Biorad Opticon', 'Biorad C1000']:
+                self.parseBioradUniv()
             elif machine == 'Cepheid SmartCycler':
                 self.parseCepheid()
             elif machine == 'Qiagen Corbett':
@@ -756,9 +756,9 @@ class Plaque:
                 setattr(self, x.name, x)
                 self.listePuits.append(x)
 
-    def parseBioradC1000(self):
+    def parseBioradUniv(self):
         """
-        This method allows to parse Biorad C1000 txt files.
+        This method allows to parse Biorad C1000 and Biorad Opticon txt files.
         """
         file = open(unicode(self.filename), 'r')
         iterator = file.readlines()
@@ -776,6 +776,10 @@ class Plaque:
                     st = field.strip()
                     if st == 'C(t)' or st == 'Threshold Cycle ( C(t) )':
                         st = 'Ct'
+                    elif st == 'Well' or st == 'Well / Set':
+                        st = 'Well'
+                    elif st == 'Starting Quantity (SQ)' or st == 'moles':
+                        st = 'Qty'
                     self.header[st] = i
                 ncol = len(self.header.keys())
 
@@ -785,13 +789,15 @@ class Plaque:
                     dat = field.strip('"')
                     dat = dat.strip()
                     try:
-                        if self.header.keys()[k] in ('Ct', 'Starting Quantity (SQ)'):
+                        if self.header.keys()[k] in ('Ct', 'Qty'):
                             dat = float(field.replace(',', '.'))
                     except ValueError:
                         pass
                     champs.append(dat)
                 if self.header.has_key('Well'):
                     name = champs[self.header['Well']]
+                    if name == '':
+                        continue
                     x = Puits(name)
                 else:
                     raise KeyError
@@ -819,9 +825,9 @@ class Plaque:
                     if sampleName != '':
                         x.setEch(Ech(sampleName))
 
-                if self.header.has_key('Starting Quantity (SQ)'):
+                if self.header.has_key('Qty'):
                     try:
-                        am = float(champs[self.header['Starting Quantity (SQ)']])
+                        am = float(champs[self.header['Qty']])
                         if am > 0 and x.type == 'standard':
                             x.setAmount(am)
                     except ValueError:
@@ -1205,6 +1211,18 @@ class PlateError(Exception):
 
 
 if __name__ == '__main__':
+    # Biorad files
+    pl = Plaque('raw_data_biorad_opticon.txt', machine='Biorad Opticon')
+    print pl.A1
+    pl = Plaque('raw_data_biorad_opticon2.txt', machine='Biorad Opticon')
+    print pl.A1
+    pl = Plaque('raw_data_biorad_c1000_1.txt', machine='Biorad C1000')
+    print pl.A01
+    pl = Plaque('raw_data_biorad_c1000_2.txt', machine='Biorad C1000')
+    print pl.A02
+    pl = Plaque('raw_data_biorad_c1000_3.txt', machine='Biorad C1000')
+    print pl.A03
+    # Appplied files
     pl = Plaque('raw_data_applied.txt', machine='Applied StepOne')
     print pl.A1
     print pl.type

@@ -41,7 +41,7 @@ import time
 __author__ = "$Author$"
 __date__ = "$Date$"
 __version__ = "$Rev$"
-__progversion__ = "0.8"
+__progversion__ = "0.9dev"
 
 class Qpcr_qt(QMainWindow):
     """
@@ -495,6 +495,9 @@ class Qpcr_qt(QMainWindow):
         elif self.machine == 'Biorad MyIQ':
             formats =[u"*.csv"]
             type = 'Biorad MyIQ machines'
+        elif self.machine == 'Biorad Opticon':
+            formats =[u"*.txt"]
+            type = 'Biorad Opticon machines'
         elif self.machine == 'Cepheid SmartCycler':
             formats =[u"*.csv"]
             type = 'Cepheid SmartCycler machines'
