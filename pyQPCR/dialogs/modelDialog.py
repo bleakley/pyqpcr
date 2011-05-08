@@ -145,7 +145,6 @@ class ModelDialog(QDialog):
         fileName = QFileDialog.getOpenFileName(self, 'Choose a pyQPCR project', dir,
                                                "Input files [%s] (%s)" % (type, " ".join(formats)))
         if fileName:
-            print fileName
             self.file.setText(fileName)
             try:
                 self.projectOut = Project(fileName)
@@ -172,6 +171,12 @@ class ModelDialog(QDialog):
                         well.setAmount(wellmodel.amount)
                     except AttributeError:
                         brokenWell.append(well.name)
+
+                self.project.dicoPlates[target].geneRef = self.project.dicoPlates[model].geneRef
+                self.project.dicoPlates[target].echRef = self.project.dicoPlates[model].echRef
+                self.project.dicoPlates[target].setDicoGene()
+                self.project.dicoPlates[target].setDicoEch()
+                self.project.setDicoAm()
 
                 if len(brokenWell) != 0:
                     QMessageBox.information(self, "Some wells have not been changed",
@@ -200,6 +205,16 @@ class ModelDialog(QDialog):
                         well.setAmount(wellmodel.amount)
                     except AttributeError:
                         brokenWell.append(well.name)
+
+                self.project.dicoPlates[target].geneRef = self.projectOut.dicoPlates[model].geneRef
+                self.project.dicoPlates[target].echRef = self.projectOut.dicoPlates[model].echRef
+                self.project.dicoPlates[target].setDicoGene()
+                self.project.dicoPlates[target].setDicoEch()
+                self.project.setDicoAm()
+
+                self.project.initLocGene(plate=self.project.dicoPlates[target])
+                self.project.initLocEch(plate=self.project.dicoPlates[target])
+                self.project.initLocAm(plate=self.project.dicoPlates[target])
 
                 if len(brokenWell) != 0:
                     QMessageBox.information(self, "Some wells have not been changed",

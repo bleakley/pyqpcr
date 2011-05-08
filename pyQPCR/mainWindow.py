@@ -1117,7 +1117,6 @@ class Qpcr_qt(QMainWindow):
             self.project.unsaved = True
             self.fileSaveAction.setEnabled(True)
             self.undoAction.setEnabled(True)
-            self.project.dicoPlates[self.currentPlate].setDicoGene()
             self.projectStack.insert(len(self.projectStack) + self.undoInd + 1,
                                      copy.deepcopy(self.project))
             if self.undoInd != -1:
@@ -1128,7 +1127,7 @@ class Qpcr_qt(QMainWindow):
                 pl = self.project.dicoPlates[key]
                 self.pileTables[key].populateTable(pl)
                 self.pileResults[key].populateResult(pl, self.typeCalc)
-            self.populateTree()
+            self.updateUi()
 
     def editWell(self):
         """
@@ -1209,7 +1208,6 @@ class Qpcr_qt(QMainWindow):
                         pl = self.project.dicoPlates[key]
                         self.pileTables[key].populateTable(pl)
                         self.pileResults[key].populateResult(pl, self.typeCalc)
-                    self.populateTree()
                     self.updateUi()
 
         else: #Please select something !!
