@@ -73,8 +73,18 @@ class ModelDialog(QDialog):
 
 
         lab2 = QLabel("<b>3. Summary:</b>")
+        self.imgModel = QImage(120, 80, QImage.Format_RGB32)
+        self.bleu = qRgb(116, 167, 227)
+        self.rouge = qRgb(233, 0, 0)
+        self.jaune = qRgb(255, 250, 80)
 
-        self.info = QLabel("The plate ... will be modfied")
+        self.info = QLabel()
+        self.info2 = QLabel()
+
+        fig = QHBoxLayout()
+        fig.addWidget(self.info)
+        fig.addWidget(QLabel(" becomes "))
+        fig.addWidget(self.info2)
 
         buttonBox = QDialogButtonBox(QDialogButtonBox.Ok|
                                      QDialogButtonBox.Cancel)
@@ -92,7 +102,7 @@ class ModelDialog(QDialog):
         finalLayout.addWidget(lab1)
         finalLayout.addWidget(self.plateCalc)
         finalLayout.addWidget(lab2)
-        finalLayout.addWidget(self.info)
+        finalLayout.addLayout(fig)
         finalLayout.addWidget(buttonBox)
         finalLayout.addStretch(1)
         finalLayout.setSizeConstraint(QLayout.SetFixedSize)
@@ -100,20 +110,102 @@ class ModelDialog(QDialog):
         self.setLayout(finalLayout)
 
         self.populateCbox()
+        self.populateImgModel()
+        self.populateImgTarget()
 
         self.connect(buttonBox, SIGNAL("accepted()"), self, SLOT("accept()"))
         self.connect(buttonBox, SIGNAL("rejected()"), self, SLOT("reject()"))
         self.connect(self.inPlate, SIGNAL("clicked()"), self.inPlateClicked)
         self.connect(self.outPlate, SIGNAL("clicked()"), self.outPlateClicked)
+        self.connect(self.cboxInPlate, SIGNAL("currentIndexChanged(int)"), self.populateImgModel)
+        self.connect(self.cboxOutPlate, SIGNAL("currentIndexChanged(int)"), self.populateImgModel)
+        self.connect(self.plateCalc, SIGNAL("currentIndexChanged(int)"), self.populateImgTarget)
         self.connect(btn, SIGNAL("clicked()"), self.setFilePath)
+
+
+    def populateImgModel(self):
+        if self.inPlate.isChecked() is True:
+            model = self.cboxInPlate.currentText()
+            plaque = self.project.dicoPlates[model]
+        else: # an external plate has been chosen
+            if hasattr(self, "projectOut"):
+                model = self.cboxOutPlate.currentText()
+                plaque = self.projectOut.dicoPlates[model]
+            else:
+                return
+
+        for j in range(120):
+            for i in range(80):
+                self.imgModel.setPixel(j, i, qRgb(255, 255, 255))
+        if plaque.type == '96':
+            facx = 10
+            facy = 10
+        elif plaque.type == '384':
+            facx = 5
+            facy = 5
+        elif plaque.type == '16':
+            facx = 120
+            facy = 5
+        elif plaque.type == '100':
+            facx = 12
+            facy = 8
+        elif plaque.type == '72':
+            facx = 13
+            facy = 10
+        for well in plaque.listePuits:
+            for i in range(well.xpos*facx, (well.xpos+1)*facx):
+                for j in range(well.ypos*facy, (well.ypos+1)*facy):
+                    if well.type == QString('unknown'):
+                        self.imgModel.setPixel(j, i, self.bleu)
+                    elif well.type == QString('standard'):
+                        self.imgModel.setPixel(j, i, self.rouge)
+                    elif well.type == QString('negative'):
+                        self.imgModel.setPixel(j, i, self.jaune)
+        self.info.setPixmap(QPixmap.fromImage(self.imgModel))
+
+    def populateImgTarget(self):
+        target = self.plateCalc.currentText()
+        plaque = self.project.dicoPlates[target]
+
+        for j in range(120):
+            for i in range(80):
+                self.imgModel.setPixel(j, i, qRgb(255, 255, 255))
+        if plaque.type == '96':
+            facx = 10
+            facy = 10
+        elif plaque.type == '384':
+            facx = 5
+            facy = 5
+        elif plaque.type == '16':
+            facx = 120
+            facy = 5
+        elif plaque.type == '100':
+            facx = 12
+            facy = 8
+        elif plaque.type == '72':
+            facx = 13
+            facy = 10
+        for well in plaque.listePuits:
+            for i in range(well.xpos*facx, (well.xpos+1)*facx):
+                for j in range(well.ypos*facy, (well.ypos+1)*facy):
+                    if well.type == QString('unknown'):
+                        self.imgModel.setPixel(j, i, self.bleu)
+                    elif well.type == QString('standard'):
+                        self.imgModel.setPixel(j, i, self.rouge)
+                    elif well.type == QString('negative'):
+                        self.imgModel.setPixel(j, i, self.jaune)
+        self.info2.setPixmap(QPixmap.fromImage(self.imgModel))
+
 
     def outPlateClicked(self):
         self.outWidget.setVisible(True)
         self.cboxInPlate.setVisible(False)
+        self.populateImgModel()
 
     def inPlateClicked(self):
         self.cboxInPlate.setVisible(True)
         self.outWidget.setVisible(False)
+        self.populateImgModel()
 
     def populateCbox(self):
         for plate in self.project.dicoPlates.keys():
@@ -225,10 +317,12 @@ class ModelDialog(QDialog):
                 return
         QDialog.accept(self)
 
+
+
 if __name__=="__main__":
     import sys
     from project import *
-    pr = Project("2plates_color.xml")
+    pr = Project("mixed.xml")
     app = QApplication(sys.argv)
     f = ModelDialog(pr=pr)
     f.show()
