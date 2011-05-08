@@ -1109,6 +1109,7 @@ class Qpcr_qt(QMainWindow):
         dir = os.path.dirname(self.filename) if self.filename is not None \
                 else "."
         dialog = ModelDialog(self, pr=self.project, pwd=dir)
+        hasChanged = False
         if dialog.exec_():
             if dialog.project != self.project:
                 self.project = dialog.project
