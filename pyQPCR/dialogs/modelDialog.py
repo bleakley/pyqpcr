@@ -143,7 +143,7 @@ class ModelDialog(QDialog):
         dir = self.pwd if self.pwd is not None else "."
         formats = [u"*.xml"]
         fileName = QFileDialog.getOpenFileName(self, 'Choose a pyQPCR project', dir,
-                                               "Input files [%s] (%s)" % (type, " ".join(formats)))
+                                               "Input files (%s)" % (" ".join(formats)))
         if fileName:
             self.file.setText(fileName)
             try:
