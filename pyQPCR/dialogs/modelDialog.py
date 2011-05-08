@@ -42,7 +42,7 @@ class ModelDialog(QDialog):
         self.project = copy.deepcopy(pr)
         self.setWindowTitle("Assistant model")
 
-        lab0 = QLabel("<b>1. Choose a model:</b>")
+        lab0 = QLabel("<b>2. Choose a model:</b>")
 
         self.inPlate = QRadioButton("Plate from the &current project:")
         self.inPlate.setChecked(Qt.Checked)
@@ -67,7 +67,7 @@ class ModelDialog(QDialog):
         self.outWidget.setLayout(vLay)
         self.outWidget.setVisible(False)
 
-        lab1 = QLabel("<b>2. Choose a target:</b>")
+        lab1 = QLabel("<b>1. Choose a target:</b>")
         self.plateCalc = QComboBox()
         lab1.setBuddy(self.plateCalc)
 
@@ -82,9 +82,9 @@ class ModelDialog(QDialog):
         self.info2 = QLabel()
 
         fig = QHBoxLayout()
-        fig.addWidget(self.info)
-        fig.addWidget(QLabel(" becomes "))
         fig.addWidget(self.info2)
+        fig.addWidget(QLabel(" becomes "))
+        fig.addWidget(self.info)
 
         buttonBox = QDialogButtonBox(QDialogButtonBox.Ok|
                                      QDialogButtonBox.Cancel)
@@ -97,10 +97,10 @@ class ModelDialog(QDialog):
         vLayout.addStretch(1)
 
         finalLayout = QVBoxLayout()
-        finalLayout.addWidget(lab0)
-        finalLayout.addLayout(vLayout)
         finalLayout.addWidget(lab1)
         finalLayout.addWidget(self.plateCalc)
+        finalLayout.addWidget(lab0)
+        finalLayout.addLayout(vLayout)
         finalLayout.addWidget(lab2)
         finalLayout.addLayout(fig)
         finalLayout.addWidget(buttonBox)
@@ -122,7 +122,6 @@ class ModelDialog(QDialog):
         self.connect(self.plateCalc, SIGNAL("currentIndexChanged(int)"), self.populateImgTarget)
         self.connect(btn, SIGNAL("clicked()"), self.setFilePath)
 
-
     def populateImgModel(self):
         if self.inPlate.isChecked() is True:
             model = self.cboxInPlate.currentText()
@@ -130,7 +129,10 @@ class ModelDialog(QDialog):
         else: # an external plate has been chosen
             if hasattr(self, "projectOut"):
                 model = self.cboxOutPlate.currentText()
-                plaque = self.projectOut.dicoPlates[model]
+                if self.projectOut.dicoPlates.has_key(model):
+                    plaque = self.projectOut.dicoPlates[model]
+                else:
+                    return
             else:
                 return
 
