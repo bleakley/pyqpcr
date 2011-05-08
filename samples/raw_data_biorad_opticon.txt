@@ -1,0 +1,63 @@
+Well / Set	Dye	Content	Description	Efficiency	C(t)	moles	Avg C(t)	Max C(t)	Min C(t)	C(t) SD	Avg moles	Max moles	Min moles	moles SD	Wellset Type	
+																
+																
+A1	SBG1	Sample	Vector-B (071209):pan-mSMRT #2	1.55	25.75											
+A4	SBG1	Sample	Vector-B (071209):pan-mNCoR #4	1.92	26.34											
+A7	SBG1	Sample	Vector-B (071209):mTbp	1.91	27.22											
+B1	SBG1	Sample	Vector-A (071209):pan-mSMRT #2	2.27	26.42											
+B4	SBG1	Sample	Vector-A (071209):pan-mNCoR #4	1.92	25.74											
+B7	SBG1	Sample	Vector-A (071209):mTbp	1.76	26.74											
+C1	SBG1	Sample	mNCoRd (071209):pan-mSMRT #2	1.91	25.17											
+C2	SBG1	Sample	Vector (072109):pan-mSMRT #2	1.84	21.58											
+C3	SBG1	Blank	pan-mSMRT #2 Blank	1.12	19.49											
+C4	SBG1	Sample	mNCoRd (071209):pan-mNCoR #4	2.09	24.49											
+C5	SBG1	Sample	Vector (072109):pan-mNCoR #4	2.05	22.47											
+C6	SBG1	Blank	pan-mNCoR #4 Blank	1.75	30.81											
+C7	SBG1	Sample	mNCoRd (071209):mTbp	1.86	26.22											
+C8	SBG1	Sample	Vector (072109):mTbp	1.35	23.49											
+C9	SBG1	Blank	mTbp Blank	1.89	28.68											
+D1	SBG1	Sample	mNCoR? (071209):pan-mSMRT #2	1.88	24.67											
+D2	SBG1	Sample	mNCoRd (072109):pan-mSMRT #2	1.63	20.58											
+D3	SBG1	Sample	mNCoR?-1250 ng (072109):pan-mSMRT #2	1.55	28.33											
+D4	SBG1	Sample	mNCoR? (071209):pan-mNCoR #4	1.59	22.86											
+D5	SBG1	Sample	mNCoRd (072109):pan-mNCoR #4	1.90	21.18											
+D6	SBG1	Sample	mNCoR?-1250 ng (072109):pan-mNCoR #4	2.08	27.99											
+D7	SBG1	Sample	mNCoR? (071209):mTbp	2.09	25.47											
+D8	SBG1	Sample	mNCoRd (072109):mTbp	1.97	24.21											
+D9	SBG1	Sample	mNCoR?-1250 ng (072109):mTbp	1.79	27.64											
+E1	SBG1	Sample	mSMRT? (071209):pan-mSMRT #2	1.95	25.74											
+E2	SBG1	Sample	mSMRT? (072109):pan-mSMRT #2	1.96	24.24											
+E3	SBG1	Sample	mNCoR?-600 ng (072109):pan-mSMRT #2	1.84	26.19											
+E4	SBG1	Sample	mSMRT? (071209):pan-mNCoR #4	1.88	25.88											
+E5	SBG1	Sample	mSMRT? (072109):pan-mNCoR #4	1.86	24.87											
+E6	SBG1	Sample	mNCoR?-600 ng (072109):pan-mNCoR #4	2.07	25.39											
+E7	SBG1	Sample	mSMRT? (071209):mTbp	1.85	27.03											
+E8	SBG1	Sample	mSMRT? (072109):mTbp	2.16	26.10											
+E9	SBG1	Sample	mNCoR?-600 ng (072109):mTbp	2.04	26.28											
+F1	SBG1	Sample	mSMRTa (071209):pan-mSMRT #2	2.11	24.45											
+F2	SBG1	Sample	mSMRTa (072109):pan-mSMRT #2	1.54	20.07											
+F3	SBG1	Sample	mNCoR?-300 ng (072109):pan-mSMRT #2	1.83	23.75											
+F4	SBG1	Sample	mSMRTa (071209):pan-mNCoR #4	1.76	25.16											
+F5	SBG1	Sample	mSMRTa (072109):pan-mNCoR #4	1.80	20.40											
+F6	SBG1	Sample	mNCoR?-300 ng (072109):pan-mNCoR #4	1.84	24.05											
+F7	SBG1	Sample	mSMRTa (071209):mTbp	1.76	25.15											
+F8	SBG1	Sample	mSMRTa (072109):mTbp	1.50	23.62											
+F9	SBG1	Sample	mNCoR?-300 ng (072109):mTbp	1.95	25.83											
+G1	SBG1	Sample	mSMRTt (071209):pan-mSMRT #2	2.20	24.34											
+G2	SBG1	Sample	mSMRTt (072109):pan-mSMRT #2	1.97	23.29											
+G3	SBG1	Sample	mNCoR?-150 ng (072109):pan-mSMRT #2	1.60	23.89											
+G4	SBG1	Sample	mSMRTt (071209):pan-mNCoR #4	1.56	25.73											
+G5	SBG1	Sample	mSMRTt (072109):pan-mNCoR #4	1.93	23.78											
+G6	SBG1	Sample	mNCoR?-150 ng (072109):pan-mNCoR #4	1.54	22.87											
+G7	SBG1	Sample	mSMRTt (071209):mTbp	1.81	26.65											
+G8	SBG1	Sample	mSMRTt (072109):mTbp	1.97	25.48											
+G9	SBG1	Sample	mNCoR?-150 ng (072109):mTbp	1.64	25.12											
+H1	SBG1	Sample	mSMRTe (071209):pan-mSMRT #2	1.49	24.42											
+H2	SBG1	Sample	mSMRTe (072109):pan-mSMRT #2	1.78	23.91											
+H3	SBG1	Sample	mNCoR?-75 ng (072109):pan-mSMRT #2	1.60	21.82											
+H4	SBG1	Sample	mSMRTe (071209):pan-mNCoR #4	1.66	25.14											
+H5	SBG1	Sample	mSMRTe (072109):pan-mNCoR #4	2.08	24.23											
+H6	SBG1	Sample	mNCoR?-75 ng (072109):pan-mNCoR #4	2.36	22.95											
+H7	SBG1	Sample	mSMRTe (071209):mTbp	1.73	26.51											
+H8	SBG1	Sample	mSMRTe (072109):mTbp	1.96	25.56											
+H9	SBG1	Sample	mNCoR?-75 ng (072109):mTbp	1.78	25.20											

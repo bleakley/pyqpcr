@@ -27,3 +27,4 @@ from utilsDialog import *
 from helpDialog import *
 from settingsDialog import *
 from projectDialog import *
+from modelDialog import *

@@ -201,6 +201,9 @@ class Qpcr_qt(QMainWindow):
         self.fileSaveAsAction = self.createAction("Save &As...",
                 self.fileSaveAs, icon="filesaveas",
                 tip="Save the file using a new name")
+        self.applyModelAction = self.createAction("Apply &model...",
+                self.applyModel, icon="applymodel",
+                tip="Apply a model")
         fileQuitAction = self.createAction("&Quit", self.close, 
                 "Ctrl+Q", "filequit", "Close the application")
         self.editAction = self.createAction("Edit wells", self.editWell, 
@@ -245,7 +248,7 @@ class Qpcr_qt(QMainWindow):
                 "Open recent files")
         fileMenu.addSeparator()
         self.addActions(fileMenu, (self.filePrintAction, self.exportAction, None, 
-                        self.fileSaveAction, self.fileSaveAsAction, 
+                        self.fileSaveAction, self.fileSaveAsAction, self.applyModelAction,
                         None, fileQuitAction))
 
         editMenu = self.menuBar().addMenu("&Edit")
@@ -278,7 +281,8 @@ class Qpcr_qt(QMainWindow):
         self.addActions(fileToolbar, (fileOpenAction, fileNewAction,
                         self.fileImportAction, self.closeTabAction, 
                         self.filePrintAction, self.exportAction, 
-                        self.fileSaveAction, self.fileSaveAsAction))
+                        self.fileSaveAction, self.fileSaveAsAction,
+                        self.applyModelAction))
         fileToolbar.setIconSize(QSize(22, 22))
 
         editToolbar = self.addToolBar("Edit")
@@ -339,6 +343,7 @@ class Qpcr_qt(QMainWindow):
                        self.enableAction, self.disableAction))
         self.addActions(self.resulWidget, (self.filePrintAction, self.exportAction,
                                       self.fileSaveAction, self.fileSaveAsAction,
+                                      self.applyModelAction,
                                       self.plotStdAction, self.plotAction))
         
         # Desactivation par defaut
@@ -658,6 +663,7 @@ class Qpcr_qt(QMainWindow):
         self.echComboBox.setEnabled(bool)
         self.amComboBox.setEnabled(bool)
         self.fileSaveAsAction.setEnabled(bool)
+        self.applyModelAction.setEnabled(bool)
         self.filePrintAction.setEnabled(bool)
         self.exportAction.setEnabled(bool)
         self.enableAction.setEnabled(bool)
@@ -1098,6 +1104,31 @@ class Qpcr_qt(QMainWindow):
             self.fileSaveAction.setEnabled(True)
             self.undoAction.setEnabled(True)
         self.redoAction.setEnabled(True)
+
+    def applyModel(self):
+        dir = os.path.dirname(self.filename) if self.filename is not None \
+                else "."
+        dialog = ModelDialog(self, pr=self.project, pwd=dir)
+        if dialog.exec_():
+            if dialog.project != self.project:
+                self.project = dialog.project
+                hasChanged = True
+        if hasChanged:
+            self.project.unsaved = True
+            self.fileSaveAction.setEnabled(True)
+            self.undoAction.setEnabled(True)
+            self.project.dicoPlates[self.currentPlate].setDicoGene()
+            self.projectStack.insert(len(self.projectStack) + self.undoInd + 1,
+                                     copy.deepcopy(self.project))
+            if self.undoInd != -1:
+                del self.projectStack[self.undoInd+1:]
+                self.undoInd = -1
+                self.redoAction.setEnabled(False)
+            for key in self.project.dicoPlates.keys():
+                pl = self.project.dicoPlates[key]
+                self.pileTables[key].populateTable(pl)
+                self.pileResults[key].populateResult(pl, self.typeCalc)
+            self.populateTree()
 
     def editWell(self):
         """
