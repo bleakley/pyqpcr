@@ -774,7 +774,8 @@ class Plaque:
                 for i, field in enumerate(line):
                     st = field.strip('"')
                     st = field.strip()
-                    if st == 'C(t)' or st == 'Threshold Cycle ( C(t) )':
+                    if st == 'C(t)' or st == 'Threshold Cycle ( C(t) )'\
+                        or st == 'Cq':
                         st = 'Ct'
                     elif st == 'Well' or st == 'Well / Set':
                         st = 'Well'
