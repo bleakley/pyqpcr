@@ -229,6 +229,7 @@ class MplUnknownWidget(QWidget):
         xmax = 0.3 * self.xmax*bool+self.xmax + 0.05 * self.xmax*(1-bool)
         self.mplCanUnknown.axes.set_xlim((self.xmin, xmax))
         self.mplCanUnknown.draw()
+        self.ncolLegend.setEnabled(self.hideLeg.isChecked())
 
     def updatePlot(self):
         """
@@ -413,6 +414,7 @@ class MplUnknownWidget(QWidget):
             # matplotlib 0.99.1 workaround :
             self.leg.set_axes(self.mplCanUnknown.axes)
             self.leg.get_frame().set_alpha(0.2)
+            self.leg.set_visible(self.hideLeg.isChecked())
         self.xmin = 0
         bool = int(self.hideLeg.checkState())/2
         xmax = 0.3*self.xmax*bool+self.xmax+0.05*self.xmax*(1-bool)
