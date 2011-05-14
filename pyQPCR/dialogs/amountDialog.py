@@ -48,7 +48,6 @@ class AmountDialog(QDialog):
         :param project: the current project
         :type project: pyQPCR.project.Project
         """
-        self.parent = parent
         QDialog.__init__(self, parent)
 
         self.listWidget = QListWidget()
@@ -232,11 +231,12 @@ class AddAmDialog(QDialog):
         :type project: pyQPCR.project.Project
         """
         QDialog.__init__(self, parent)
-        lab = QLabel("Amount:")
+        lab = QLabel("&Amount:")
         if am is not None:
             self.am = QLineEdit(am)
         else:
             self.am = QLineEdit()
+        lab.setBuddy(self.am)
         self.am.setValidator(QDoubleValidator(self))
         buttonBox = QDialogButtonBox(QDialogButtonBox.Ok|
                                      QDialogButtonBox.Cancel)
@@ -249,7 +249,7 @@ class AddAmDialog(QDialog):
 
         self.connect(buttonBox, SIGNAL("accepted()"), self, SLOT("accept()"))
         self.connect(buttonBox, SIGNAL("rejected()"), self, SLOT("reject()"))
-        self.setWindowTitle("New sample")
+        self.setWindowTitle("New amount")
 
 if __name__=="__main__":
     app = QApplication(sys.argv)
