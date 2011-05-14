@@ -205,16 +205,17 @@ class EchDialog(QDialog):
 class AddEchDialog(QDialog):
     
     def __init__(self, parent=None, ech=None, listPlates=None):
-        self.parent = parent
-        self.listPlates = listPlates
         QDialog.__init__(self, parent)
-        lab = QLabel("Sample:")
+        self.listPlates = listPlates
+        lab = QLabel("&Sample:")
         if ech is not None:
             self.ech = QLineEdit(ech.name)
         else:
             self.ech = QLineEdit()
-        labRef = QLabel("Reference:")
+        lab.setBuddy(self.ech)
+        labRef = QLabel("&Reference:")
         self.ref = QCheckBox()
+        labRef.setBuddy(self.ref)
 
         if ech is not None:
             self.ref.setCheckState(ech.isRef)
@@ -236,13 +237,11 @@ class AddEchDialog(QDialog):
         layout = QGridLayout()
         layout.addWidget(lab, 0, 0)
         layout.addWidget(self.ech, 0, 1)
-        hLay = QHBoxLayout()
-        hLay.addWidget(labRef)
-        hLay.addWidget(self.ref)
-        layout.addLayout(hLay, 1, 0, 1, 2)
+        layout.setSizeConstraint(QLayout.SetFixedSize)
+        layout.addWidget(labRef, 1, 0)
+        layout.addWidget(self.ref, 1, 1)
         layout.addWidget(self.widList, 2, 0, 1, 2)
         layout.addWidget(buttonBox, 3, 0, 1, 2)
-        layout.setSizeConstraint(QLayout.SetFixedSize)
         self.setLayout(layout)
 
         self.connect(buttonBox, SIGNAL("accepted()"), self, SLOT("accept()"))

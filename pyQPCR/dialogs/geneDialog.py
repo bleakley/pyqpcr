@@ -235,16 +235,16 @@ class GeneDialog(QDialog):
 class AddGeneDialog(QDialog):
     
     def __init__(self, parent=None, ge=None, listPlates=None):
-        self.parent = parent
-        self.listPlates = listPlates
         QDialog.__init__(self, parent)
-        lab = QLabel("Target:")
+        self.listPlates = listPlates
+        lab = QLabel("&Target:")
         if ge is not None:
             g = copy.deepcopy(ge)
             self.gene = QLineEdit(g.name)
         else:
             self.gene = QLineEdit()
-        lab2 = QLabel("Efficiency:")
+        lab.setBuddy(self.gene)
+        lab2 = QLabel("&Efficiency:")
         buttonBox = QDialogButtonBox(QDialogButtonBox.Ok|
                                      QDialogButtonBox.Cancel)
         hlayout = QHBoxLayout()
@@ -253,6 +253,7 @@ class AddGeneDialog(QDialog):
         self.eff.setLocale(QLocale(QLocale.English, QLocale.UnitedStates))
         self.eff.setRange(0.0, 120.0)
         self.eff.setSuffix(" %")
+        lab2.setBuddy(self.eff)
         if ge is not None:
             self.eff.setValue(g.eff)
         else:
@@ -269,8 +270,9 @@ class AddGeneDialog(QDialog):
         hlayout.addWidget(self.eff)
         hlayout.addWidget(QLabel(unichr(177)))
         hlayout.addWidget(self.pmerror)
-        labRef = QLabel("Reference:")
+        labRef = QLabel("&Reference:")
         self.ref = QCheckBox()
+        labRef.setBuddy(self.ref)
         if ge is not None:
             self.ref.setCheckState(g.isRef)
         else:
@@ -290,18 +292,17 @@ class AddGeneDialog(QDialog):
         layout.addWidget(self.gene, 0, 1)
         layout.addWidget(lab2, 1, 0)
         layout.addLayout(hlayout, 1, 1)
-        hLay = QHBoxLayout()
-        hLay.addWidget(labRef)
-        hLay.addWidget(self.ref)
-        layout.setSizeConstraint(QLayout.SetFixedSize)
-        layout.addLayout(hLay, 2, 0, 1, 2)
+        layout.addWidget(labRef, 2, 0)
+        layout.addWidget(self.ref, 2, 1)
         layout.addWidget(self.widList, 3, 0, 1, 2)
         layout.addWidget(buttonBox, 4, 0, 1, 2)
+        layout.setSizeConstraint(QLayout.SetFixedSize)
         self.setLayout(layout)
 
         self.connect(buttonBox, SIGNAL("accepted()"), self, SLOT("accept()"))
         self.connect(buttonBox, SIGNAL("rejected()"), self, SLOT("reject()"))
         self.connect(self.ref, SIGNAL("stateChanged(int)"), self.unHide)
+
         self.setWindowTitle("New target")
 
     def populateList(self, ge):
