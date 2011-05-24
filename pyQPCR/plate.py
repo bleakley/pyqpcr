@@ -192,10 +192,13 @@ class Plaque:
                     dat = geneEch.split('_')
                     if len(dat) > 2:
                         geneName = string.join(dat[1:], '_')
-                    else:
+                        x.setGene(Gene(geneName))
+                    elif len(dat) == 2:
                         geneName = dat[1]
+                        x.setGene(Gene(geneName))
+                    else:
+                        geneName = dat[0]
                     x.setEch(Ech(dat[0]))
-                    x.setGene(Gene(geneName))
                 elif self.header.has_key('Name'):
                     geneEch = champs[self.header['Name']]
                     dat = geneEch.split('_')
