@@ -939,7 +939,7 @@ class StdObject:
     slope, Pearsson's coefficient, ...).
     """
 
-    def __init__(self, x, y, yest, slope, orig, R2, eff, stdeff, slopeerr, origerr):
+    def __init__(self, x, y, yest, slope, orig, R2, eff, stdeff, slopeerr, origerr, qmean):
         """
         Constructor of StdObject
 
@@ -963,6 +963,8 @@ class StdObject:
         :type slopeerr: float
         :param origerr: the standard error associated with the origin
         :type origerr: float
+        :param qmean: the average of the quantities
+        :type qmean: float
         """
         self.x = x
         self.y = y
@@ -974,6 +976,7 @@ class StdObject:
         self.stdeff = stdeff
         self.slopeerr = slopeerr
         self.origerr = origerr
+        self.qmean = qmean
 
 
 class Replicate:

@@ -20,6 +20,7 @@
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 from pyQPCR.widgets.matplotlibWidget import MatplotlibWidget, NavToolBar
+from numpy import log10
 import pyQPCR.qrc_resources
 
 __author__ = "$Author: tgastine $"
@@ -104,11 +105,14 @@ class MplStdWidget(QWidget):
             geneName = nameGene
         obj = self.data[geneName]
         self.mplCanStd.axes.cla()
-        self.mplCanStd.axes.scatter(obj.x, obj.y, marker='o')
-        self.mplCanStd.axes.plot(obj.x, obj.yest)
 
+        newx = obj.x + log10(obj.qmean)
+        self.mplCanStd.axes.scatter(newx, obj.y, marker='o')
+        self.mplCanStd.axes.plot(newx, obj.yest)
+
+        rescaleOrig = obj.orig - obj.slope * log10(obj.qmean)
         self.labEquation.setText('ct = %.2f log q0 + %.2f' \
-                                % (obj.slope, obj.orig))
+                                % (obj.slope, rescaleOrig))
         self.labR2.setText('%.3f' % obj.R2)
         self.labEff.setText('%.2f%% %s %.2f' % (obj.eff, unichr(177), obj.stdeff))
         self.mplCanStd.draw()

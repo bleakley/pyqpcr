@@ -487,14 +487,16 @@ class Project:
                 for ech in self.dicoTriplicat[pl][g].keys():
 # Qabs = (ctmean -orig)/slope
                     try:
-                        Qabs = 10**((self.dicoTriplicat[pl][g][ech].ctmean - self.dicoPlotStd[g].orig)/ \
+                        Qrel = 10**((self.dicoTriplicat[pl][g][ech].ctmean - self.dicoPlotStd[g].orig)/ \
                                 self.dicoPlotStd[g].slope)
-                        Qabserror = Qabs * log(10)/ self.dicoPlotStd[g].slope * sqrt( \
-                                    self.dicoTriplicat[pl][g][ech].ctdevtalpha**2 +\
-                                    self.dicoPlotStd[g].origerr**2 + \
-                                     (self.dicoPlotStd[g].slopeerr/self.dicoPlotStd[g].slope* \
-                                    (self.dicoTriplicat[pl][g][ech].ctmean-self.dicoPlotStd[g].orig))**2)
-                        
+                        Qrelerror = Qrel * abs(log(Qrel)) * sqrt( \
+                              (self.dicoTriplicat[pl][g][ech].ctdevtalpha**2+
+                               self.dicoPlotStd[g].origerr**2)/ \
+                               (self.dicoTriplicat[pl][g][ech].ctmean-self.dicoPlotStd[g].orig)**2
+                             +(self.dicoPlotStd[g].slopeerr/self.dicoPlotStd[g].slope)**2 )
+                        Qabs = Qrel * self.dicoPlotStd[g].qmean
+                        Qabserror = Qrelerror * self.dicoPlotStd[g].qmean
+                        #print g, ech, Qabs, Qabserror, Qabserror/Qabs
                         self.dicoTriplicat[pl][g][ech].setNRQ(Qabs)
                         self.dicoTriplicat[pl][g][ech].setNRQerror(Qabserror)
                         for well in self.dicoTriplicat[pl][g][ech].listePuits:
@@ -623,6 +625,8 @@ class Project:
             for trip in self.dicoStd[geneName].values():
                 x = append(x, trip.amList)
                 y = append(y, trip.ctList)
+            qmean = x.mean()
+            x = x/qmean # normalisation to minimize error in Qabs computation
             x = log10(x)
             slope, orig = polyfit(x, y, 1)
             yest = polyval([slope, orig], x)
@@ -641,7 +645,7 @@ class Project:
             # Coefficient de Pearsson de correlation
             R2 = 1 - sum((y-yest)**2)/sum((y-mean(y))**2)
             self.dicoPlotStd[geneName] = StdObject(x, y, yest, slope, orig, R2, eff, 
-                                                   stdeff, slopeerr, origerr)
+                                                   stdeff, slopeerr, origerr, qmean)
             # output for debugging stuff:
             # print eff, stdeff, R2
             # Mise a jour de l'efficacite des puits
