@@ -36,7 +36,7 @@ def fltFromQStr(qstr):
     :return: the value of the QString
     :rtype: float
     """
-    i, ok = qstr.toFloat()
+    i, ok = qstr.toDouble()
     if ok:
         return i
     else:

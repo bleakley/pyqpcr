@@ -890,9 +890,9 @@ class Qpcr_qt(QMainWindow):
                                 machine=self.machine,
                                 typeCalc=self.typeCalc)
         if dialog.exec_():
-            self.ectMax, st = dialog.ectLineEdit.text().toFloat()
-            self.ctMin, st = dialog.ctMinLineEdit.text().toFloat()
-            self.confidence, st = dialog.confCbox.currentText().toFloat()
+            self.ectMax, st = dialog.ectLineEdit.text().toDouble()
+            self.ctMin, st = dialog.ctMinLineEdit.text().toDouble()
+            self.confidence, st = dialog.confCbox.currentText().toDouble()
             errtype = dialog.typeCbox.currentText()
             self.machine = dialog.machBox.currentText()
             self.typeCalc = dialog.typeCalc.currentText()
