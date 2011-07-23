@@ -119,10 +119,7 @@ class PlateWidget(MyQTableWidget):
                 name = "%s\n%s" % (well.ech, well.gene.name)
             elif well.type == QString('standard'):
                 try:
-                    if well.amount >= 1e-2 and well.amount <= 1e3:
-                        name = "%.2f\n%s" % (well.amount, well.gene)
-                    else:
-                        name = "%.1e\n%s" % (well.amount, well.gene)
+                    name = "%g\n%s" % (well.amount, well.gene)
                 except TypeError:
                     name = "%s\n%s" % (well.amount, well.gene)
             tipname = "ct=%s\namount=%s" % (str(well.ct), str(well.amount))
@@ -282,10 +279,7 @@ class ResultWidget(QTableWidget):
                 except TypeError:
                     itCtdev = QTableWidgetItem(well.ctdev)
             try:
-                if well.amount >= 1e-2 and well.amount <= 1e3:
-                    itAmount = QTableWidgetItem("%.2f" % well.amount)
-                else:
-                    itAmount = QTableWidgetItem("%.2e" % well.amount)
+                itAmount = QTableWidgetItem("%g" % well.amount)
             except TypeError:
                 itAmount = QTableWidgetItem(well.amount)
             itEch = QTableWidgetItem(well.ech.name)
