@@ -95,10 +95,7 @@ class AmountDialog(QDialog):
         :param input: the input string (representing a float or an integer)
         :type input: PyQt4.QtCore.QString
         """
-        if float(input) >= 1e-2 and float(input) <= 1e3:
-            output = QString("%.2f" % float(input))
-        else:
-            output = QString("%.2e" % float(input))
+        output = QString("%g" % float(input))
         return output
 
     def populateList(self):
@@ -186,10 +183,7 @@ class AmountDialog(QDialog):
             return
         for it in self.listWidget.selectedItems():
             am = it.statusTip()
-            if self.project.hashAmount[am] >= 1e-2 and self.project.hashAmount[am] <= 1e3:
-                st = "%.2f" % self.project.hashAmount[am]
-            else:
-                st = "%.2e" % self.project.hashAmount[am]
+            st = "%g" % self.project.hashAmount[am]
             sts.append(st)
             ams.append(am)
 
