@@ -851,6 +851,66 @@ class Plaque:
         for well in self.listePuits:
             setattr(self, well.name, well)
 
+    def writeHtmlPlateMap(self):
+        """
+        This method allows to represent the setup of a plate in an
+        HTML table. It is used for instance during the PDF export 
+        of pyQPCR.
+        """
+        if self.type == '96':
+            nrows = 8
+            ncolumns = 12
+            tableLabels = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
+        elif self.type == '384':
+            nrows = 16
+            ncolumns = 24
+            tableLabels = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
+                           'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P']
+        elif self.type == '16':
+            nrows = 1
+            ncolumns = 16
+            tableLabels = ['A']
+        elif self.type == '72':
+            nrows = 9
+            ncolumns = 8
+            tableLabels = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
+                                'I']
+        elif self.type == '100':
+            nrows = 10
+            ncolumns = 10
+            tableLabels = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
+                            'I', 'J']
+
+        html = u""
+        html += "<table cellpadding=2 cellspacing=0 border=1 width=100%>\n"
+        html += "<tr>"
+        html += "<th align=center></td>"
+        for j in range(ncolumns):
+            html += "<th align=center>%i</td>" % (j+1)
+        html += "</tr>"
+        for i in range(nrows):
+            html += "<tr><th align=center>%s</th>\n" % tableLabels[i]
+            for j in range(ncolumns):
+                empty = True
+                for well in self.listePuits:
+                    if well.xpos == i and well.ypos == j:
+                        if well.type == 'unknown':
+                            bgcolor = '#e6e6fa'
+                        elif well.type == 'standard':
+                            bgcolor = '#ffe4e1'
+                        elif well.type == 'negative':
+                            bgcolor = '#fff8d6'
+                        table = "<table border=0 width=100%>"
+                        table += "<tr><td align=center>%s</td></tr><tr><td align=center>%s</td></tr>" % (well.gene.name, well.ech.name)
+                        table += "</table>"
+                        html += "<td bgcolor=%s align=center>%s</td>\n" % (bgcolor, table)
+                        empty = False
+                if empty:
+                    html += "<td align=center></td>\n"
+            html += "</tr>\n"
+        html += "</table>"
+        return html
+
     def writeHtml(self, ctMin=35, ectMax=0.3, typeCalc='Relative quantification'):
         """
         This method allows to represent the results of a plate in a HTML table.
@@ -1256,3 +1316,4 @@ if __name__ == '__main__':
     print pl.type
     pl = Plaque('raw_data_AB7900_96w.txt', machine='Applied 7900')
     print pl.C1
+
