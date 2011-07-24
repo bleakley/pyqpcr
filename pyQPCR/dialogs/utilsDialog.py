@@ -37,6 +37,8 @@ class PrintingDialog(QDialog):
                        the export of standard curves
     :attribute btnQuant: a check-box that allows to select (unselect)
                          the export of quantification histograms
+    :attribute btnPlate: a check-box that allows to select (unselect)
+                         the export of the plate setup
     """
     
     def __init__(self, parent=None):
@@ -48,27 +50,35 @@ class PrintingDialog(QDialog):
         """
         QDialog.__init__(self, parent)
 
+        lab0 = QLabel("&Plate setup:")
         lab1 = QLabel("&Results table:")
         lab2 = QLabel("&Standard curves:")
         lab3 = QLabel("&Quantification plots:")
+
+        self.btnPlate = QCheckBox()
+        self.btnPlate.setChecked(True)
         self.btnRes = QCheckBox()
         self.btnRes.setChecked(True)
         self.btnStd = QCheckBox()
         self.btnQuant = QCheckBox()
         buttonBox = QDialogButtonBox(QDialogButtonBox.Ok|
                                      QDialogButtonBox.Cancel)     
+
+        lab0.setBuddy(self.btnPlate)
         lab1.setBuddy(self.btnRes)
         lab2.setBuddy(self.btnStd)
         lab3.setBuddy(self.btnQuant)
 
         layout = QGridLayout()
-        layout.addWidget(lab1, 0, 0)
-        layout.addWidget(self.btnRes, 0, 1)
-        layout.addWidget(lab2, 1, 0)
-        layout.addWidget(self.btnStd, 1, 1)
-        layout.addWidget(lab3, 2, 0)
-        layout.addWidget(self.btnQuant, 2, 1)
-        layout.addWidget(buttonBox, 3, 0, 1, 2)
+        layout.addWidget(lab0, 0, 0)
+        layout.addWidget(self.btnPlate, 0, 1)
+        layout.addWidget(lab1, 1, 0)
+        layout.addWidget(self.btnRes, 1, 1)
+        layout.addWidget(lab2, 2, 0)
+        layout.addWidget(self.btnStd, 2, 1)
+        layout.addWidget(lab3, 3, 0)
+        layout.addWidget(self.btnQuant, 3, 1)
+        layout.addWidget(buttonBox, 4, 0, 1, 2)
 
         self.setLayout(layout)
         self.setWindowTitle("Printing")

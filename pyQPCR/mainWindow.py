@@ -747,6 +747,7 @@ class Qpcr_qt(QMainWindow):
         """
         dialog = PrintingDialog(self)
         if dialog.exec_():
+            isPlate = dialog.btnPlate.isChecked()
             isTable = dialog.btnRes.isChecked()
             isStd = dialog.btnStd.isChecked()
             isQuant = dialog.btnQuant.isChecked()
@@ -780,17 +781,18 @@ class Qpcr_qt(QMainWindow):
         html +=  "<li> <b>pyQPCR version :</b> %s</li>\n" % __progversion__
         html +=  "</ul>\n"
 
-        for index, key in enumerate(self.project.dicoPlates.keys()):
-            if index == 1:
-                html += "<p style='page-break-before:always;'>"
-                html += "<br><h2>Plate setup (%s)</h2><br>" % key
-                html += self.project.dicoPlates[key].writeHtmlPlateMap()
-                html += "</p>"
-            else:
-                html += "<br><h2>Plate setup (%s)</h2><br>" % key
-                html += "<p>"
-                html += self.project.dicoPlates[key].writeHtmlPlateMap()
-                html += "</p>"
+        if isPlate:
+            for index, key in enumerate(self.project.dicoPlates.keys()):
+                if index == 1:
+                    html += "<p style='page-break-before:always;'>"
+                    html += "<br><h2>Plate setup (%s)</h2><br>" % key
+                    html += self.project.dicoPlates[key].writeHtmlPlateMap()
+                    html += "</p>"
+                else:
+                    html += "<br><h2>Plate setup (%s)</h2><br>" % key
+                    html += "<p>"
+                    html += self.project.dicoPlates[key].writeHtmlPlateMap()
+                    html += "</p>"
 
         if isTable:
             for key in self.project.dicoPlates.keys():
