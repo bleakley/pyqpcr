@@ -894,14 +894,23 @@ class Plaque:
                 empty = True
                 for well in self.listePuits:
                     if well.xpos == i and well.ypos == j:
+                        table = "<table border=0 width=100%>"
                         if well.type == 'unknown':
                             bgcolor = '#e6e6fa'
+                            table += "<tr><td align=center>%s</td></tr><tr><td\
+                                     align=center>%s</td></tr>" % (well.gene.name, well.ech.name)
                         elif well.type == 'standard':
                             bgcolor = '#ffe4e1'
+                            try:
+                                table += "<tr><td align=center>%s</td></tr><tr><td\
+                                     align=center>%g</td></tr>" % (well.gene.name, well.amount)
+                            except TypeError:
+                                table += "<tr><td align=center>%s</td></tr><tr><td\
+                                     align=center>%s</td></tr>" % (well.gene.name, str(well.amount))
                         elif well.type == 'negative':
                             bgcolor = '#fff8d6'
-                        table = "<table border=0 width=100%>"
-                        table += "<tr><td align=center>%s</td></tr><tr><td align=center>%s</td></tr>" % (well.gene.name, well.ech.name)
+                            table += "<tr><td align=center>%s</td></tr><tr><td\
+                                     align=center>%s</td></tr>" % (well.gene.name, well.ech.name)
                         table += "</table>"
                         html += "<td bgcolor=%s align=center>%s</td>\n" % (bgcolor, table)
                         empty = False

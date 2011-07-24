@@ -21,12 +21,12 @@ Using logarithm, we obtain
 .. math::
    \ln z = y\ln 10
 
-Differentiating this expression, we have
+Differentiating this expression, we get
 
 .. math::
-   \dfrac{\delta z}{z} = \delta y \ln 10 \quad\text{with}\quad y = \dfrac{{\overline{c_t}}_{sg}- b_g}{a_g}
+   \dfrac{\delta z}{z} = \delta y \ln 10 \quad\text{with}\quad y = \dfrac{{\overline{c_t}}_{sg}- b_g}{a_g},
 
-which conduct to the following error 
+that leads to the following error 
 
 .. math::
    \text{SE}(AQ_{sg}) = \dfrac{AQ_{sg}\ln(10)}{a_g}\sqrt{{\text{SE}({c_t}_{sg})}^2 + \text{SE}(b_g)^2 +
