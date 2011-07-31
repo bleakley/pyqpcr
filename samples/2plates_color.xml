@@ -1090,4 +1090,26 @@
 <SAMPLE ENABLED='1'></SAMPLE>
 </WELL>
 </PLATE>
+ <TARGETSORDER>
+  <TG>gene1</TG>
+  <TG>gene2</TG>
+  <TG>gene3</TG>
+  <TG>gene4</TG>
+  <TG>gene5</TG>
+  <TG>gene6</TG>
+  <TG>gene7</TG>
+  <TG>gene1b</TG>
+  <TG>gene8</TG>
+  <TG>gene9</TG>
+  <TG>gene10</TG>
+  <TG>gene11</TG>
+  <TG>gene12</TG>
+  <TG>gene13</TG>
+ </TARGETSORDER>
+ <SAMPLESORDER>
+  <SP>sampleref</SP>
+  <SP>sample2</SP>
+  <SP>sample3</SP>
+  <SP>sample4</SP>
+ </SAMPLESORDER>
 </QPCR>
