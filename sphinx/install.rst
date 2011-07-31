@@ -35,7 +35,7 @@ In such a case, `pythonxy <http://www.pythonxy.com>`_ is a good package to start
 Linux
 -----
 
-pyQPCR needs several python libraries as dependencies:
+pyQPCR requires several python libraries as dependencies:
 
    * `python <http://www.python.org>`_ 2.5 or higher
    * `PyQt4 <http://www.riverbankcomputing.co.uk/software/pyqt/intro>`_ version 4.2 or higher
@@ -56,7 +56,9 @@ and then install it with::
 
    sudo rpm -ivh dist/pyQPCR-[version]-1.noarch.rpm
 
-t is known to work with Fedora and Opensuse Linux (don't forget to install python-devel and rpmbuild).
+by replacing "[version]" by the current version of pyQPCR.  It is known to work
+with Fedora and Opensuse Linux (don't forget to install python-devel and
+rpmbuild).
 
 
 MacOS X
