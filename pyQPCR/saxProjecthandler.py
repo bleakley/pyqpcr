@@ -129,10 +129,12 @@ class SaxProjectHandler(QXmlDefaultHandler):
             self.targetsOrder = []
         elif qName == "TG":
             self.tg = attributes.value("NAME")
+            self.text = QString()
         elif qName == "SAMPLESORDER":
             self.samplesOrder = []
         elif qName == "SP":
             self.sp = attributes.value("NAME")
+            self.text = QString()
         return True
 
     def characters(self, text):
@@ -199,11 +201,17 @@ class SaxProjectHandler(QXmlDefaultHandler):
             g.setEnabled(self.targetEnabled)
             self.well.setGene(g)
         elif qName == "TG":
-            self.targetsOrder.append(self.tg)
+            if self.tg != '':
+                self.targetsOrder.append(self.tg)
+            else:
+                self.targetsOrder.append(self.text)
         elif qName == "TARGETSORDER":
             self.project.targetsOrder = self.targetsOrder
         elif qName == "SP":
-            self.samplesOrder.append(self.sp)
+            if self.sp != '':
+                self.samplesOrder.append(self.sp)
+            else:
+                self.samplesOrder.append(self.text)
         elif qName == "SAMPLESORDER":
             self.project.samplesOrder = self.samplesOrder
         return True
