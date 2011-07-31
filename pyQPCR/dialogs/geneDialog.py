@@ -87,7 +87,10 @@ class GeneDialog(QDialog):
         """
         self.listWidget.clear()
         for it in self.project.hashGene.values()[1:]:
-            name = "%s (%.2f%%%s%.2f)" % (it.name, it.eff, unichr(177), it.pm)
+            try:
+                name = "%s (%.2f%%%s%.2f)" % (it.name, it.eff, unichr(177), it.pm)
+            except TypeError:
+                name = "%s" % (it.name)
             item = QListWidgetItem(name)
             if it.isRef == Qt.Checked:
                 item.setIcon(QIcon(":/reference.png"))
@@ -264,7 +267,10 @@ class AddGeneDialog(QDialog):
         self.pmerror.setRange(0.0, 100.0)
         self.pmerror.setSuffix(" %")
         if ge is not None:
-            self.pmerror.setValue(g.pm)
+            try:
+                self.pmerror.setValue(g.pm)
+            except TypeError:
+                self.pmerror.setValue(0.)
         else:
             self.pmerror.setValue(0.)
         hlayout.addWidget(self.eff)
