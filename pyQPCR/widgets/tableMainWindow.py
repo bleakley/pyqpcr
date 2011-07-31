@@ -283,8 +283,11 @@ class ResultWidget(QTableWidget):
             except TypeError:
                 itAmount = QTableWidgetItem(well.amount)
             itEch = QTableWidgetItem(well.ech.name)
-            itEff = QTableWidgetItem("%.2f%%%s%.2f" % (well.gene.eff,
+            try:
+                itEff = QTableWidgetItem("%.2f%%%s%.2f" % (well.gene.eff,
                                      unichr(177), well.gene.pm))
+            except TypeError:
+                itEff = QTableWidgetItem('')
             itType = QTableWidgetItem(well.type)
             try:
                 itNRQ = QTableWidgetItem("%.2f%s%.2f" % (well.NRQ,

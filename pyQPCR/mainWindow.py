@@ -698,7 +698,10 @@ class Qpcr_qt(QMainWindow):
             item = QTreeWidgetItem(itemRefEch, [pl.echRef])
         itemStd = QTreeWidgetItem(ancestor, ["Standard"])
         for gene in self.project.hashGene.values()[1:]:
-            eff = "%s:%.2f%s%.2f" % (gene.name, gene.eff, unichr(177), gene.pm)
+            try:
+                eff = "%s:%.2f%s%.2f" % (gene.name, gene.eff, unichr(177), gene.pm)
+            except TypeError:
+                eff = '%s:' % gene.name
             item = QTreeWidgetItem(itemStd, [eff])
         self.tree.expandAll()
 
