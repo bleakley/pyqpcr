@@ -176,11 +176,11 @@ class Project:
                 stream << "</PLATE>\n"
             stream << " <TARGETSORDER>\n"
             for gene in self.hashGene.keys()[1:]:
-                stream << "  <TG NAME='%s'></TG>\n" % gene
+                stream << "  <TG>%s</TG>\n" % gene
             stream << " </TARGETSORDER>\n"
             stream << " <SAMPLESORDER>\n"
             for ech in self.hashEch.keys()[1:]:
-                stream << "  <SP NAME='%s'></SP>\n" % ech
+                stream << "  <SP>%s</SP>\n" % ech
             stream << " </SAMPLESORDER>\n"
             stream << "</QPCR>\n"
         except (IOError, OSError), e:
