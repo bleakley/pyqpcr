@@ -10,7 +10,3 @@ pyQPCR is a GUI application written in python that deals with quantitative
 PCR (QPCR) raw data. Using quantification cycle values extracted from QPCR 
 instruments, it uses a proven and universally applicable model to give 
 finalized quantification results.
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
