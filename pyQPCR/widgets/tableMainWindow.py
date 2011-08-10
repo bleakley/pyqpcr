@@ -95,6 +95,10 @@ class PlateWidget(MyQTableWidget):
                                 'I', 'J']
             self.setRowCount(10)
             self.setColumnCount(10)
+        elif plateType == '48':
+            self.tableLabels = ['A', 'B']
+            self.setRowCount(2)
+            self.setColumnCount(24)
 
         self.setVerticalHeaderLabels(self.tableLabels)
         self.setEditTriggers(QTableWidget.NoEditTriggers)

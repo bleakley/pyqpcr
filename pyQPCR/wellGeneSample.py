@@ -567,6 +567,12 @@ class Puits:
                 self.xpos = (val-1)/10
                 self.ypos = val - self.xpos * 10 - 1
                 self.setName(lettres[self.xpos] + '%i' % (self.ypos+1))
+            elif plateType == '48': # Esco Spectrum 48
+                group = numbersOnly.search(self.name).groups()
+                val = int(group[0])
+                self.xpos = (val-1)/24
+                self.ypos = val - self.xpos * 24 - 1
+                self.setName(lettres[self.xpos] + '%i' % (self.ypos+1))
 
     def setGene(self, gene):
         """

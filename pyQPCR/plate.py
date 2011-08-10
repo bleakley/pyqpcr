@@ -99,6 +99,8 @@ class Plaque:
                 self.parseBioradMyIQ()
             elif machine in ['Biorad Opticon', 'Biorad C1000']:
                 self.parseBioradUniv()
+            elif machine in ['Esco Spectrum 48']:
+                self.parseEsco()
             elif machine == 'Cepheid SmartCycler':
                 self.parseCepheid()
             elif machine == 'Qiagen Corbett':
@@ -548,6 +550,82 @@ class Plaque:
                     setattr(self, x.name, x)
                     self.listePuits.append(x)
 
+    def parseEsco(self):
+        """
+        This method allows to parse Esco Spectrum 48 raw data. It supports only
+        CSV files. In fact this machine exports only in XLS format, so one has
+        to convert in CSV form Excel or OpenOffice.
+        """
+        self.setPlateType('48')
+        file = open(unicode(self.filename), 'r')
+        iterator = csv.reader(file, delimiter=returnDelimiter(file))
+        hasHeader = False
+        for ind, line in enumerate(iterator):
+            if len(line) != 0:
+                if string.join(line).__contains__('Number'):
+                    hasHeader = True
+                    initTab = ind
+            if hasHeader:
+                if ind == initTab:
+                    self.header = OrderedDict()
+                    for i, field in enumerate(line):
+                        self.header[field] = i
+                    ncol = len(self.header.keys())
+
+                if ind != initTab and len(line) == ncol:
+                    champs = []
+                    for k, field in enumerate(line):
+                        try:
+                            if self.header.keys()[k] in ('Standard Concentration', 
+                                'Ct'):
+                                dat = float(field.replace(',', '.'))
+                            else:
+                                dat = field
+                        except ValueError:
+                            dat = field
+                        champs.append(dat)
+                    if self.header.has_key('Number'):
+                        name = champs[self.header['Number']]
+                        name = name[1:-1] # remove < and >
+                        if name != '':
+                            x = Puits(name)
+                        else:
+                            continue
+                    else:
+                        raise KeyError
+
+                    if self.header.has_key('Sample Name'):
+                        name = champs[self.header['Sample Name']]
+                        if name.__contains__('_'):
+                            dat = name.split('_')
+                        elif name.__contains__('-'):
+                            dat = name.split('-')
+                        elif name.__contains__(' '):
+                            dat = name.split(' ')
+                        else:
+                            dat = name
+                        if len(dat) == 2:
+                            x.setGene(Gene(dat[0]))
+                            x.setEch(Ech(dat[1]))
+                        else:
+                            x.setGene(Gene(name))
+                    if self.header.has_key('Ct'):
+                        ct = champs[self.header['Ct']]
+                        if ct == '':
+                            x.setEnabled(False)
+                        x.setCt(ct)
+                    if self.header.has_key('Standard Concentration'):
+                        try:
+                            amount = float(champs[ \
+                                           self.header['Standard Concentration']])
+                            if amount != 0:
+                                x.setType('standard')
+                                x.setAmount(amount)
+                        except ValueError:
+                            pass
+                    setattr(self, x.name, x)
+                    self.listePuits.append(x)
+
     def parseCorbett(self):
         """
         This method allows to parse the Qiagen Corbett files (CSV only).
@@ -880,6 +958,10 @@ class Plaque:
             ncolumns = 10
             tableLabels = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
                             'I', 'J']
+        elif self.type == '48':
+            nrows = 2
+            ncolumns = 24
+            tableLabels = ['A', 'B']
 
         html = u""
         html += "<table cellpadding=2 cellspacing=0 border=1 width=100%>\n"
@@ -1325,4 +1407,5 @@ if __name__ == '__main__':
     print pl.type
     pl = Plaque('raw_data_AB7900_96w.txt', machine='Applied 7900')
     print pl.C1
-
+    pl = Plaque('raw_data_EscoSpectrum.csv', machine='Esco Spectrum 48')
+    print pl.A6
