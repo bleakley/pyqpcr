@@ -141,7 +141,7 @@ class Qpcr_qt(QMainWindow):
         self.typeCalc = settings.value("Calc/typeCalc", 
                              QVariant('Relative quantification')).toString()
         self.machine = settings.value("machine",
-                                      QVariant('Eppendorf')).toString()
+                                      QVariant('Eppendorf Mastercycler')).toString()
 
         size = settings.value("MainWindow/Size",
                               QVariant(QSize(1024, 768))).toSize()
@@ -476,10 +476,7 @@ class Qpcr_qt(QMainWindow):
         """
         dir = os.path.dirname(self.filename) if self.filename is not None \
                 else "."
-        if self.machine == 'Eppendorf':
-            formats =[u"*.txt", u"*.csv"]
-            type = 'Eppendorf machines'
-        elif self.machine == 'Applied StepOne':
+        if self.machine == 'Applied StepOne':
             formats =[u"*.txt", u"*.csv"]
             type = 'Applied StepOne machines'
         elif self.machine == 'Applied 7000':
@@ -506,6 +503,9 @@ class Qpcr_qt(QMainWindow):
         elif self.machine == 'Cepheid SmartCycler':
             formats =[u"*.csv"]
             type = 'Cepheid SmartCycler machines'
+        if self.machine == 'Eppendorf Mastercycler':
+            formats =[u"*.txt", u"*.csv"]
+            type = 'Eppendorf Mastercycler machines'
         elif self.machine == 'Esco Spectrum 48':
             formats =[u"*.csv"]
             type = 'Esco Spectrum 48 machines'
@@ -520,7 +520,7 @@ class Qpcr_qt(QMainWindow):
             type = 'Stratagene Mx3000'
         else:
             formats =[u"*.txt", u"*.csv"]
-            type = 'Eppendorf machines'
+            type = 'Eppendorf Mastercycler machines'
         fileNames = QFileDialog.getOpenFileNames(self,
                        "pyQPCR - Choose a file", dir, 
                        "Input files [%s] (%s);;pyQPCR file (*.xml)" % (type, 
