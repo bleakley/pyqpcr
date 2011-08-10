@@ -1,0 +1,38 @@
+Number,Group,Sample Name,Standard Concentration,Calculated Concentration,Ct
+<A1>,1,1 C6,,,"25,82"
+<A2>,1,2 C6,,,"26,87"
+<A3>,1,c C6,,,"26,91"
+<A4>,1,nssC6,,,"22,59"
+<A5>,1,nssC6,,,"23,03"
+<A6>,1,nssC6,,,"21,9"
+<A7>,1,nss gfpC6,,,"35,45"
+<A8>,1,nss gfpC6,,,
+<A9>,1,nss gfpC6,,,"37,56"
+<A10>,1,gfpC6,,,
+<A11>,1,gfpC6,,,
+<A12>,1,gfpC6,,,
+<A13>,2,C SF,,,
+<A14>,2,C SF,,,
+<A15>,2,C SF,,,
+<A16>,2,NSs SF,,,
+<A17>,2,NSs SF,,,
+<A18>,2,NSs SF,,,
+<A19>,2,NSs GFP SF,,,
+<A20>,2,NSs GFP SF,,,
+<A21>,2,NSs GFP SF,,,
+<A22>,2,GFP SF,,,
+<A23>,2,GFP SF,,,
+<A24>,2,GFP SF,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+<B13>,2,Antigo NSs SF,,,

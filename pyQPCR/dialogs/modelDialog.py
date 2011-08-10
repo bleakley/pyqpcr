@@ -145,6 +145,9 @@ class ModelDialog(QDialog):
         elif plaque.type == '384':
             facx = 5
             facy = 5
+        elif plaque.type == '48':
+            facx = 60
+            facy = 5
         elif plaque.type == '16':
             facx = 120
             facy = 5
@@ -177,6 +180,9 @@ class ModelDialog(QDialog):
             facy = 10
         elif plaque.type == '384':
             facx = 5
+            facy = 5
+        elif plaque.type == '48':
+            facx = 60
             facy = 5
         elif plaque.type == '16':
             facx = 120
