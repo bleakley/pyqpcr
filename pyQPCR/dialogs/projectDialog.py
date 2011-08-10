@@ -46,7 +46,7 @@ class NewProjectDialog(QDialog):
     :attribute workdir: the directory where the project will be saved
     """
     
-    def __init__(self, parent=None, pwd=None, machine='Eppendorf'):
+    def __init__(self, parent=None, pwd=None, machine='Eppendorf Mastercycler'):
         """
         Constructor of NewProjectDialog
 
@@ -74,31 +74,31 @@ class NewProjectDialog(QDialog):
         lab2 = QLabel("<b>3. &Machine type</b>")
         self.machBox = QComboBox()
         lab2.setBuddy(self.machBox)
-        self.machBox.addItems(['Eppendorf', 'Applied StepOne', 'Applied 7000',
+        self.machBox.addItems(['Applied StepOne', 'Applied 7000',
                                'Applied 7500', 'Applied 7700', 'Applied 7900',
                                'Biorad C1000', 'Biorad MyIQ', 'Biorad Opticon',
-                               'Cepheid SmartCycler', 'Esco Spectrum 48',
-                               'Qiagen Corbett', 'Roche LightCycler 480', 
-                               'Stratagene Mx3000'])
-        if machine == 'Eppendorf':
+                               'Cepheid SmartCycler', 'Eppendorf Mastercycler',
+                               'Esco Spectrum 48', 'Qiagen Corbett', 
+                               'Roche LightCycler 480', 'Stratagene Mx3000'])
+        if machine == 'Applied StepOne':
             self.machBox.setCurrentIndex(0)
-        elif machine == 'Applied StepOne':
-            self.machBox.setCurrentIndex(1)
         elif machine == 'Applied 7000':
-            self.machBox.setCurrentIndex(2)
+            self.machBox.setCurrentIndex(1)
         elif machine == 'Applied 7500':
-            self.machBox.setCurrentIndex(3)
+            self.machBox.setCurrentIndex(2)
         elif machine == 'Applied 7700':
-            self.machBox.setCurrentIndex(4)
+            self.machBox.setCurrentIndex(3)
         elif machine == 'Applied 7900':
-            self.machBox.setCurrentIndex(5)
+            self.machBox.setCurrentIndex(4)
         elif machine == 'Biorad C1000':
-            self.machBox.setCurrentIndex(6)
+            self.machBox.setCurrentIndex(5)
         elif machine == 'Biorad MyIQ':
-            self.machBox.setCurrentIndex(7)
+            self.machBox.setCurrentIndex(6)
         elif machine == 'Biorad Opticon':
-            self.machBox.setCurrentIndex(8)
+            self.machBox.setCurrentIndex(7)
         elif machine == 'Cepheid SmartCycler':
+            self.machBox.setCurrentIndex(8)
+        elif machine == 'Eppendorf Mastercycler':
             self.machBox.setCurrentIndex(9)
         elif machine == 'Esco Spectrum 48':
             self.machBox.setCurrentIndex(10)
@@ -176,9 +176,9 @@ class NewProjectDialog(QDialog):
         A method to add a plate to the project.
         """
         dir = self.pwd if self.pwd is not None else "."
-        if self.machBox.currentText() == 'Eppendorf':
+        if self.machBox.currentText() == 'Eppendorf Mastercycler':
             formats =[u"*.txt", u"*.csv"]
-            type = 'Eppendorf machines'
+            type = 'Eppendorf Mastercycler machines'
         elif self.machBox.currentText() == 'Applied StepOne':
             formats =[u"*.txt", u"*.csv"]
             type = 'Applied StepOne machines'

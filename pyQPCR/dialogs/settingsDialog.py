@@ -94,7 +94,7 @@ class SettingsDialog(QDialog):
     """
 
     def __init__(self, parent=None, ect=0.3, ctmin=35, confidence=0.9,
-                 errtype="normal", machine='Eppendorf', 
+                 errtype="normal", machine='Eppendorf Mastercycler', 
                  typeCalc='Relative quantification'):
         """
         Constructor of SettingsDialog
@@ -176,32 +176,32 @@ class SettingsDialog(QDialog):
         labMachine = QLabel("<b>PCR device :</b>")
         lab5 = QLabel("&Machine type : ")
         self.machBox = QComboBox()
-        self.machBox.addItems(['Eppendorf', 'Applied StepOne', 'Applied 7000', 
+        self.machBox.addItems(['Applied StepOne', 'Applied 7000', 
                                'Applied 7500', 'Applied 7700', 'Applied 7900',
                                'Biorad C1000', 'Biorad MyIQ', 'Biorad Opticon',
-                               'Cepheid SmartCycler', 'Esco Spectrum 48',
-                               'Qiagen Corbett', 'Roche LightCycler 480', 
-                               'Stratagene Mx3000'])
+                               'Cepheid SmartCycler',  'Eppendorf Mastercycler',
+                               'Esco Spectrum 48', 'Qiagen Corbett', 
+                               'Roche LightCycler 480', 'Stratagene Mx3000'])
 
-        if machine == 'Eppendorf':
+        if machine == 'Applied StepOne':
             self.machBox.setCurrentIndex(0)
-        elif machine == 'Applied StepOne':
-            self.machBox.setCurrentIndex(1)
         elif machine == 'Applied 7000':
-            self.machBox.setCurrentIndex(2)
+            self.machBox.setCurrentIndex(1)
         elif machine == 'Applied 7500':
-            self.machBox.setCurrentIndex(3)
+            self.machBox.setCurrentIndex(2)
         elif machine == 'Applied 7700':
-            self.machBox.setCurrentIndex(4)
+            self.machBox.setCurrentIndex(3)
         elif machine == 'Applied 7900':
-            self.machBox.setCurrentIndex(5)
+            self.machBox.setCurrentIndex(4)
         elif machine == 'Biorad C1000':
-            self.machBox.setCurrentIndex(6)
+            self.machBox.setCurrentIndex(5)
         elif machine == 'Biorad MyIQ':
-            self.machBox.setCurrentIndex(7)
+            self.machBox.setCurrentIndex(6)
         elif machine == 'Biorad Opticon':
-            self.machBox.setCurrentIndex(8)
+            self.machBox.setCurrentIndex(7)
         elif machine == 'Cepheid SmartCycler':
+            self.machBox.setCurrentIndex(8)
+        elif machine == 'Eppendorf Mastercycler':
             self.machBox.setCurrentIndex(9)
         elif machine == 'Esco Spectrum 48':
             self.machBox.setCurrentIndex(10)

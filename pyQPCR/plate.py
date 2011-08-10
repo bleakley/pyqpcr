@@ -68,7 +68,7 @@ class Plaque:
     :type contUkn: logical
     """
     
-    def __init__(self, filename=None, machine='Eppendorf'):
+    def __init__(self, filename=None, machine='Eppendorf Mastercycler'):
         """
         Constructor of a Plaque object.
 
@@ -90,7 +90,7 @@ class Plaque:
  
         if self.filename is not None and machine is not None:
             self.determineFileType(self.filename)
-            if machine == 'Eppendorf':
+            if machine == 'Eppendorf Mastercycler':
                 self.parseEppendorf()
             elif machine in ['Applied StepOne', 'Applied 7000', 'Applied 7500',
                              'Applied 7700', 'Applied 7900']:
