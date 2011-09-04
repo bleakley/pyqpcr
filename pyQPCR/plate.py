@@ -594,21 +594,21 @@ class Plaque:
                     else:
                         raise KeyError
 
-                    if self.header.has_key('Sample Name'):
-                        name = champs[self.header['Sample Name']]
-                        if name.__contains__('_'):
-                            dat = name.split('_')
-                        elif name.__contains__('-'):
-                            dat = name.split('-')
-                        elif name.__contains__(' '):
-                            dat = name.split(' ')
-                        else:
-                            dat = name
-                        if len(dat) == 2:
-                            x.setGene(Gene(dat[0]))
-                            x.setEch(Ech(dat[1]))
-                        else:
-                            x.setGene(Gene(name))
+                    #if self.header.has_key('Sample Name'):
+                        #name = champs[self.header['Sample Name']]
+                        #if name.__contains__('_'):
+                            #dat = name.split('_')
+                        #elif name.__contains__('-'):
+                            #dat = name.split('-')
+                        #elif name.__contains__(' '):
+                            #dat = name.split(' ')
+                        #else:
+                            #dat = name
+                        #if len(dat) == 2:
+                            #x.setGene(Gene(dat[1]))
+                            #x.setEch(Ech(dat[0]))
+                        #else:
+                            #x.setGene(Gene(name))
                     if self.header.has_key('Ct'):
                         ct = champs[self.header['Ct']]
                         if ct == '':
