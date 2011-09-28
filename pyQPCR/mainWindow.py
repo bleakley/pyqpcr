@@ -878,6 +878,7 @@ class Qpcr_qt(QMainWindow):
         if self.printer is None:
             self.printer = QPrinter(QPrinter.HighResolution)
             self.printer.setPageSize(QPrinter.A4)
+            self.printer.setColorMode(QPrinter.Color)
             self.printer.setOutputFormat(QPrinter.PdfFormat)
         formats =[u"*.pdf"]
         fname = unicode(QFileDialog.getSaveFileName(self, 
