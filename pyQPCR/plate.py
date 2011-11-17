@@ -1383,10 +1383,10 @@ if __name__ == '__main__':
     pl = Plaque('raw_data_biorad_c1000_3.txt', machine='Biorad C1000')
     print pl.A03
     # Appplied files
-    pl = Plaque('raw_data_applied.txt', machine='Applied StepOne')
+    pl = Plaque('raw_data_ABstepone.txt', machine='Applied StepOne')
     print pl.A1
     print pl.type
-    pl = Plaque('raw_data_applied2.txt', machine='Applied StepOne')
+    pl = Plaque('raw_data_ABstepone_2.txt', machine='Applied StepOne')
     print pl.A1
     print pl.type
     pl = Plaque('raw_data_AB7000.csv', machine='Applied 7000')
