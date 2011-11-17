@@ -95,8 +95,8 @@ class MplUnknownWidget(QWidget):
         self.ncolLegend = QSpinBox()
         self.labNcol.setBuddy(self.ncolLegend)
         self.labNcol.setVisible(False)
-        self.ncolLegend.setMaximum(5)
-        self.ncolLegend.setMinimum(1)
+        self.ncolLegend.setRange(1, 5)
+        self.ncolLegend.setSingleStep(1)
         self.ncolLegend.setVisible(False)
 
         self.lab3 = QLabel("Bar &spacing:")
