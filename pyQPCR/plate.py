@@ -337,7 +337,7 @@ class Plaque:
         remap = False
         file = open(unicode(self.filename), 'Ur')
         fileencoding = "utf-8"
-        result = re.compile(u'Well.*(Ct|C\u0442)')
+        result = re.compile(u'Well.*(Ct|C\u0442|CT)')
         motifSample = re.compile(r'Reference Sample = (.*)')
         motifTarget = re.compile(r'Endogenous Control = (.*)')
         motifWell = re.compile(r'([A-P][0-9][0-9]?|[0-9]+)')
@@ -370,6 +370,14 @@ class Plaque:
                     self.header = OrderedDict()
                     for i, field in enumerate(line):
                         st = field.strip('"')
+                        if st in ('Ct', 'CT', u'C\u0442'):
+                            st = 'ct'
+                        elif st in ('Qty', 'Quantity'):
+                            st = 'Qty'
+                        elif st == u'C\u0442 Mean':
+                            st = 'ctmean'
+                        elif st in (u'C\u0442 SD', 'Std. Dev. CT', 'StdDev Ct'):
+                            st = 'ctdev'
                         self.header[st] = i
                     ncol = len(self.header.keys())
                 if ind != initTab and len(line) >= ncol-1 and \
@@ -378,9 +386,8 @@ class Plaque:
                     champs = []
                     for k, field in enumerate(line):
                         try:
-                            if self.header.keys()[k] in ('Ct', u'C\u0442',
-                                    u'C\u0442 Mean', u'C\u0442 SD', 'Quantity',
-                                    'Qty'):
+                            if self.header.keys()[k] in ('ct', 'ctmean', 'Qty',\
+                                    'ctdev'):
                                 dat = float(field.replace(',', '.'))
                             else:
                                 dat = field
@@ -408,31 +415,19 @@ class Plaque:
                         echName = champs[self.header['Sample Name']]
                         if not motifA1.match(echName):
                             x.setEch(Ech(echName))
-                    if self.header.has_key(u'C\u0442'):
-                        ct = champs[self.header[u'C\u0442']]
-                        if ct == 'Undetermined':
+                    if self.header.has_key('ct'):
+                        ct = champs[self.header['ct']]
+                        if ct == 'Undetermined' or ct == '':
+                            ct = ''
                             x.setEnabled(False)
                         x.setCt(ct)
-                    elif self.header.has_key('Ct'):
-                        ct = champs[self.header['Ct']]
-                        if ct == '' or ct == 'Undetermined':
-                            x.setEnabled(False)
-                        x.setCt(ct)
-                    if self.header.has_key(u'C\u0442 Mean'):
-                        ctmean = champs[self.header[u'C\u0442 Mean']]
+                    if self.header.has_key('ctmean'):
+                        ctmean = champs[self.header[u'ctmean']]
                         x.setCtmean(ctmean)
-                    if self.header.has_key(u'C\u0442 SD'):
-                        ctdev = champs[self.header[u'C\u0442 SD']]
+                    if self.header.has_key('ctdev'):
+                        ctdev = champs[self.header[u'ctdev']]
                         x.setCtdev(ctdev)
-                    if self.header.has_key('Quantity'):
-                        try:
-                            amount = float(champs[self.header['Quantity']])
-                            if amount > 0:
-                                x.setType('standard')
-                                x.setAmount(amount)
-                        except ValueError:
-                            pass
-                    elif self.header.has_key('Qty'):
+                    if self.header.has_key('Qty'):
                         try:
                             amount = float(champs[self.header['Qty']])
                             x.setType('standard')
@@ -442,9 +437,9 @@ class Plaque:
                     if self.header.has_key('Target Name'):
                         geneName = champs[self.header['Target Name']]
                         x.setGene(Gene(geneName))
-                    elif self.header.has_key('Detector'):
-                        geneName = champs[self.header['Detector']]
-                        x.setGene(Gene(geneName))
+                    #elif self.header.has_key('Detector'):
+                        #geneName = champs[self.header['Detector']]
+                        #x.setGene(Gene(geneName))
                     setattr(self, x.name, x)
                     self.listePuits.append(x)
             if motifSample.match(rawline):
@@ -1387,7 +1382,10 @@ if __name__ == '__main__':
     pl = Plaque('raw_data_applied2.txt', machine='Applied StepOne')
     print pl.A1
     print pl.type
-    pl = Plaque('raw_applied7000.csv', machine='Applied 7000')
+    pl = Plaque('raw_data_AB7000.csv', machine='Applied 7000')
+    print pl.A1
+    print pl.type
+    pl = Plaque('raw_data_AB7000_2.csv', machine='Applied 7000')
     print pl.A1
     print pl.type
     pl = Plaque('raw_data_AB7500_2.csv', machine='Applied 7500')
