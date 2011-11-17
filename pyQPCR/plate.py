@@ -378,6 +378,8 @@ class Plaque:
                             st = 'ctmean'
                         elif st in (u'C\u0442 SD', 'Std. Dev. CT', 'StdDev Ct'):
                             st = 'ctdev'
+                        elif st in ('Sample Name', 'SampleName'):
+                            st = 'Sample Name'
                         self.header[st] = i
                     ncol = len(self.header.keys())
                 if ind != initTab and len(line) >= ncol-1 and \
@@ -415,11 +417,16 @@ class Plaque:
                         echName = champs[self.header['Sample Name']]
                         if not motifA1.match(echName):
                             x.setEch(Ech(echName))
-                    if self.header.has_key('ct'):
-                        ct = champs[self.header['ct']]
-                        if ct == 'Undetermined' or ct == '':
-                            ct = ''
-                            x.setEnabled(False)
+                    try: # In case the ct column has been dropped
+                        if self.header.has_key('ct'):
+                            ct = champs[self.header['ct']]
+                            if ct == 'Undetermined':
+                                ct = ''
+                                x.setEnabled(False)
+                            x.setCt(ct)
+                    except IndexError:
+                        ct = ''
+                        x.setEnabled(False)
                         x.setCt(ct)
                     if self.header.has_key('ctmean'):
                         ctmean = champs[self.header[u'ctmean']]
@@ -1386,6 +1393,9 @@ if __name__ == '__main__':
     print pl.A1
     print pl.type
     pl = Plaque('raw_data_AB7000_2.csv', machine='Applied 7000')
+    print pl.A1
+    print pl.type
+    pl = Plaque('raw_data_AB7000_3.csv', machine='Applied 7000')
     print pl.A1
     print pl.type
     pl = Plaque('raw_data_AB7500_2.csv', machine='Applied 7500')
