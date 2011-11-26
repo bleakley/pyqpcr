@@ -353,13 +353,19 @@ class Plaque:
 
         for ind, line in enumerate(iterator):
             if self.fileType == 'txt': 
-                line = line.decode(fileencoding)
-                rawline = line
-                line = splitter.findall(line)
+                try:
+                    line = line.decode(fileencoding)
+                    rawline = line
+                    line = splitter.findall(line)
+                except UnicodeDecodeError:
+                    pass
             elif self.fileType == 'csv':
                 rawline = string.join(line, '')
                 for k in range(len(line)):
-                    line[k] = line[k].decode(fileencoding)
+                    try:
+                        line[k] = line[k].decode(fileencoding)
+                    except UnicodeDecodeError:
+                        pass
 
             if len(result.findall(rawline)) != 0:
                 hasHeader = True
@@ -417,6 +423,10 @@ class Plaque:
                         echName = champs[self.header['Sample Name']]
                         if not motifA1.match(echName):
                             x.setEch(Ech(echName))
+                    elif self.header.has_key('Sample'):
+                        echName = champs[self.header['Sample']]
+                        if not motifA1.match(echName):
+                            x.setEch(Ech(echName))
                     try: # In case the ct column has been dropped
                         if self.header.has_key('ct'):
                             ct = champs[self.header['ct']]
@@ -444,9 +454,9 @@ class Plaque:
                     if self.header.has_key('Target Name'):
                         geneName = champs[self.header['Target Name']]
                         x.setGene(Gene(geneName))
-                    #elif self.header.has_key('Detector'):
-                        #geneName = champs[self.header['Detector']]
-                        #x.setGene(Gene(geneName))
+                    elif self.header.has_key('Detector'):
+                        geneName = champs[self.header['Detector']]
+                        x.setGene(Gene(geneName))
                     setattr(self, x.name, x)
                     self.listePuits.append(x)
             if motifSample.match(rawline):
@@ -1391,13 +1401,14 @@ if __name__ == '__main__':
     print pl.type
     pl = Plaque('raw_data_AB7000.csv', machine='Applied 7000')
     print pl.A1
-    print pl.type
     pl = Plaque('raw_data_AB7000_2.csv', machine='Applied 7000')
     print pl.A1
-    print pl.type
     pl = Plaque('raw_data_AB7000_3.csv', machine='Applied 7000')
     print pl.A1
-    print pl.type
+    pl = Plaque('raw_data_AB7000_4.csv', machine='Applied 7000')
+    print pl.A1
+    pl = Plaque('raw_data_AB7000_5.csv', machine='Applied 7000')
+    print pl.A1
     pl = Plaque('raw_data_AB7500_2.csv', machine='Applied 7500')
     print pl.A1
     print pl.type
