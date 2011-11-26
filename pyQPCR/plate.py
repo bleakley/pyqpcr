@@ -339,7 +339,7 @@ class Plaque:
         fileencoding = "utf-8"
         result = re.compile(u'Well.*(Ct|C\u0442|CT)')
         motifSample = re.compile(r'Reference Sample = (.*)')
-        motifTarget = re.compile(r'Endogenous Control = (.*)')
+        motifTarget = re.compile(r'Endogenous Control( = | )(.*)')
         motifWell = re.compile(r'([A-P][0-9][0-9]?|[0-9]+)')
         motifA1 = re.compile(r'([A-P][0-9][0-9]?)')
         numbersOnly = re.compile(r"([0-9]+)")
@@ -353,12 +353,9 @@ class Plaque:
 
         for ind, line in enumerate(iterator):
             if self.fileType == 'txt': 
-                try:
-                    line = line.decode(fileencoding)
-                    rawline = line
-                    line = splitter.findall(line)
-                except UnicodeDecodeError:
-                    pass
+                line = line.decode(fileencoding)
+                rawline = line
+                line = splitter.findall(line)
             elif self.fileType == 'csv':
                 rawline = string.join(line, '')
                 for k in range(len(line)):
@@ -462,7 +459,7 @@ class Plaque:
             if motifSample.match(rawline):
                 self.echRef = QString(motifSample.findall(rawline)[0])
             if motifTarget.match(rawline):
-                newGeneRef = QString(motifTarget.findall(rawline)[0])
+                newGeneRef = QString(motifTarget.findall(rawline)[0][1])
                 if newGeneRef not in self.geneRef:
                     self.geneRef.append(newGeneRef)
 
@@ -1395,10 +1392,9 @@ if __name__ == '__main__':
     # Appplied files
     pl = Plaque('raw_data_ABstepone.txt', machine='Applied StepOne')
     print pl.A1
-    print pl.type
+    print pl.geneRef
     pl = Plaque('raw_data_ABstepone_2.txt', machine='Applied StepOne')
     print pl.A1
-    print pl.type
     pl = Plaque('raw_data_AB7000.csv', machine='Applied 7000')
     print pl.A1
     pl = Plaque('raw_data_AB7000_2.csv', machine='Applied 7000')
@@ -1407,6 +1403,7 @@ if __name__ == '__main__':
     print pl.A1
     pl = Plaque('raw_data_AB7000_4.csv', machine='Applied 7000')
     print pl.A1
+    print pl.geneRef
     pl = Plaque('raw_data_AB7000_5.csv', machine='Applied 7000')
     print pl.A1
     pl = Plaque('raw_data_AB7500_2.csv', machine='Applied 7500')
