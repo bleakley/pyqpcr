@@ -1,0 +1,111 @@
+Exported RQ Study Well Information,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+Document Name: Plate1 ,,,,,,,,,,,,,
+Plate Type: Relative Quantification Study,,,,,,,,,,,,,
+User: rjm503,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+Document Information,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+Operator: rjm503,,,,,,,,,,,,,
+Last Modified: ,,,,,,,,,,,,,
+Instrument Type: Applied Biosystems 7000 Real-Time PCR System,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+Comments:,,,,,,,,,,,,,
+SDS v1.2,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+Thermal Cycler Profile,,,,,,,,,,,,,
+Stage,Repetitions,Temperature,Time,Ramp Rate,Auto Increment,,,,,,,,
+1,1,50.0 °C,02:00,Auto,,,,,,,,,
+2,1,95.0 °C,10:00,Auto,,,,,,,,,
+3,40,95.0 °C,00:15,Auto,,,,,,,,,
+,,60.0 °C,01:00,Auto,,,,,,,,,
+9600 Mode Emulation,,,,,,,,,,,,,
+Data Collection :  Stage 3 Step 1,,,,,,,,,,,,,
+PCR Volume: 25 µL,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+Calibrator, CMO,,,,,,,,,,,,
+,,,,,,,,,,,,,
+Endogenous Control, EndogControl,,,,,,,,,,,,
+,,,,,,,,,,,,,
+Plate,Well ID,Well,Sample,Detector,Ct,Ct std err,Omit,Filtered,Threshold,Auto Ct,Baseline,Start,End
+,,,,,,,,,,,,,
+MyoD AMO run data St11 plate,61,F1,CMO St11,Gene1,29.233,0.019,,,0.387662,Auto,Auto,1,23
+MyoD AMO run data St11 plate,62,F2,CMO St11,Gene1,29.279,0.019,,,0.387662,Auto,Auto,1,23
+MyoD AMO run data St11 plate,63,F3,CMO St11,Gene1,29.214,0.019,,,0.387662,Auto,Auto,1,23
+MyoD AMO run data St11 plate,64,F4,AMO 1030,Gene1,28.377,0.024,,,0.387662,Auto,Auto,1,22
+MyoD AMO run data St11 plate,65,F5,AMO 1030,Gene1,28.379,0.024,,,0.387662,Auto,Auto,1,22
+MyoD AMO run data St11 plate,66,F6,AMO 1030,Gene1,28.306,0.024,,,0.387662,Auto,Auto,1,23
+MyoD AMO run data St11 plate,67,F7,AMO 2060,Gene1,28.978,0.044,,,0.387662,Auto,Auto,1,23
+MyoD AMO run data St11 plate,68,F8,AMO 2060,Gene1,28.86,0.044,,,0.387662,Auto,Auto,1,23
+MyoD AMO run data St11 plate,69,F9,AMO 2060,Gene1,29,0.044,,,0.387662,Auto,Auto,1,23
+MyoD AMO run data St11 plate,89,H5,NTC,Gene1,Undet.,,,,0.387662,Auto,Auto,1,26
+MyoD AMO run data St11 plate,25,C1,CMO St11,Gene2,29.262,0.096,,,0.233148,Auto,Auto,1,23
+MyoD AMO run data St11 plate,26,C2,CMO St11,Gene2,29.161,0.096,,,0.233148,Auto,Auto,1,23
+MyoD AMO run data St11 plate,27,C3,CMO St11,Gene2,29.484,0.096,,,0.233148,Auto,Auto,1,23
+MyoD AMO run data St11 plate,28,C4,AMO 1030,Gene2,26.278,0.111,,,0.233148,Auto,Auto,1,20
+MyoD AMO run data St11 plate,29,C5,AMO 1030,Gene2,25.902,0.111,,,0.233148,Auto,Auto,1,19
+MyoD AMO run data St11 plate,30,C6,AMO 1030,Gene2,26.162,0.111,,,0.233148,Auto,Auto,1,20
+MyoD AMO run data St11 plate,31,C7,AMO 2060,Gene2,26.027,0.269,,,0.233148,Auto,Auto,1,19
+MyoD AMO run data St11 plate,32,C8,AMO 2060,Gene2,25.107,0.269,,,0.233148,Auto,Auto,1,18
+MyoD AMO run data St11 plate,33,C9,AMO 2060,Gene2,25.693,0.269,,,0.233148,Auto,Auto,1,16
+MyoD AMO run data St11 plate,87,H3,NTC,Gene2,36,,,,0.233148,Auto,Auto,1,24
+MyoD AMO run data St11 plate,73,G1,CMO St11,Gene3,27,0.142,,,0.249436,Auto,Auto,1,22
+MyoD AMO run data St11 plate,74,G2,CMO St11,Gene3,27.41,0.142,,,0.249436,Auto,Auto,1,22
+MyoD AMO run data St11 plate,75,G3,CMO St11,Gene3,26.971,0.142,,,0.249436,Auto,Auto,1,21
+MyoD AMO run data St11 plate,76,G4,AMO 1030,Gene3,26.822,0.166,,,0.249436,Auto,Auto,1,22
+MyoD AMO run data St11 plate,77,G5,AMO 1030,Gene3,26.518,0.166,,,0.249436,Auto,Auto,1,21
+MyoD AMO run data St11 plate,78,G6,AMO 1030,Gene3,26.246,0.166,,,0.249436,Auto,Auto,1,21
+MyoD AMO run data St11 plate,79,G7,AMO 2060,Gene3,26.922,0.071,,,0.249436,Auto,Auto,1,22
+MyoD AMO run data St11 plate,80,G8,AMO 2060,Gene3,26.758,0.071,,,0.249436,Auto,Auto,1,21
+MyoD AMO run data St11 plate,81,G9,AMO 2060,Gene3,26.679,0.071,,,0.249436,Auto,Auto,1,21
+MyoD AMO run data St11 plate,90,H6,NTC,Gene3,Undet.,,,,0.249436,Auto,Auto,1,26
+MyoD AMO run data St11 plate,13,B1,CMO St11,Gene4,26,0.142,,,0.186712,Auto,Auto,1,21
+MyoD AMO run data St11 plate,14,B2,CMO St11,Gene4,26.097,0.142,,,0.186712,Auto,Auto,1,21
+MyoD AMO run data St11 plate,15,B3,CMO St11,Gene4,25.632,0.142,,,0.186712,Auto,Auto,1,21
+MyoD AMO run data St11 plate,16,B4,AMO 1030,Gene4,23.528,0.212,,,0.186712,Auto,Auto,1,18
+MyoD AMO run data St11 plate,17,B5,AMO 1030,Gene4,22.848,0.212,,,0.186712,Auto,Auto,1,18
+MyoD AMO run data St11 plate,18,B6,AMO 1030,Gene4,23.429,0.212,,,0.186712,Auto,Auto,1,18
+MyoD AMO run data St11 plate,19,B7,AMO 2060,Gene4,23.856,0.127,,,0.186712,Auto,Auto,1,19
+MyoD AMO run data St11 plate,20,B8,AMO 2060,Gene4,24.207,0.127,,,0.186712,Auto,Auto,1,19
+MyoD AMO run data St11 plate,21,B9,AMO 2060,Gene4,24.26,0.127,,,0.186712,Auto,Auto,1,19
+MyoD AMO run data St11 plate,86,H2,NTC,Gene4,34.641,,,,0.186712,Auto,Auto,1,28
+MyoD AMO run data St11 plate,49,E1,CMO St11,Gene5,28.262,0.27,,,0.075163,Auto,Auto,1,25
+MyoD AMO run data St11 plate,50,E2,CMO St11,Gene5,27.867,0.27,,,0.075163,Auto,Auto,1,24
+MyoD AMO run data St11 plate,51,E3,CMO St11,Gene5,27.332,0.27,,,0.075163,Auto,Auto,1,23
+MyoD AMO run data St11 plate,52,E4,AMO 1030,Gene5,25.267,0.183,,,0.075163,Auto,Auto,1,22
+MyoD AMO run data St11 plate,53,E5,AMO 1030,Gene5,25.038,0.183,,,0.075163,Auto,Auto,1,21
+MyoD AMO run data St11 plate,54,E6,AMO 1030,Gene5,24.64,0.183,,,0.075163,Auto,Auto,1,21
+MyoD AMO run data St11 plate,55,E7,AMO 2060,Gene5,24.744,0.119,,,0.075163,Auto,Auto,1,21
+MyoD AMO run data St11 plate,56,E8,AMO 2060,Gene5,24.551,0.119,,,0.075163,Auto,Auto,1,21
+MyoD AMO run data St11 plate,57,E9,AMO 2060,Gene5,24.964,0.119,,,0.075163,Auto,Auto,1,21
+MyoD AMO run data St11 plate,92,H8,NTC,Gene5,36,,,,0.075163,Auto,Auto,1,33
+MyoD AMO run data St11 plate,1,A1,CMO st11,EndogControl,25.309,0.028,,,0.205446,Auto,Auto,1,20
+MyoD AMO run data St11 plate,2,A2,CMO st11,EndogControl,25.33,0.028,,,0.205446,Auto,Auto,1,20
+MyoD AMO run data St11 plate,3,A3,CMO st11,EndogControl,25.237,0.028,,,0.205446,Auto,Auto,1,20
+MyoD AMO run data St11 plate,4,A4,AMO 1030,EndogControl,23.314,0.092,,,0.205446,Auto,Auto,1,18
+MyoD AMO run data St11 plate,5,A5,AMO 1030,EndogControl,23.104,0.092,,,0.205446,Auto,Auto,1,18
+MyoD AMO run data St11 plate,6,A6,AMO 1030,EndogControl,23,0.092,,,0.205446,Auto,Auto,1,18
+MyoD AMO run data St11 plate,7,A7,AMO 2060,EndogControl,22.706,0.264,,,0.205446,Auto,Auto,1,18
+MyoD AMO run data St11 plate,8,A8,AMO 2060,EndogControl,21.942,0.264,,,0.205446,Auto,Auto,1,17
+MyoD AMO run data St11 plate,9,A9,AMO 2060,EndogControl,22.759,0.264,,,0.205446,Auto,Auto,1,17
+MyoD AMO run data St11 plate,85,H1,NTC,EndogControl,39.273,,,,0.205446,Auto,Auto,1,34
+MyoD AMO run data St11 plate,37,D1,CMO St11,Gene6,26.955,0.218,,,0.223627,Auto,Auto,1,22
+MyoD AMO run data St11 plate,38,D2,CMO St11,Gene6,27,0.218,,,0.223627,Auto,Auto,1,22
+MyoD AMO run data St11 plate,39,D3,CMO St11,Gene6,26.324,0.218,,,0.223627,Auto,Auto,1,21
+MyoD AMO run data St11 plate,40,D4,AMO 1030,Gene6,25.291,0.032,,,0.223627,Auto,Auto,1,20
+MyoD AMO run data St11 plate,41,D5,AMO 1030,Gene6,25.245,0.032,,,0.223627,Auto,Auto,1,20
+MyoD AMO run data St11 plate,42,D6,AMO 1030,Gene6,25.18,0.032,,,0.223627,Auto,Auto,1,20
+MyoD AMO run data St11 plate,43,D7,AMO 2060,Gene6,26.212,0.051,,,0.223627,Auto,Auto,1,21
+MyoD AMO run data St11 plate,44,D8,AMO 2060,Gene6,26.335,0.051,,,0.223627,Auto,Auto,1,21
+MyoD AMO run data St11 plate,45,D9,AMO 2060,Gene6,26.381,0.051,,,0.223627,Auto,Auto,1,22
+MyoD AMO run data St11 plate,88,H4,NTC,Gene6,Undet.,,,,0.223627,Auto,Auto,1,39
+MyoD AMO run data St11 plate,10,A10,CMO,Gene7,23.816,0.157,,,0.202709,Auto,Auto,1,19
+MyoD AMO run data St11 plate,11,A11,CMO,Gene7,23.863,0.157,,,0.202709,Auto,Auto,1,19
+MyoD AMO run data St11 plate,12,A12,CMO,Gene7,24.309,0.157,,,0.202709,Auto,Auto,1,20
+MyoD AMO run data St11 plate,22,B10,AMO 1030,Gene7,23.005,0.03,,,0.202709,Auto,Auto,1,18
+MyoD AMO run data St11 plate,23,B11,AMO 1030,Gene7,23,0.03,,,0.202709,Auto,Auto,1,18
+MyoD AMO run data St11 plate,24,B12,AMO 1030,Gene7,22.912,0.03,,,0.202709,Auto,Auto,1,18
+MyoD AMO run data St11 plate,34,C10,AMO 2060,Gene7,22.531,0.018,,,0.202709,Auto,Auto,1,17
+MyoD AMO run data St11 plate,35,C11,AMO 2060,Gene7,22.588,0.018,,,0.202709,Auto,Auto,1,18
+MyoD AMO run data St11 plate,36,C12,AMO 2060,Gene7,22.542,0.018,,,0.202709,Auto,Auto,1,16
+MyoD AMO run data St11 plate,91,H7,NTC,Gene7,Undet.,,,,0.202709,Auto,Auto,1,39
