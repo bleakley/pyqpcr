@@ -109,6 +109,8 @@ class Plaque:
                 self.parseLightCycler480()
             elif machine == 'Stratagene Mx3000':
                 self.parseStratagene()
+            elif machine in ['Illumina Eco']:
+                self.parseIllumina()
             # Raise exception if no well are detected
             if len(self.listePuits) == 0:
                 raise PlateError(self.filename, machine)
@@ -556,6 +558,88 @@ class Plaque:
                             x.setType('unknown')
                         elif type == 'Std':
                             x.setType('standard')
+                    setattr(self, x.name, x)
+                    self.listePuits.append(x)
+
+    def parseIllumina(self):
+        """
+        This method parse Illumina Eco CSV files.
+        """
+        self.setPlateType('96')
+        file = open(unicode(self.filename), 'r')
+        iterator = csv.reader(file, delimiter=returnDelimiter(file))
+        hasHeader = False
+        for ind, line in enumerate(iterator):
+            if len(line) != 0:
+                if string.join(line).__contains__('Well'):
+                    hasHeader = True
+                    initTab = ind
+            if hasHeader:
+                if ind == initTab:
+                    self.header = OrderedDict()
+                    for i, field in enumerate(line):
+                        self.header[field] = i
+                    ncol = len(self.header.keys())
+
+                if ind != initTab and len(line) == ncol:
+                    champs = []
+                    for k, field in enumerate(line):
+                        try:
+                            if self.header.keys()[k] in ('Standard Concentration', 
+                                'Cq', 'Cq Mean', 'Std. Dev. Cq', 'Quantity'):
+                                dat = float(field.replace(',', '.'))
+                            else:
+                                dat = field
+                        except ValueError:
+                            dat = field
+                        champs.append(dat)
+                    if self.header.has_key('Well'):
+                        name = champs[self.header['Well']]
+                        if name != '':
+                            x = Puits(name)
+                        else:
+                            continue
+                    else:
+                        raise KeyError
+
+                    if self.header.has_key('Sample Name'):
+                        echName = champs[self.header['Sample Name']]
+                        x.setEch(Ech(echName))
+                    if self.header.has_key('Assay Name'):
+                        geneName = champs[self.header['Assay Name']]
+                        x.setGene(Gene(geneName))
+                    if self.header.has_key('Exclude'):
+                        exclude = champs[self.header['Exclude']]
+                        if exclude == 'Excluded':
+                            x.setEnabled(False)
+                    if self.header.has_key('Cq'):
+                        ct = champs[self.header['Cq']]
+                        if ct == '':
+                            x.setEnabled(False)
+                        x.setCt(ct)
+                    if self.header.has_key('Cq Mean'):
+                        ctmean = champs[self.header['Cq Mean']]
+                        if ctmean != '':
+                            x.setCtmean(ctmean)
+                    if self.header.has_key('Std. Dev. Cq'):
+                        ctdev = champs[self.header['Std. Dev. Cq']]
+                        if ctdev != '':
+                            x.setCtdev(ctdev)
+                    if self.header.has_key('Assay Role'):
+                        type = champs[self.header['Assay Role']]
+                        if type == 'Standard':
+                            x.setType('standard')
+
+                    if self.header.has_key('Quantity'):
+                        try:
+                            amount = float(champs[ \
+                                           self.header['Quantity']])
+                            if amount != 0:
+                                x.setEch(Ech(''))
+                                x.setType('standard')
+                                x.setAmount(amount)
+                        except ValueError:
+                            pass
                     setattr(self, x.name, x)
                     self.listePuits.append(x)
 
@@ -1379,49 +1463,53 @@ class PlateError(Exception):
 
 if __name__ == '__main__':
     # Biorad files
-    pl = Plaque('raw_data_biorad_opticon.txt', machine='Biorad Opticon')
+    pl = Plaque('Biorad/raw_data_biorad_opticon.txt', machine='Biorad Opticon')
     print pl.A1
-    pl = Plaque('raw_data_biorad_opticon2.txt', machine='Biorad Opticon')
+    pl = Plaque('Biorad/raw_data_biorad_opticon2.txt', machine='Biorad Opticon')
     print pl.A1
-    pl = Plaque('raw_data_biorad_c1000_1.txt', machine='Biorad C1000')
+    pl = Plaque('Biorad/raw_data_biorad_c1000_1.txt', machine='Biorad C1000')
     print pl.A01
-    pl = Plaque('raw_data_biorad_c1000_2.txt', machine='Biorad C1000')
+    pl = Plaque('Biorad/raw_data_biorad_c1000_2.txt', machine='Biorad C1000')
     print pl.A02
-    pl = Plaque('raw_data_biorad_c1000_3.txt', machine='Biorad C1000')
+    pl = Plaque('Biorad/raw_data_biorad_c1000_3.txt', machine='Biorad C1000')
     print pl.A03
     # Appplied files
-    pl = Plaque('raw_data_ABstepone.txt', machine='Applied StepOne')
+    pl = Plaque('AppliedBiosystems/raw_data_ABstepone.txt', machine='Applied StepOne')
     print pl.A1
     print pl.geneRef
-    pl = Plaque('raw_data_ABstepone_2.txt', machine='Applied StepOne')
+    pl = Plaque('AppliedBiosystems/raw_data_ABstepone_2.txt', machine='Applied StepOne')
     print pl.A1
-    pl = Plaque('raw_data_AB7000.csv', machine='Applied 7000')
+    pl = Plaque('AppliedBiosystems/raw_data_AB7000.csv', machine='Applied 7000')
     print pl.A1
-    pl = Plaque('raw_data_AB7000_2.csv', machine='Applied 7000')
+    pl = Plaque('AppliedBiosystems/raw_data_AB7000_2.csv', machine='Applied 7000')
     print pl.A1
-    pl = Plaque('raw_data_AB7000_3.csv', machine='Applied 7000')
+    pl = Plaque('AppliedBiosystems/raw_data_AB7000_3.csv', machine='Applied 7000')
     print pl.A1
-    pl = Plaque('raw_data_AB7000_4.csv', machine='Applied 7000')
+    pl = Plaque('AppliedBiosystems/raw_data_AB7000_4.csv', machine='Applied 7000')
     print pl.A1
     print pl.geneRef
-    pl = Plaque('raw_data_AB7000_5.csv', machine='Applied 7000')
+    pl = Plaque('AppliedBiosystems/raw_data_AB7000_5.csv', machine='Applied 7000')
     print pl.A1
-    pl = Plaque('raw_data_AB7500_2.csv', machine='Applied 7500')
-    print pl.A1
-    print pl.type
-    pl = Plaque('raw_data_AB7500.csv', machine='Applied 7500')
+    pl = Plaque('AppliedBiosystems/raw_data_AB7500_2.csv', machine='Applied 7500')
     print pl.A1
     print pl.type
-    pl = Plaque('raw_data_AB7500_3.csv', machine='Applied 7500')
+    pl = Plaque('AppliedBiosystems/raw_data_AB7500.csv', machine='Applied 7500')
     print pl.A1
     print pl.type
-    pl = Plaque('raw_data_AB7700.csv', machine='Applied 7700')
+    pl = Plaque('AppliedBiosystems/raw_data_AB7500_3.csv', machine='Applied 7500')
+    print pl.A1
+    print pl.type
+    pl = Plaque('AppliedBiosystems/raw_data_AB7700.csv', machine='Applied 7700')
     print pl.B2
     print pl.type
-    pl = Plaque('raw_data_AB7900.txt', machine='Applied 7900')
+    pl = Plaque('AppliedBiosystems/raw_data_AB7900.txt', machine='Applied 7900')
     print pl.B17
     print pl.type
-    pl = Plaque('raw_data_AB7900_96w.txt', machine='Applied 7900')
+    pl = Plaque('AppliedBiosystems/raw_data_AB7900_96w.txt', machine='Applied 7900')
     print pl.C1
-    pl = Plaque('raw_data_EscoSpectrum.csv', machine='Esco Spectrum 48')
+    pl = Plaque('Esco/raw_data_EscoSpectrum.csv', machine='Esco Spectrum 48')
     print pl.A6
+    pl = Plaque('Illumina/raw_data_eco1.csv', machine='Illumina Eco')
+    print pl.A6
+    pl = Plaque('Illumina/raw_data_eco2.csv', machine='Illumina Eco')
+    print pl.A6.type, pl.A6.amount

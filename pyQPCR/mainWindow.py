@@ -509,6 +509,9 @@ class Qpcr_qt(QMainWindow):
         elif self.machine == 'Esco Spectrum 48':
             formats =[u"*.csv"]
             type = 'Esco Spectrum 48 machines'
+        elif self.machine == 'Illumina Eco':
+            formats =[u"*.csv"]
+            type = 'Illumina Eco machines'
         elif self.machine == 'Qiagen Corbett':
             formats =[u"*.csv"]
             type = 'Qiagen Corbett machines'
