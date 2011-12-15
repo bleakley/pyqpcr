@@ -78,8 +78,9 @@ class NewProjectDialog(QDialog):
                                'Applied 7500', 'Applied 7700', 'Applied 7900',
                                'Biorad C1000', 'Biorad MyIQ', 'Biorad Opticon',
                                'Cepheid SmartCycler', 'Eppendorf Mastercycler',
-                               'Esco Spectrum 48', 'Qiagen Corbett', 
-                               'Roche LightCycler 480', 'Stratagene Mx3000'])
+                               'Esco Spectrum 48', 'Illumina Eco',
+                               'Qiagen Corbett', 'Roche LightCycler 480', 
+                               'Stratagene Mx3000'])
         if machine == 'Applied StepOne':
             self.machBox.setCurrentIndex(0)
         elif machine == 'Applied 7000':
@@ -102,12 +103,14 @@ class NewProjectDialog(QDialog):
             self.machBox.setCurrentIndex(9)
         elif machine == 'Esco Spectrum 48':
             self.machBox.setCurrentIndex(10)
-        elif machine == 'Qiagen Corbett':
+        elif machine == 'Illumina Eco':
             self.machBox.setCurrentIndex(11)
-        elif machine == 'Roche LightCycler 480':
+        elif machine == 'Qiagen Corbett':
             self.machBox.setCurrentIndex(12)
-        elif machine == 'Stratagene Mx3000':
+        elif machine == 'Roche LightCycler 480':
             self.machBox.setCurrentIndex(13)
+        elif machine == 'Stratagene Mx3000':
+            self.machBox.setCurrentIndex(14)
 
         lab3 = QLabel("<b>4. Plates files</b>")
         self.listFiles = QListWidget()
@@ -209,6 +212,9 @@ class NewProjectDialog(QDialog):
         elif self.machBox.currentText() == 'Esco Spectrum 48':
             formats =[u"*.csv"]
             type = 'Esco Spectrum 48 machines'
+        elif self.machBox.currentText() == 'Illumina Eco':
+            formats =[u"*.csv"]
+            type = 'Illumina Eco machines'
         elif self.machBox.currentText() == 'Qiagen Corbett':
             formats =[u"*.csv"]
             type = 'Qiagen Corbett machines'
