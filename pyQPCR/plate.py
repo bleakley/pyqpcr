@@ -1055,6 +1055,10 @@ class Plaque:
             nrows = 2
             ncolumns = 24
             tableLabels = ['A', 'B']
+        elif self.type == '48a':
+            nrows = 6
+            ncolumns = 8
+            tableLabels = ['A', 'B', 'C', 'D', 'E', 'F']
 
         html = u""
         html += "<table cellpadding=2 cellspacing=0 border=1 width=100%>\n"
