@@ -44,6 +44,9 @@ class MyQTableWidget(QTableWidget):
         elif self.columnCount() == 10 and self.rowCount() == 10:
             width = event.size().width()/10.
             height = event.size().height()/10.
+        elif self.columnCount() == 8 and self.rowCount() == 6:
+            width = event.size().width()/8.
+            height = event.size().height()/6.
         else:
             width = event.size().width()/12.
             height = event.size().height()/8.
@@ -99,6 +102,10 @@ class PlateWidget(MyQTableWidget):
             self.tableLabels = ['A', 'B']
             self.setRowCount(2)
             self.setColumnCount(24)
+        elif plateType == '48a':
+            self.tableLabels = ['A', 'B', 'C', 'D', 'E', 'F']
+            self.setRowCount(6)
+            self.setColumnCount(8)
 
         self.setVerticalHeaderLabels(self.tableLabels)
         self.setEditTriggers(QTableWidget.NoEditTriggers)

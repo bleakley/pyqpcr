@@ -565,7 +565,7 @@ class Plaque:
         """
         This method parse Illumina Eco CSV files.
         """
-        self.setPlateType('96')
+        self.setPlateType('48a')
         file = open(unicode(self.filename), 'r')
         iterator = csv.reader(file, delimiter=returnDelimiter(file))
         hasHeader = False
