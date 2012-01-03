@@ -146,20 +146,20 @@ class ModelDialog(QDialog):
             facx = 5
             facy = 5
         elif plaque.type == '48':
-            facx = 60
+            facx = 40
             facy = 5
         elif plaque.type == '48a':
             facx = 13
             facy = 15
         elif plaque.type == '16':
-            facx = 120
-            facy = 5
+            facx = 80
+            facy = 7
         elif plaque.type == '100':
-            facx = 12
-            facy = 8
+            facx = 8
+            facy = 12
         elif plaque.type == '72':
-            facx = 13
-            facy = 10
+            facx = 9
+            facy = 15
         for well in plaque.listePuits:
             for i in range(well.xpos*facx, (well.xpos+1)*facx):
                 for j in range(well.ypos*facy, (well.ypos+1)*facy):
@@ -185,20 +185,20 @@ class ModelDialog(QDialog):
             facx = 5
             facy = 5
         elif plaque.type == '48':
-            facx = 60
+            facx = 40
             facy = 5
         elif plaque.type == '48a':
             facx = 13
             facy = 15
         elif plaque.type == '16':
-            facx = 120
-            facy = 5
+            facx = 80
+            facy = 7
         elif plaque.type == '100':
-            facx = 12
-            facy = 8
+            facx = 8
+            facy = 12
         elif plaque.type == '72':
-            facx = 13
-            facy = 10
+            facx = 9
+            facy = 15
         for well in plaque.listePuits:
             for i in range(well.xpos*facx, (well.xpos+1)*facx):
                 for j in range(well.ypos*facy, (well.ypos+1)*facy):
