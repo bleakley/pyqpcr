@@ -76,7 +76,7 @@ else:
                              },
                 'install': {'optimize': '1', 'prefix' : '/usr'}
                 } 
-    elif platform.dist()[0] == 'SuSe':
+    elif platform.dist()[0] in ('SuSe', 'SuSE'):
         extra_options['options'] = \
                 {
                 'bdist_rpm': { 
