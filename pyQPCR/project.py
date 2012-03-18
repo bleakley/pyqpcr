@@ -42,7 +42,7 @@ class Project:
     >>> proj.findTrip(0.3, 0.9, 'student')
     """
 
-    def __init__(self, fname=None, open=True):
+    def __init__(self, fname=None, open=True, initIndexColor=None):
         """
         Constructor for the project object
 
@@ -51,6 +51,9 @@ class Project:
         :param open: a boolean to indicate if we create a new project or 
                      open an existing file
         :type open: logical
+        :param initIndexColor: it we want to merge project, then the first color
+                               is not zero.
+        :type initIndexColor: integer
         """
         self.colors = [QColor(Qt.blue), QColor(Qt.red), QColor(Qt.green), 
                   QColor(Qt.yellow), QColor(Qt.magenta),
@@ -61,6 +64,10 @@ class Project:
                   QColor(Qt.darkGray), QColor(Qt.lightGray), 
                   QColor(Qt.black)]
 
+        if initIndexColor is not None:
+            self.indexColor = initIndexColor
+        else:
+            self.indexColor = 0
         self.dicoPlates = OrderedDict()
  
         self.hashGene = OrderedDict()
@@ -279,7 +286,6 @@ class Project:
         :param plate: the plate
         :type plate: pyQPCR.plate
         """
-        indexColor = 0
         if plate is None:
             for pl in self.dicoPlates:
                 for well in self.dicoPlates[pl].listePuits:
@@ -287,11 +293,11 @@ class Project:
                     if not self.hashGene.has_key(nomgene):
                         # color attributions
                         if not hasattr(well.gene, 'color'):
-                            well.gene.setColor(self.colors[indexColor])
-                        if indexColor < len(self.colors)-1:
-                            indexColor += 1
+                            well.gene.setColor(self.colors[self.indexColor])
+                        if self.indexColor < len(self.colors)-1:
+                            self.indexColor += 1
                         else:
-                            indexColor = 0
+                            self.indexColor = 0
                         self.hashGene[nomgene] = well.gene
         else:
             for well in plate.listePuits:
@@ -299,11 +305,11 @@ class Project:
                 if not self.hashGene.has_key(nomgene):
                     # color attributions
                     if not hasattr(well.gene, 'color'):
-                        well.gene.setColor(self.colors[indexColor])
-                    if indexColor < len(self.colors)-1:
-                        indexColor += 1
+                        well.gene.setColor(self.colors[self.indexColor])
+                    if self.indexColor < len(self.colors)-1:
+                        self.indexColor += 1
                     else:
-                        indexColor = 0
+                        self.indexColor = 0
                     self.hashGene[nomgene] = well.gene
                     if hasattr(plate, 'geneRef'):
                         for geneName in plate.geneRef:

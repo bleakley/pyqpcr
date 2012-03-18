@@ -537,7 +537,7 @@ class Qpcr_qt(QMainWindow):
                     st = '<ul>'
                     warn = False
                     try:
-                        prtmp = Project(file)
+                        prtmp = Project(file, initIndexColor=self.project.indexColor)
                     except ProjectError, e:
                         QMessageBox.warning(self, "Problem in import !", "%s" % str(e))
                         return
