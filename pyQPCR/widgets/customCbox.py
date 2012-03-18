@@ -65,6 +65,7 @@ class GeneEchComboBox(QComboBox):
         QComboBox.__init__(self, parent)
         self.setModel(HeaderModel(self))
         self.setItemDelegate(ComboDelegate(self))
+        self.setMinimumContentsLength(10)
 
     def addItem(self, obj, *args):
         if hasattr(obj, "name"):
