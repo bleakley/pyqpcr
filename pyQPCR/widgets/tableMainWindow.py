@@ -22,9 +22,9 @@ from PyQt4.QtCore import *
 import pyQPCR.qrc_resources
 from numpy import nan
 
-__author__ = "$Author: tgastine $"
-__date__ = "$Date: 2010-10-14 21:02:08 +0200 (jeu. 14 oct. 2010) $"
-__version__ = "$Rev: 324 $"
+__author__ = "$Author$"
+__date__ = "$Date$"
+__version__ = "$Rev$"
 
 
 class MyQTableWidget(QTableWidget):
