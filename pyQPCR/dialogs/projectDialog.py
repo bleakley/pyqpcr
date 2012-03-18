@@ -74,8 +74,8 @@ class NewProjectDialog(QDialog):
         lab2 = QLabel("<b>3. &Machine type</b>")
         self.machBox = QComboBox()
         lab2.setBuddy(self.machBox)
-        self.machBox.addItems(['Applied StepOne', 'Applied 7000',
-                               'Applied 7500', 'Applied 7700', 'Applied 7900',
+        self.machBox.addItems(['Applied StepOne', 'Applied 7000', 'Applied 7500', 
+                               'Applied 7700', 'Applied 7900', 'Applied Viia7',
                                'Biorad C1000', 'Biorad MyIQ', 'Biorad Opticon',
                                'Cepheid SmartCycler', 'Eppendorf Mastercycler',
                                'Esco Spectrum 48', 'Illumina Eco',
@@ -91,26 +91,28 @@ class NewProjectDialog(QDialog):
             self.machBox.setCurrentIndex(3)
         elif machine == 'Applied 7900':
             self.machBox.setCurrentIndex(4)
-        elif machine == 'Biorad C1000':
+        elif machine == 'Applied Viia7':
             self.machBox.setCurrentIndex(5)
-        elif machine == 'Biorad MyIQ':
+        elif machine == 'Biorad C1000':
             self.machBox.setCurrentIndex(6)
-        elif machine == 'Biorad Opticon':
+        elif machine == 'Biorad MyIQ':
             self.machBox.setCurrentIndex(7)
-        elif machine == 'Cepheid SmartCycler':
+        elif machine == 'Biorad Opticon':
             self.machBox.setCurrentIndex(8)
-        elif machine == 'Eppendorf Mastercycler':
+        elif machine == 'Cepheid SmartCycler':
             self.machBox.setCurrentIndex(9)
-        elif machine == 'Esco Spectrum 48':
+        elif machine == 'Eppendorf Mastercycler':
             self.machBox.setCurrentIndex(10)
-        elif machine == 'Illumina Eco':
+        elif machine == 'Esco Spectrum 48':
             self.machBox.setCurrentIndex(11)
-        elif machine == 'Qiagen Corbett':
+        elif machine == 'Illumina Eco':
             self.machBox.setCurrentIndex(12)
-        elif machine == 'Roche LightCycler 480':
+        elif machine == 'Qiagen Corbett':
             self.machBox.setCurrentIndex(13)
-        elif machine == 'Stratagene Mx3000':
+        elif machine == 'Roche LightCycler 480':
             self.machBox.setCurrentIndex(14)
+        elif machine == 'Stratagene Mx3000':
+            self.machBox.setCurrentIndex(15)
 
         lab3 = QLabel("<b>4. Plates files</b>")
         self.listFiles = QListWidget()
@@ -197,6 +199,9 @@ class NewProjectDialog(QDialog):
         elif self.machBox.currentText() == 'Applied 7900':
             formats =[u"*.txt"]
             type = 'Applied 7900 machines'
+        elif self.machBox.currentText() == 'Applied Viia7':
+            formats =[u"*.txt", u"*.csv"]
+            type = 'Applied Viia7 machines'
         elif self.machBox.currentText() == 'Biorad C1000':
             formats =[u"*.txt"]
             type = 'Biorad C1000 machines'

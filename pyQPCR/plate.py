@@ -93,7 +93,7 @@ class Plaque:
             if machine == 'Eppendorf Mastercycler':
                 self.parseEppendorf()
             elif machine in ['Applied StepOne', 'Applied 7000', 'Applied 7500',
-                             'Applied 7700', 'Applied 7900']:
+                             'Applied 7700', 'Applied 7900', 'Applied Viia7']:
                 self.parseAppliedUniv()
             elif machine == 'Biorad MyIQ':
                 self.parseBioradMyIQ()
@@ -420,6 +420,8 @@ class Plaque:
                         raise KeyError
                     if self.header.has_key('Sample Name'):
                         echName = champs[self.header['Sample Name']]
+                        echName = echName.rstrip(r'\.0*')
+                        echName = echName.replace(',', '')
                         if not motifA1.match(echName):
                             x.setEch(Ech(echName))
                     elif self.header.has_key('Sample'):
@@ -461,9 +463,11 @@ class Plaque:
             if motifSample.match(rawline):
                 self.echRef = QString(motifSample.findall(rawline)[0])
             if motifTarget.match(rawline):
-                newGeneRef = QString(motifTarget.findall(rawline)[0][1])
-                if newGeneRef not in self.geneRef:
-                    self.geneRef.append(newGeneRef)
+                newGeneRef = motifTarget.findall(rawline)[0][1]
+                newGeneRefs = newGeneRef.split(',')
+                for newGeneRef in newGeneRefs:
+                    if newGeneRef not in self.geneRef:
+                        self.geneRef.append(QString(newGeneRef.strip()))
 
         if remap: # Recompute coordinate if it is a 96-wells
             for well in self.listePuits:
@@ -1481,6 +1485,11 @@ if __name__ == '__main__':
     pl = Plaque('AppliedBiosystems/raw_data_ABstepone.txt', machine='Applied StepOne')
     print pl.A1
     print pl.geneRef
+
+    pl = Plaque('AppliedBiosystems/raw_data_viia7.txt', machine='Applied Viia7')
+    print pl.A1
+    print pl.geneRef
+    print pl.echRef
     pl = Plaque('AppliedBiosystems/raw_data_ABstepone_2.txt', machine='Applied StepOne')
     print pl.A1
     pl = Plaque('AppliedBiosystems/raw_data_AB7000.csv', machine='Applied 7000')
