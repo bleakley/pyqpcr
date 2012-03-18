@@ -41,7 +41,7 @@ import time
 __author__ = "$Author$"
 __date__ = "$Date$"
 __version__ = "$Rev$"
-__progversion__ = "0.9"
+__progversion__ = "0.10dev"
 
 class Qpcr_qt(QMainWindow):
     """
@@ -935,7 +935,7 @@ class Qpcr_qt(QMainWindow):
         import platform
         QMessageBox.about(self, "About pyQPCR",
         """<b>pyQPCR</b> v %s
-        <p>Copyright &copy; 2008-2011 Thomas Gastine - Magali Hennion - 
+        <p>Copyright &copy; 2008-2012 Thomas Gastine - Magali Hennion - 
         All rights reserved.
         <p>This application can be used to perform
         simple qPCR analysis.
