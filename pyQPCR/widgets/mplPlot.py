@@ -115,7 +115,7 @@ class MplUnknownWidget(QWidget):
         self.lab5.setBuddy(self.cboxRot)
         self.lab5.setVisible(False)
         self.cboxRot.setValue(self.labelRotation)
-        self.cboxRot.setRange(0, 45)
+        self.cboxRot.setRange(0, 90)
         self.cboxRot.setSingleStep(5)
         self.cboxRot.setVisible(False)
 
@@ -290,6 +290,11 @@ class MplUnknownWidget(QWidget):
         size = int(self.cboxRot.value())
         for xtick in self.mplCanUnknown.axes.get_xticklabels():
             xtick.set_rotation(size)
+            if size == 0 or size == 90:
+                xtick.set_horizontalalignment('center')
+            else:
+                xtick.set_horizontalalignment('right')
+
         self.mplCanUnknown.draw()
 
     def changeAxesScale(self):
@@ -401,9 +406,15 @@ class MplUnknownWidget(QWidget):
 
         # plot
         self.mplCanUnknown.axes.set_xticks(self.project.barXticks.values())
-        self.mplCanUnknown.axes.set_xticklabels(self.project.barXticks.keys(), 
-                                                fontsize=size, 
-                                                rotation=int(self.cboxRot.value()))
+        if int(self.cboxRot.value()) == 0 or int(self.cboxRot.value()) == 90:
+            self.mplCanUnknown.axes.set_xticklabels(self.project.barXticks.keys(), 
+                                                    fontsize=size, 
+                                                    rotation=int(self.cboxRot.value()))
+        else:
+            self.mplCanUnknown.axes.set_xticklabels(self.project.barXticks.keys(), 
+                                                    fontsize=size, 
+                                                    horizontalalignment='right',
+                                                    rotation=int(self.cboxRot.value()))
         # Legend + xlim
         ncol = self.ncolLegend.value()
         self.leg = self.mplCanUnknown.axes.legend(loc='upper right', 
