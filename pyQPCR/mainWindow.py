@@ -1818,7 +1818,7 @@ class Qpcr_qt(QMainWindow):
         :param key: the name of the plate
         :type key: str
         """
-        mytab = ResultWidget(typeCalc=self.typeCalc)
+        mytab = ResultWidget(typeCalc=self.typeCalc, plateType=plaque.type)
         mytab.populateResult(plaque, self.typeCalc)
         self.tabulResults.addTab(mytab, key)
         self.pileResults[key] = mytab

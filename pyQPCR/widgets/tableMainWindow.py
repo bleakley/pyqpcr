@@ -190,7 +190,7 @@ class ResultWidget(QTableWidget):
     Q-PCR experiment. It is used in the main window of pyQPCR
     """
 
-    def __init__(self, parent=None, typeCalc='Relative quantification'):
+    def __init__(self, parent=None, typeCalc='Relative quantification', plateType='96'):
         """
         Constructor of the Result Widget. 
 
@@ -198,6 +198,8 @@ class ResultWidget(QTableWidget):
         :type parent: PyQt4.QtGui.QWidget
         :param typeCalc: the type of calculation
         :type typeCalc: PyQt4.QtCore.QString
+        :param plateType: the type of plates (96 wells, 384 wells, 72 or 100)
+        :type plateType: PyQt4.QtCore.QString
         """
         QTableWidget.__init__(self, parent)
         if typeCalc == 'Relative quantification':
@@ -206,8 +208,20 @@ class ResultWidget(QTableWidget):
         elif typeCalc == 'Absolute quantification':
             self.resultLabels = ["Well", "Target", "Ct", "<Ct>", "E(Ct)", "Amount",
                     "Sample", "Eff", "Type", "Qabs"]
-        self.setRowCount(96)
+        if plateType == '96':
+            self.setRowCount(96)
+        elif plateType == '384':
+            self.setRowCount(384)
+        elif plateType == '16':
+            self.setRowCount(16)
+        elif plateType == '48' or plateType == '48a':
+            self.setRowCount(48)
+        elif plateType == '72':
+            self.setRowCount(72)
+        elif plateType == '100':
+            self.setRowCount(100)
         self.setColumnCount(10)
+
         self.setHorizontalHeaderLabels(self.resultLabels)
         for i in range(len(self.resultLabels)):
             self.horizontalHeader().setResizeMode(i, QHeaderView.Stretch)
