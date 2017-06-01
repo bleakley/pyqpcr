@@ -1,4 +1,4 @@
-# pyQCPR History
+# pyQPCR History
 
 This project is a fork of pyQCPR, originally created by Thomas Gastine and Magali Hennion. It was originally hosted at http://pyqpcr.sourceforge.net/.
 
