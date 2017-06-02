@@ -2,6 +2,8 @@ from distutils.core import setup
 import glob
 import sys
 
+sys.setrecursionlimit(2000)
+
 # Remove the build folder, a bit slower but ensures that build contains the latest
 import shutil
 shutil.rmtree("build", ignore_errors=True)
