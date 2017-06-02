@@ -983,24 +983,16 @@ class Qpcr_qt(QMainWindow):
         text = self.generateText()
         if text is None:
             return
-        print text
-        """
-        if self.printer is None:
-            self.printer = QPrinter(QPrinter.HighResolution)
-            self.printer.setPageSize(QPrinter.A4)
-            self.printer.setColorMode(QPrinter.Color)
-            self.printer.setOutputFormat(QPrinter.PdfFormat)
-        formats = [u"*.pdf"]
+        #print text
+
+        formats = [u"*.txt"]
         fname = unicode(QFileDialog.getSaveFileName(self,
-                                                    "pyQPCR - Export results in a pdf file", "results.pdf",
-                                                    "PDF - Portable Document Format (%s)" % " ".join(formats)))
+                                                    "pyQPCR - Export results in a tab-delimited text file", "results.txt",
+                                                    "Tab-delimited plain text format (%s)" % " ".join(formats)))
         if fname:
-            self.printer.setOutputFileName(fname)
-            document = QTextDocument()
-            document.setHtml(html)
-            document.print_(self.printer)
-            self.cleanPngs()
-        """
+            with open(fname, 'w') as f:
+                f.write(text)
+
 
     def cleanPngs(self):
         """

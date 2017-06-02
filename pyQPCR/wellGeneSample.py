@@ -489,7 +489,7 @@ class Puits:
             NRQerror = "%.2f" % self.NRQerror
         except TypeError:
             NRQerror = ''
-        eff = "%.2f%s%.2f" % (self.gene.eff, unichr(177), self.gene.pm)
+        eff = "%.2f +/- %.2f" % (self.gene.eff, self.gene.pm)
 
         name = "%s" % self.name
         #if self.type == 'unknown':
