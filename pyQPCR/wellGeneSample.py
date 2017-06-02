@@ -446,6 +446,64 @@ class Puits:
         st += "</WELL>\n"
         return st
 
+    def writeText(self, ctMin=35, ectMax=0.3):
+        """
+        This method is used to display a Puits object in an text string.
+        It is called when one wants print the result in a text file.
+
+        :param ctMin: the minimum value for a ct (negative)
+        :type ctMin: float
+        :param ectMax: the maximum value for the standard deviation of the
+                       ct in a replicate.
+        :type ectMax: float
+        """
+        try:
+            amount = "%g" % self.amount
+        except TypeError:
+            amount =  str(self.amount)
+        try:
+            if self.ct <= ctMin and self.type == 'negative':
+                ct = "(flagged)"
+            else:
+                ct = ''
+            ct += "%.2f" % self.ct
+        except TypeError:
+            ct = ''
+        try:
+            ctmean = "%.2f" % self.ctmean
+        except TypeError:
+            ctmean = ''
+        try:
+            if self.ctdev >= ectMax:
+                ctdev = "(flagged)"
+            else:
+                ctdev = ''
+            ctdev += "%.2f" % self.ctdev
+        except TypeError:
+            ctdev = ''
+        try:
+            NRQ = "%.2f" % self.NRQ
+        except TypeError:
+            NRQ = ''
+        try:
+            NRQerror = "%.2f" % self.NRQerror
+        except TypeError:
+            NRQerror = ''
+        eff = "%.2f%s%.2f" % (self.gene.eff, unichr(177), self.gene.pm)
+
+        name = "%s" % self.name
+        #if self.type == 'unknown':
+        #    bgcolor = '#e6e6fa'
+        #elif self.type == 'standard':
+        #    bgcolor = '#ffe4e1'
+        #elif self.type == 'negative':
+        #    bgcolor = '#fff8d6'
+
+        st = "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n" % (name, self.enabled,
+                    self.type, self.gene.name, self.ech.name, ct,
+                    ctmean, ctdev, amount, eff, NRQ, NRQerror)
+        return st
+
     def writeHtml(self, ctMin=35, ectMax=0.3):
         """
         This method is used to display a Puits object in an HTML string.

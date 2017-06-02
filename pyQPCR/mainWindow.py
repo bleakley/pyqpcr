@@ -32,7 +32,7 @@ from pyQPCR.wellGeneSample import WellError
 from pyQPCR.project import Project, NRQError, QabsError, ProjectError
 import matplotlib
 from numpy import linspace, log10, log, sqrt, sum, mean, polyfit, polyval, \
-        asarray, append, array, delete
+    asarray, append, array, delete
 from scipy.stats import t, norm
 import os
 import copy
@@ -42,6 +42,7 @@ __author__ = "$Author$"
 __date__ = "$Date$"
 __version__ = "$Rev$"
 __progversion__ = "0.10dev"
+
 
 class Qpcr_qt(QMainWindow):
     """
@@ -58,7 +59,7 @@ class Qpcr_qt(QMainWindow):
         :type parent: PyQt4.QtGui.QWidget
         """
         QMainWindow.__init__(self, parent)
- 
+
         self.setMinimumSize(640, 480)
         self.filename = None
         self.printer = None
@@ -73,29 +74,29 @@ class Qpcr_qt(QMainWindow):
         self.pileTables = OrderedDict()
         self.createProjWidget()
         self.onglet.addTab(self.projWidget, "Plates")
- 
+
         settings = QSettings()
-        self.labelRotation, status  = settings.value("Mpl/labelRotation", 
-                                                     QVariant(0)).toInt()
-        self.labelFontSize, status  = settings.value("Mpl/labelFontSize", 
-                                                     QVariant(10)).toInt()
-        self.barWth, status  = settings.value("Mpl/barWidth", 
-                                              QVariant(0.1)).toDouble()
-        self.barSpacing, status = settings.value("Mpl/barSpacing", 
+        self.labelRotation, status = settings.value("Mpl/labelRotation",
+                                                    QVariant(0)).toInt()
+        self.labelFontSize, status = settings.value("Mpl/labelFontSize",
+                                                    QVariant(10)).toInt()
+        self.barWth, status = settings.value("Mpl/barWidth",
+                                             QVariant(0.1)).toDouble()
+        self.barSpacing, status = settings.value("Mpl/barSpacing",
                                                  QVariant(0.3)).toDouble()
 
-        self.topMplCan, status = settings.value("MplCan/top", 
+        self.topMplCan, status = settings.value("MplCan/top",
                                                 QVariant(0.95)).toDouble()
-        self.botMplCan, status = settings.value("MplCan/bottom", 
+        self.botMplCan, status = settings.value("MplCan/bottom",
                                                 QVariant(0.10)).toDouble()
-        self.rightMplCan, status = settings.value("MplCan/right", 
-                                                 QVariant(0.98)).toDouble()
-        self.leftMplCan, status = settings.value("MplCan/left", 
+        self.rightMplCan, status = settings.value("MplCan/right",
+                                                  QVariant(0.98)).toDouble()
+        self.leftMplCan, status = settings.value("MplCan/left",
                                                  QVariant(0.09)).toDouble()
- 
+
         self.createResultWidget()
         self.pileResults = OrderedDict()
- 
+
         self.vSplitter = QSplitter(Qt.Horizontal)
         self.vSplitter.addWidget(self.tree)
         self.vSplitter.addWidget(self.onglet)
@@ -134,12 +135,12 @@ class Qpcr_qt(QMainWindow):
         self.recentFiles = settings.value("RecentFiles").toStringList()
         self.ectMax, status = settings.value("EctMax", QVariant(0.3)).toDouble()
         self.ctMin, status = settings.value("ctMin", QVariant(35.)).toDouble()
-        self.confidence, status = settings.value("Error/confidence", 
+        self.confidence, status = settings.value("Error/confidence",
                                                  QVariant(0.9)).toDouble()
-        self.errtype = settings.value("Error/errtype", 
+        self.errtype = settings.value("Error/errtype",
                                       QVariant('normal')).toString()
-        self.typeCalc = settings.value("Calc/typeCalc", 
-                             QVariant('Relative quantification')).toString()
+        self.typeCalc = settings.value("Calc/typeCalc",
+                                       QVariant('Relative quantification')).toString()
         self.machine = settings.value("machine",
                                       QVariant('Eppendorf Mastercycler')).toString()
 
@@ -151,9 +152,9 @@ class Qpcr_qt(QMainWindow):
         self.move(position)
         self.restoreState(settings.value("MainWindow/State").toByteArray())
         self.vSplitter.restoreState(
-                settings.value("MainWindow/VerticalSplitter").toByteArray())
+            settings.value("MainWindow/VerticalSplitter").toByteArray())
         self.mainSplitter.restoreState(
-                settings.value("MainWindow/MainSplitter").toByteArray())
+            settings.value("MainWindow/MainSplitter").toByteArray())
         self.setWindowTitle("pyQPCR")
         self.updateFileMenu()
 
@@ -183,73 +184,75 @@ class Qpcr_qt(QMainWindow):
         """
         This methods create the menus and toolbars of pyQPCR.
         """
-        fileOpenAction = self.createAction("&Open...", self.fileOpen, 
-                QKeySequence.Open, "fileopen", "Open an existing project")
-        fileNewAction = self.createAction("&New project...", self.fileNew, 
-                QKeySequence.New, "filenew", "Create a new project")
-        self.fileImportAction = self.createAction("&Import...", self.fileImport, 
-                "Ctrl+I", "fileimport", "Import/add an existing plate")
-        self.closeTabAction = self.createAction("&Close a plate", self.closePlate, 
-                QKeySequence.Close, "closeplate", "Close an existing plate")
+        fileOpenAction = self.createAction("&Open...", self.fileOpen,
+                                           QKeySequence.Open, "fileopen", "Open an existing project")
+        fileNewAction = self.createAction("&New project...", self.fileNew,
+                                          QKeySequence.New, "filenew", "Create a new project")
+        self.fileImportAction = self.createAction("&Import...", self.fileImport,
+                                                  "Ctrl+I", "fileimport", "Import/add an existing plate")
+        self.closeTabAction = self.createAction("&Close a plate", self.closePlate,
+                                                QKeySequence.Close, "closeplate", "Close an existing plate")
         self.filePrintAction = self.createAction("&Print", self.filePrint,
-                QKeySequence.Print, "fileprint", "Print results")
+                                                 QKeySequence.Print, "fileprint", "Print results")
         self.exportAction = self.createAction("&Export as PDF", self.fileExport,
-                "Ctrl+D", "pdf", "Export results in a PDF file")
+                                              "Ctrl+D", "pdf", "Export results in a PDF file")
+        self.textExportAction = self.createAction("&Export as table", self.textFileExport,
+                                                  "Export results in a tab-delimited plain text file")
         self.fileSaveAction = self.createAction("&Save", self.fileSave,
-                QKeySequence.Save, "filesave", "Save the file")
+                                                QKeySequence.Save, "filesave", "Save the file")
         self.fileSaveAction.setEnabled(False)
         self.fileSaveAsAction = self.createAction("Save &As...",
-                self.fileSaveAs, icon="filesaveas",
-                tip="Save the file using a new name")
+                                                  self.fileSaveAs, icon="filesaveas",
+                                                  tip="Save the file using a new name")
         self.applyModelAction = self.createAction("Apply &model...",
-                self.applyModel, icon="applymodel",
-                tip="Apply a model")
-        fileQuitAction = self.createAction("&Quit", self.close, 
-                "Ctrl+Q", "filequit", "Close the application")
-        self.editAction = self.createAction("Edit wells", self.editWell, 
-                "Ctrl+E", "edit", "Edit selected wells")
-        self.undoAction = self.createAction("Undo", self.undo, 
-                QKeySequence.Undo, "undo", "Undo")
+                                                  self.applyModel, icon="applymodel",
+                                                  tip="Apply a model")
+        fileQuitAction = self.createAction("&Quit", self.close,
+                                           "Ctrl+Q", "filequit", "Close the application")
+        self.editAction = self.createAction("Edit wells", self.editWell,
+                                            "Ctrl+E", "edit", "Edit selected wells")
+        self.undoAction = self.createAction("Undo", self.undo,
+                                            QKeySequence.Undo, "undo", "Undo")
         self.undoAction.setEnabled(False)
         self.redoAction = self.createAction("Redo", self.redo,
-                QKeySequence.Redo, "redo", "Redo")
+                                            QKeySequence.Redo, "redo", "Redo")
         self.redoAction.setEnabled(False)
         self.addGeneAction = self.createAction("Add &Target...", self.addGene,
-                "Ctrl+T", "addgene", "Add a new target")
+                                               "Ctrl+T", "addgene", "Add a new target")
         self.addEchAction = self.createAction("Add &Sample...", self.addEch,
-                "Ctrl+G", "addech", "Add a new sample")
+                                              "Ctrl+G", "addech", "Add a new sample")
         self.addAmAction = self.createAction("Add A&mount...", self.addAmount,
-                "Ctrl+M", "addamount", "Add a new amount")
-        self.plotAction = self.createAction("Quantifications", 
-                             self.computeUnknown, "Ctrl+Shift+U", 
-                             "plotUnknown", "Plot results")
-        self.plotStdAction = self.createAction("Standard curves", 
-                              self.computeStd, "Ctrl+Shift+S", 
-                              "plotStandard", "Plot standard curves")
+                                             "Ctrl+M", "addamount", "Add a new amount")
+        self.plotAction = self.createAction("Quantifications",
+                                            self.computeUnknown, "Ctrl+Shift+U",
+                                            "plotUnknown", "Plot results")
+        self.plotStdAction = self.createAction("Standard curves",
+                                               self.computeStd, "Ctrl+Shift+S",
+                                               "plotStandard", "Plot standard curves")
         self.extractAction = self.createAction("E&xtract sub-plates",
-                             self.extractSubplate, "Ctrl+X",
-                           "extract", "Extract a sub-plate from an existing plate")
-        self.enableAction = self.createAction("Enable wells", self.enable, 
-                     None, "enable", "Enable selected wells")
+                                               self.extractSubplate, "Ctrl+X",
+                                               "extract", "Extract a sub-plate from an existing plate")
+        self.enableAction = self.createAction("Enable wells", self.enable,
+                                              None, "enable", "Enable selected wells")
         self.disableAction = self.createAction("Disable wells", self.disable,
-                     None, "disable", "Disable selected wells")
-        settingsAction = self.createAction("&Configure pyQPCR...", 
+                                               None, "disable", "Disable selected wells")
+        settingsAction = self.createAction("&Configure pyQPCR...",
                                            self.configure, icon="settings")
         helpAboutAction = self.createAction("&About pyQPCR", self.helpAbout,
-                icon="about")
+                                            icon="about")
         helpHelpAction = self.createAction("&Help", self.helpHelp,
-                QKeySequence.HelpContents, icon="help")
-        
+                                           QKeySequence.HelpContents, icon="help")
+
         # Menus
         fileMenu = self.menuBar().addMenu("&File")
-        self.addActions(fileMenu, (fileOpenAction, fileNewAction, 
+        self.addActions(fileMenu, (fileOpenAction, fileNewAction,
                                    self.fileImportAction, self.closeTabAction))
         self.recentFileMenu = fileMenu.addMenu(QIcon(":/filerecent.png"),
-                "Open recent files")
+                                               "Open recent files")
         fileMenu.addSeparator()
-        self.addActions(fileMenu, (self.filePrintAction, self.exportAction, None, 
-                        self.fileSaveAction, self.fileSaveAsAction, self.applyModelAction,
-                        None, fileQuitAction))
+        self.addActions(fileMenu, (self.filePrintAction, self.exportAction, self.textExportAction, None,
+                                   self.fileSaveAction, self.fileSaveAsAction, self.applyModelAction,
+                                   None, fileQuitAction))
 
         editMenu = self.menuBar().addMenu("&Edit")
         editMenu.addAction(self.editAction)
@@ -263,7 +266,7 @@ class Qpcr_qt(QMainWindow):
 
         calculMenu = self.menuBar().addMenu("&Computations")
         self.addActions(calculMenu, (self.enableAction, self.disableAction,
-                                  None, self.plotStdAction, self.plotAction))
+                                     None, self.plotStdAction, self.plotAction))
 
         settingsMenu = self.menuBar().addMenu("&Settings")
         settingsMenu.addAction(settingsAction)
@@ -273,16 +276,16 @@ class Qpcr_qt(QMainWindow):
 
         # Le menu doit afficher les fichiers recemment ouverts
         self.connect(self.recentFileMenu, SIGNAL("aboutToShow()"),
-                self.updateFileMenu)
-        
+                     self.updateFileMenu)
+
         # Toolbars
         fileToolbar = self.addToolBar("File")
         fileToolbar.setObjectName("FileToolBar")
         self.addActions(fileToolbar, (fileOpenAction, fileNewAction,
-                        self.fileImportAction, self.closeTabAction, 
-                        self.filePrintAction, self.exportAction, 
-                        self.fileSaveAction, self.fileSaveAsAction,
-                        self.applyModelAction))
+                                      self.fileImportAction, self.closeTabAction,
+                                      self.filePrintAction, self.exportAction,
+                                      self.fileSaveAction, self.fileSaveAsAction,
+                                      self.applyModelAction))
         fileToolbar.setIconSize(QSize(22, 22))
 
         editToolbar = self.addToolBar("Edit")
@@ -291,12 +294,15 @@ class Qpcr_qt(QMainWindow):
         editToolbar.addSeparator()
         self.typeComboBox = QComboBox()
         self.typeComboBox.addItems(["unknown", "standard", "negative"])
-        pix = QPixmap(32,32)
-        bleu = QColor(116, 167, 227) ; pix.fill(bleu)
+        pix = QPixmap(32, 32)
+        bleu = QColor(116, 167, 227);
+        pix.fill(bleu)
         self.typeComboBox.setItemIcon(0, QIcon(pix))
-        rouge = QColor(233, 0, 0) ; pix.fill(rouge)
+        rouge = QColor(233, 0, 0);
+        pix.fill(rouge)
         self.typeComboBox.setItemIcon(1, QIcon(pix))
-        jaune = QColor(255, 250, 80) ; pix.fill(jaune)
+        jaune = QColor(255, 250, 80);
+        pix.fill(jaune)
         self.typeComboBox.setItemIcon(2, QIcon(pix))
         self.typeComboBox.setToolTip("List of types")
         self.typeComboBox.setStatusTip(self.typeComboBox.toolTip())
@@ -332,20 +338,20 @@ class Qpcr_qt(QMainWindow):
         plotToolbar.setObjectName("PlotToolBar")
         self.addActions(plotToolbar, (self.plotStdAction, self.plotAction))
         plotToolbar.setIconSize(QSize(22, 22))
-        
+
         # ContextMenu
         self.projWidget.setContextMenuPolicy(Qt.ActionsContextMenu)
         self.resulWidget.setContextMenuPolicy(Qt.ActionsContextMenu)
-        self.addActions(self.projWidget, (fileOpenAction, fileNewAction, 
-                       self.fileImportAction, self.closeTabAction, 
-                       self.editAction, self.undoAction, self.redoAction, 
-                       self.addGeneAction, self.addEchAction, 
-                       self.enableAction, self.disableAction))
+        self.addActions(self.projWidget, (fileOpenAction, fileNewAction,
+                                          self.fileImportAction, self.closeTabAction,
+                                          self.editAction, self.undoAction, self.redoAction,
+                                          self.addGeneAction, self.addEchAction,
+                                          self.enableAction, self.disableAction))
         self.addActions(self.resulWidget, (self.filePrintAction, self.exportAction,
-                                      self.fileSaveAction, self.fileSaveAsAction,
-                                      self.applyModelAction,
-                                      self.plotStdAction, self.plotAction))
-        
+                                           self.fileSaveAction, self.fileSaveAsAction,
+                                           self.applyModelAction,
+                                           self.plotStdAction, self.plotAction))
+
         # Desactivation par defaut
         self.activateDesactivate(False)
 
@@ -357,7 +363,7 @@ class Qpcr_qt(QMainWindow):
         action = QAction(text, self)
         if icon is not None:
             action.setIcon(QIcon(":/%s.png" % icon))
-        if shortcut  is not None:
+        if shortcut is not None:
             action.setShortcut(shortcut)
         if tip is not None:
             action.setToolTip(tip)
@@ -390,11 +396,11 @@ class Qpcr_qt(QMainWindow):
         if not self.okToContinue():
             return
         dir = os.path.dirname(self.filename) if self.filename is not None \
-                else "."
-        formats =[u"*.xml"]
+            else "."
+        formats = [u"*.xml"]
         fname = unicode(QFileDialog.getOpenFileName(self,
-                                                    "pyQPCR - Choose a file", 
-                dir, "pyQPCR files (%s)" % " ".join(formats)))
+                                                    "pyQPCR - Choose a file",
+                                                    dir, "pyQPCR files (%s)" % " ".join(formats)))
         if fname:
             self.loadFile(fname)
 
@@ -432,10 +438,10 @@ class Qpcr_qt(QMainWindow):
                 self.appendResult(pl, key)
 
             # Pile de plaques pour le Undo/Redo
-            self.projectStack.insert(len(self.projectStack) + self.undoInd + 1, 
+            self.projectStack.insert(len(self.projectStack) + self.undoInd + 1,
                                      copy.deepcopy(self.project))
             if self.undoInd != -1:
-                del self.projectStack[self.undoInd+1:]
+                del self.projectStack[self.undoInd + 1:]
                 self.undoInd = -1
                 self.redoAction.setEnabled(False)
             self.updateUi()
@@ -449,7 +455,7 @@ class Qpcr_qt(QMainWindow):
         if not self.okToContinue():
             return
         dir = os.path.dirname(self.filename) if self.filename is not None \
-                else "."
+            else "."
         dialog = NewProjectDialog(self, pwd=dir, machine=self.machine)
         if dialog.exec_():
             self.cleanBeforeOpen()
@@ -464,7 +470,7 @@ class Qpcr_qt(QMainWindow):
             self.projectStack.insert(len(self.projectStack) + self.undoInd + 1,
                                      copy.deepcopy(self.project))
             if self.undoInd != -1:
-                del self.projectStack[self.undoInd+1:]
+                del self.projectStack[self.undoInd + 1:]
                 self.undoInd = -1
                 self.redoAction.setEnabled(False)
 
@@ -475,62 +481,62 @@ class Qpcr_qt(QMainWindow):
         the preference dialog.
         """
         dir = os.path.dirname(self.filename) if self.filename is not None \
-                else "."
+            else "."
         if self.machine == 'Applied StepOne':
-            formats =[u"*.txt", u"*.csv"]
+            formats = [u"*.txt", u"*.csv"]
             type = 'Applied StepOne machines'
         elif self.machine == 'Applied 7000':
-            formats =[u"*.txt", u"*.csv"]
+            formats = [u"*.txt", u"*.csv"]
             type = 'Applied 7000 machines'
         elif self.machine == 'Applied 7500':
-            formats =[u"*.txt", u"*.csv"]
+            formats = [u"*.txt", u"*.csv"]
             type = 'Applied 7500 machines'
         elif self.machine == 'Applied 7700':
-            formats =[u"*.csv"]
+            formats = [u"*.csv"]
             type = 'Applied 7700 machines'
         elif self.machine == 'Applied 7900':
-            formats =[u"*.txt"]
+            formats = [u"*.txt"]
             type = 'Applied 7900 machines'
         if self.machine == 'Applied Viia7':
-            formats =[u"*.txt", u"*.csv"]
+            formats = [u"*.txt", u"*.csv"]
             type = 'Applied Viia7 machines'
         elif self.machine == 'Biorad C1000':
-            formats =[u"*.txt"]
+            formats = [u"*.txt"]
             type = 'Biorad C1000 machines'
         elif self.machine == 'Biorad MyIQ':
-            formats =[u"*.csv"]
+            formats = [u"*.csv"]
             type = 'Biorad MyIQ machines'
         elif self.machine == 'Biorad Opticon':
-            formats =[u"*.txt"]
+            formats = [u"*.txt"]
             type = 'Biorad Opticon machines'
         elif self.machine == 'Cepheid SmartCycler':
-            formats =[u"*.csv"]
+            formats = [u"*.csv"]
             type = 'Cepheid SmartCycler machines'
         if self.machine == 'Eppendorf Mastercycler':
-            formats =[u"*.txt", u"*.csv"]
+            formats = [u"*.txt", u"*.csv"]
             type = 'Eppendorf Mastercycler machines'
         elif self.machine == 'Esco Spectrum 48':
-            formats =[u"*.csv"]
+            formats = [u"*.csv"]
             type = 'Esco Spectrum 48 machines'
         elif self.machine == 'Illumina Eco':
-            formats =[u"*.csv"]
+            formats = [u"*.csv"]
             type = 'Illumina Eco machines'
         elif self.machine == 'Qiagen Corbett':
-            formats =[u"*.csv"]
+            formats = [u"*.csv"]
             type = 'Qiagen Corbett machines'
         elif self.machine == 'Roche LightCycler 480':
-            formats =[u"*.txt"]
+            formats = [u"*.txt"]
             type = 'Roche LightCycler 480'
         elif self.machine == 'Stratagene Mx3000':
-            formats =[u"*.txt"]
+            formats = [u"*.txt"]
             type = 'Stratagene Mx3000'
         else:
-            formats =[u"*.txt", u"*.csv"]
+            formats = [u"*.txt", u"*.csv"]
             type = 'Eppendorf Mastercycler machines'
         fileNames = QFileDialog.getOpenFileNames(self,
-                       "pyQPCR - Choose a file", dir, 
-                       "Input files [%s] (%s);;pyQPCR file (*.xml)" % (type, 
-                                " ".join(formats)))
+                                                 "pyQPCR - Choose a file", dir,
+                                                 "Input files [%s] (%s);;pyQPCR file (*.xml)" % (type,
+                                                                                                 " ".join(formats)))
         if fileNames:
             for file in fileNames:
                 if file.endsWith('xml') or file.endsWith('XML'):
@@ -552,18 +558,18 @@ class Qpcr_qt(QMainWindow):
                     st += '</ul>'
                     if warn:
                         QMessageBox.warning(self, "Import not complete",
-                         "<b>Warning</b>: the plate(s): %s is (are) already in the project ! \
-                         As a consequence, it (they) has (have) not been added."       
-                                        % (st))
+                                            "<b>Warning</b>: the plate(s): %s is (are) already in the project ! \
+                         As a consequence, it (they) has (have) not been added."
+                                            % (st))
 
                     self.updateUi()
                     self.project.unsaved = True
                     self.fileSaveAction.setEnabled(True)
                     self.undoAction.setEnabled(True)
-                    self.projectStack.insert(len(self.projectStack)+self.undoInd+1,
+                    self.projectStack.insert(len(self.projectStack) + self.undoInd + 1,
                                              copy.deepcopy(self.project))
                     if self.undoInd != -1:
-                        del self.projectStack[self.undoInd+1:]
+                        del self.projectStack[self.undoInd + 1:]
                         self.undoInd = -1
                         self.redoAction.setEnabled(False)
                 else:
@@ -572,9 +578,9 @@ class Qpcr_qt(QMainWindow):
                     else:
                         name = QFileInfo(file).fileName()
                         QMessageBox.warning(self, "Import cancelled",
-                          "<b>Warning</b>: the plate %s is already in the project %s ! \
-                           As a consequence, it has not been added to the project."       
-                                        % (name, QFileInfo(self.filename).fileName()))
+                                            "<b>Warning</b>: the plate %s is already in the project %s ! \
+                           As a consequence, it has not been added to the project."
+                                            % (name, QFileInfo(self.filename).fileName()))
 
     def addPlate(self, fname=None, fileNew=False):
         """
@@ -595,7 +601,7 @@ class Qpcr_qt(QMainWindow):
         if fname:
             message = "Loaded %s" % QFileInfo(fname).fileName()
             self.updateStatus(message)
-# Nettoyage des tableaux avant l'eventuel remplissage
+            # Nettoyage des tableaux avant l'eventuel remplissage
             try:
                 plaque = Plaque(fname, self.machine)
                 self.project.addPlate(plaque)
@@ -612,7 +618,7 @@ class Qpcr_qt(QMainWindow):
                     self.projectStack.insert(len(self.projectStack) + self.undoInd + 1,
                                              copy.deepcopy(self.project))
                     if self.undoInd != -1:
-                        del self.projectStack[self.undoInd+1:]
+                        del self.projectStack[self.undoInd + 1:]
                         self.undoInd = -1
                         self.redoAction.setEnabled(False)
             except KeyError:
@@ -629,8 +635,8 @@ class Qpcr_qt(QMainWindow):
         will warn you that you are going to close a plate.
         """
         reply = QMessageBox.question(self, "Remove a plate",
-                            "Are you sure to remove %s ?" % self.currentPlate,
-                            QMessageBox.Yes|QMessageBox.No)
+                                     "Are you sure to remove %s ?" % self.currentPlate,
+                                     QMessageBox.Yes | QMessageBox.No)
         plToDestroy = self.currentPlate
         if reply == QMessageBox.Yes:
             message = "Closed %s" % plToDestroy
@@ -649,7 +655,7 @@ class Qpcr_qt(QMainWindow):
             self.projectStack.insert(len(self.projectStack) + self.undoInd + 1,
                                      copy.deepcopy(self.project))
             if self.undoInd != -1:
-                del self.projectStack[self.undoInd+1:]
+                del self.projectStack[self.undoInd + 1:]
                 self.undoInd = -1
                 self.redoAction.setEnabled(False)
 
@@ -675,6 +681,7 @@ class Qpcr_qt(QMainWindow):
         self.applyModelAction.setEnabled(bool)
         self.filePrintAction.setEnabled(bool)
         self.exportAction.setEnabled(bool)
+        self.textExportAction.setEnabled(bool)
         self.enableAction.setEnabled(bool)
         self.disableAction.setEnabled(bool)
         self.fileImportAction.setEnabled(bool)
@@ -687,7 +694,7 @@ class Qpcr_qt(QMainWindow):
         """
         self.tree.clear()
         if self.filename is not None:
-            ancestor = QTreeWidgetItem(self.tree, 
+            ancestor = QTreeWidgetItem(self.tree,
                                        [QFileInfo(self.filename).fileName()])
         else:
             ancestor = QTreeWidgetItem(self.tree, ["untitled project"])
@@ -700,8 +707,8 @@ class Qpcr_qt(QMainWindow):
             item = QTreeWidgetItem(ancestor, [key])
             pl = self.project.dicoPlates[key]
             itemQuant = QTreeWidgetItem(item, ["Quantification"])
-            itemRefGene = QTreeWidgetItem(itemQuant , ["Reference Target"])
-            itemRefEch = QTreeWidgetItem(itemQuant , ["Reference Sample"])
+            itemRefGene = QTreeWidgetItem(itemQuant, ["Reference Target"])
+            itemRefEch = QTreeWidgetItem(itemQuant, ["Reference Sample"])
             for geneName in pl.geneRef:
                 item = QTreeWidgetItem(itemRefGene, [geneName])
             item = QTreeWidgetItem(itemRefEch, [pl.echRef])
@@ -742,15 +749,87 @@ class Qpcr_qt(QMainWindow):
         """
         Save as wizard.
         """
-        formats =[u"*.xml"]
+        formats = [u"*.xml"]
         fname = self.filename if self.filename is not None else "."
-        fname = unicode(QFileDialog.getSaveFileName(self, 
-                "pyQPCR - Save a file", fname,
-                "Result files (%s)" % " ".join(formats)))
+        fname = unicode(QFileDialog.getSaveFileName(self,
+                                                    "pyQPCR - Save a file", fname,
+                                                    "Result files (%s)" % " ".join(formats)))
         if fname:
             self.setWindowTitle("pyQPCR - %s[*]" % QFileInfo(fname).fileName())
             self.filename = fname
             self.fileSave()
+
+    def generateText(self):
+        """
+        This method is used to generate a tab-delimited text output that
+        corresponds to the result table.
+        """
+        dialog = PrintingDialog(self)
+        if dialog.exec_():
+            isPlate = dialog.btnPlate.isChecked()
+            isTable = dialog.btnRes.isChecked()
+            isStd = dialog.btnStd.isChecked()
+            isQuant = dialog.btnQuant.isChecked()
+        else:
+            return
+        if not hasattr(self, "project"):
+            return
+        text = u""
+        text += "qPCR results\n\n"
+        text += "Setup\n"
+        text += "\n"
+        text += "* Calculation type : %s\n" % self.typeCalc
+        if self.errtype == "student":
+            text += "* Error type : Student t-test\n"
+        elif self.errtype == "normal":
+            text += "* Error type : Gaussian\n"
+        text += "* Confidence interval : %.2f %%\n" % (100 * self.confidence)
+        text += "* Machine : %s\n" % self.machine
+        text += "* Maximum E(Ct) : %.2f\n" % self.ectMax
+        text += "* Minimum Ct : %.2f\n" % self.ctMin
+        text += "* Date : %s\n" % time.strftime('%d/%m/%Y', time.localtime())
+        text += "* pyQPCR version : %s\n" % __progversion__
+        text += "\n"
+
+        if isPlate:
+            for index, key in enumerate(self.project.dicoPlates.keys()):
+                if index == 1:
+                    text += "Plate setup (%s)\n" % key
+                    text += self.project.dicoPlates[key].writeTextPlateMap()
+                    text += "\n"
+                else:
+                    text += "Plate setup (%s)\n" % key
+                    text += self.project.dicoPlates[key].writeTextPlateMap()
+                    text += "\n"
+
+        if isTable:
+            for key in self.project.dicoPlates.keys():
+                text += "Results table (%s)\n" % key
+                text += self.project.dicoPlates[key].writeText(self.ctMin, self.ectMax, self.typeCalc)
+
+        if isStd and self.nplotStd != 0:
+            text += "\nStandard curves"
+            # self.plotStdWidget.geneStdBox.addItems(self.project.dicoStd.keys())
+            # for index in range(len(self.project.dicoStd.keys())):
+            for index, data in enumerate(self.project.dicoPlotStd.keys()):
+                # self.plotStdWidget.geneStdBox.setCurrentIndex(index)
+                self.plotStdWidget.plotStd(nameGene=data)
+                fig = self.plotStdWidget.mplCanStd.figure.savefig("output%i.png" % index,
+                                                                  dpi=250)
+                text += "Gene : %s" % data
+                text += "Linear Regression : %s" % self.plotStdWidget.labEquation.text()
+                text += "Efficiency : %s" % self.plotStdWidget.labEff.text()
+                text += "R^2 : %s" % self.plotStdWidget.labR2.text()
+
+                text += "See 'output%i.png'" % index
+                text += "\n"
+            text += "\n"
+
+        if isQuant and self.nplotGene != 0:
+            text += "\nQuantification curves"
+            fig = self.mplUknWidget.mplCanUnknown.figure.savefig("output.png", dpi=500)
+            text += "\n\nSee 'output.png'"
+        return text
 
     def generateHTML(self):
         """
@@ -780,18 +859,18 @@ class Qpcr_qt(QMainWindow):
         html += "<h1 align=center> qPCR results </h1><br><br>"
         html += "<br><h2>Setup</h2><br>\n"
         html += "<ul>\n"
-        html +=  "<li> <b>Calculation type :</b> %s</li>\n" % self.typeCalc
+        html += "<li> <b>Calculation type :</b> %s</li>\n" % self.typeCalc
         if self.errtype == "student":
-            html +=  "<li> <b>Error type :</b> Student t-test </li>\n" 
+            html += "<li> <b>Error type :</b> Student t-test </li>\n"
         elif self.errtype == "normal":
-            html +=  "<li> <b>Error type :</b> Gaussian </li>\n" 
-        html +=  "<li> <b>Confidence interval :</b> %.2f &#37;</li>\n" % (100*self.confidence)
-        html +=  "<li> <b>Machine :</b> %s</li>\n" % self.machine
-        html +=  "<li> <b>Maximum E(Ct) :</b> %.2f</li>\n" % self.ectMax
-        html +=  "<li> <b>Minimum Ct :</b> %.2f</li>\n" % self.ctMin
-        html +=  "<li> <b>Date :</b> %s</li>\n" % time.strftime('%d/%m/%Y',time.localtime())
-        html +=  "<li> <b>pyQPCR version :</b> %s</li>\n" % __progversion__
-        html +=  "</ul>\n"
+            html += "<li> <b>Error type :</b> Gaussian </li>\n"
+        html += "<li> <b>Confidence interval :</b> %.2f &#37;</li>\n" % (100 * self.confidence)
+        html += "<li> <b>Machine :</b> %s</li>\n" % self.machine
+        html += "<li> <b>Maximum E(Ct) :</b> %.2f</li>\n" % self.ectMax
+        html += "<li> <b>Minimum Ct :</b> %.2f</li>\n" % self.ctMin
+        html += "<li> <b>Date :</b> %s</li>\n" % time.strftime('%d/%m/%Y', time.localtime())
+        html += "<li> <b>pyQPCR version :</b> %s</li>\n" % __progversion__
+        html += "</ul>\n"
 
         if isPlate:
             for index, key in enumerate(self.project.dicoPlates.keys()):
@@ -812,28 +891,28 @@ class Qpcr_qt(QMainWindow):
                 html += self.project.dicoPlates[key].writeHtml(self.ctMin, self.ectMax,
                                                                self.typeCalc)
 
-        if isStd and self.nplotStd !=0:
+        if isStd and self.nplotStd != 0:
             html += "<p style='page-break-before:always;'>"
             html += "<br><h2>Standard curves</h2><br>"
-            #self.plotStdWidget.geneStdBox.addItems(self.project.dicoStd.keys())
-            #for index in range(len(self.project.dicoStd.keys())):
+            # self.plotStdWidget.geneStdBox.addItems(self.project.dicoStd.keys())
+            # for index in range(len(self.project.dicoStd.keys())):
             for index, data in enumerate(self.project.dicoPlotStd.keys()):
                 if (not index % 3 and index != 0):
                     html += "<p style='page-break-before:always;'>"
                 else:
                     html += "<p>"
                 html += "<table border=0 width=100%>\n"
-                #self.plotStdWidget.geneStdBox.setCurrentIndex(index)
+                # self.plotStdWidget.geneStdBox.setCurrentIndex(index)
                 self.plotStdWidget.plotStd(nameGene=data)
-                fig = self.plotStdWidget.mplCanStd.figure.savefig("output%i.png" % index, 
-                                                    dpi=250)
+                fig = self.plotStdWidget.mplCanStd.figure.savefig("output%i.png" % index,
+                                                                  dpi=250)
                 html += "<tr valign=middle>\n"
                 html += ("<th align=center>"
                          "<table width=100% border=0>")
-                html += "<tr><th><font size 10pt><b>Gene : </b> %s</th></tr>" %\
+                html += "<tr><th><font size 10pt><b>Gene : </b> %s</th></tr>" % \
                         data
-                html += "<tr><th><b>Linear Regression : </b> %s</th></tr>" %\
-                        self.plotStdWidget.labEquation.text() 
+                html += "<tr><th><b>Linear Regression : </b> %s</th></tr>" % \
+                        self.plotStdWidget.labEquation.text()
                 html += "<tr><th><b>Efficiency : </b> %s</th></tr>" % \
                         self.plotStdWidget.labEff.text()
                 html += "<tr><th><b>R&#178; : </b> %s</th></tr>" % \
@@ -886,16 +965,42 @@ class Qpcr_qt(QMainWindow):
             self.printer.setPageSize(QPrinter.A4)
             self.printer.setColorMode(QPrinter.Color)
             self.printer.setOutputFormat(QPrinter.PdfFormat)
-        formats =[u"*.pdf"]
-        fname = unicode(QFileDialog.getSaveFileName(self, 
-                "pyQPCR - Export results in a pdf file", "results.pdf",
-                "PDF - Portable Document Format (%s)" % " ".join(formats)))
+        formats = [u"*.pdf"]
+        fname = unicode(QFileDialog.getSaveFileName(self,
+                                                    "pyQPCR - Export results in a pdf file", "results.pdf",
+                                                    "PDF - Portable Document Format (%s)" % " ".join(formats)))
         if fname:
             self.printer.setOutputFileName(fname)
             document = QTextDocument()
             document.setHtml(html)
             document.print_(self.printer)
             self.cleanPngs()
+
+    def textFileExport(self):
+        """
+        A method to export results in a tab-delimited text file
+        """
+        text = self.generateText()
+        if text is None:
+            return
+        print text
+        """
+        if self.printer is None:
+            self.printer = QPrinter(QPrinter.HighResolution)
+            self.printer.setPageSize(QPrinter.A4)
+            self.printer.setColorMode(QPrinter.Color)
+            self.printer.setOutputFormat(QPrinter.PdfFormat)
+        formats = [u"*.pdf"]
+        fname = unicode(QFileDialog.getSaveFileName(self,
+                                                    "pyQPCR - Export results in a pdf file", "results.pdf",
+                                                    "PDF - Portable Document Format (%s)" % " ".join(formats)))
+        if fname:
+            self.printer.setOutputFileName(fname)
+            document = QTextDocument()
+            document.setHtml(html)
+            document.print_(self.printer)
+            self.cleanPngs()
+        """
 
     def cleanPngs(self):
         """
@@ -934,7 +1039,7 @@ class Qpcr_qt(QMainWindow):
         """
         import platform
         QMessageBox.about(self, "About pyQPCR",
-        """<b>pyQPCR</b> v %s
+                          """<b>pyQPCR</b> v %s
         <p>Copyright &copy; 2008-2012 Thomas Gastine - Magali Hennion - 
         All rights reserved.
         <p>This application can be used to perform
@@ -975,7 +1080,7 @@ class Qpcr_qt(QMainWindow):
         if recentFiles:
             for i, fname in enumerate(recentFiles):
                 action = QAction(QIcon(":/filerecent.png"), "&%d %s" % \
-                        (i+1, QFileInfo(fname).fileName()), self)
+                                 (i + 1, QFileInfo(fname).fileName()), self)
                 action.setData(QVariant(fname))
                 self.connect(action, SIGNAL("triggered()"), self.loadFile)
                 self.recentFileMenu.addAction(action)
@@ -989,25 +1094,25 @@ class Qpcr_qt(QMainWindow):
         if self.okToContinue():
             settings = QSettings()
             filename = QVariant(QString(self.filename)) \
-                  if self.filename is not None else QVariant()
+                if self.filename is not None else QVariant()
             settings.setValue("Last File", filename)
             recentFiles = QVariant(self.recentFiles) if self.recentFiles \
-                  else QVariant()
+                else QVariant()
             settings.setValue("RecentFiles", recentFiles)
             ectMax = QVariant(self.ectMax) if self.ectMax \
-                  else QVariant()
+                else QVariant()
             settings.setValue("EctMax", ectMax)
             ctMin = QVariant(self.ctMin) if self.ctMin \
-                  else QVariant()
+                else QVariant()
             settings.setValue("ctMin", ctMin)
             confidence = QVariant(self.confidence) if self.confidence \
-                  else QVariant()
+                else QVariant()
             errtype = QVariant(self.errtype) if self.errtype \
-                  else QVariant()
+                else QVariant()
             typeCalc = QVariant(self.typeCalc) if self.typeCalc \
-                  else QVariant()
+                else QVariant()
             machine = QVariant(self.machine) if self.machine \
-                  else QVariant()
+                else QVariant()
 
             if self.nplotGene != 0:
                 top = QVariant(self.mplUknWidget.mplCanUnknown.fig.subplotpars.top)
@@ -1033,12 +1138,12 @@ class Qpcr_qt(QMainWindow):
             settings.setValue("machine", machine)
             settings.setValue("MainWindow/Size", QVariant(self.size()))
             settings.setValue("MainWindow/Position",
-                    QVariant(self.pos()))
+                              QVariant(self.pos()))
             settings.setValue("MainWindow/State", QVariant(self.saveState()))
-            settings.setValue("MainWindow/VerticalSplitter", 
-                    QVariant(self.vSplitter.saveState()))
-            settings.setValue("MainWindow/MainSplitter", 
-                    QVariant(self.mainSplitter.saveState()))
+            settings.setValue("MainWindow/VerticalSplitter",
+                              QVariant(self.vSplitter.saveState()))
+            settings.setValue("MainWindow/MainSplitter",
+                              QVariant(self.mainSplitter.saveState()))
         else:
             event.ignore()
 
@@ -1051,9 +1156,9 @@ class Qpcr_qt(QMainWindow):
         if hasattr(self, "project"):
             if self.project.unsaved:
                 reponse = QMessageBox.question(self,
-                        "pyQPCR - Unsaved Changes",
-                        "Save unsaved changes?",
-                        QMessageBox.Yes|QMessageBox.No|QMessageBox.Cancel)
+                                               "pyQPCR - Unsaved Changes",
+                                               "Save unsaved changes?",
+                                               QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel)
                 if reponse == QMessageBox.Cancel:
                     return False
                 elif reponse == QMessageBox.Yes:
@@ -1068,7 +1173,7 @@ class Qpcr_qt(QMainWindow):
             self.undoInd += 1
         self.project = copy.deepcopy(self.projectStack[self.undoInd])
         self.updateUi()
-#
+        #
         for key in self.project.dicoPlates.keys():
             pl = self.project.dicoPlates[key]
             if not self.pileTables.has_key(key):
@@ -1104,7 +1209,7 @@ class Qpcr_qt(QMainWindow):
             self.undoInd -= 1
         self.project = copy.deepcopy(self.projectStack[self.undoInd])
         self.updateUi()
-#
+        #
         for key in self.project.dicoPlates.keys():
             pl = self.project.dicoPlates[key]
             if not self.pileTables.has_key(key):
@@ -1121,7 +1226,7 @@ class Qpcr_qt(QMainWindow):
                 self.pileTables.__delitem__(key)
                 self.pileResults.__delitem__(key)
 
-# Si on remonte tous les undo pas besoin de sauvegarder
+            # Si on remonte tous les undo pas besoin de sauvegarder
         if self.undoInd == 0 or self.undoInd == -len(self.projectStack):
             self.project.unsaved = False
             self.fileSaveAction.setEnabled(False)
@@ -1134,7 +1239,7 @@ class Qpcr_qt(QMainWindow):
 
     def applyModel(self):
         dir = os.path.dirname(self.filename) if self.filename is not None \
-                else "."
+            else "."
         dialog = ModelDialog(self, pr=self.project, pwd=dir)
         hasChanged = False
         if dialog.exec_():
@@ -1148,7 +1253,7 @@ class Qpcr_qt(QMainWindow):
             self.projectStack.insert(len(self.projectStack) + self.undoInd + 1,
                                      copy.deepcopy(self.project))
             if self.undoInd != -1:
-                del self.projectStack[self.undoInd+1:]
+                del self.projectStack[self.undoInd + 1:]
                 self.undoInd = -1
                 self.redoAction.setEnabled(False)
             for key in self.project.dicoPlates.keys():
@@ -1178,7 +1283,7 @@ class Qpcr_qt(QMainWindow):
             selectedWells.append(well)
         if len(selectedWells) > 0:
             dialog = EditDialog(self, project=self.project, selected=selected)
-             
+
             hasChanged = False
             if dialog.exec_():
                 ge = dialog.cboxGene.currentObj()
@@ -1229,7 +1334,7 @@ class Qpcr_qt(QMainWindow):
                     self.projectStack.insert(len(self.projectStack) + self.undoInd + 1,
                                              copy.deepcopy(self.project))
                     if self.undoInd != -1:
-                        del self.projectStack[self.undoInd+1:]
+                        del self.projectStack[self.undoInd + 1:]
                         self.undoInd = -1
                         self.redoAction.setEnabled(False)
                     for key in self.project.dicoPlates.keys():
@@ -1238,9 +1343,9 @@ class Qpcr_qt(QMainWindow):
                         self.pileResults[key].populateResult(pl, self.typeCalc)
                     self.updateUi()
 
-        else: #Please select something !!
+        else:  # Please select something !!
             QMessageBox.information(self, "Please select some wells",
-                "You must select at least one well to edit something.")
+                                    "You must select at least one well to edit something.")
 
     def addGene(self):
         """
@@ -1263,7 +1368,7 @@ class Qpcr_qt(QMainWindow):
                 self.projectStack.insert(len(self.projectStack) + self.undoInd + 1,
                                          copy.deepcopy(self.project))
                 if self.undoInd != -1:
-                    del self.projectStack[self.undoInd+1:]
+                    del self.projectStack[self.undoInd + 1:]
                     self.undoInd = -1
                     self.redoAction.setEnabled(False)
                 for key in self.project.dicoPlates.keys():
@@ -1293,7 +1398,7 @@ class Qpcr_qt(QMainWindow):
                 self.projectStack.insert(len(self.projectStack) + self.undoInd + 1,
                                          copy.deepcopy(self.project))
                 if self.undoInd != -1:
-                    del self.projectStack[self.undoInd+1:]
+                    del self.projectStack[self.undoInd + 1:]
                     self.undoInd = -1
                     self.redoAction.setEnabled(False)
                 for key in self.project.dicoPlates.keys():
@@ -1322,7 +1427,7 @@ class Qpcr_qt(QMainWindow):
                 self.projectStack.insert(len(self.projectStack) + self.undoInd + 1,
                                          copy.deepcopy(self.project))
                 if self.undoInd != -1:
-                    del self.projectStack[self.undoInd+1:]
+                    del self.projectStack[self.undoInd + 1:]
                     self.undoInd = -1
                     self.redoAction.setEnabled(False)
                 for key in self.project.dicoPlates.keys():
@@ -1361,14 +1466,14 @@ class Qpcr_qt(QMainWindow):
                 self.projectStack.insert(len(self.projectStack) + self.undoInd + 1,
                                          copy.deepcopy(self.project))
                 if self.undoInd != -1:
-                    del self.projectStack[self.undoInd+1:]
+                    del self.projectStack[self.undoInd + 1:]
                     self.undoInd = -1
                     self.redoAction.setEnabled(False)
 
             self.subIndex += 1
-        else: #Please select something !!
+        else:  # Please select something !!
             QMessageBox.information(self, "Please select some wells",
-                "You must select at least one well to create a new subplate.")
+                                    "You must select at least one well to create a new subplate.")
 
     def modifyGene(self):
         """
@@ -1390,14 +1495,14 @@ class Qpcr_qt(QMainWindow):
             self.projectStack.insert(len(self.projectStack) + self.undoInd + 1,
                                      copy.deepcopy(self.project))
             if self.undoInd != -1:
-                del self.projectStack[self.undoInd+1:]
+                del self.projectStack[self.undoInd + 1:]
                 self.undoInd = -1
                 self.redoAction.setEnabled(False)
             self.pileTables[self.currentPlate].populateTable( \
-                          self.project.dicoPlates[self.currentPlate])
+                self.project.dicoPlates[self.currentPlate])
             self.pileResults[self.currentPlate].populateResult( \
-                          self.project.dicoPlates[self.currentPlate], 
-                          self.typeCalc)
+                self.project.dicoPlates[self.currentPlate],
+                self.typeCalc)
 
     def modifyEch(self):
         """
@@ -1420,13 +1525,13 @@ class Qpcr_qt(QMainWindow):
             self.projectStack.insert(len(self.projectStack) + self.undoInd + 1,
                                      copy.deepcopy(self.project))
             if self.undoInd != -1:
-                del self.projectStack[self.undoInd+1:]
+                del self.projectStack[self.undoInd + 1:]
                 self.undoInd = -1
                 self.redoAction.setEnabled(False)
             self.pileTables[self.currentPlate].populateTable( \
-                         self.project.dicoPlates[self.currentPlate])
+                self.project.dicoPlates[self.currentPlate])
             self.pileResults[self.currentPlate].populateResult( \
-                         self.project.dicoPlates[self.currentPlate], self.typeCalc)
+                self.project.dicoPlates[self.currentPlate], self.typeCalc)
 
     def modifyAm(self):
         """
@@ -1449,13 +1554,13 @@ class Qpcr_qt(QMainWindow):
             self.projectStack.insert(len(self.projectStack) + self.undoInd + 1,
                                      copy.deepcopy(self.project))
             if self.undoInd != -1:
-                del self.projectStack[self.undoInd+1:]
+                del self.projectStack[self.undoInd + 1:]
                 self.undoInd = -1
                 self.redoAction.setEnabled(False)
             self.pileTables[self.currentPlate].populateTable( \
-                        self.project.dicoPlates[self.currentPlate])
+                self.project.dicoPlates[self.currentPlate])
             self.pileResults[self.currentPlate].populateResult( \
-                        self.project.dicoPlates[self.currentPlate], self.typeCalc)
+                self.project.dicoPlates[self.currentPlate], self.typeCalc)
 
     def setType(self):
         """
@@ -1474,16 +1579,16 @@ class Qpcr_qt(QMainWindow):
             self.project.unsaved = True
             self.fileSaveAction.setEnabled(True)
             self.undoAction.setEnabled(True)
-            self.projectStack.insert(len(self.projectStack)+self.undoInd+1,
+            self.projectStack.insert(len(self.projectStack) + self.undoInd + 1,
                                      copy.deepcopy(self.project))
             if self.undoInd != -1:
-                del self.projectStack[self.undoInd+1:]
+                del self.projectStack[self.undoInd + 1:]
                 self.undoInd = -1
                 self.redoAction.setEnabled(False)
             self.pileTables[self.currentPlate].populateTable( \
-                        self.project.dicoPlates[self.currentPlate])
+                self.project.dicoPlates[self.currentPlate])
             self.pileResults[self.currentPlate].populateResult( \
-                        self.project.dicoPlates[self.currentPlate], self.typeCalc)
+                self.project.dicoPlates[self.currentPlate], self.typeCalc)
 
     def enable(self):
         """
@@ -1505,13 +1610,13 @@ class Qpcr_qt(QMainWindow):
             self.projectStack.insert(len(self.projectStack) + self.undoInd + 1,
                                      copy.deepcopy(self.project))
             if self.undoInd != -1:
-                del self.projectStack[self.undoInd+1:]
+                del self.projectStack[self.undoInd + 1:]
                 self.undoInd = -1
                 self.redoAction.setEnabled(False)
             self.pileTables[self.currentPlate].populateTable( \
-                        self.project.dicoPlates[self.currentPlate])
+                self.project.dicoPlates[self.currentPlate])
             self.pileResults[self.currentPlate].populateResult( \
-                        self.project.dicoPlates[self.currentPlate], self.typeCalc)
+                self.project.dicoPlates[self.currentPlate], self.typeCalc)
 
     def disable(self):
         """
@@ -1537,13 +1642,13 @@ class Qpcr_qt(QMainWindow):
             self.projectStack.insert(len(self.projectStack) + self.undoInd + 1,
                                      copy.deepcopy(self.project))
             if self.undoInd != -1:
-                del self.projectStack[self.undoInd+1:]
+                del self.projectStack[self.undoInd + 1:]
                 self.undoInd = -1
                 self.redoAction.setEnabled(False)
             self.pileTables[self.currentPlate].populateTable( \
-                            self.project.dicoPlates[self.currentPlate])
+                self.project.dicoPlates[self.currentPlate])
             self.pileResults[self.currentPlate].populateResult( \
-                            self.project.dicoPlates[self.currentPlate], self.typeCalc)
+                self.project.dicoPlates[self.currentPlate], self.typeCalc)
 
     def displayWarnings(self):
         """
@@ -1559,7 +1664,7 @@ class Qpcr_qt(QMainWindow):
         A method to check negative samples quality
         """
         st = "<b>Warning</b>: ct of the following wells are lower than %.2f :" % \
-                ctMin
+             ctMin
         st += '<ul>'
         bad = False
         for pl in self.project.dicoPlates:
@@ -1576,47 +1681,47 @@ class Qpcr_qt(QMainWindow):
         """
         Determine the reference target and sample
         """
-        bad = True 
+        bad = True
         for plname in self.project.dicoPlates.keys():
             pl = self.project.dicoPlates[plname]
             if pl.contUkn:
                 bad = False
                 if len(pl.geneRef) == 0:
                     QMessageBox.warning(self, "Warning",
-                        "Reference target undefined for plate <b>%s</b>!" % plname)
+                                        "Reference target undefined for plate <b>%s</b>!" % plname)
                     raise ValueError
 
                 for geneName in pl.geneRef:
                     wrong = False
                     if not pl.dicoGene.has_key(geneName):
                         QMessageBox.warning(self, "Warning",
-                            """Wrong reference target for plate <b>%s</b>!
-                               This plate does not contain <b>%s</b>.""" %  \
-                               (plname, geneName))
+                                            """Wrong reference target for plate <b>%s</b>!
+                               This plate does not contain <b>%s</b>.""" % \
+                                            (plname, geneName))
                         raise ValueError
                     for well in pl.dicoGene[geneName]:
                         if well.type == 'unknown':
                             wrong = True
                     if not wrong:
                         QMessageBox.warning(self, "Warning",
-                            """Wrong reference target for plate <b>%s</b>!
+                                            """Wrong reference target for plate <b>%s</b>!
                                This plate does not contain <b>%s</b> for
-                               unknown-type wells.""" %  \
-                               (plname, geneName))
+                               unknown-type wells.""" % \
+                                            (plname, geneName))
                         raise ValueError
 
                 if pl.echRef == '':
                     QMessageBox.warning(self, "Warning",
-                        "Reference sample undefined for plate <b>%s</b>!" % plname)
+                                        "Reference sample undefined for plate <b>%s</b>!" % plname)
                     raise ValueError
                 elif not pl.dicoEch.has_key(pl.echRef):
                     QMessageBox.warning(self, "Warning",
-                        """Wrong reference sample for plate <b>%s</b>!
+                                        """Wrong reference sample for plate <b>%s</b>!
                            This plate does not contain <b>%s</b>.""" % (plname, pl.echRef))
                     raise ValueError
-            elif not pl.contUkn and len(pl.geneRef) != 0 :
+            elif not pl.contUkn and len(pl.geneRef) != 0:
                 QMessageBox.warning(self, "Warning",
-                    """The plate <b>%s</b> does not contain 'unknown'-type wells.
+                                    """The plate <b>%s</b> does not contain 'unknown'-type wells.
                     Reference target and/or sample have probably been defined
                     for this plate.
                     <p>The quantification can't be proceeded. If you want
@@ -1625,8 +1730,8 @@ class Qpcr_qt(QMainWindow):
                 raise ValueError
         if bad:
             QMessageBox.warning(self, "Warning",
-                "The plates do not contain 'unknown'-type wells."
-                "The quantification can't be proceeded.")
+                                "The plates do not contain 'unknown'-type wells."
+                                "The quantification can't be proceeded.")
             raise ValueError
 
     def computeUnknown(self):
@@ -1646,7 +1751,7 @@ class Qpcr_qt(QMainWindow):
         # On construit tous les triplicats
         try:
             self.project.findTrip(self.ectMax, self.confidence,
-                                      self.errtype)
+                                  self.errtype)
 
         except ReplicateError, e:
             st = "<b>Warning</b>: E(ct) of the following replicates is greater"
@@ -1656,10 +1761,10 @@ class Qpcr_qt(QMainWindow):
 
         except WellError, e:
             QMessageBox.warning(self, "Problem occurs in calculation !",
-                "<b>Warning</b>: A problem occured in the calculations. " \
-                "It seems to come from the well(s) <b>%s</b>. " \
-                "Check whether ct are correctly defined." \
-                % e.brokenWells)  
+                                "<b>Warning</b>: A problem occured in the calculations. " \
+                                "It seems to come from the well(s) <b>%s</b>. " \
+                                "Check whether ct are correctly defined." \
+                                % e.brokenWells)
             self.displayWarnings()
             return
 
@@ -1669,11 +1774,11 @@ class Qpcr_qt(QMainWindow):
                 self.project.calcNRQ()
             except NRQError, e:
                 QMessageBox.warning(self, "Problem occurs in calculation !",
-                    "<b>Warning</b>: A problem occured in the following replicates : " \
-                    "%s It probably comes from the reference target or sample which" \
-                    " is undefined for this gene or sample." \
-                    "<p> As a consequence these replicates have not been plotted." \
-                    % str(e))
+                                    "<b>Warning</b>: A problem occured in the following replicates : " \
+                                    "%s It probably comes from the reference target or sample which" \
+                                    " is undefined for this gene or sample." \
+                                    "<p> As a consequence these replicates have not been plotted." \
+                                    % str(e))
                 return
 
         elif self.typeCalc == 'Absolute quantification':
@@ -1681,22 +1786,23 @@ class Qpcr_qt(QMainWindow):
                 self.project.calcQabs()
             except NRQError, e:
                 QMessageBox.warning(self, "Problem occurs in calculation !",
-                    "<b>Warning</b>: A problem occured in the following replicates : " \
-                    "%s It probably comes from the reference target or sample which" \
-                    " is undefined for this gene or sample." \
-                    "<p> As a consequence these replicates have not been plotted." \
-                    % str(e))
+                                    "<b>Warning</b>: A problem occured in the following replicates : " \
+                                    "%s It probably comes from the reference target or sample which" \
+                                    " is undefined for this gene or sample." \
+                                    "<p> As a consequence these replicates have not been plotted." \
+                                    % str(e))
                 return
             except QabsError, e:
                 QMessageBox.warning(self, "Problem occurs in calculation !", '%s' % str(e))
                 return
 
         if self.nplotGene == 0:
-            self.mplUknWidget = MplUnknownWidget(self, barWth=self.barWth, 
-                           barSpac=self.barSpacing, labelFt=self.labelFontSize,
-                           labelRot=self.labelRotation)
-            self.mplUknWidget.mplCanUnknown.fig.subplots_adjust(right=self.rightMplCan, 
-                           left=self.leftMplCan, top=self.topMplCan, bottom=self.botMplCan)
+            self.mplUknWidget = MplUnknownWidget(self, barWth=self.barWth,
+                                                 barSpac=self.barSpacing, labelFt=self.labelFontSize,
+                                                 labelRot=self.labelRotation)
+            self.mplUknWidget.mplCanUnknown.fig.subplots_adjust(right=self.rightMplCan,
+                                                                left=self.leftMplCan, top=self.topMplCan,
+                                                                bottom=self.botMplCan)
             self.onglet.addTab(self.mplUknWidget, "Quantification")
             self.nplotGene += 1
         self.mplUknWidget.cboxPlate.clear()
@@ -1712,9 +1818,9 @@ class Qpcr_qt(QMainWindow):
             self.mplUknWidget.plotUnknown(self.project)
         except AttributeError:
             QMessageBox.warning(self, "Problem occurs in plotting !",
-                    "<b>Warning</b>: no defined samples." \
-                    "Results cannot be displayed. Please define some samples."
-                    )
+                                "<b>Warning</b>: no defined samples." \
+                                "Results cannot be displayed. Please define some samples."
+                                )
             return
         self.project.unsaved = True
         self.fileSaveAction.setEnabled(True)
@@ -1722,7 +1828,7 @@ class Qpcr_qt(QMainWindow):
         self.projectStack.insert(len(self.projectStack) + self.undoInd + 1,
                                  copy.deepcopy(self.project))
         if self.undoInd != -1:
-            del self.projectStack[self.undoInd+1:]
+            del self.projectStack[self.undoInd + 1:]
             self.undoInd = -1
             self.redoAction.setEnabled(False)
 
@@ -1732,7 +1838,7 @@ class Qpcr_qt(QMainWindow):
         """
         try:
             self.project.findStd(self.ectMax, self.confidence,
-                                self.errtype)
+                                 self.errtype)
 
         except ReplicateError, e:
             st = "<b>Warning</b>: E(ct) of the following replicates is greater"
@@ -1740,16 +1846,16 @@ class Qpcr_qt(QMainWindow):
             st += "<ul>"
             for trip in e.listRep:
                 st += "<li><b>%s, %.2f</b> : E(ct)=%.2f </li>" % (trip.gene, \
-                                                  trip.amList[0], trip.ctdev)
+                                                                  trip.amList[0], trip.ctdev)
             st += "</ul>"
             QMessageBox.warning(self, "Warning Replicates", st)
 
         except WellError, e:
             QMessageBox.warning(self, "Problem occurs in standard calculation !",
-                "<b>Warning</b>: A problem occured in the calculations. " \
-                "It seems to come from the well(s) <b>%s</b>. " \
-                "Check whether ct are correctly defined." \
-                % e.brokenWells)  
+                                "<b>Warning</b>: A problem occured in the calculations. " \
+                                "It seems to come from the well(s) <b>%s</b>. " \
+                                "Check whether ct are correctly defined." \
+                                % e.brokenWells)
             self.displayWarnings()
             self.displayWarnings()
             return
@@ -1767,10 +1873,10 @@ class Qpcr_qt(QMainWindow):
             self.project.unsaved = True
             self.fileSaveAction.setEnabled(True)
             self.undoAction.setEnabled(True)
-            self.projectStack.insert(len(self.projectStack)+self.undoInd+1,
+            self.projectStack.insert(len(self.projectStack) + self.undoInd + 1,
                                      copy.deepcopy(self.project))
             if self.undoInd != -1:
-                del self.projectStack[self.undoInd+1:]
+                del self.projectStack[self.undoInd + 1:]
                 self.undoInd = -1
                 self.redoAction.setEnabled(False)
             for key in self.project.dicoPlates.keys():
@@ -1780,8 +1886,8 @@ class Qpcr_qt(QMainWindow):
             self.plotStdWidget.plotStd(self.project.dicoPlotStd)
         else:
             QMessageBox.warning(self, "Warning",
-                "The plates do not contain 'standard'-type wells."
-                "The standard curves can't be proceeded.")
+                                "The plates do not contain 'standard'-type wells."
+                                "The standard curves can't be proceeded.")
 
     def changeCurrentIndex(self):
         """
@@ -1862,7 +1968,8 @@ class Qpcr_qt(QMainWindow):
             del self.project
         self.projectStack = []
         self.undoInd = -1
- 
+
+
 def run():
     """
     Main function to run pyQPCR.

@@ -1026,6 +1026,74 @@ class Plaque:
         for well in self.listePuits:
             setattr(self, well.name, well)
 
+    def writeTextPlateMap(self):
+        """
+        This method allows to represent the setup of a plate in an
+        text table. It is used for instance during the text export
+        of pyQPCR.
+        """
+        if self.type == '96':
+            nrows = 8
+            ncolumns = 12
+            tableLabels = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
+        elif self.type == '384':
+            nrows = 16
+            ncolumns = 24
+            tableLabels = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
+                           'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P']
+        elif self.type == '16':
+            nrows = 1
+            ncolumns = 16
+            tableLabels = ['A']
+        elif self.type == '72':
+            nrows = 9
+            ncolumns = 8
+            tableLabels = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
+                                'I']
+        elif self.type == '100':
+            nrows = 10
+            ncolumns = 10
+            tableLabels = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
+                            'I', 'J']
+        elif self.type == '48':
+            nrows = 2
+            ncolumns = 24
+            tableLabels = ['A', 'B']
+        elif self.type == '48a':
+            nrows = 6
+            ncolumns = 8
+            tableLabels = ['A', 'B', 'C', 'D', 'E', 'F']
+
+        text = u""
+        for j in range(ncolumns):
+            text += "\t%i" % (j+1)
+        text += "\n"
+        for i in range(nrows):
+            text += "%s\t" % tableLabels[i]
+            for j in range(ncolumns):
+                empty = True
+                for well in self.listePuits:
+                    if well.xpos == i and well.ypos == j:
+                        table = ""
+                        if well.type == 'unknown':
+                            #bgcolor = '#e6e6fa'
+                            table += "%s|%s" % (well.gene.name, well.ech.name)
+                        elif well.type == 'standard':
+                            #bgcolor = '#ffe4e1'
+                            try:
+                                table += "%s|%g" % (well.gene.name, well.amount)
+                            except TypeError:
+                                table += "%s|%s" % (well.gene.name, str(well.amount))
+                        elif well.type == 'negative':
+                            #bgcolor = '#fff8d6'
+                            table += "%s|%s" % (well.gene.name, well.ech.name)
+                        text += "%s\t" % table
+                        empty = False
+                if empty:
+                    text += "\t"
+            text += "\n"
+        return text
+
     def writeHtmlPlateMap(self):
         """
         This method allows to represent the setup of a plate in an
@@ -1102,6 +1170,30 @@ class Plaque:
             html += "</tr>\n"
         html += "</table>"
         return html
+
+    def writeText(self, ctMin=35, ectMax=0.3, typeCalc='Relative quantification'):
+        """
+        This method allows to represent the results of a plate in a text table.
+        It is used for instance during the text export of pyQPCR.
+
+        :param ctMin: the minimum ct value allowed
+        :type ctMin: float
+        :param ectMax: the maximum value of E(ct)
+        :type ectMax: float
+        :param typeCalc: the type of calculation
+        :type typeCalc: PyQt4.QtCore.QString
+        """
+        text = u""
+        text += "\n"
+        text += "Well\tEnabled\tType\tTarget\tSample\tCt\tCtmean\tCtdev\tAmount\tEfficiency"
+        if typeCalc == 'Relative quantification':
+            text += "\tNRQ\tNRQerror"
+        elif typeCalc == 'Absolute quantification':
+            text += "\tQabs\tQabsError"
+        text += "\n"
+        for well in self.listePuits:
+            text += well.writeText(ctMin, ectMax)
+        return text
 
     def writeHtml(self, ctMin=35, ectMax=0.3, typeCalc='Relative quantification'):
         """

@@ -2,6 +2,19 @@
 
 This project is a fork of pyQCPR, originally created by Thomas Gastine and Magali Hennion. It was originally hosted at http://pyqpcr.sourceforge.net/.
 
+## Windows Build
+ * Install Anaconda (Python 2.7 version)
+ * Add Anaconda2 and Anaconda2/Scripts to PATH
+ * Downgrade pyqt from 5.6.0 to 4.10.4
+   ```
+   conda remove navigator-updater
+   conda install pyqt=4.10.4
+   ```
+ * Build and run
+   ```
+   python direct-run.py
+   ```
+
 # pyQPCR Installation
 
 ## Dependencies
